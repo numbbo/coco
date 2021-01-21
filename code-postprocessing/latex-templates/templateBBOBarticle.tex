@@ -1,30 +1,53 @@
 \documentclass[sigconf]{acmart}
+% 
+% LaTeX template for visualizing the performance of
+% optimization algorithms, that were run on the 
+% bbob test suite of COCO. Any number of 
+% algorithms should work with this template.
 
 % include preamble:
-\input{templatepreamble.tex}
+\include{templatepreamble.tex}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% TO BE EDITED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% rungeneric.py writes data into a subfolder of ppdata
+
+% location of pictures files
 \newcommand{\bbobdatapath}{ppdata/} % change default output folder of COCO if desired
-\input{\bbobdatapath cocopp_commands.tex} % provide default of algname and algfolder
-% \renewcommand{\algname}{MYNAME}  % name of algorithm as it should appear in the text
-% \renewcommand{\algfolder}{ABC/} % subfolder of \bbobdatapath for processed algorithm
+
+% Algorithm names as they appear in the tables, uncomment and adapt if necessary
+% \newcommand{\algAtables}{ALGO1}  % first argument in the post-processing
+% \newcommand{\algBtables}{ALGO2}  % second argument in the post-processing
+% \newcommand{\algCtables}{ALGO3}  % third argument in the post-processing
+% \newcommand{\algDtables}{ALGO4}  % forth argument in the post-processing
+% ...
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% read in data and deal with the different number of algorithms:
+\input{\bbobdatapath cocopp_commands.tex}
+
+\ifthenelse{\equal{\numofalgs}{1}}{
+   \graphicspath{{\bbobdatapath\algfolder}}}{
+	 \graphicspath{{\bbobdatapath\algsfolder}}
+}
+
+\ifthenelse{\isundefined{\algorithmA}}{\newcommand{\algorithmA}{\algname}}{}
+%\ifthenelse{\isundefined{\algorithmA}{\newcommand{\algorithmA}{\change{MY-ALGORITHM-NAME}}}{}  % better use the previous line?
+%%
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\graphicspath{{\bbobdatapath\algfolder}}
 
 \begin{document}
 
-
-\title{Black-Box Optimization Benchmarking Template for Noiseless Function
-Testbed}
-\renewcommand{\shorttitle}{Black-Box Optimization Benchmarking Template for Noiseless Function Testbed}
+\title{Black-Box Optimization Benchmarking Template for the Comparison of Algorithms on the \bbob Test Suite}
+\renewcommand{\shorttitle}{Black-Box Optimization Benchmarking Template for \bbob Test Suite}
 \subtitle{Draft version}
-
 
 
 \author{Firstname Lastname}
@@ -132,27 +155,63 @@ to be written
 % \section{Algorithm Presentation}
 %
 % \section{Experimental Procedure}
+%
 % \subsection{Parameter Tuning}
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{CPU Timing}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % note that the following text is just a proposal and can/should be changed to your needs:
-In order to evaluate the CPU timing of the algorithm, we have run the \change{MY-ALGORITHM-NAME} on the  \change{bbob test suite \cite{hansen2009fun}} with restarts for a maximum budget equal to \change{$400 (D + 2)$} function evaluations according to \cite{hansen2016exp}. The \change{C/Java/Python/Matlab/Octave} code was run on a \change{Mac Intel(R) Core(TM) i5-2400S CPU @ 2.50GHz} with \change{1} processor and \change{4} cores \change{and (compile) options xxx}. The time per function evaluation for dimensions 2, 3, 5, 10, 20\change{, 40} equals \change{$x.x$}, \change{$x.x$}, \change{$x.x$}, \change{$xx$}, \change{$xxx$}\change{, and $xxx$} seconds respectively. 
+In order to evaluate the CPU timing of the algorithm, we have run the \change{\algorithmA} with restarts on the entire \bbob test suite \cite{hansen2009fun} for \change{$100n$} function evaluations according to \cite{hansen2016exp}.
+%\change{replace the previous sentence with ``on the function $f_{8}$ with restarts for at least 30 seconds and until a maximum budget equal to \change{$400 (n + 2)$} is reached.'' in case you use the old code base}
+ The \change{C/Java/Matlab/Octave/Python} code was run on a \change{Mac Intel(R) Core(TM) i5-2400S CPU @ 2.50GHz} with \change{1} processor and \change{4} cores \change{and (compile) options xxx}. The time per function evaluation for dimensions 2, 3, 5, 10, 20\change{, 40} equals \change{$x.x$}, \change{$x.x$}, \change{$x.x$}, \change{$xx$}, \change{$xxx$}\change{, and $xxx$} seconds respectively. 
 
+\ifthenelse{\equal{\numofalgs}{1}}{}{
+\change{repeat the above for any algorithm tested}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Results of \algname\ from experiments according to \cite{hansen2016exp} and \cite{hansen2016perfass} on the benchmark
-functions given in \cite{wp200901_2010} are presented in
-Figures~\ref{fig:ERTgraphs}, \ref{fig:RLDs}, \ref{tab:ERTloss}, and \ref{fig:ERTlogloss} and in
-Tables~\ref{tab:ERTs}. The experiments were performed with COCO \cite{hansen2020cocoplat}, version \change{\version},
-the plots were produced with version \change{\version}.
+Results from experiments according to \cite{hansen2016exp} and
+\cite{hansen2016perfass} on the benchmark functions given in 
+{\cite{wp200901_2010}} are presented in
+%%
+\ifthenelse{\equal{\numofalgs}{1}}{
+Figures~\ref{fig:ERTgraphs} and \ref{fig:ECDFsingleOne} and Tables~\ref{tab:ERTs05} and \ref{tab:ERTs20}.
+%, \ref{tab:ERTloss}, and \ref{fig:ERTlogloss}.
+}{\ifthenelse{\equal{\numofalgs}{2}}{
+Figures~\ref{fig:scaling}, \ref{fig:ECDFs05D}, \ref{fig:ECDFs20D}, \ref{fig:ECDFsingleOne}, and \ref{fig:scatterplots} and Tables~\ref{tab:ERTs05} and \ref{tab:ERTs20}.
+}{\ifthenelse{\(\numofalgs > 2\)}{
+Figures~\ref{fig:scaling}, \ref{fig:ECDFs}, and \ref{fig:ECDFsingleOne} and Tables~\ref{tab:ERTs05} and \ref{tab:ERTs20}.
+}}{}}
+%%
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The experiments were performed with COCO \cite{hansen2020cocoplat}, version
+\change{\version}, the plots were produced with version \change{\version}.
+
+The \textbf{expected runtime (ERT)}, used in the %figures and
+tables,
+depends on a given target precision, $\Itarget=\fopt+\Df$, and is
+computed over all relevant trials as the number of function
+evaluations executed during each trial while the best function value
+did not reach \ftarget, summed over all trials and divided by the
+number of trials that actually reached \ftarget\
+\cite{hansen2016exp,price1997dev}.
+\textbf{Statistical significance} is tested with the rank-sum test for a given
+target $\Delta\ftarget$ using, for each trial,
+either the number of needed function evaluations to reach
+$\ftarget$ (inverted and multiplied by $-1$), or, if the target
+was not reached, the best $\Df$-value achieved, measured only up to
+the smallest number of overall function evaluations for any
+unsuccessful trial under consideration.
+
+
+
+\ifthenelse{\equal{\numofalgs}{1}}{
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Scaling of ERT with dimension
@@ -191,7 +250,136 @@ the plots were produced with version \change{\version}.
  }
 \end{figure*}
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ECDFs per group
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure*}
+\centering
+\begin{tabular}{c@{\hspace*{0.01\textwidth}}c@{\hspace*{0.01\textwidth}}c}
+{\sffamily separable fcts}\hspace{1cm} & {\sffamily moderate fcts}\hspace{1cm} & \hspace{-1cm}{\sffamily ill-conditioned fcts}\\
+\includegraphics[width=0.32\textwidth]{pprldmany-single-functions/pprldmany_separ}&
+\includegraphics[width=0.32\textwidth]{pprldmany-single-functions/pprldmany_lcond}&
+\includegraphics[width=0.32\textwidth]{pprldmany-single-functions/pprldmany_hcond}\\[-0.2em]
+{\sffamily multi-modal fcts}\hspace{1cm} & {\sffamily weakly structured multi-modal fcts}\hspace{1cm} & \hspace{-1cm}{\sffamily all fcts}\\
+\includegraphics[width=0.32\textwidth]{pprldmany-single-functions/pprldmany_multi}&
+\includegraphics[width=0.32\textwidth]{pprldmany-single-functions/pprldmany_mult2}&
+\includegraphics[width=0.32\textwidth]{pprldmany-single-functions/pprldmany}
+\vspace*{-1ex}
+\end{tabular}
+ \caption{\label{fig:ECDFgroups}
+	\bbobecdfcaptionallgroups
+}
+\end{figure*}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ECDFs per function
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure*}
+\centering
+\begin{tabular}{l@{\hspace*{-0.00\textwidth}}l@{\hspace*{0.01\textwidth}}l@{\hspace*{-0.00\textwidth}}l}
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f001}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f002}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f003}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f004}\\[-0.2em]
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f005}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f006}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f007}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f008}\\[-0.2em]
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f009}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f010}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f011}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f012}\\[-0.2em]
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f013}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f014}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f015}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f016}\\[-0.2em]
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f017}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f018}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f019}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f020}\\[-0.2em]
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f021}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f022}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f023}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f024}
+\vspace*{-1ex}
+\end{tabular}
+ \caption{\label{fig:ECDFsingleOne}
+	\bbobecdfcaptionsinglefunctionssingledim{$\!\!$s 2 to 40}
+}
+\end{figure*}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%% ERT loss ratios (figure and table)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}
+\centering
+\parbox{0.48\columnwidth}{\centering 5-D}\hfill
+\parbox{0.48\columnwidth}{\centering 20-D}\\
+\includegraphics[width=0.48\columnwidth]{pplogloss_05D_noiselessall}\hfill
+\includegraphics[width=0.48\columnwidth]{pplogloss_20D_noiselessall}\\[2ex]
+%
+\input{\bbobdatapath\algfolder pploglosstable_05D_noiselessall}\\
+\input{\bbobdatapath\algfolder pploglosstable_20D_noiselessall}
+\caption{\label{tab:ERTloss}%
+\bbobloglosstablecaption{}
+}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%% ERT loss ratios per function group
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}
+\begin{tabular}{@{}l@{}@{}l@{}}
+\multicolumn{1}{c}{5-D} & \multicolumn{1}{c}{20-D}\\
+\rot[2.8]{separable fcts}
+\hspace*{-1.4mm}
+\includegraphics[width=0.24\textwidth]{pplogloss_05D_separ} &
+\includegraphics[width=0.24\textwidth]{pplogloss_20D_separ}\\
+\rot[2.7]{moderate fcts}
+\hspace*{-1.4mm}
+\includegraphics[width=0.24\textwidth]{pplogloss_05D_lcond} &
+\includegraphics[width=0.24\textwidth]{pplogloss_20D_lcond}\\
+\rot[1.9]{ill-conditioned fcts}
+\hspace*{-1.35mm}
+\includegraphics[width=0.24\textwidth]{pplogloss_05D_hcond} &
+\includegraphics[width=0.24\textwidth]{pplogloss_20D_hcond}\\
+\rot[2.5]{multi-modal fcts}
+\hspace*{-1.3mm}
+\includegraphics[width=0.24\textwidth]{pplogloss_05D_multi} &
+\includegraphics[width=0.24\textwidth]{pplogloss_20D_multi}\\
+\rot[1.6]{weak structure fcts}
+\hspace*{-1.4mm}
+\includegraphics[width=0.24\textwidth]{pplogloss_05D_mult2} &
+\includegraphics[width=0.24\textwidth]{pplogloss_20D_mult2}
+\vspace*{-0.5ex}
+\end{tabular}
+ \caption{\label{fig:ERTlogloss}%
+\bbobloglossfigurecaption{}
+}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
 % Table showing the expected runtime (ERT in number of function
@@ -201,7 +389,7 @@ the plots were produced with version \change{\version}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{table*}\tiny
-%\hfill5-D\hfill~\\[1ex]
+%\hfill10-D\hfill~\\[1ex]
 {\normalsize \color{red}
 \ifthenelse{\isundefined{\algorithmG}}{}{more than 6 algorithms: please split the tables below by hand until it fits to the page limits}
 }
@@ -270,21 +458,25 @@ the plots were produced with version \change{\version}.
 
 \end{minipage}}
 
-\caption[Table of ERTs]{\label{tab:ERTs5}\bbobpptablecaption{dimension $5$}
+\caption[Table of ERTs]{\label{tab:ERTs05}\bbobpptablecaption{dimension $5$}
 }
 \end{table*}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
 % Table showing the expected runtime (ERT in number of function
-% evaluations) divided by the best ERT measured during BBOB-2009 (given in the
+% evaluations) [divided by the best ERT measured during BBOB-2009] (given in the
 % first row of each cell) for functions $f_1$--$f_{24} for dimension 20$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{table*}\tiny
 %\hfill20-D\hfill~\\[1ex]
+{\normalsize \color{red}
+\ifthenelse{\isundefined{\algorithmG}}{}{more than 6 algorithms: please split the tables below by hand until it fits to the page limits}
+}
 \mbox{\begin{minipage}[t]{0.499\textwidth}\tiny
 \centering
 \pptableheader 
@@ -319,6 +511,7 @@ the plots were produced with version \change{\version}.
 \hspace{0.002\textwidth}
 \begin{minipage}[t]{0.499\textwidth}\tiny
 \centering
+
 \pptableheader 
 
 \input{\bbobdatapath\algfolder pptable_f013_20D}
@@ -348,7 +541,7 @@ the plots were produced with version \change{\version}.
 \pptablefooter
 
 \end{minipage}}
- 
+
 \caption[Table of ERTs]{\label{tab:ERTs20}\bbobpptablecaption{dimension $20$}
 }
 \end{table*}
@@ -356,121 +549,316 @@ the plots were produced with version \change{\version}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+}{} % end of 1 algorithm template
+
+
+
+\ifthenelse{\numofalgs > 1}{
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Empirical cumulative distribution functions (ECDFs) per function group.
+% Scaling of ERT with dimension
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure*}
+\centering
+\begin{tabular}{@{}c@{}c@{}c@{}c@{}}
+\includegraphics[width=0.24\textwidth]{ppfigs_f001}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f002}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f003}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f004}\\[-0.25em]
+\includegraphics[width=0.24\textwidth]{ppfigs_f005}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f006}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f007}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f008}\\[-0.25em]
+\includegraphics[width=0.24\textwidth]{ppfigs_f009}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f010}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f011}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f012}\\[-0.25em]
+\includegraphics[width=0.24\textwidth]{ppfigs_f013}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f014}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f015}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f016}\\[-0.25em]
+\includegraphics[width=0.24\textwidth]{ppfigs_f017}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f018}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f019}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f020}\\[-0.25em]
+\includegraphics[width=0.24\textwidth]{ppfigs_f021}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f022}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f023}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f024}
+\end{tabular}
+\vspace*{-0.2cm}
+\caption[Expected running time (\ERT) divided by dimension
+versus dimension in log-log presentation]{
+\label{fig:scaling}
+\bbobppfigslegend{$f_1$ and $f_{24}$}. 
+}
+% 
+\end{figure*}
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+% Empirical cumulative distribution functions (ECDFs) per function group
+% for dimensions 5 and 20
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure*}
+\begin{tabular}{c@{\hspace*{0.01\textwidth}}c@{\hspace*{0.01\textwidth}}c}
+{\sffamily separable fcts}\hspace{1cm} & {\sffamily moderate fcts}\hspace{1cm} & \hspace{-1cm}{\sffamily ill-conditioned fcts}\\
+\includegraphics[width=0.32\textwidth]{\bbobdatapath\algsfolder/pprldmany_05D_separ}&
+\includegraphics[width=0.32\textwidth]{\bbobdatapath\algsfolder/pprldmany_05D_lcond}&
+\includegraphics[width=0.32\textwidth]{\bbobdatapath\algsfolder/pprldmany_05D_hcond}\\[-0.2em]
+{\sffamily multi-modal fcts}\hspace{1cm} & {\sffamily weakly structured multi-modal fcts}\hspace{1cm} & \hspace{-1cm}{\sffamily all fcts}\\
+\includegraphics[width=0.32\textwidth]{\bbobdatapath\algsfolder/pprldmany_05D_multi}&
+\includegraphics[width=0.32\textwidth]{\bbobdatapath\algsfolder/pprldmany_05D_mult2}&
+\includegraphics[width=0.32\textwidth]{\bbobdatapath\algsfolder/pprldmany_05D_noiselessall}
+\vspace*{-1ex}
+\end{tabular}
+\caption{
+\label{fig:ECDFs05D}
+\bbobECDFslegend{5}
+}
+\end{figure*}
+
+
+\begin{figure*}
+\begin{tabular}{c@{\hspace*{0.01\textwidth}}c@{\hspace*{0.01\textwidth}}c}
+{\sffamily separable fcts}\hspace{1cm} & {\sffamily moderate fcts}\hspace{1cm} & \hspace{-1cm}{\sffamily ill-conditioned fcts}\\
+\includegraphics[width=0.32\textwidth]{\bbobdatapath\algsfolder/pprldmany_20D_separ}&
+\includegraphics[width=0.32\textwidth]{\bbobdatapath\algsfolder/pprldmany_20D_lcond}&
+\includegraphics[width=0.32\textwidth]{\bbobdatapath\algsfolder/pprldmany_20D_hcond}\\[-0.2em]
+{\sffamily multi-modal fcts}\hspace{1cm} & {\sffamily weakly structured multi-modal fcts}\hspace{1cm} & \hspace{-1cm}{\sffamily all fcts}\\
+\includegraphics[width=0.32\textwidth]{\bbobdatapath\algsfolder/pprldmany_20D_multi}&
+\includegraphics[width=0.32\textwidth]{\bbobdatapath\algsfolder/pprldmany_20D_mult2}&
+\includegraphics[width=0.32\textwidth]{\bbobdatapath\algsfolder/pprldmany_20D_noiselessall}
+\vspace*{-1ex}
+\end{tabular}
+\caption{
+\label{fig:ECDFs20D}
+\bbobECDFslegend{20}
+}
+\end{figure*}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ECDFs per function in dimension 5
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure*}
-\begin{tabular}{l@{\hspace*{-0.00\textwidth}}l@{\hspace*{0.01\textwidth}}|l@{\hspace*{-0.00\textwidth}}l}
-\multicolumn{2}{c}{$D=5$} & \multicolumn{2}{c}{$D=20$}\\[-0.5ex]
-\rot[3]{all functions}
-\includegraphics[width=0.2362\textwidth]{pprldistr_05D_noiselessall} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_05D_noiselessall} &
-\includegraphics[width=0.2362\textwidth]{pprldistr_20D_noiselessall} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_20D_noiselessall} \\[-0.2em]
-\rot[2.9]{separable fcts}
-\includegraphics[width=0.2362\textwidth]{pprldistr_05D_separ} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_05D_separ} &
-\includegraphics[width=0.2362\textwidth]{pprldistr_20D_separ} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_20D_separ} \\[-0.2em]
-\rot[1.45]{misc.\ moderate fcts}
-\includegraphics[width=0.2362\textwidth]{pprldistr_05D_lcond} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_05D_lcond} &
-\includegraphics[width=0.2362\textwidth]{pprldistr_20D_lcond} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_20D_lcond} \\[-0.2em]
-\rot[1.5]{ill-conditioned fcts}
-\includegraphics[width=0.2362\textwidth]{pprldistr_05D_hcond} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_05D_hcond} &
-\includegraphics[width=0.2362\textwidth]{pprldistr_20D_hcond} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_20D_hcond} \\[-0.2em]
-\rot[2.3]{multi-modal fcts}
-\includegraphics[width=0.2362\textwidth]{pprldistr_05D_multi} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_05D_multi} &
-\includegraphics[width=0.2362\textwidth]{pprldistr_20D_multi} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_20D_multi} \\[-0.2em]
-\rot[1.7]{weak structure fcts}
-\includegraphics[width=0.2362\textwidth]{pprldistr_05D_mult2} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_05D_mult2} &
-\includegraphics[width=0.2362\textwidth]{pprldistr_20D_mult2} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_20D_mult2}
-\vspace*{-1ex}
-\end{tabular}
- \caption{\label{fig:RLDs}
- \bbobpprldistrlegend{}
- }
-\end{figure*}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% ERT loss ratios (figure and table)
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{figure}
 \centering
-\parbox{0.48\columnwidth}{\centering 5-D}\hfill
-\parbox{0.48\columnwidth}{\centering 20-D}\\
-\includegraphics[width=0.48\columnwidth]{pplogloss_05D_noiselessall}\hfill
-\includegraphics[width=0.48\columnwidth]{pplogloss_20D_noiselessall}\\[2ex]
-%
-\input{\bbobdatapath\algfolder pploglosstable_05D_noiselessall}\\
-\input{\bbobdatapath\algfolder pploglosstable_20D_noiselessall}
-\caption{\label{tab:ERTloss}%
-\bbobloglosstablecaption{}
-}
-\end{figure}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% ERT loss ratios per function group
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{figure}
-\begin{tabular}{@{}l@{}@{}l@{}}
-\multicolumn{1}{c}{5-D} & \multicolumn{1}{c}{20-D}\\
-\rot[2.5]{separable fcts}
-\hspace*{-1.4mm}
-\includegraphics[width=0.24\textwidth]{pplogloss_05D_separ} &
-\includegraphics[width=0.24\textwidth]{pplogloss_20D_separ}\\
-\rot[2.4]{moderate fcts}
-\hspace*{-1.4mm}
-\includegraphics[width=0.24\textwidth]{pplogloss_05D_lcond} &
-\includegraphics[width=0.24\textwidth]{pplogloss_20D_lcond}\\
-\rot[1.3]{ill-conditioned fcts}
-\hspace*{-1.35mm}
-\includegraphics[width=0.24\textwidth]{pplogloss_05D_hcond} &
-\includegraphics[width=0.24\textwidth]{pplogloss_20D_hcond}\\
-\rot[1.9]{multi-modal fcts}
-\hspace*{-1.3mm}
-\includegraphics[width=0.24\textwidth]{pplogloss_05D_multi} &
-\includegraphics[width=0.24\textwidth]{pplogloss_20D_multi}\\
-\rot[1.2]{weak structure fcts}
-\hspace*{-1.4mm}
-\includegraphics[width=0.24\textwidth]{pplogloss_05D_mult2} &
-\includegraphics[width=0.24\textwidth]{pplogloss_20D_mult2}
-\vspace*{-0.5ex}
+\begin{tabular}{@{}l@{}l@{}l@{}l@{}l@{}}
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f001_05D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f002_05D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f003_05D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f004_05D}\\
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f005_05D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f006_05D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f007_05D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f008_05D}\\
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f009_05D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f010_05D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f011_05D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f012_05D}\\
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f013_05D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f014_05D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f015_05D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f016_05D}\\
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f017_05D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f018_05D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f019_05D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f020_05D}\\
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f021_05D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f022_05D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f023_05D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f024_05D}
 \end{tabular}
- \caption{\label{fig:ERTlogloss}%
-\bbobloglossfigurecaption{}
+ \caption{\label{fig:ECDFsingleOne}
+	\bbobecdfcaptionsinglefunctionssingledim{5}
 }
-\end{figure}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{figure*}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\section{Discussion}  % and or conclusion, summary...
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+% Table showing the expected runtime (ERT in number of function
+% evaluations) for functions $f_1$--$f_{24}$ for dimension 5.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}\tiny
+%\hfill 5-D\hfill~\\[1ex]
+{\normalsize \color{red}
+\ifthenelse{\isundefined{\algorithmG}}{}{more than 6 algorithms: please split the tables below by hand until it fits to the page limits}
+}
+\mbox{\begin{minipage}[t]{0.495\textwidth}
+\centering
+\pptablesheader
+\input{\bbobdatapath\algsfolder pptables_f001_05D} 
+\input{\bbobdatapath\algsfolder pptables_f002_05D}
+\input{\bbobdatapath\algsfolder pptables_f003_05D}
+\input{\bbobdatapath\algsfolder pptables_f004_05D}
+\input{\bbobdatapath\algsfolder pptables_f005_05D}
+\input{\bbobdatapath\algsfolder pptables_f006_05D}
+\input{\bbobdatapath\algsfolder pptables_f007_05D}
+\input{\bbobdatapath\algsfolder pptables_f008_05D}
+\input{\bbobdatapath\algsfolder pptables_f009_05D}
+\input{\bbobdatapath\algsfolder pptables_f010_05D}
+\input{\bbobdatapath\algsfolder pptables_f011_05D}
+\input{\bbobdatapath\algsfolder pptables_f012_05D}
+\end{tabularx}
+\end{minipage}
+\hspace{0.002\textwidth}
+\begin{minipage}[t]{0.499\textwidth}\tiny
+\centering
+\pptablesheader
+\input{\bbobdatapath\algsfolder pptables_f013_05D}
+\input{\bbobdatapath\algsfolder pptables_f014_05D}
+\input{\bbobdatapath\algsfolder pptables_f015_05D}
+\input{\bbobdatapath\algsfolder pptables_f016_05D}
+\input{\bbobdatapath\algsfolder pptables_f017_05D}
+\input{\bbobdatapath\algsfolder pptables_f018_05D}
+\input{\bbobdatapath\algsfolder pptables_f019_05D}
+\input{\bbobdatapath\algsfolder pptables_f020_05D}
+\input{\bbobdatapath\algsfolder pptables_f021_05D}
+\input{\bbobdatapath\algsfolder pptables_f022_05D}
+\input{\bbobdatapath\algsfolder pptables_f023_05D}
+\input{\bbobdatapath\algsfolder pptables_f024_05D}
+\end{tabularx}
+\end{minipage}}
+
+\caption{\label{tab:ERTs05}
+\bbobpptablesmanylegend{dimension $5$}
+}
+\end{table*}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+% Table showing the expected runtime (ERT in number of function
+% evaluations) for functions $f_1$--$f_{24}$ for dimension 20.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}\tiny
+%\hfill 20-D\hfill~\\[1ex]
+{\normalsize \color{red}
+\ifthenelse{\isundefined{\algorithmG}}{}{more than 6 algorithms: please split the tables below by hand until it fits to the page limits}
+}
+\mbox{\begin{minipage}[t]{0.495\textwidth}
+\centering
+\pptablesheader
+\input{\bbobdatapath\algsfolder pptables_f001_20D} 
+\input{\bbobdatapath\algsfolder pptables_f002_20D}
+\input{\bbobdatapath\algsfolder pptables_f003_20D}
+\input{\bbobdatapath\algsfolder pptables_f004_20D}
+\input{\bbobdatapath\algsfolder pptables_f005_20D}
+\input{\bbobdatapath\algsfolder pptables_f006_20D}
+\input{\bbobdatapath\algsfolder pptables_f007_20D}
+\input{\bbobdatapath\algsfolder pptables_f008_20D}
+\input{\bbobdatapath\algsfolder pptables_f009_20D}
+\input{\bbobdatapath\algsfolder pptables_f010_20D}
+\input{\bbobdatapath\algsfolder pptables_f011_20D}
+\input{\bbobdatapath\algsfolder pptables_f012_20D}
+\end{tabularx}
+\end{minipage}
+\hspace{0.002\textwidth}
+\begin{minipage}[t]{0.499\textwidth}\tiny
+\centering
+\pptablesheader
+\input{\bbobdatapath\algsfolder pptables_f013_20D}
+\input{\bbobdatapath\algsfolder pptables_f014_20D}
+\input{\bbobdatapath\algsfolder pptables_f015_20D}
+\input{\bbobdatapath\algsfolder pptables_f016_20D}
+\input{\bbobdatapath\algsfolder pptables_f017_20D}
+\input{\bbobdatapath\algsfolder pptables_f018_20D}
+\input{\bbobdatapath\algsfolder pptables_f019_20D}
+\input{\bbobdatapath\algsfolder pptables_f020_20D}
+\input{\bbobdatapath\algsfolder pptables_f021_20D}
+\input{\bbobdatapath\algsfolder pptables_f022_20D}
+\input{\bbobdatapath\algsfolder pptables_f023_20D}
+\input{\bbobdatapath\algsfolder pptables_f024_20D}
+\end{tabularx}
+\end{minipage}}
+
+\caption{\label{tab:ERTs20}
+\bbobpptablesmanylegend{dimension $20$}
+}
+\end{table*}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+}{} % end of all that comes for 2 or 3+ algorithms
+
+
+
+\ifthenelse{\equal{\numofalgs}{2}}{
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+% Scatter plots per function.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure*}
+\begin{tabular}{*{4}{@{}c@{}}}
+    \includegraphics[height=0.2\textwidth]{ppscatter_f001}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f002}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f003}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f004}\\[-0.6em]
+    \includegraphics[height=0.2\textwidth]{ppscatter_f005}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f006}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f007}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f008}\\[-0.6em]
+    \includegraphics[height=0.2\textwidth]{ppscatter_f009}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f010}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f011}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f012}\\[-0.6em]
+    \includegraphics[height=0.2\textwidth]{ppscatter_f013}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f014}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f015}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f016}\\[-0.6em]
+    \includegraphics[height=0.2\textwidth]{ppscatter_f017}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f018}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f019}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f020}\\[-0.6em]
+    \includegraphics[height=0.2\textwidth]{ppscatter_f021}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f022}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f023}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f024}
+\end{tabular}
+\caption{\label{fig:scatterplots}
+\bbobppscatterlegend{$f_1$--$f_{24}$}
+}
+\end{figure*}
+
+
+}{} % end of 2 algorithms template
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{bbob}  % bbob.bib is the name of the Bibliography in this case
 
-\clearpage % otherwise the last figure might be missing
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 \end{document}
