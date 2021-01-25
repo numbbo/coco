@@ -1,38 +1,8 @@
 \documentclass[sigconf]{acmart}
 
-\usepackage{booktabs} % For formal tables
-\usepackage{graphicx}
-\usepackage{rotating}
-\definecolor{Gray}{gray}{0.6}
-\usepackage{xspace}
+% include preamble:
+\include{templatepreamble.tex}
 
-% Copyright
-%\setcopyright{none}
-%\setcopyright{acmcopyright}
-%\setcopyright{acmlicensed}
-\setcopyright{rightsretained}
-%\setcopyright{usgov}
-%\setcopyright{usgovmixed}
-%\setcopyright{cagov}
-%\setcopyright{cagovmixed}
-
-
-% DOI
-\acmDOI{10.1145/123_4}
-
-% ISBN
-\acmISBN{123-4567-24-567/18/07}
-
-%Conference
-\acmConference[GECCO '19]{the Genetic and Evolutionary Computation Conference 2019}{July 13--17, 2019}{Prague, Czech Republic}
-\acmYear{2019}
-\copyrightyear{2019}
-
-\acmPrice{15.00}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%   END OF PREAMBLE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% TO BE EDITED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -47,21 +17,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \graphicspath{{\bbobdatapath\algfolder}}
 
-\newcommand{\DIM}{\ensuremath{\mathrm{DIM}}}
-\newcommand{\aRT}{\ensuremath{\mathrm{aRT}}}
-\newcommand{\FEvals}{\ensuremath{\mathrm{FEvals}}}
-\newcommand{\nruns}{\ensuremath{\mathrm{Nruns}}}
-\newcommand{\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
-%\newcommand{\Df}{\ensuremath{\Delta f}}
-\newcommand{\DI}{\ensuremath{\Delta I_{\mathrm{HV}}^{\mathrm{COCO}}}}
-\newcommand{\nbFEs}{\ensuremath{\mathrm{\#FEs}}}
-\newcommand{\ftarget}{\ensuremath{f_\mathrm{t}}}
-\newcommand{\CrE}{\ensuremath{\mathrm{CrE}}}
-\newcommand{\hvref}{\ensuremath{I_\mathrm{ref}}}
-\newcommand{\fopt}{\hvref}
-\newcommand{\change}[1]{{\color{red} #1}}
-\newcommand{\TODO}[1]{{\color{orange} !!! #1 !!!}}
-\newcommand{\bbobbiobj}{{\ttfamily bbob-biobj}\xspace}
+% overwrite some definitions from single-objective case in preamble:
+\renewcommand{\fopt}{\hvref}
 
 %%%%%%%%%%%%%%%%%%%%%%   END OF PREAMBLE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -70,8 +27,6 @@
 
 \title{Black-Box Optimization Benchmarking Template for the Bi-Objective \bbobbiobj Test Suite}
 \renewcommand{\shorttitle}{Template for Benchmarking Single Algorithms on the \bbobbiobj Testbed}
-\titlenote{Submission deadline: April 3rd.}
-%Camera-ready paper due April 24th.}}
 \subtitle{Draft version}
 
 
@@ -197,7 +152,8 @@ In order to evaluate the CPU timing of the algorithm, we have run the \change{\a
 Results of \algname\ from experiments according to \cite{hansen2016exp}, \cite{hansen2016perfass} and \cite{biobj2016perfass} on the benchmark
 functions given in \cite{biobj2016func} are presented in
 Figures~\ref{fig:ECDFsingleOne}, \ref{fig:ECDFsingleTwo}, \ref{fig:ECDFsingleThree}, and \ref{fig:ECDFsGroups}, and in
-Tables~\ref{tab:aRTs5} and \ref{tab:aRTs20}. The experiments were performed with COCO \cite{hansen2016cocoplat}, version \change{2.0}, the plots were produced with version \change{2.0}.
+Tables~\ref{tab:ERTs5} and \ref{tab:ERTs20}. The experiments were performed with COCO \cite{hansen2020cocoplat},
+version \change{\version}, the plots were produced with version \change{\version}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -311,10 +267,6 @@ Tables~\ref{tab:aRTs5} and \ref{tab:aRTs20}. The experiments were performed with
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\rot}[2][2.5]{
-  \hspace*{-3.5\baselineskip}%
-  \begin{rotate}{90}\hspace{#1em}#2
-  \end{rotate}}
 \begin{figure*}
 \begin{tabular}{c@{\hspace*{-0.00\textwidth}}c@{\hspace*{-0.00\textwidth}}c@{\hspace*{-0.00\textwidth}}c}
 separable-separable & separable-moderate & separable-ill-cond. & separable-multimodal\\
@@ -347,7 +299,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
-% Table showing the average running time (aRT in number of function
+% Table showing the expected running time (ERT in number of function
 % evaluations) to reach the given targets for functions $f_1$--$f_{55}$ for dimension 5.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -491,7 +443,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 
 \end{minipage}}
 
- \caption[Table of aRTs]{\label{tab:aRTs5}\bbobpptablecaption{dimension $5$}
+ \caption[Table of ERTs]{\label{tab:ERTs5}\bbobpptablecaption{dimension $5$} \cocoversion
  }
 \end{table*}
 %sideways
@@ -500,7 +452,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Table showing the average running time (aRT in number of function
+% Table showing the expected running time (ERT in number of function
 % evaluations) to reach the given targets for functions $f_1$--$f_{55}$ for dimension 5.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -643,7 +595,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 
 \end{minipage}}
 
- \caption[Table of aRTs]{\label{tab:aRTs20}\bbobpptablecaption{dimension $20$}
+ \caption[Table of ERTs]{\label{tab:ERTs20}\bbobpptablecaption{dimension $20$} \cocoversion
  }
 \end{table*}
 
@@ -666,7 +618,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Scaling of aRT with dimension
+% Scaling of ERT with dimension
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure*}
@@ -703,7 +655,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 \includegraphics[width=0.2\textwidth]{ppfigdim_f030}
 \end{tabular}
 \vspace{-3ex}
- \caption{\label{fig:aRTgraphs}
+ \caption{\label{fig:ERTgraphs}
  \bbobppfigdimlegend{$f_1$ and $f_{30}$}
 }
 \end{figure*}
@@ -738,8 +690,8 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 \includegraphics[width=0.2\textwidth]{ppfigdim_f055}
 \end{tabular}
 \vspace{-3ex}
- \caption{\label{fig:aRTgraphsTwo}
- Runtime versus dimension as described in Fig.~\ref{fig:aRTgraphs}, here for functions $f_{31}$ to $f_{55}$.
+ \caption{\label{fig:ERTgraphsTwo}
+ Runtime versus dimension as described in Fig.~\ref{fig:ERTgraphs}, here for functions $f_{31}$ to $f_{55}$.
  }
 \end{figure*}
 

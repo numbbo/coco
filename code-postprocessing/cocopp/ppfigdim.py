@@ -567,7 +567,11 @@ def main(dsList, _valuesOfInterest, outputdir):
         beautify(axesLabel=False)
         
         # display number of instances in data and used targets type:
-        display_text = '%d instances\n' % len(((dictFunc[func][0]).instancenumbers))
+        if all(d.instancenumbers == dictFunc[func][0].instancenumbers
+               for d in dictFunc[func]): # all the same?
+            display_text = '%d instances\n' % len(((dictFunc[func][0]).instancenumbers))
+        else:
+            display_text = 'instances %s' % [d.instancenumbers for d in dictFunc[func]]
         display_text += _valuesOfInterest.short_info
         plt.text(plt.xlim()[0], plt.ylim()[0],
                  display_text, fontsize=14, horizontalalignment="left",

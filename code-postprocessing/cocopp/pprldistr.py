@@ -420,11 +420,12 @@ def _plotRLDistr_old(dsList, target, **plotArgs):
         except TypeError:
             target = target
         tmp = i.detEvals((target,))[0] / i.dim
+        nn += len(tmp)
         tmp = tmp[not np.isnan(tmp)] # keep only success
         if len(tmp) > 0:
             fsolved.add(i.funcId)
         x.extend(tmp)
-        nn += i.nbRuns()
+        # nn += i.nbRuns()
     kwargs = plotArgs.copy()
     label = ''
     try:
@@ -452,11 +453,12 @@ def erld_data(dsList, target, max_fun_evals=np.inf):
     for ds in dsList: # ds is a DataSet
         funcs.add(ds.funcId)
         evals = ds.detEvals((target((ds.funcId, ds.dim)),))[0] / ds.dim
+        nruns += len(evals)
         evals = evals[not np.isnan(evals)] # keep only success
         if len(evals) > 0 and sum(evals <= max_fun_evals):
             fsolved.add(ds.funcId)
         runlength_data.extend(evals)
-        nruns += ds.nbRuns()
+        # nruns += ds.nbRuns()
     return sorted(runlength_data), nruns, funcs, fsolved
 
 
@@ -497,11 +499,12 @@ def plotRLDistr(dsList, target, label='', max_fun_evals=np.inf,
     for ds in dsList: # ds is a DataSet
         funcs.add(ds.funcId)
         tmp = ds.detEvals((target((ds.funcId, ds.dim)),))[0] / ds.dim
+        nn += len(tmp)
         tmp = tmp[np.isnan(tmp) == False] # keep only success
         if len(tmp) > 0 and sum(tmp <= max_fun_evals):
             fsolved.add(ds.funcId)
         x.extend(tmp)
-        nn += ds.nbRuns()
+        # nn += ds.nbRuns()
     kwargs = plotArgs.copy()
     label += ': %d/%d' % (len(fsolved), len(funcs))
     kwargs['label'] = kwargs.setdefault('label', label)
@@ -517,6 +520,8 @@ def plotFVDistr(dsList, budget, min_f=None, **plotArgs):
     :param plotArgs: additional arguments passed to plot
 
     :returns: handle
+
+    CAVEAT: this routine is not instance-balanced
 
     """
     if not min_f:

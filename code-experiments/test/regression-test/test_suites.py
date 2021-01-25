@@ -98,7 +98,7 @@ if __name__ == "__main__":
             data_file_path = ("data/regression_test_%ddata_for_suite_" % ndata) + name + ".py"
 
             if not os.path.exists(data_file_path):
-                remote_data_path = 'http://coco.gforge.inria.fr/regression-tests/'
+                remote_data_path = 'https://coco.gforge.inria.fr/regression-tests/'
                 # download data from remote_data_path:
                 if not os.path.exists(os.path.split(data_file_path)[0]):
                     try:

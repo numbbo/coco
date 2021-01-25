@@ -5,25 +5,34 @@ numbbo/coco: Comparing Continuous Optimizers
 [![Appveyor](https://ci.appveyor.com/api/projects/status/4dawpqr7aq2ioici/branch/master?svg=true)](https://ci.appveyor.com/project/nikohansen/coco-j53aywshl8udzvb/branch/master)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2594848.svg)](https://doi.org/10.5281/zenodo.2594848)
 [[BibTeX](https://zenodo.org/record/2594848/export/hx#.XIu-BxP0nRY)] cite as:
-> Nikolaus Hansen, Dimo Brockhoff, Olaf Mersmann, Tea Tusar, Dejan Tusar, Ouassim Ait ElHara, Phillipe R. Sampaio, Asma Atamna, Konstantinos Varelas, Umut Batu, Duc Manh Nguyen, Filip Matzner, Anne Auger. COmparing Continuous Optimizers: numbbo/COCO on Github. Zenodo, [DOI:10.5281/zenodo.2594847](https://doi.org/10.5281/zenodo.2594847), March 2019.
+> Nikolaus Hansen, Dimo Brockhoff, Olaf Mersmann, Tea Tusar, Dejan Tusar, Ouassim Ait ElHara, Phillipe R. Sampaio, Asma Atamna, Konstantinos Varelas, Umut Batu, Duc Manh Nguyen, Filip Matzner, Anne Auger. COmparing Continuous Optimizers: numbbo/COCO on Github. Zenodo, [DOI:10.5281/zenodo.2594848](https://doi.org/10.5281/zenodo.2594848), March 2019.
 ---
 
-[This code](https://github.com/numbbo/coco) reimplements the original Comparing
-Continous Optimizer platform, now rewritten fully in `ANSI C` and `Python` with
-other languages calling the `C` code. As the name suggests, the code provides a
-platform to benchmark and compare continuous optimizers, AKA non-linear solvers
-for numerical optimization. Languages currently available are
+[This code](https://github.com/numbbo/coco) provides a platform to
+benchmark and compare continuous optimizers, AKA non-linear solvers
+for numerical optimization. It is fully written in `ANSI C` and
+`Python` (reimplementing the original Comparing Continous
+Optimizer platform) with other languages calling the `C` code.
+Languages currently available to connect a solver to the benchmarks are
 
   - `C/C++`
   - `Java`
   - `MATLAB/Octave`
   - `Python`
 
+Code for others might be available in branched code.
 Contributions to link further languages (including a better
 example in `C++`) are more than welcome.
 
-For more general information,
-- read our [benchmarking guidelines introduction](http://numbbo.github.io/coco-doc/)
+The general project structure is shown in the following figure
+where the black color indicates code or data provided by the platform
+and the red color indicates either user code or data and graphical output
+from using the platform:
+
+![General COCO Structure](coco.png)
+
+For more general information:
+- read our [benchmarking guidelines introduction](https://arxiv.org/pdf/1603.08785.pdf)
 - read the [COCO experimental setup](http://numbbo.github.io/coco-doc/experimental-setup) description
 - see the [`bbob-biobj` and `bbob-biobj-ext` COCO multi-objective functions testbed](http://numbbo.github.io/coco-doc/bbob-biobj/functions) documentation and the [specificities of the performance assessment for the bi-objective testbeds](http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment).
 - consult the [BBOB workshops series](http://numbbo.github.io/workshops),
@@ -85,15 +94,15 @@ Getting Started <a name="Getting-Started"></a>
 ---------------
 0. Check out the [_Requirements_](#Requirements) above.
 
-0. For post-processing and **displaying** data only:
+1. Install the post-processing for **displaying** data (using Python):
 
     ```
         pip install cocopp
     ```
 
-    and continue with (second paragraph of) point 7 below.
+    As long as no experiments are meant to be run, the next points 2.-6. can be skipped and continue with points 7. and 8. below.
 
-1. **Download** the COCO framework code from github, 
+1. **Download** the COCO framework code from github,
 
     - either by clicking the [Download ZIP button](https://github.com/numbbo/coco/archive/master.zip) 
       and unzip the `zip` file, 
@@ -107,7 +116,7 @@ Getting Started <a name="Getting-Started"></a>
 
 2. In a system shell, **`cd` into** the `coco` or `coco-<version>` folder (framework root), 
     where the file `do.py` can be found. Type, i.e. **execute**, one of the following commands once
-    ```
+    ```sh
       python do.py run-c
       python do.py run-java
       python do.py run-matlab
@@ -118,15 +127,6 @@ Getting Started <a name="Getting-Started"></a>
     respective code and run the example experiment once. The build result and the example
     experiment code can be found under `code-experiments/build/<language>` (`<language>=matlab` 
     for Octave). `python do.py` lists all available commands. 
-  
-3. On the computer where experiment data shall be post-processed, run
-
-    ```
-      python do.py install-postprocessing
-    ```
-    to (user-locally) install the post-processing. From here on, `do.py` has done
-    its job and is only needed again for updating the builds to a new release.
-    
   
 4. **Copy** the folder `code-experiments/build/YOUR-FAVORITE-LANGUAGE` and
     its content to another location. In Python it is sufficient to copy the 
@@ -151,7 +151,7 @@ Getting Started <a name="Getting-Started"></a>
     of the observer options in the example experiment file.
 
     Another entry point for your own experiments can be the `code-experiments/examples`
-    folder. 
+    folder.
 
 5. Now you can **run** your favorite algorithm on the `bbob` and `bbob-largescale` suites
   (for single-objective algorithms), on the `bbob-biobj` suite (for multi-objective 
@@ -162,20 +162,22 @@ Getting Started <a name="Getting-Started"></a>
 6. <a name="Getting-Started-pp"></a>**Postprocess** the data from the results folder by
   typing
 
+    ```sh
         python -m cocopp [-o OUTPUT_FOLDERNAME] YOURDATAFOLDER [MORE_DATAFOLDERS]
-      
+    ```
+
     Any subfolder in the folder arguments will be searched for logged data. That is, 
   experiments from different batches can be in different folders collected under a 
   single "root"  `YOURDATAFOLDER` folder. We can also compare more than one algorithm 
   by specifying several data result folders generated by different algorithms.
 
-    We also provide many archived algorithm data sets. For example
+7. We also provide many **archived algorithm data sets**. For example
 
-    ```
-      python -m cocopp 'bbob/2009/BFGS_ros'
+    ```sh
+      python -m cocopp 'bbob/2009/BFGS_ros' 'bbob/2010/IPOP-ACTCMA'
     ```
 
-    processes the referenced archived BFGS data set. The given substring must
+    processes the referenced archived BFGS data set and an IPOP-CMA data set. The given substring must
     have a unique match in the archive or must end with `!` or `*` or must be a
     [regular expression](https://docs.python.org/3/library/re.html#regular-expression-syntax)
     containing a `*` and not ending with `!` or `*`. Otherwise, all matches are listed
@@ -185,14 +187,14 @@ Getting Started <a name="Getting-Started"></a>
     [`help(cocopp.archives)`](https://coco.gforge.inria.fr/apidocs-cocopp/cocopp.archiving.OfficialArchives.html)
     or the class
     [`COCODataArchive`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.archiving.COCODataArchive.html).
-    
+
     Data descriptions can be found for the `bbob` test suite at
-    http://coco.gforge.inria.fr/doku.php?id=algorithms and for the `bbob-biobj`
-    test suite at http://coco.gforge.inria.fr/doku.php?id=algorithms-biobj.
+    [coco-algorithms](http://coco.gforge.inria.fr/doku.php?id=algorithms) and for the `bbob-biobj`
+    test suite at [coco-algorithms-biobj](http://coco.gforge.inria.fr/doku.php?id=algorithms-biobj).
 
     Local and archived data can be freely mixed like
 
-    ```
+    ```sh
       python -m cocopp YOURDATAFOLDER 'bbob/2010/IPOP-ACT'
     ```
 
@@ -591,17 +593,16 @@ Citation
 --------
 You may cite this work in a scientific context as
 
-N. Hansen, A. Auger, O. Mersmann, T. Tušar, D. Brockhoff. [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](http://numbbo.github.io/coco-doc/), _ArXiv e-prints_, [arXiv:1603.08785](http://arxiv.org/abs/1603.08785), 2016.
-
+N. Hansen, A. Auger, R. Ros, O. Mersmann, T. Tušar, D. Brockhoff. [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://doi.org/10.1080/10556788.2020.1808977), Optimization Methods and Software, 2020. [[arXiv version](https://arxiv.org/pdf/1603.08785.pdf)]
 ```
-@ARTICLE{hansen2016cocoplat, 
-  author = {Hansen, N. and Auger, A. and Mersmann, O. and 
+@ARTICLE{hansen2020cocoplat, 
+  author = {Hansen, N. and Auger, A. and Ros, R. and Mersmann, O. and 
              Tu{\v s}ar, T. and Brockhoff, D.},
   title = {{COCO}: A Platform for Comparing Continuous Optimizers 
              in a Black-Box Setting},
-  journal = {ArXiv e-prints},
-  volume = {arXiv:1603.08785},
-  year = 2016
+  journal = {Optimization Methods and Software},
+  doi = {https://doi.org/10.1080/10556788.2020.1808977},
+  year = 2020
 }
 ```
 
@@ -619,7 +620,7 @@ Links and Documentation <a name="Links"></a>
   found at http://coco.gforge.inria.fr/ppdata-archive
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software 
   by registering at http://coco.gforge.inria.fr/register
-* Read about the basic principles behind the Coco platform at http://numbbo.github.io/coco-doc/.
+* Read about the basic principles behind the Coco platform in [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://arxiv.org/pdf/1603.08785.pdf).
 * For details on the experimental set-up to carry out the benchmarking
   please refer to http://numbbo.github.io/coco-doc/experimental-setup/.
 * More detailed documentation of the existing benchmark suites can be found here:
@@ -643,7 +644,7 @@ Links and Documentation <a name="Links"></a>
   
 Comprehensive List of Documentations <a name="Documentations"></a>
 --------------------------------------------
-* General introduction: http://numbbo.github.io/coco-doc
+* General introduction: [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://arxiv.org/pdf/1603.08785.pdf)
 * Experimental setup: http://numbbo.github.io/coco-doc/experimental-setup/
 * Testbeds
   - bbob: http://coco.gforge.inria.fr/downloads/download16.00/bbobdocfunctions.pdf

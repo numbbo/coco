@@ -602,7 +602,13 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
         num_of_instances = []
         for alg in algorithms_with_data:
             try:
-                num_of_instances.append(len((dictFunc[f][alg])[0].instancenumbers))
+                # display number of instances in data and used targets type:
+                if all(d.instancenumbers == (dictFunc[f][alg])[0].instancenumbers
+                       for d in dictFunc[f][alg]):  # all the same?
+                    num_of_instances.append(len((dictFunc[f][alg])[0].instancenumbers))
+                else:
+                    for d in dictFunc[f][alg]:
+                        num_of_instances.append(len(d.instancenumbers))
             except IndexError:
                 pass
         # issue a warning if number of instances is inconsistant, otherwise

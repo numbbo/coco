@@ -30,7 +30,7 @@ ion() # may be needed for figures to be shown when executing the script
 import cocopp
 
 # Collect and unarchive data (~20MB)
-dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
+dataurl = 'https://coco.gforge.inria.fr/data-archive/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
 filename, headers = urlretrieve(dataurl)
 archivefile = tarfile.open(filename)
 archivefile.extractall()

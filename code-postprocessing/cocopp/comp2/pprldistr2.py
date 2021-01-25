@@ -78,8 +78,8 @@ def beautify(handles):
     toolsdivers.legend(loc='best')
 
     x = numpy.asarray(axisHandle.get_xticks())
-    axisHandle.set_xticklabels([str(int(numpy.log10(xx))) for xx in x])
     axisHandle.set_xticks(x)
+    axisHandle.set_xticklabels([str(int(numpy.log10(xx))) for xx in x])
     plt.xlim(xlim)
 
 
