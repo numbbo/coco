@@ -32,7 +32,7 @@ del absolute_import, division, print_function, unicode_literals
 # from .exceptions import NoSuchProblemException, InvalidProblemException
 
 import pkg_resources
-__version__ = pkg_resources.require('cocopp')[0].version
+__version__ = pkg_resources.require('cocoex')[0].version
 del pkg_resources
 
 __all__ = ['Observer', 'Suite', 'known_suite_names', 'default_observers']
