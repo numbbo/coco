@@ -12,9 +12,10 @@ if __name__ == "__main__":
     except:
         pass
     else:
-        name = "bbob-constrained"
+        name = "bbob-constrained-active-only"
+        data_name = "bbob-constrained"
         cocoex.known_suite_names.append(name)
-        data_file_path = ("data/regression_test_%ddata_for_suite_" % ndata) + name + ".py"
+        data_file_path = ("data/regression_test_%ddata_for_suite_" % ndata) + data_name + ".py"
 
         if not os.path.exists(data_file_path):
             remote_data_path = 'http://coco.gforge.inria.fr/regression-tests/'
