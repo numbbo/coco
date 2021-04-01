@@ -18,14 +18,14 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 /**
  * @brief Sets the dimensions and default instances for the bbob suite.
  */
-static coco_suite_t *suite_cons_bbob_initialize(void) {
+static coco_suite_t *suite_cons_bbob_initialize(const char *suite_name) {
 
   coco_suite_t *suite;
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
   const size_t num_dimensions = sizeof(dimensions) / sizeof(dimensions[0]);
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob-constrained", 48, num_dimensions, dimensions, "year: 2016");
+  suite = coco_suite_allocate(suite_name, 48, num_dimensions, dimensions, "year: 2016");
 
   return suite;
 }
@@ -48,7 +48,8 @@ static const char *suite_cons_bbob_get_instances_by_year(const int year) {
 /**
  * @brief Creates and returns a constrained BBOB problem.
  */
-static coco_problem_t *coco_get_cons_bbob_problem(const size_t function,
+static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
+                                                  const size_t function,
                                                   const size_t dimension,
                                                   const size_t instance) {
   
@@ -58,12 +59,16 @@ static coco_problem_t *coco_get_cons_bbob_problem(const size_t function,
   double *feasible_direction = coco_allocate_vector(dimension);  
   double *xopt = coco_allocate_vector(dimension);  
   double f_0, exponent;
+  long rseed = (long) (function + 10000 * instance);
 
   const char *problem_id_template = "bbob-constrained_f%03lu_i%02lu_d%02lu";
   const char *problem_name_template = "bbob-constrained suite problem f%lu instance %lu in %luD";
+  if (strcmp(suite_name, "bbob-constrained-active-only") == 0) {
+    problem_id_template = "bbob-constrained-active-only_f%03lu_i%02lu_d%02lu";
+    problem_name_template = "bbob-constrained-active-only suite problem f%lu instance %lu in %luD";
+  }
   
   /* Seed value used for shifting the whole constrained problem */
-  long rseed = (long) (function + 10000 * instance);
   bbob2009_compute_xopt(xopt, rseed, dimension);
   
   /* Choose a different seed value for building the objective function */
@@ -169,7 +174,7 @@ static coco_problem_t *suite_cons_bbob_get_problem(coco_suite_t *suite,
   const size_t dimension = suite->dimensions[dimension_idx];
   const size_t instance = suite->instances[instance_idx];
 
-  problem = coco_get_cons_bbob_problem(function, dimension, instance);
+  problem = coco_get_cons_bbob_problem(suite->suite_name, function, dimension, instance);
 
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
