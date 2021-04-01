@@ -18,6 +18,8 @@
 typedef struct {
   double *gradient;
   double *x;
+  double x_shift_factor; /* shift solution by - factor * gradient */
+  double gradient_norm;
 } linear_constraint_data_t;	
 
 static void c_sum_variables_evaluate(coco_problem_t *self, 
@@ -36,7 +38,8 @@ static void c_linear_gradient_free(void *thing);
 static coco_problem_t *c_sum_variables_allocate(const size_t number_of_variables);
 
 static coco_problem_t *c_linear_transform(coco_problem_t *inner_problem, 
-                                          const double *gradient);
+                                          const double *gradient,
+                                          const double x_shift_factor);
          
 static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t function,
                                                       const size_t dimension,
@@ -46,12 +49,13 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
                                                       const char *problem_id_template,
                                                       const char *problem_name_template,
                                                       double *gradient,
+                                                      double x_shift_factor,
                                                       const double *feasible_direction);
                                                       
 static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function,
                                                       const size_t dimension,
                                                       const size_t instance,
-                                                      const size_t number_of_linear_constraints,
+                                                      const size_t number_of_active_constraints,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template,
                                                       const double *feasible_direction);
@@ -82,6 +86,7 @@ static void c_linear_single_evaluate(coco_problem_t *self,
                                      double *y) {
 	
   size_t i;
+  double factor;
   
   linear_constraint_data_t *data;
   coco_problem_t *inner_problem;
@@ -90,9 +95,10 @@ static void c_linear_single_evaluate(coco_problem_t *self,
   inner_problem = coco_problem_transformed_get_inner_problem(self);
   
   assert(self->number_of_constraints == 1);
-			
-  for (i = 0; i < self->number_of_variables; ++i)
-    data->x[i] = (data->gradient[i])*x[i];
+
+  for (i = 0, factor = data->x_shift_factor / data->gradient_norm;
+       i < self->number_of_variables; ++i)
+    data->x[i] = (data->gradient[i]) * (x[i] - factor * data->gradient[i]);
   
   coco_evaluate_constraint(inner_problem, data->x, y);
   
@@ -167,16 +173,25 @@ static coco_problem_t *c_sum_variables_allocate(const size_t number_of_variables
 /**
  * @brief Transforms a linear constraint with all-ones gradient
  *        into a linear constraint whose gradient is passed 
- *        as argument.
+ *        as argument and with the feasible domain extended by
+ *        shift_factor.
  */
 static coco_problem_t *c_linear_transform(coco_problem_t *inner_problem, 
-                                          const double *gradient) {
+                                          const double *gradient,
+                                          const double shift_factor) {
   
   linear_constraint_data_t *data;
   coco_problem_t *self;
+  double gradient_norm = coco_vector_norm(gradient, inner_problem->number_of_variables);
+
+  if (gradient_norm <= 0)
+    coco_error("c_linear_transform(): gradient norm %f<=0 zero", gradient_norm);
+
   data = coco_allocate_memory(sizeof(*data));
   data->gradient = coco_duplicate_vector(gradient, inner_problem->number_of_variables);
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
+  data->x_shift_factor = shift_factor;
+  data->gradient_norm = gradient_norm;
   self = coco_problem_transformed_allocate(inner_problem, data, 
       c_linear_gradient_free, "gradient_linear_constraint");
   self->evaluate_constraint = c_linear_single_evaluate;
@@ -200,6 +215,7 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
                                                       const char *problem_id_template,
                                                       const char *problem_name_template,
                                                       double *gradient,
+                                                      const double x_shift_factor,
                                                       const double *feasible_direction) {
 																			
   size_t i;
@@ -238,7 +254,7 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
     coco_vector_scale(gradient, dimension,
                       factor1 * factor2,
                       coco_vector_norm(gradient, dimension));
-    problem = c_linear_transform(problem, gradient);
+    problem = c_linear_transform(problem, gradient, x_shift_factor);
 
   }
   else{ /* Randomly generate the gradient of the linear constraint */
@@ -252,7 +268,7 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
       gradient_linear_constraint[i] = factor1 *
                 coco_random_normal(random_generator) * factor2 / sqrt((double)dimension);
 
-    problem = c_linear_transform(problem, gradient_linear_constraint);
+    problem = c_linear_transform(problem, gradient_linear_constraint, x_shift_factor);
     coco_free_memory(gradient_linear_constraint);
   }
   
@@ -292,7 +308,7 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
 static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function,
                                                       const size_t dimension,
                                                       const size_t instance,
-                                                      const size_t number_of_linear_constraints,
+                                                      const size_t number_of_active_constraints,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template,
                                                       const double *feasible_direction) {
@@ -305,9 +321,17 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   coco_random_state_t *random_generator;
   double *gradient_c1 = NULL;
   double *gradient;
+  double shift_factor;
   long seed_cons;
   double exp1, factor1;
+  size_t number_of_inactive_constraints = number_of_active_constraints / 2;  /* TODO: decide whether this should go into the interface */
+  size_t number_of_linear_constraints;
   
+  if (strncmp(problem_name_template, "bbob-constrained-active-only", 28) == 0)
+    number_of_inactive_constraints = 0;
+
+  number_of_linear_constraints = number_of_active_constraints + number_of_inactive_constraints;
+
   gradient_c1 = coco_allocate_vector(dimension);
   																	
   for (i = 0; i < dimension; ++i)
@@ -330,28 +354,39 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
    * its gradient.
    */ 
   /* set gradient depending on instance number */
-  gradient = instance % number_of_linear_constraints ? NULL : gradient_c1;
+  gradient = instance % number_of_active_constraints ? NULL : gradient_c1;
   problem_c = c_linear_single_cons_bbob_problem_allocate(function,
       dimension, instance, 1, factor1,
-      problem_id_template, problem_name_template, gradient,
+      problem_id_template, problem_name_template, gradient, 0.0,
       feasible_direction);
 	 
   /* Instantiate the other linear constraints (if any) and stack them 
    * all into problem_c
    */     
-  for (i = 2; i <= number_of_linear_constraints; ++i) {
+  /* TODO: create a permutation here using coco_compute_random_permutation(permutation, ...) */
+  for (i = 2; i <= number_of_linear_constraints; ++i) {  /* TODO: loop over j instead of i */
 	 
     /* Instantiate a new problem containing one linear constraint only */
     /* set gradient depending on instance number */
-    gradient = (i - 1 + instance) % number_of_linear_constraints ? NULL : gradient_c1;
+
+    /* TODO: i = permutation[j]; */
+
+    if (i <= number_of_active_constraints) {
+      gradient = (i - 1 + instance) % number_of_active_constraints ? NULL : gradient_c1;
+      shift_factor = 0.0;
+    } else {
+      gradient = NULL;
+      shift_factor = 0.01 + 2.0 * coco_random_uniform(random_generator);
+    }
+
     problem_c2 = c_linear_single_cons_bbob_problem_allocate(function,
         dimension, instance, i, factor1,
-        problem_id_template, problem_name_template, gradient,
+        problem_id_template, problem_name_template, gradient, shift_factor,
         feasible_direction);
-		
+
     problem_c = coco_problem_stacked_allocate(problem_c, problem_c2,
         problem_c2->smallest_values_of_interest, problem_c2->largest_values_of_interest);
-	 
+
     /* Use the standard stacked problem_id as problem_name and 
      * construct a new suite-specific problem_id 
      */
