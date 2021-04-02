@@ -314,7 +314,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
                                                       const double *feasible_direction) {
 																																			
   const double global_scaling_factor = 100.;
-  size_t i;
+  size_t i, j;
   
   coco_problem_t *problem_c = NULL;
   coco_problem_t *problem_c2 = NULL;
@@ -324,13 +324,13 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   double shift_factor;
   long seed_cons;
   double exp1, factor1;
-  size_t number_of_inactive_constraints = number_of_active_constraints / 2;  /* TODO: decide whether this should go into the interface */
   size_t number_of_linear_constraints;
+  size_t inactive_constraints_left = number_of_active_constraints / 2;  /* TODO: decide whether this should go into the interface */
   
   if (strncmp(problem_id_template, "bbob-constrained-active-only", 28) == 0)
-    number_of_inactive_constraints = 0;
+    inactive_constraints_left = 0;
 
-  number_of_linear_constraints = number_of_active_constraints + number_of_inactive_constraints;
+  number_of_linear_constraints = number_of_active_constraints + inactive_constraints_left;
 
   gradient_c1 = coco_allocate_vector(dimension);
   																	
@@ -362,26 +362,28 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
 	 
   /* Instantiate the other linear constraints (if any) and stack them 
    * all into problem_c
-   */     
-  /* TODO: create a permutation here using coco_compute_random_permutation(permutation, ...) */
-  for (i = 2; i <= number_of_linear_constraints; ++i) {  /* TODO: loop over j instead of i */
+   */
+  for (j = 2, i = 1; j <= number_of_linear_constraints; ++j) {
 	 
     /* Instantiate a new problem containing one linear constraint only */
     /* set gradient depending on instance number */
 
-    /* TODO: i = permutation[j]; */
-
-    if (i <= number_of_active_constraints) {
-      gradient = (i - 1 + instance) % number_of_active_constraints ? NULL : gradient_c1;
+    if (i < number_of_active_constraints && coco_random_uniform(random_generator)
+          + 1e-23 > (double) inactive_constraints_left / number_of_linear_constraints
+        ) {  /* create an active constraint */
+      gradient = (++i - 1 + instance) % number_of_active_constraints ? NULL : gradient_c1;
       shift_factor = 0.0;
-    } else {
+    } else {  /* create an inactive (shifted) constraint */
+      if (--inactive_constraints_left < 0)
+        coco_error("c_linear_cons_bbob_problem_allocate(): no inactive left i=%d j=%d nb_act=%ul nb_con=%ul",
+                   i, j, number_of_active_constraints, number_of_linear_constraints);
       gradient = NULL;
       shift_factor = 0.01 + 2.0 * coco_random_uniform(random_generator);
     }
 
-    problem_c2 = c_linear_single_cons_bbob_problem_allocate(function,
-        dimension, instance, i, factor1,
-        problem_id_template, problem_name_template, gradient, shift_factor,
+    problem_c2 = c_linear_single_cons_bbob_problem_allocate(function, dimension, instance,
+        i <= number_of_active_constraints ? i : number_of_linear_constraints - inactive_constraints_left,
+        factor1, problem_id_template, problem_name_template, gradient, shift_factor,
         feasible_direction);
 
     problem_c = coco_problem_stacked_allocate(problem_c, problem_c2,
