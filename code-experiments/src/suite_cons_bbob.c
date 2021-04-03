@@ -64,6 +64,8 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
   const char *problem_id_template = "bbob-constrained_f%03lu_i%02lu_d%02lu";
   const char *problem_name_template = "bbob-constrained suite problem f%lu instance %lu in %luD";
   if (strcmp(suite_name, "bbob-constrained-active-only") == 0) {
+    /* CAVEAT: the first 28 chars of this ID are used in c_linear_cons_bbob_problem_allocate()
+     * in c_linear.c to make the decision whether inactive constraints are added */
     problem_id_template = "bbob-constrained-active-only_f%03lu_i%02lu_d%02lu";
     problem_name_template = "bbob-constrained-active-only suite problem f%lu instance %lu in %luD";
   }
@@ -183,9 +185,10 @@ static coco_problem_t *suite_cons_bbob_get_problem(coco_suite_t *suite,
   /* Use the standard stacked problem_id as problem_name and 
    * construct a new suite-specific problem_id 
    */
-  coco_problem_set_name(problem, problem->problem_id);
-  coco_problem_set_id(problem, "bbob-constrained_f%02lu_i%02lu_d%02lu", 
-  (unsigned long)function, (unsigned long)instance, (unsigned long)dimension);
+  coco_problem_set_id(problem, "%s_f%03lu_i%02lu_d%02lu",
+    suite->suite_name, (unsigned long)function, (unsigned long)instance, (unsigned long)dimension);
+  coco_problem_set_name(problem, "%s suite problem f%lu instance %lu in %luD",
+    suite->suite_name, (unsigned long)function, (unsigned long)instance, (unsigned long)dimension);
   
   return problem;
 }

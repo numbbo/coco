@@ -327,7 +327,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   size_t number_of_inactive_constraints = number_of_active_constraints / 2;  /* TODO: decide whether this should go into the interface */
   size_t number_of_linear_constraints;
   
-  if (strncmp(problem_name_template, "bbob-constrained-active-only", 28) == 0)
+  if (strncmp(problem_id_template, "bbob-constrained-active-only", 28) == 0)
     number_of_inactive_constraints = 0;
 
   number_of_linear_constraints = number_of_active_constraints + number_of_inactive_constraints;
