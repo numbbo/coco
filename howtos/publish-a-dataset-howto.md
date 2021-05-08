@@ -1,9 +1,9 @@
 # How to Publish Your Data Within COCO
 
-There are two simple ways to make data easily accessible to the community:
+There are two ways to make data easily accessible to the community:
 
-- propose inclusion of your data into `cocopp.archives`, or
-- host a COCO archive with your data.
+- propose inclusion of your data into [`cocopp.archives`](https://numbbo.github.io/data-archive), or
+- host your own COCO archive with your data.
 
 In both cases, first, the data need to be prepared. For this, for each
 dataset (that is, each benchmarked algorithm variant):
@@ -31,8 +31,8 @@ or in a preprint available for example on [arXiv](https://arxiv.org) or
 For this:
 
   3. Upload the above data zipfile(s) to a file sharing site or to an accessible URL.
-  4. Ask for the inclusion into `cocopp.archives`. For this, open an [issue
-     at the Gitlab repository of COCO](https://github.com/numbbo/coco/issues)
+  4. Ask for the inclusion into [`cocopp.archives`](https://numbbo.github.io/data-archive).
+     For this, open an [issue at the Gitlab repository of COCO](https://github.com/numbbo/coco/issues)
      (you need to have a Github account) with
 
      - the publication reference and a link to the paper
@@ -47,9 +47,8 @@ For this:
 
 Hosting an archive means putting one or several data zipfiles with an added
 "archive definition text file" online in a dedicated folder that can be
-accessed under an URL, like  
-http://lq-cma.gforge.inria.fr/data-archives/lq-gecco2019. For example, any
-folder under a personal homepage root will do.
+accessed under an URL, like http://lq-cma.gforge.inria.fr/data-archives/lq-gecco2019.
+For example, any folder under a personal homepage root will do.
 
 For this:
 
@@ -77,7 +76,7 @@ For this:
      the other way around, additional subarchives can be
      created in any archive subfolder. This is how
      http://coco.gforge.inria.fr/data-archive is organize.
-     <details><summary>Code alternative from a system shell (click to expand)</summary>
+     <details><summary>Alternative code (from a system shell, click to expand)</summary>
      <tt>python -c "import cocopp; cocopp.archiving.create('elisa_2020')"</tt>
      </details>
      </details>
