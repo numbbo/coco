@@ -323,7 +323,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   double *gradient;
   double shift_factor;
   long seed_cons;
-  double exp1, factor1;
+  double factor1;
   size_t number_of_linear_constraints;
   size_t inactive_constraints_left = number_of_active_constraints / 2;  /* TODO: decide whether this should go into the interface */
   
@@ -339,7 +339,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
 
   /* Build a coco_problem_t object for each constraint. 
    * The constraints' gradients are generated randomly with
-   * distriution 10**U[0,1] * N_i(0, I) * 10**U_i[0,2]
+   * distribution 10**U[0,1] * N_i(0, I/n) * 10**U_i[0,2]
    * where U[a, b] is uniform in [a,b] and only U_i is drawn 
    * for each constraint individually.
    */
@@ -347,8 +347,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   /* Calculate the first random factor 10**U[0,1]. */
   seed_cons = (long)(function + 10000 * instance);
   random_generator = coco_random_new((uint32_t) seed_cons);
-  exp1 = coco_random_uniform(random_generator);
-  factor1 = global_scaling_factor * pow(10.0, exp1);
+  factor1 = global_scaling_factor * pow(10.0, coco_random_uniform(random_generator));
 
   /* Build the first linear constraint using 'gradient_c1' to build
    * its gradient.
