@@ -1123,6 +1123,24 @@ static double coco_vector_norm(const double *x, size_t dimension) {
 }
 
 /**
+ * @brief return scalar product between vectors x and y.
+ *
+ */
+static double coco_vector_scalar_product(const double *x, const double *y, size_t dimension) {
+
+  size_t i;
+  double ssum = 0.0;
+
+  assert(x);
+  assert(y);
+
+  for (i = 0; i < dimension; ++i)
+    ssum += x[i] * y[i];
+
+  return ssum;
+}
+
+/**
  * @brief Checks if a given matrix M is orthogonal by (partially) computing M * M^T.
  * If M is a square matrix and M * M^T is close enough to the identity matrix
  * (up to a chosen precision), the function returns 1. Otherwise, it returns 0.
