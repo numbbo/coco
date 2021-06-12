@@ -290,6 +290,33 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
 }
 
 /**
+ * @brief helper function to successively compute a linear combination of
+ *        constraint gradients, add current gradient if weight is != 0.
+ *
+*/
+static void con_update_linear_combination(double *linear_combination,
+                                          const coco_problem_t *problem,
+                                          double weight) {
+  size_t i;
+  linear_constraint_data_t *data;
+
+  data = (linear_constraint_data_t *) coco_problem_transformed_get_data(problem);
+  if (data->gradient == NULL) {
+    if (weight != 0) coco_error("con_update_linear_combination(): gradient of constraint was zero");
+    else coco_warning("con_update_linear_combination(): gradient of constraint was zero");
+  }
+  if (data->x_shift_factor != 0)
+    coco_warning("Inactive constraint passed to update_linear_combination, x_shift_factor=%f",
+                 data->x_shift_factor);
+  if (weight == 0)
+    return; /* nothing to add */
+  if (weight < 0)
+    coco_warning("con_update_linear_combination: weight=%f < 0, should be > 0", weight);
+  for (i = 0; i < problem->number_of_variables; ++i)
+    linear_combination[i] += weight * data->gradient[i];
+}
+
+/**
  * @brief Builds a coco_problem_t containing all the linear constraints
  *        by stacking them all.
  * 
@@ -319,11 +346,14 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   coco_problem_t *problem_c = NULL;
   coco_problem_t *problem_c2 = NULL;
   coco_random_state_t *random_generator;
+  coco_random_state_t *random_generator2;
   double *gradient_c1 = NULL;
   double *gradient;
+  double *linear_combination;
+  linear_constraint_data_t *first_constraint_data = NULL;
   double shift_factor;
   long seed_cons;
-  double factor1;
+  double fac, norm, factor1;
   size_t number_of_linear_constraints;
   size_t inactive_constraints_left = number_of_active_constraints / 2;  /* TODO: decide whether this should go into the interface */
   
@@ -333,6 +363,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   number_of_linear_constraints = number_of_active_constraints + inactive_constraints_left;
 
   gradient_c1 = coco_allocate_vector(dimension);
+  linear_combination = coco_allocate_vector_with_value(dimension, 0.0);
   																	
   for (i = 0; i < dimension; ++i)
     gradient_c1[i] = -feasible_direction[i];
@@ -347,6 +378,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   /* Calculate the first random factor 10**U[0,1]. */
   seed_cons = (long)(function + 10000 * instance);
   random_generator = coco_random_new((uint32_t) seed_cons);
+  random_generator2 = coco_random_new((uint32_t) seed_cons);
   factor1 = global_scaling_factor * pow(10.0, coco_random_uniform(random_generator));
 
   /* Build the first linear constraint using 'gradient_c1' to build
@@ -358,6 +390,11 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
       dimension, instance, 1, factor1,
       problem_id_template, problem_name_template, gradient, 0.0,
       feasible_direction);
+  if (gradient != NULL)  /* preserve the constraint based on function gradient */
+    first_constraint_data = (linear_constraint_data_t *) coco_problem_transformed_get_data(problem_c);
+  else
+    con_update_linear_combination(linear_combination, problem_c,
+                                  coco_random_uniform(random_generator2));
 	 
   /* Instantiate the other linear constraints (if any) and stack them 
    * all into problem_c
@@ -384,6 +421,14 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
         i <= number_of_active_constraints ? i : number_of_linear_constraints - inactive_constraints_left,
         factor1, problem_id_template, problem_name_template, gradient, shift_factor,
         feasible_direction);
+    if (shift_factor == 0) {  /* active constraint */
+      if (gradient != NULL) {  /* preserve the constraint based on function gradient */
+        if (first_constraint_data)
+          coco_warning("c_linear_cons_bbob_problem_allocate(): first_constraint_data already assigned, this is probably a bug");
+        first_constraint_data = (linear_constraint_data_t *) coco_problem_transformed_get_data(problem_c2);
+      } else
+        con_update_linear_combination(linear_combination, problem_c2, coco_random_uniform(random_generator2));
+    }
 
     problem_c = coco_problem_stacked_allocate(problem_c, problem_c2,
         problem_c2->smallest_values_of_interest, problem_c2->largest_values_of_interest);
@@ -399,10 +444,31 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
     coco_problem_set_type(problem_c, "%s_%s", problem_c2->problem_type, 
         problem_c2->problem_type);
   }
+
+  /* Modify first constraint without changing the feasible solution,
+   * thereby disguising the gradient of the function
+   */
+  if (number_of_active_constraints > 1) {
+    norm = first_constraint_data->gradient_norm;  /* for reading convenience only */
+    gradient = first_constraint_data->gradient;   /* ditto */
+    fac = coco_vector_scalar_product(linear_combination, gradient, dimension);
+    if (fac < 0)
+      coco_error("scalar product between first constraint and linear combination = %f < 0 should be > 0", fac);
+    fac = fac <= 0 ? dimension : coco_double_min(dimension, norm * norm / fac);
+    fac *= (1 + coco_random_uniform(random_generator2)) / (2 + 1. / dimension);  /* bound to <1 and >1/3 */
+    for (i = 0; i < dimension; ++i)
+      gradient[i] -= fac * linear_combination[i];
+    fac = coco_vector_norm(gradient, dimension);  /* new gradient norm */
+    if (fac == 0)  /* make sure that gradient did not become zero */
+      coco_error("new vector norm = %f == 0, should be > 0", fac);
+    coco_vector_scale(gradient, dimension, norm, fac); /* restore original norm */
+  }
   
+  coco_free_memory(linear_combination);
   coco_free_memory(gradient_c1);
   coco_random_free(random_generator);
-  
+  coco_random_free(random_generator2);
+
   return problem_c;
  
 }
