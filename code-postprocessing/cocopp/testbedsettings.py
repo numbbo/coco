@@ -411,6 +411,7 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
         functions_with_legend=(1, 48),
         first_function_number=1,
         last_function_number=48,
+        instances_are_uniform = False,
         reference_algorithm_filename='',
         reference_algorithm_displayname='',  # TODO: should be read in from data set in reference_algorithm_filename
         scenario=scenario_constrainedfixed,
