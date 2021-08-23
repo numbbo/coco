@@ -58,7 +58,6 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
   
   double *feasible_direction = coco_allocate_vector(dimension);  
   double *xopt = coco_allocate_vector(dimension);  
-  double f_0, exponent;
   long rseed = (long) (function + 10000 * instance);
 
   const char *problem_id_template = "bbob-constrained_f%03lu_i%02lu_d%02lu";
@@ -84,13 +83,15 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
         dimension, instance, number_of_linear_constraints, rseed,
         feasible_direction, xopt, problem_id_template, 
         problem_name_template);
-	 
+    problem = transform_obj_scale(problem, 10.);
+
   } else if (obj_function_type(function) == 2) {
 	  
     problem = f_ellipsoid_c_linear_cons_bbob_problem_allocate(function, 
         dimension, instance, number_of_linear_constraints, rseed,
         feasible_direction, xopt, problem_id_template, 
         problem_name_template);
+    problem = transform_obj_scale(problem, 1e-4);
 	  
   } else if (obj_function_type(function) == 3) {
 	  
@@ -98,6 +99,7 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
         dimension, instance, number_of_linear_constraints, rseed,
         feasible_direction, xopt, problem_id_template, 
         problem_name_template);
+    problem = transform_obj_scale(problem, 10.);
 	  
   } else if (obj_function_type(function) == 4) {
 	  
@@ -105,6 +107,7 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
         dimension, instance, number_of_linear_constraints, rseed,
         feasible_direction, xopt, problem_id_template, 
         problem_name_template);
+    problem = transform_obj_scale(problem, 1e-4);
 	  
   } else if (obj_function_type(function) == 5) {
 	  
@@ -112,6 +115,7 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
         dimension, instance, number_of_linear_constraints, rseed,
         feasible_direction, xopt, problem_id_template, 
         problem_name_template);
+    problem = transform_obj_scale(problem, 1e-4);
 	  
   } else if (obj_function_type(function) == 6) {
 	  
@@ -119,6 +123,7 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
         dimension, instance, number_of_linear_constraints, rseed,
         feasible_direction, xopt, problem_id_template, 
         problem_name_template);
+    problem = transform_obj_scale(problem, 1e-4);
 	  
   } else if (obj_function_type(function) == 7) {
 	  
@@ -126,6 +131,7 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
         dimension, instance, number_of_linear_constraints, rseed,
         feasible_direction, xopt, problem_id_template, 
         problem_name_template);
+    /* scaling factor is 1 */
 	  
   } else if (obj_function_type(function) == 8) {
 	  
@@ -133,6 +139,7 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
         dimension, instance, number_of_linear_constraints, rseed,
         feasible_direction, xopt, problem_id_template, 
         problem_name_template);
+    problem = transform_obj_scale(problem, 10.);
 	  
   } else {
     coco_error("get_cons_bbob_problem(): cannot retrieve problem f%lu instance %lu in %luD", 
@@ -140,13 +147,6 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
     coco_free_memory(xopt);
     coco_free_memory(feasible_direction);
     return NULL; /* Never reached */
-  }
-
-  /* Scale down the objective function value */
-  exponent = -2./3;
-  f_0 = coco_problem_get_best_value(problem);
-  if (f_0 > 1e3) {
-    problem = transform_obj_scale(problem, pow(f_0, exponent));
   }
 
   coco_free_memory(xopt);
