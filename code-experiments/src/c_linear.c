@@ -410,7 +410,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
       gradient = (++i - 1 + instance) % number_of_active_constraints ? NULL : gradient_c1;
       shift_factor = 0.0;
     } else {  /* create an inactive (shifted) constraint */
-      if (--inactive_constraints_left < 0)
+      if (inactive_constraints_left-- <= 0)
         coco_error("c_linear_cons_bbob_problem_allocate(): no inactive left i=%d j=%d nb_act=%ul nb_con=%ul",
                    i, j, number_of_active_constraints, number_of_linear_constraints);
       gradient = NULL;
