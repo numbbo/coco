@@ -7,12 +7,16 @@ jobs:
       - image: ubuntu:rolling
         environment:
           CC: gcc
+          TZ: Europe/Paris
     working_directory: ~/coco
     steps:
       - checkout
       - run:
           name: Update apt-get
           command: apt-get update -qy
+      - run:
+          name: Set noninteractive frontend for tzdata configuration
+          command: export DEBIAN_FRONTEND=noninteractive
       - run:
           name: Install python-dev with apt-get
           command: apt-get install -y python3-dev
