@@ -14,8 +14,11 @@ jobs:
           name: Update apt-get
           command: apt-get update -qy
       - run:
+          name: Set time zone
+          command: ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime 
+      - run:
           name: Install python-dev with apt-get
-          command: apt-get install -y python3-dev
+          command: DEBIAN_FRONTEND="noninteractive" apt-get install -y python3-dev
       - run:
           name: Install pip with apt-get
           command: apt-get install -y python3-pip
