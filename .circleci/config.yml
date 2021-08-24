@@ -7,7 +7,6 @@ jobs:
       - image: ubuntu:rolling
         environment:
           CC: gcc
-          TZ: Europe/Paris
     working_directory: ~/coco
     steps:
       - checkout
