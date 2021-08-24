@@ -16,7 +16,7 @@ jobs:
           command: apt-get update -qy
       - run:
           name: Set noninteractive frontend for tzdata configuration
-          command: export DEBIAN_FRONTEND=noninteractive
+          command: echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
       - run:
           name: Install python-dev with apt-get
           command: apt-get install -y python3-dev
