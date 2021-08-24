@@ -15,10 +15,10 @@ jobs:
           command: apt-get update -qy
       - run:
           name: Set time zone
-          command: sudo ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime 
+          command: ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime 
       - run:
           name: Set noninteractive frontend for time zone configuration
-          command: sudo dpkg-reconfigure -f noninteractive tzdata
+          command: dpkg-reconfigure -f noninteractive tzdata
       - run:
           name: Install python-dev with apt-get
           command: apt-get install -y python3-dev
