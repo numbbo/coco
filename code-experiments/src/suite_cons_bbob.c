@@ -57,7 +57,7 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
   coco_problem_t *problem = NULL;
   
   double *feasible_direction = coco_allocate_vector(dimension);  
-  double *xopt = coco_allocate_vector(dimension);  
+  double *xopt = coco_allocate_vector(dimension);
   long rseed = (long) (function + 10000 * instance);
 
   const char *problem_id_template = "bbob-constrained_f%03lu_i%02lu_d%02lu";
@@ -83,7 +83,7 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
         dimension, instance, number_of_linear_constraints, rseed,
         feasible_direction, xopt, problem_id_template, 
         problem_name_template);
-    problem = transform_obj_scale(problem, 10.);
+    problem = transform_obj_scale(problem, 10.);  /* move initial feasible point to a delta-f between 100 and 10000 */
 
   } else if (obj_function_type(function) == 2) {
 	  
@@ -91,7 +91,7 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
         dimension, instance, number_of_linear_constraints, rseed,
         feasible_direction, xopt, problem_id_template, 
         problem_name_template);
-    problem = transform_obj_scale(problem, 1e-4);
+    problem = transform_obj_scale(problem, 1e-4);  /* move initial feasible point to a delta-f between 100 and 10000 */
 	  
   } else if (obj_function_type(function) == 3) {
 	  
@@ -99,7 +99,7 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
         dimension, instance, number_of_linear_constraints, rseed,
         feasible_direction, xopt, problem_id_template, 
         problem_name_template);
-    problem = transform_obj_scale(problem, 10.);
+    problem = transform_obj_scale(problem, 10.);  /* move initial feasible point to a delta-f between 100 and 10000 */
 	  
   } else if (obj_function_type(function) == 4) {
 	  
@@ -107,7 +107,7 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
         dimension, instance, number_of_linear_constraints, rseed,
         feasible_direction, xopt, problem_id_template, 
         problem_name_template);
-    problem = transform_obj_scale(problem, 1e-4);
+    problem = transform_obj_scale(problem, 1e-4);  /* move initial feasible point to a delta-f between 100 and 10000 */
 	  
   } else if (obj_function_type(function) == 5) {
 	  
@@ -115,7 +115,7 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
         dimension, instance, number_of_linear_constraints, rseed,
         feasible_direction, xopt, problem_id_template, 
         problem_name_template);
-    problem = transform_obj_scale(problem, 1e-4);
+    problem = transform_obj_scale(problem, 1e-4);  /* move initial feasible point to a delta-f between 100 and 10000 */
 	  
   } else if (obj_function_type(function) == 6) {
 	  
@@ -123,7 +123,7 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
         dimension, instance, number_of_linear_constraints, rseed,
         feasible_direction, xopt, problem_id_template, 
         problem_name_template);
-    problem = transform_obj_scale(problem, 1e-4);
+    problem = transform_obj_scale(problem, 1e-4);  /* move initial feasible point to a delta-f between 100 and 100,000 */
 	  
   } else if (obj_function_type(function) == 7) {
 	  
@@ -131,15 +131,15 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
         dimension, instance, number_of_linear_constraints, rseed,
         feasible_direction, xopt, problem_id_template, 
         problem_name_template);
-    /* scaling factor is 1 */
-	  
+    problem = transform_obj_scale(problem, 1e2);  /* move initial feasible point to a delta-f between 100 and 1000 */
+
   } else if (obj_function_type(function) == 8) {
 	  
     problem = f_rastrigin_c_linear_cons_bbob_problem_allocate(function, 
         dimension, instance, number_of_linear_constraints, rseed,
         feasible_direction, xopt, problem_id_template, 
         problem_name_template);
-    problem = transform_obj_scale(problem, 10.);
+    problem = transform_obj_scale(problem, 10.);  /* move initial feasible point to a delta-f between 100 and 10000 */
 	  
   } else {
     coco_error("get_cons_bbob_problem(): cannot retrieve problem f%lu instance %lu in %luD", 
