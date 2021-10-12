@@ -28,6 +28,8 @@ from .ppfig import Usage
 from .compall import ppfigs
 
 import matplotlib.pyplot as plt
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
 
 __all__ = ['main']
@@ -307,6 +309,9 @@ def main(argv=None):
                     raise Usage('Expect a valid float for flag crafting-effort.')
             elif o == "--include-fonts":
                 plt.rc('pdf', fonttype=42)
+                plt.rcParams['pdf.fonttype'] = 42
+                matplotlib.rcParams['pdf.fonttype'] = 42
+                matplotlib.rcParams['ps.fonttype'] = 42
             elif o == "--tab-only":
                 genericsettings.isFig = False
                 genericsettings.isRLDistr = False

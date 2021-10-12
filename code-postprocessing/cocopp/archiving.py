@@ -1392,7 +1392,7 @@ class _ArchivesOfficial(ListOfArchives):
     __doc__ += ListOfArchives.__doc__
 
     listing_file = ListOfArchives._fullfile("official_archives")
-    search_folder = _abs_path(cocopp_home, "data-archive") 
+    search_folder = _abs_path(cocopp_home, "data-archive")
 
 class ArchivesLocal(ListOfArchives):
     """COCO data archives somewhere local on this machine.
