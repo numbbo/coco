@@ -373,7 +373,7 @@ def create(local_path):
                 and not fnlower.startswith('.')
                 and not default_definition_filename in filename
                 and not fnlower == 'readme'
-                and not fnlower.endswith(('.dat', '.rdat', '.tdat', '.info',
+                and not fnlower.endswith(('.git', '.dat', '.rdat', '.tdat', '.info',
                                           '.txt', '.md', '.py', '.ipynb', '.pdf'))
                 and not '.txt' in fnlower
                 ):
