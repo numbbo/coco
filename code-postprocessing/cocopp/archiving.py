@@ -287,7 +287,7 @@ def get(url_or_folder=None):
     and ``cocopp.archiving.ArchivesKnown()`` will show a list.
 
     >>> import cocopp
-    >>> url = 'http://lq-cma.gforge.inria.fr/data-archives/lq-gecco2019'
+    >>> url = 'https://cma-es.github.io/lq-cma/data-archives/lq-gecco2019'
     >>> arch = cocopp.archiving.get(url).update()  # downloads a 0.4KB definition file
     >>> len(arch)
     4
@@ -854,7 +854,7 @@ class COCODataArchive(_td.StrList):
         As remote archives may grow or change, a common usecase may be
         
         >>> import cocopp.archiving as ac
-        >>> url = 'http://lq-cma.gforge.inria.fr/data-archives/lq-gecco2019'
+        >>> url = 'https://cma-es.github.io/lq-cma/data-archives/lq-gecco2019'
         >>> arch = ac.get(url).update()  # doctest:+SKIP
         
         For updating a local archive use::
