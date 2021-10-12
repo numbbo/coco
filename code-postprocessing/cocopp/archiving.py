@@ -1101,7 +1101,7 @@ class ListOfArchives(_td.StrList):
             f.write(_repr_definitions(self))
 
     def remote_update(self, name=None):
-        """join in the respective list from ``http://coco.gforge.inria.fr/data-archives``.
+        """join in the respective list from ``coco_url + '/data-archives'``.
         
         Use `save` to save the joined entries.
         """
@@ -1299,8 +1299,7 @@ class OfficialArchives(object):
     def add_archive(self, name):
         """Allow to use a new official archive.
         
-        The archive must exist as a subfolder of
-        https://coco.gforge.inria.fr/data-archive
+        The archive must exist as a subfolder of ``coco_url + '/data-archive'``.
         """
         self._list += [(self._base + name, None),]
         self.set_as_attributes_in()
