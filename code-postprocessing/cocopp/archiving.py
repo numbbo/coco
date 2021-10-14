@@ -83,14 +83,14 @@ try:
 except ImportError:
     from urllib import urlretrieve as _urlretrieve
 
-coco_url00 = "https://coco.gforge.inria.fr"  # original location
-coco_url01 = "https://numbbo.github.io/gforge"  # new backup location
-coco_url02 = "https://numbbo.github.io/data-archive"  # new location
+coco_url00 = "https://coco.gforge.inria.fr/data-archive"  # original location
+coco_url01 = "https://numbbo.github.io/gforge/data-archive"  # new backup location
+coco_url02 = "https://numbbo.github.io/data-archive/data-archive"  # new location
 coco_url = coco_url02
 cocopp_home = os.path.abspath(os.path.expanduser(os.path.join("~", ".cocopp")))
-cocopp_home_archives = os.path.join(cocopp_home, "data-archives")
 default_archive_location = os.path.join(cocopp_home, 'data-archives')
 default_definition_filename = 'coco_archive_definition.txt'
+cocopp_home_archives = default_archive_location
 listing_file_start = 'list_'
 listing_file_extension = '.txt'
 backup_last_filename = ''  # global variable to see whether and where a backup was made
@@ -187,12 +187,12 @@ def _str_to_list(str_or_list):
         return [str_or_list]
     raise ValueError(str_or_list)
 
-def _move_official_local_data():
+def _old_move_official_local_data():
     """move "official" archives folder to the generic standardized location once and for all"""
     src = os.path.join(cocopp_home, 'data-archive')
     dest = _url_to_folder_name(coco_url)
     if os.path.exists(src):
-        if not os.path.exists(os.path.join(dest, 'data-archive')):
+        if not os.path.exists(os.path.join(dest, 'data-archive')):  # obsolete
             _makedirs(dest)
             print("moving %s to %s" % (src, dest))
             _shutil.move(src, dest)
@@ -242,8 +242,8 @@ def _get_remote(url, target_folder=None, redownload=False):
     key = url
     url = official_archives.url(url) or url.rstrip('/')
     target_folder = target_folder or _url_to_folder_name(url)
-    if key in official_archives.names:
-        _move_official_local_data()  # once and for all
+    # if key in official_archives.names:  # old code
+    #     _move_official_local_data()  # once and for all
     if redownload or not os.path.exists(_definition_file_to_read(target_folder)):
         _makedirs(target_folder)
         _download_definitions(url, target_folder)
@@ -1104,7 +1104,7 @@ class ListOfArchives(_td.StrList):
             f.write(_repr_definitions(self))
 
     def remote_update(self, name=None):
-        """join in the respective list from ``coco_url + '/data-archives'``.
+        """join in the respective list from ``coco_url.rsplit('/')[0] + '/data-archives'``.
         
         Use `save` to save the joined entries.
         """
@@ -1253,15 +1253,15 @@ class OfficialArchives(object):
 
         Post-processing (2+)
           Using:
-            /.../.cocopp/data-archive/bbob/2009/BIPOP-CMA-ES_hansen_noiseless.tgz
-            /.../.cocopp/data-archive/bbob/2012/DE-AUTO_voglis_noiseless.tgz
-            /.../.cocopp/data-archive/bbob/2012/DE-BFGS_voglis_noiseless.tgz
-            /.../.cocopp/data-archive/bbob/2012/DE-ROLL_voglis_noiseless.tgz
-            /.../.cocopp/data-archive/bbob/2012/DE-SIMPLEX_voglis_noiseless.tgz
-            /.../.cocopp/data-archive/bbob/2012/DE_posik_noiseless.tgz
-            /.../.cocopp/data-archive/bbob/2012/DEAE_posik_noiseless.tgz
-            /.../.cocopp/data-archive/bbob/2012/DEb_posik_noiseless.tgz
-            /.../.cocopp/data-archive/bbob/2012/DEctpb_posik_noiseless.tgz
+            /.../.cocopp/data-.../bbob/2009/BIPOP-CMA-ES_hansen_noiseless.tgz
+            /.../.cocopp/data-.../bbob/2012/DE-AUTO_voglis_noiseless.tgz
+            /.../.cocopp/data-.../bbob/2012/DE-BFGS_voglis_noiseless.tgz
+            /.../.cocopp/data-.../bbob/2012/DE-ROLL_voglis_noiseless.tgz
+            /.../.cocopp/data-.../bbob/2012/DE-SIMPLEX_voglis_noiseless.tgz
+            /.../.cocopp/data-.../bbob/2012/DE_posik_noiseless.tgz
+            /.../.cocopp/data-.../bbob/2012/DEAE_posik_noiseless.tgz
+            /.../.cocopp/data-.../bbob/2012/DEb_posik_noiseless.tgz
+            /.../.cocopp/data-.../bbob/2012/DEctpb_posik_noiseless.tgz
 
         Post-processing (2+)
           loading data...
@@ -1285,7 +1285,8 @@ class OfficialArchives(object):
         exception is made for `'all'`, which is removed to get the URL.
         """
         self.all = None  # only to prevent lint error in cocopp/__init__.py
-        self._base = coco_url + '/data-archive/'
+        self._base = coco_url.rstrip('/') + '/'
+        # self._base = coco_url + '/data-archive/'  # old way
         # TODO-decide: should this list better be initialized by a ListOfArchives file?
         #              (the same transition as before with the _all attribute in COCODataArchive)
         #              The code then only "hardcodes" the class name mapping?
@@ -1302,7 +1303,7 @@ class OfficialArchives(object):
     def add_archive(self, name):
         """Allow to use a new official archive.
         
-        The archive must exist as a subfolder of ``coco_url + '/data-archive'``.
+        The archive must exist as a subfolder of ``coco_url``.
         """
         self._list += [(self._base + name, None),]
         self.set_as_attributes_in()
@@ -1383,7 +1384,7 @@ official_archives = OfficialArchives()
 # TODO-decide: when should we (try to) update these?
 official_archives.set_as_attributes_in()  # set "official" archives as attributes by suite name
 
-class _ArchivesOfficial(ListOfArchives):
+class _old_ArchivesOfficial(ListOfArchives):
     """superseded by `OfficialArchives`
     
     Official COCO data archives.
@@ -1394,7 +1395,7 @@ class _ArchivesOfficial(ListOfArchives):
     __doc__ += ListOfArchives.__doc__
 
     listing_file = ListOfArchives._fullfile("official_archives")
-    search_folder = _abs_path(cocopp_home, "data-archive")
+    search_folder = _abs_path(cocopp_home, "data-archive")  # obsolete
 
 class ArchivesLocal(ListOfArchives):
     """COCO data archives somewhere local on this machine.
@@ -1417,13 +1418,18 @@ class ArchivesKnown(ListOfArchives):
     search_folder = default_archive_location 
 
 class RemoteListOfArchives(_td.StrList):
-    """Elements of this list can be used directly in `cocopp.archiving.get`.
+    """Elements of this list can be used directly with `cocopp.archiving.get`.
 
     The only purpose of this list is to propose (or remind) known archive
-    locations to the user. For this purpose, the current listing file is
+    remote locations to the user. For this purpose, the current listing file is
     downloaded.
     """
-    location = coco_url + '/data-archives/'  # + 'list_known_archives.txt'
+    # was: location = coco_url + '/data-archives/'  # + 'list_known_archives.txt'
+    # a hack: remove deepest folder name in coco_url
+    location = coco_url.rstrip('/').rsplit('/', 1)[0]  # remove lowest folder name
+    if '//' not in location:
+        location = coco_url.rstrip('/')
+    location += '/data-archives/'
 
     def __init__(self, name='known_archives'):
         super(RemoteListOfArchives, self).__init__(self._download(name))
