@@ -623,7 +623,7 @@ Links and Documentation <a name="Links"></a>
   found at https://numbbo.github.io/ppdata-archive
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software 
   by registering via [this form](https://docs.google.com/forms/d/1GS48SXGjapUu6WY6Zt-Ma5HCl2izq4ydT7sMa5ujUDI)
-* Read about the basic principles behind the Coco platform in [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting (pdf)]((https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977)) or at [arXiv](https://arxiv.org/abs/1603.08785).
+* Read about the basic principles behind the Coco platform in [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting (pdf)](https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977) or at [arXiv](https://arxiv.org/abs/1603.08785).
 * For details on the experimental set-up to carry out the benchmarking
   please refer to http://numbbo.github.io/coco-doc/experimental-setup/.
 * More detailed documentation of the existing benchmark suites can be found here:
