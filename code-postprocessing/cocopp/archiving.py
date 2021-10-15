@@ -83,10 +83,11 @@ try:
 except ImportError:
     from urllib import urlretrieve as _urlretrieve
 
-coco_url00 = "https://coco.gforge.inria.fr/data-archive"  # original location
-coco_url01 = "https://numbbo.github.io/gforge/data-archive"  # new backup location
-coco_url02 = "https://numbbo.github.io/data-archive/data-archive"  # new location
-coco_url = coco_url02
+coco_urls = ["https://coco.gforge.inria.fr/data-archive",  # original location
+             "https://numbbo.github.io/gforge/data-archive",  # new backup location
+             "https://numbbo.github.io/data-archive/data-archive",  # new location
+            ]
+coco_url = coco_urls[-1]  # may be reassigned if it doesn't work out
 cocopp_home = os.path.abspath(os.path.expanduser(os.path.join("~", ".cocopp")))
 default_archive_location = os.path.join(cocopp_home, 'data-archives')
 default_definition_filename = 'coco_archive_definition.txt'
@@ -1278,14 +1279,16 @@ class OfficialArchives(object):
     >>> cocopp.main('-o myoutputfolder BIPOP! 2012/DE*')  # doctest:+SKIP
 
     """
-    def __init__(self):
+    def __init__(self, url=None):
         """all URLs and classes (optional) in one place.
         
         The archive names are identical with the last part of the URL. The only
         exception is made for `'all'`, which is removed to get the URL.
         """
         self.all = None  # only to prevent lint error in cocopp/__init__.py
-        self._base = coco_url.rstrip('/') + '/'
+        if url is None:
+            url = coco_url
+        self._base = url.rstrip('/') + '/'
         # self._base = coco_url + '/data-archive/'  # old way
         # TODO-decide: should this list better be initialized by a ListOfArchives file?
         #              (the same transition as before with the _all attribute in COCODataArchive)
@@ -1380,9 +1383,21 @@ class OfficialArchives(object):
                 if name != 'test':
                     raise
 
-official_archives = OfficialArchives()
-# TODO-decide: when should we (try to) update these?
-official_archives.set_as_attributes_in()  # set "official" archives as attributes by suite name
+# official_archives = OfficialArchives()
+for url in coco_urls[-1::-1]:  # loop over possible URLs until successful
+    try:
+        official_archives = OfficialArchives(url)  # lazy init, does kinda nothing
+        # TODO-decide: when should we (try to) update/check these?
+        # The following `set_as_attributes_in` calls `cocopp.archiving.get(url)` and works if the
+        # connection was successful at least once (before or now)
+        official_archives.set_as_attributes_in()  # set "official" archives as attributes by suite name
+        coco_url = url
+        break
+    except:  # (HTTPError, TimeoutError, URLError)
+        warnings.warn("failed to connect to " + url)
+else:
+    warnings.warn("failed fo find workable URL or local folder for official archives")
+    official_archives = None
 
 class _old_ArchivesOfficial(ListOfArchives):
     """superseded by `OfficialArchives`
@@ -1429,7 +1444,7 @@ class RemoteListOfArchives(_td.StrList):
     location = coco_url.rstrip('/').rsplit('/', 1)[0]  # remove lowest folder name
     if '//' not in location:
         location = coco_url.rstrip('/')
-    location += '/data-archives/'
+    location += '/data-archives/'  # + 'list_known_archives.txt'
 
     def __init__(self, name='known_archives'):
         super(RemoteListOfArchives, self).__init__(self._download(name))

@@ -122,9 +122,10 @@ if 11 < 3:  # old version, to be removed
     bbob_biobj = archives.bbob_biobj
 else:
     archives = archiving.official_archives  # just an alias
-    data_archive = archives.all  # another alias, only for historical reasons
-    archives.link_as_attributes_in(_sys.modules['cocopp'],  # more individual aliases
-                                   except_for=['all', 'test'])
+    if archives is not None:
+        data_archive = archives.all  # another alias, only for historical reasons
+        archives.link_as_attributes_in(_sys.modules['cocopp'],  # more individual aliases
+                                       except_for=['all', 'test'])
 
 # data_archive = 'use `archives.all` instead'
 # bbob = 'use `archives.bbob` instead'
