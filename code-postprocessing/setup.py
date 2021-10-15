@@ -3,7 +3,9 @@
 
 Prepare distribution::
 
-    outcomment (activate) install requirements below
+    make a git tag (on GitHub) to have a new distribution release number
+
+    outcomment (activate) install requirements below (in this file)
     python setup.py check
     python setup.py sdist bdist_wheel --universal > dist_call_output.txt ; less dist_call_output.txt  # bdist_wininst
 
@@ -14,9 +16,9 @@ Check distribution and project description::
 
 Finally upload the distribution::
 
-    twine upload dist/*2.x.x*  # to not upload outdated stuff
+    twine upload dist/*2.4.x*  # to not upload outdated stuff
 
-and tag the version::
+and (possibly) tag the version::
 
     git tag -a cocopp-2.3.x.xx -m "cocopp-2.3.x.xx uploaded to PyPI"
 

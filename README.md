@@ -8,17 +8,19 @@ numbbo/coco: Comparing Continuous Optimizers
 > Nikolaus Hansen, Dimo Brockhoff, Olaf Mersmann, Tea Tusar, Dejan Tusar, Ouassim Ait ElHara, Phillipe R. Sampaio, Asma Atamna, Konstantinos Varelas, Umut Batu, Duc Manh Nguyen, Filip Matzner, Anne Auger. COmparing Continuous Optimizers: numbbo/COCO on Github. Zenodo, [DOI:10.5281/zenodo.2594848](https://doi.org/10.5281/zenodo.2594848), March 2019.
 ---
 
-[This code](https://github.com/numbbo/coco) reimplements the original Comparing
-Continous Optimizer platform, now rewritten fully in `ANSI C` and `Python` with
-other languages calling the `C` code. As the name suggests, the code provides a
-platform to benchmark and compare continuous optimizers, AKA non-linear solvers
-for numerical optimization. Languages currently available are
+[This code](https://github.com/numbbo/coco) provides a platform to
+benchmark and compare continuous optimizers, AKA non-linear solvers
+for numerical optimization. It is fully written in `ANSI C` and
+`Python` (reimplementing the original Comparing Continous
+Optimizer platform) with other languages calling the `C` code.
+Languages currently available to connect a solver to the benchmarks are
 
   - `C/C++`
   - `Java`
   - `MATLAB/Octave`
   - `Python`
 
+Code for others might be available in branched code.
 Contributions to link further languages (including a better
 example in `C++`) are more than welcome.
 
@@ -30,7 +32,7 @@ from using the platform:
 ![General COCO Structure](coco.png)
 
 For more general information:
-- read our [benchmarking guidelines introduction](https://arxiv.org/pdf/1603.08785.pdf)
+- read our benchmarking guidelines introduction [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting (pdf)]((https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977)) or at [arXiv](https://arxiv.org/abs/1603.08785).
 - read the [COCO experimental setup](http://numbbo.github.io/coco-doc/experimental-setup) description
 - see the [`bbob-biobj` and `bbob-biobj-ext` COCO multi-objective functions testbed](http://numbbo.github.io/coco-doc/bbob-biobj/functions) documentation and the [specificities of the performance assessment for the bi-objective testbeds](http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment).
 - consult the [BBOB workshops series](http://numbbo.github.io/workshops),
@@ -591,16 +593,19 @@ Citation
 --------
 You may cite this work in a scientific context as
 
-N. Hansen, A. Auger, R. Ros, O. Mersmann, T. Tušar, D. Brockhoff. [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://doi.org/10.1080/10556788.2020.1808977), Optimization Methods and Software, 2020. [[arXiv version](https://arxiv.org/pdf/1603.08785.pdf)]
+N. Hansen, A. Auger, R. Ros, O. Mersmann, T. Tušar, D. Brockhoff. [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://doi.org/10.1080/10556788.2020.1808977), _Optimization Methods and Software_, 36(1), pp. 114-144, 2021. [[pdf](https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977), [arXiv](https://arxiv.org/abs/1603.08785)]
 ```
-@ARTICLE{hansen2020cocoplat, 
-  author = {Hansen, N. and Auger, A. and Ros, R. and Mersmann, O. and 
-             Tu{\v s}ar, T. and Brockhoff, D.},
-  title = {{COCO}: A Platform for Comparing Continuous Optimizers 
-             in a Black-Box Setting},
-  journal = {Optimization Methods and Software},
-  doi = {https://doi.org/10.1080/10556788.2020.1808977},
-  year = 2020
+@ARTICLE{hansen2021coco,
+author = {Hansen, N. and Auger, A. and Ros, R. and Mersmann, O.
+          and Tu{\v s}ar, T. and Brockhoff, D.},
+title = {{COCO}: A Platform for Comparing Continuous Optimizers 
+          in a Black-Box Setting},
+journal = {Optimization Methods and Software},
+doi = {https://doi.org/10.1080/10556788.2020.1808977},
+pages = {114--144},
+issue = {1},
+volume = {36},
+year = 2021
 }
 ```
 
@@ -618,7 +623,7 @@ Links and Documentation <a name="Links"></a>
   found at https://numbbo.github.io/ppdata-archive
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software 
   by registering via [this form](https://docs.google.com/forms/d/1GS48SXGjapUu6WY6Zt-Ma5HCl2izq4ydT7sMa5ujUDI)
-* Read about the basic principles behind the Coco platform in [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://arxiv.org/pdf/1603.08785.pdf).
+* Read about the basic principles behind the Coco platform in [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting (pdf)]((https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977)) or at [arXiv](https://arxiv.org/abs/1603.08785).
 * For details on the experimental set-up to carry out the benchmarking
   please refer to http://numbbo.github.io/coco-doc/experimental-setup/.
 * More detailed documentation of the existing benchmark suites can be found here:
@@ -627,7 +632,7 @@ Links and Documentation <a name="Links"></a>
   - for the **`bbob-biobj`** and **`bbob-biobj-ext`** problem suites
     at http://numbbo.github.io/coco-doc/bbob-biobj/functions
   - for the **`bbob-largescale`** problem suite
-    at http://numbbo.github.io/coco-doc/bbob-largescale/functions
+    at https://arxiv.org/pdf/1903.06396.pdf
   - for the **`bbob-mixint`** and **`bbob-biobj-mixint`** problem suites, we refer to 
     https://hal.inria.fr/hal-02067932/document and to
     https://numbbo.github.io/gforge/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
@@ -642,14 +647,14 @@ Links and Documentation <a name="Links"></a>
   
 Comprehensive List of Documentations <a name="Documentations"></a>
 --------------------------------------------
-* General introduction: [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://arxiv.org/pdf/1603.08785.pdf)
+* General introduction: [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting (pdf)](https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977) or at [arXiv](https://arxiv.org/abs/1603.08785)
 * Experimental setup: http://numbbo.github.io/coco-doc/experimental-setup/
 * Testbeds
   - bbob: https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf
   - bbob-biobj: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
   - bbob-biobj-ext: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
   - bbob-noisy (only in old code basis): http://coco.lri.fr/downloads/download15.03/bbobdocnoisyfunctions.pdf
-  - bbob-largescale: http://numbbo.github.io/coco-doc/bbob-largescale/functions/
+  - bbob-largescale: https://arxiv.org/pdf/1903.06396.pdf
   - bbob-mixint and bbob-biobj-mixint: https://hal.inria.fr/hal-02067932/document and
     https://numbbo.github.io/gforge/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
   - bbob-constrained (in progress): http://numbbo.github.io/coco-doc/bbob-constrained/functions/

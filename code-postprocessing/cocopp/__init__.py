@@ -72,7 +72,7 @@ The postprocessing result of
 
 >>> cocopp.main('bbob/2009/*')  # doctest:+SKIP
 
-can be browsed at http://coco.gforge.inria.fr/ppdata-archive/bbob/2009-all.
+can be browsed at http://numbbo.github.io/ppdata-archive/bbob/2009 (or 2009-all).
 
 To display algorithms in the background, the ``genericsettings.background``
 variable needs to be set:

@@ -762,6 +762,9 @@ class GECCOBBOBBiObjMixintTestbed(GECCOBiObjExtBBOBTestbed):
         instancesOfInterest={1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1,
                              12: 1, 13: 1, 14: 1, 15: 1},
         scenario=scenario_biobjmixintfixed,
+        plots_on_main_html_page=['pprldmany_05D_noiselessall.svg', 'pprldmany_10D_noiselessall.svg',
+                                 'pprldmany_20D_noiselessall.svg', 'pprldmany_40D_noiselessall.svg',
+                                 'pprldmany_80D_noiselessall.svg', 'pprldmany_160D_noiselessall.svg'],
     )
 
     def __init__(self, targetValues):
@@ -773,5 +776,19 @@ class GECCOBBOBBiObjMixintTestbed(GECCOBiObjExtBBOBTestbed):
                 self.instantiate_attributes(targetValues, [key])
 
     def filter(self, dsl):
-        ''' Does nothing on dsl (overriding the filter method of the superclass). '''
+        """ Checks if only data from the bbob-biobj-mixint
+            suite is included in dsl. If also other test suite
+            data sets is detected, an error is given.
+
+            Returns the filtered list as a flat list.
+        """
+
+        # find out whether we have to do something:
+        for ds in dsl:
+            if not (ds.suite_name == 'bbob-biobj-mixint'):
+                raise ValueError("Data from %s suite is not "
+                                 "compatible with data from "
+                                 "the bbob-biobj-mixint "
+                                 "suites" % str(ds.suite_name))
+
         return dsl

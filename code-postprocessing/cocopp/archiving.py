@@ -83,7 +83,10 @@ try:
 except ImportError:
     from urllib import urlretrieve as _urlretrieve
 
-coco_url = "https://coco.gforge.inria.fr"
+coco_url00 = "https://coco.gforge.inria.fr"  # original location
+coco_url01 = "https://numbbo.github.io/gforge"  # new backup location
+coco_url02 = "https://numbbo.github.io/data-archive"  # new location
+coco_url = coco_url02
 cocopp_home = os.path.abspath(os.path.expanduser(os.path.join("~", ".cocopp")))
 cocopp_home_archives = os.path.join(cocopp_home, "data-archives")
 default_archive_location = os.path.join(cocopp_home, 'data-archives')
@@ -287,7 +290,7 @@ def get(url_or_folder=None):
     and ``cocopp.archiving.ArchivesKnown()`` will show a list.
 
     >>> import cocopp
-    >>> url = 'http://lq-cma.gforge.inria.fr/data-archives/lq-gecco2019'
+    >>> url = 'https://cma-es.github.io/lq-cma/data-archives/lq-gecco2019'
     >>> arch = cocopp.archiving.get(url).update()  # downloads a 0.4KB definition file
     >>> len(arch)
     4
@@ -373,7 +376,7 @@ def create(local_path):
                 and not fnlower.startswith('.')
                 and not default_definition_filename in filename
                 and not fnlower == 'readme'
-                and not fnlower.endswith(('.dat', '.rdat', '.tdat', '.info',
+                and not fnlower.endswith(('.git', '.dat', '.rdat', '.tdat', '.info',
                                           '.txt', '.md', '.py', '.ipynb', '.pdf'))
                 and not '.txt' in fnlower
                 ):
@@ -854,7 +857,7 @@ class COCODataArchive(_td.StrList):
         As remote archives may grow or change, a common usecase may be
         
         >>> import cocopp.archiving as ac
-        >>> url = 'http://lq-cma.gforge.inria.fr/data-archives/lq-gecco2019'
+        >>> url = 'https://cma-es.github.io/lq-cma/data-archives/lq-gecco2019'
         >>> arch = ac.get(url).update()  # doctest:+SKIP
         
         For updating a local archive use::
@@ -1101,7 +1104,7 @@ class ListOfArchives(_td.StrList):
             f.write(_repr_definitions(self))
 
     def remote_update(self, name=None):
-        """join in the respective list from ``http://coco.gforge.inria.fr/data-archives``.
+        """join in the respective list from ``coco_url + '/data-archives'``.
         
         Use `save` to save the joined entries.
         """
@@ -1299,8 +1302,7 @@ class OfficialArchives(object):
     def add_archive(self, name):
         """Allow to use a new official archive.
         
-        The archive must exist as a subfolder of
-        https://coco.gforge.inria.fr/data-archive
+        The archive must exist as a subfolder of ``coco_url + '/data-archive'``.
         """
         self._list += [(self._base + name, None),]
         self.set_as_attributes_in()
@@ -1392,7 +1394,7 @@ class _ArchivesOfficial(ListOfArchives):
     __doc__ += ListOfArchives.__doc__
 
     listing_file = ListOfArchives._fullfile("official_archives")
-    search_folder = _abs_path(cocopp_home, "data-archive") 
+    search_folder = _abs_path(cocopp_home, "data-archive")
 
 class ArchivesLocal(ListOfArchives):
     """COCO data archives somewhere local on this machine.
