@@ -1,0 +1,25 @@
+title: COCO webpage
+description: >- 
+  This is the webpage of the
+  Comparing Continous Optimizers (COCO) platform
+#url: "numbbo.github.io"
+#baseurl: "/coco" 
+github_repo: "numbbo/coco"
+
+# Build settings
+remote_theme: pmarsceill/just-the-docs
+# search_enabled: false # Use this to disable search
+
+plugins:
+  - jekyll-feed
+  
+kramdown:
+    math-engine: katex
+
+# Exclude from processing.
+# The following items will not be processed, by default.
+exclude:
+  - .jekyll-cache/
+  - Gemfile
+  - Gemfile.lock
+  - README.md

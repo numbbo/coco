@@ -1,0 +1,22 @@
+{
+  "name": "ok-sort",
+  "version": "1.2.2",
+  "description": "A pure JavaScript solution to make HTML Tables sortable",
+  "main": "sort-table.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stationer/SortTable.git"
+  },
+  "keywords": [
+    "Sort"
+  ],
+  "author": "Tyler Uebele",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stationer/SortTable/issues"
+  },
+  "homepage": "https://github.com/stationer/SortTable#readme"
+}
