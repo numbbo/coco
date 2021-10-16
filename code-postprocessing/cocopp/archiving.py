@@ -294,7 +294,7 @@ def get(url_or_folder=None):
     >>> arch = cocopp.archiving.get(url).update()  # downloads a 0.4KB definition file
     >>> len(arch)
     4
-    >>> assert arch.remote_data_path == url
+    >>> assert arch.remote_data_path.split('//', 1)[1] == url.split('//', 1)[1], (arch.remote_data_path, url)
  
     See `cocopp.archives` for "officially" available archives.
     """
