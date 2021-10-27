@@ -68,6 +68,12 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
     problem_id_template = "bbob-constrained-active-only_f%03lu_i%02lu_d%02lu";
     problem_name_template = "bbob-constrained-active-only suite problem f%lu instance %lu in %luD";
   }
+  if (strcmp(suite_name, "bbob-constrained-no-disguise") == 0) {
+    /* First trick as above, by chance same number of characters
+     * Both options at the same time not supported */
+    problem_id_template = "bbob-constrained-no-disguise_f%03lu_i%02lu_d%02lu";
+    problem_name_template = "bbob-constrained-no-disguise suite problem f%lu instance %lu in %luD";
+  }
   
   /* Seed value used for shifting the whole constrained problem */
   bbob2009_compute_xopt(xopt, rseed, dimension);

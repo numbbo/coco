@@ -356,9 +356,13 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   double fac, norm, factor1;
   size_t number_of_linear_constraints;
   size_t inactive_constraints_left = number_of_active_constraints / 2;  /* TODO: decide whether this should go into the interface */
-  
+  int disguise_gradient = 1;
+
   if (strncmp(problem_id_template, "bbob-constrained-active-only", 28) == 0)
     inactive_constraints_left = 0;
+
+  if (strncmp(problem_id_template, "bbob-constrained-no-disguise", 28) == 0)
+    disguise_gradient = 0;
 
   number_of_linear_constraints = number_of_active_constraints + inactive_constraints_left;
 
@@ -448,7 +452,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   /* Modify first constraint without changing the feasible solution,
    * thereby disguising the gradient of the function
    */
-  if (number_of_active_constraints > 1) {
+  if (number_of_active_constraints > 1 && disguise_gradient) {
     norm = first_constraint_data->gradient_norm;  /* for reading convenience only */
     gradient = first_constraint_data->gradient;   /* ditto */
     fac = coco_vector_scalar_product(linear_combination, gradient, dimension);
