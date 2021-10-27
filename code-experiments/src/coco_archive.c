@@ -80,14 +80,13 @@ static void coco_archive_node_item_free(coco_archive_avl_item_t *item, void *use
 static int coco_archive_compare_by_last_objective(const coco_archive_avl_item_t *item1,
                                                   const coco_archive_avl_item_t *item2,
                                                   void *userdata) {
+  (void) userdata; /* To silence the compiler */
   if (coco_double_almost_equal(item1->normalized_y[1], item2->normalized_y[1], mo_precision))
     return 0;
   else if (item1->normalized_y[1] < item2->normalized_y[1])
     return -1;
   else
     return 1;
-
-  (void) userdata; /* To silence the compiler */
 }
 
 /**
