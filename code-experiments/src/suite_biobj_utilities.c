@@ -543,7 +543,4 @@ static double suite_biobj_get_best_hyp_value(const char *suite_name, const char 
   coco_free_memory(curr_key);
   coco_warning("suite_biobj_get_best_hyp_value(): best value of %s could not be found; set to 1.0", key);
   return 1.0;
-
-  coco_error("suite_biobj_get_best_hyp_value(): unexpected exception");
-  return 0; /* Never reached */
 }
