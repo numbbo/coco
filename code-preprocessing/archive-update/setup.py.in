@@ -17,8 +17,8 @@ print('Using Cython to build interface.')
     
 extensions.append(Extension('cocoprep.coco_archive',
                             sources=['interface/coco_archive.pyx', 'interface/coco.c'],
-                            include_dirs=[np.get_include()], 
-                            define_macros=[('NPY_NO_DEPRECATED_API', 'NPY_1_7_API_VERSION')]))
+                            include_dirs=[np.get_include()],
+                            ))
 
 setup(
     name='cocoprep',
