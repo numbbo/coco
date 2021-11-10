@@ -2124,18 +2124,21 @@ class DataSetList(list):
         GECCO-BBOB 2009-2013 function testbeds. 
 
         """
-        sorted = {} 
+        sorted = {}
 
         # TODO: this should be done in the testbed, not here
         if testbedsettings.current_testbed.name == 'bbob-constrained':
             for i in self:
                 n_constraints = testbedsettings.current_testbed.constraint_category(i.funcId)
                 if i.funcId in range(1, 19):
-                    sorted.setdefault('separ m=' + n_constraints, DataSetList()).append(i)
+                    sorted.setdefault(
+                        'separ m=' + n_constraints, DataSetList()).append(i)
                 elif i.funcId in range(19, 43):
-                    sorted.setdefault('hcond m=' + n_constraints, DataSetList()).append(i)
+                    sorted.setdefault(
+                        'hcond m=' + n_constraints, DataSetList()).append(i)
                 elif i.funcId in range(43, 49):
-                    sorted.setdefault('multi m=' + n_constraints, DataSetList()).append(i)
+                    sorted.setdefault(
+                        'multi m=' + n_constraints, DataSetList()).append(i)
                 else:
                     warnings.warn('Unknown function id.')
         else:
@@ -2189,25 +2192,16 @@ class DataSetList(list):
                 n_constraints = testbedsettings.current_testbed.constraint_category(i.funcId)
                 if i.funcId in range(1, 19):
                     groups.append(
-                        (
-                            'separ m=' + n_constraints,
-                            'Separable functions with' + n_constraints + 'constraints'
-                        )
-                    )
+                        ('separ m=' + n_constraints,
+                         'Separable functions with' + n_constraints + 'constraints'))
                 elif i.funcId in range(19, 43):
                     groups.append(
-                        (
-                            'hcond m=' + n_constraints,
-                            'Ill-conditioned functions with' + n_constraints + 'constraints'
-                        )
-                    )
+                        ('hcond m=' + n_constraints,
+                         'Ill-conditioned functions with' + n_constraints + 'constraints'))
                 elif any(i.funcId in range(43, 49) for i in self):
                     groups.append(
-                        (
-                            'multi m=' + n_constraints,
-                            'Multi-modal functions with' + n_constraints + 'constraints'
-                        )
-                    )
+                        ('multi m=' + n_constraints,
+                         'Multi-modal functions with' + n_constraints + 'constraints'))
             return OrderedDict(groups)  # remove duplicates, keep order
         else:
             groups = []
