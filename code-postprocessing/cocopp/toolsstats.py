@@ -187,7 +187,9 @@ def drawSP_from_dataset(data_set, ftarget, percentiles, samplesize=genericsettin
     
     The expected value of ``all_sampled_values_sorted`` is the expected
     runtime ERT, as obtained by ``data_set.detERT([ftarget])[0]``.
-    
+
+    Details: `samplesize` is adjusted (increased) such that it is zero when taken
+    modulo `data_set.nbRuns()`.
     """
     try:
         evals = data_set.detEvals([ftarget])[0]
@@ -195,7 +197,7 @@ def drawSP_from_dataset(data_set, ftarget, percentiles, samplesize=genericsettin
         print('drawSP_from_dataset expects a DataSet instance as first input, was: ' + str(type(data_set)))
         raise 
     nanidx = np.isnan(evals)
-    return drawSP(evals[~nanidx], data_set.maxevals[nanidx], percentiles, samplesize)
+    return drawSP(evals[~nanidx], data_set.maxevals[nanidx], percentiles, data_set.bootstrap_sample_size(samplesize))
 
 def drawSP_from_dataset_new(data_set, ftarget, dummy,
                             samplesize=genericsettings.simulated_runlength_bootstrap_sample_size):

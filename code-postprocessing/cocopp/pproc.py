@@ -604,6 +604,7 @@ class DataSet(object):
         _extra_attr
         algId
         algs
+        bootstrap_sample_size
         comment
         computeERTfromEvals
         consistency_check
@@ -1301,6 +1302,12 @@ class DataSet(object):
     def nbRuns(self):
         """Returns the number of runs."""
         return numpy.shape(self.evals)[1] - 1 
+
+    def bootstrap_sample_size(self, sample_size=genericsettings.simulated_runlength_bootstrap_sample_size):
+        """return minimum size not smaller than `sample_size` such that modulo self.nbRuns() == 0"""
+        i = int(np.ceil(sample_size / self.nbRuns()))
+        assert i >= 0
+        return (i or 1) * self.nbRuns()
 
     def __parseHeader(self, header):
         """Extract data from a header line in an index entry."""
@@ -2347,7 +2354,7 @@ class DataSetList(list):
                         if simulated_restarts is not True and simulated_restarts > 0:
                             n = simulated_restarts
                         else:
-                            n = (data_per_target or 0) + 2 * ds.nbRuns() + genericsettings.simulated_runlength_bootstrap_sample_size
+                            n = (data_per_target or 0) + ds.nbRuns() + ds.bootstrap_sample_size()
                         evals = ds.evals_with_simulated_restarts(
                                     target_values((ds.funcId, ds.dim)),
                                     bootstrap=bootstrap,

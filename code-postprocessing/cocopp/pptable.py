@@ -239,7 +239,7 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                 #   set_trace()
                 if any(succ):
                     tmp2 = toolsstats.drawSP(tmp[succ], tmp[succ==False],
-                                (10, 50, 90), genericsettings.simulated_runlength_bootstrap_sample_size)[0]
+                                (10, 50, 90), entry.bootstrap_sample_size())[0]
                     dispersion.append((tmp2[-1] - tmp2[0]) / 2.)
                 else: 
                     dispersion.append(None)

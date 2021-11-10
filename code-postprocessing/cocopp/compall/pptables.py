@@ -349,7 +349,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                 # tmpdata.append(ert/refalgert[i])
                 if succ.any():
                     tmp = toolsstats.drawSP(ec[succ], entry.maxevals[succ == False],
-                                            [10, 50, 90], samplesize=samplesize)[0]
+                                            [10, 50, 90], samplesize=entry.bootstrap_sample_size(samplesize))[0]
                     tmpdisp.append((tmp[-1] - tmp[0]) / 2.)
                 else:
                     tmpdisp.append(numpy.nan)
