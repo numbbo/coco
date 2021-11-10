@@ -460,58 +460,51 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
 
     def number_of_constraints(self, dimension, function_id, active_only=False):
         """
-        Returns the number of constraints for a COCO problem
-        (indexed by ID and dimension)
-        Returns the number of active constraints if active_only=True
+        Mapping from function id + dimension to the number of constraints
+        Returns the number of constraints as integer
         """
 
         # test if we have a constrained test suite
         if not isinstance(self, CONSBBOBTestbed):
             return 0
 
-        remainder = function_id % 6
-        n_constraints = 0
-        n_active = 0
-        if remainder == 0:
-            n_constraints = 1
-            n_active = 1
-        elif remainder == 1:
-            n_constraints = 3
-            n_active = 2
-        elif remainder == 2:
-            n_constraints = 9
-            n_active = 6
-        elif remainder == 3:
-            n_constraints = 9 + floor(3 * dimension / 4)
-            n_active = 6 + floor(dimension / 2)
-        elif remainder == 4:
-            n_constraints = 9 + floor(3 * dimension / 2)
-            n_active = 6 + floor(dimension)
-        elif remainder == 5:
-            n_constraints = 9 + floor(9 * dimension / 2)
-            n_active = 6 + 3 * dimension
+        n_constraints_active = [
+            1, 2, 6, 6 + floor(dimension / 2),
+            6 + dimension, 6 + 3 * dimension
+        ]
+        n_constraints_total = [
+            1, 3, 9, 9 + floor(3 * dimension / 4),
+            9 + floor(3 * dimension / 2), 9 + floor(9 * dimension / 2)
+        ]
+
         if active_only:
-            return n_active
+            n_constraints_number = n_constraints_active
         else:
-            return n_constraints
+            n_constraints_number = n_constraints_total
 
-    def constraint_category(self, function_id):
-        remainder = function_id % 6
-        cat = None
-        if remainder == 0:
-            cat = '1'
-        elif remainder == 1:
-            cat = '3'
-        elif remainder == 2:
-            cat = '9'
-        elif remainder == 3:
-            cat = '9+3n4'
-        elif remainder == 4:
-            cat = '9+3n2'
-        elif remainder == 5:
-            cat = '9+9n2'
-        return cat
+        remainder = function_id % 6  # is also len(n_constraints_number)
+        constraints_map = {k: n for k, n in enumerate(n_constraints_number)}
 
+        return constraints_map[remainder]
+
+    def constraint_category(self, function_id, active_only=False):
+        """
+        Mapping from function id to the number of constraints
+        Returns the number of constraints as a string formula
+        which is a function of dimension n
+        """
+        constraints_active = ['1', '2', '6', '6+n2', '6+n', '6+3n']
+        constraints_total = ['1', '3', '9', '9+3n4', '9+3n2', '9+9n2']
+
+        if active_only:
+            constraints_number = constraints_active
+        else:
+            constraints_number = constraints_total
+
+        remainder = function_id % 6  # is also len(constraints_number)
+        constraints_map = {k: n for k, n in enumerate(constraints_number)}
+
+        return constraints_map[remainder]
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
