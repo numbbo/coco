@@ -1848,42 +1848,40 @@ class DataSetList(list):
             if 11 < 3:  # would break searching of algId in archives
                 alg_name = toolsdivers.str_to_latex(alg_name)  # not really necessary but ' ' seems nicer than '_'
         try:
-            f = openfile(indexFile, errors='replace')  # strange chars in names may cause errors
-            if genericsettings.verbose:
-                print('Processing %s.' % indexFile)
+            with openfile(indexFile, errors='replace') as f:  # strange chars in names may cause errors
+                if genericsettings.verbose:
+                    print('Processing %s.' % indexFile)
 
-            # Read all data sets within one index file.
-            nbLine = 1
-            data_file_names = []
-            header = ''
-            while True:
-                try:
-                    if 'indicator' not in header:
-                        header = advance_iterator(f)
-                        while not header.strip(): # remove blank lines
+                # Read all data sets within one index file.
+                nbLine = 1
+                data_file_names = []
+                header = ''
+                while True:
+                    try:
+                        if 'indicator' not in header:
                             header = advance_iterator(f)
-                            nbLine += 1
-                        comment = advance_iterator(f)
-                        if not comment.startswith('%'):
-                            warnings.warn('Entry in file %s at line %d is faulty: '
-                                          % (indexFile, nbLine) +
-                                          'it will be skipped.')
-                            nbLine += 2
-                            continue
+                            while not header.strip(): # remove blank lines
+                                header = advance_iterator(f)
+                                nbLine += 1
+                            comment = advance_iterator(f)
+                            if not comment.startswith('%'):
+                                warnings.warn('Entry in file %s at line %d is faulty: '
+                                            % (indexFile, nbLine) +
+                                            'it will be skipped.')
+                                nbLine += 2
+                                continue
 
-                    data = advance_iterator(f)  # this is the filename of the data file!?
-                    data_file_names.append(data)
-                    nbLine += 3
-                    #TODO: check that something is not wrong with the 3 lines.
-                    ds = DataSet(header, comment, data, indexFile)
-                    if alg_name is not None:
-                        ds.algId = alg_name
-                    if len(ds.instancenumbers) > 0:                    
-                        self.append(ds)
-                except StopIteration:
-                    break
-            # Close index file
-            f.close()
+                        data = advance_iterator(f)  # this is the filename of the data file!?
+                        data_file_names.append(data)
+                        nbLine += 3
+                        #TODO: check that something is not wrong with the 3 lines.
+                        ds = DataSet(header, comment, data, indexFile)
+                        if alg_name is not None:
+                            ds.algId = alg_name
+                        if len(ds.instancenumbers) > 0:                    
+                            self.append(ds)
+                    except StopIteration:
+                        break
             if len(data_file_names) != len(set(data_file_names)):
                 warnings.warn("WARNING: a data file has been referenced" +
                     " several times in file %s:" % indexFile)
