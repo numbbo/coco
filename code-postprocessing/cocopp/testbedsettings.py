@@ -3,7 +3,6 @@ from __future__ import absolute_import
 import os
 import numpy as np
 import warnings
-from math import floor
 
 from . import dataformatsettings
 
@@ -466,16 +465,15 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
         """
 
         if active_only:
-            n_constraints_number = [1, 2, 6, 6 + floor(dimension / 2),
-                                    6 + dimension, 6 + 3 * dimension]
+            numbers = [1, 2, 6, 6 + int(dimension / 2),
+                       6 + dimension, 6 + 3 * dimension]
         else:
-            n_constraints_number = [
-                1, 3, 9, 9 + floor(3 * dimension / 4),
-                9 + floor(3 * dimension / 2), 9 + floor(9 * dimension / 2)]
+            numbers = [1, 3, 9, 9 + 3 * int(dimension / 4),
+                       9 + 3 * int(dimension / 2), 9 + 9 * int(dimension / 2)]
 
-        constraints_map = {k: n for k, n in enumerate(n_constraints_number)}
+        map_id_to_number = {k: n for k, n in enumerate(numbers)}
 
-        return constraints_map[function_id % 6] #  is also len(n_constraints_number)
+        return map_id_to_number[function_id % 6] #  is also len(n_constraints_number)
 
     @staticmethod
     def constraint_category(function_id, active_only=False):
@@ -486,13 +484,13 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
         """
 
         if active_only:
-            constraints_number = ['1', '2', '6', '6+n2', '6+n', '6+3n']
+            numbers = ['1', '2', '6', '6+n2', '6+n', '6+3n']
         else:
-            constraints_number = ['1', '3', '9', '9+3n4', '9+3n2', '9+9n2']
+            numbers = ['1', '3', '9', '9+3n4', '9+3n2', '9+9n2']
 
-        constraints_map = {k: n for k, n in enumerate(constraints_number)}
+        map_id_to_number = {k: n for k, n in enumerate(numbers)}
 
-        return constraints_map[function_id % 6]  # is also len(constraints_number)
+        return map_id_to_number[function_id % 6]  # is also len(constraints_number)
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
