@@ -486,7 +486,7 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
         if active_only:
             numbers = ['1', '2', '6', '6+n2', '6+n', '6+3n']
         else:
-            numbers = ['1', '3', '9', '9+3n4', '9+3n2', '9+9n2']
+            numbers = ['1', '3', '9', '3ndiv4+9', '6ndiv4+9', '9ndiv2+9']
 
         map_id_to_number = {k: n for k, n in enumerate(numbers)}
 
