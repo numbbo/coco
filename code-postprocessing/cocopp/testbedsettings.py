@@ -226,7 +226,7 @@ class Testbed(object):
         return dsl
 
     @staticmethod
-    def number_of_constraints(dimension, funcId):
+    def number_of_constraints(dimension, function_id, **kwargs):
         return 0
 
 
