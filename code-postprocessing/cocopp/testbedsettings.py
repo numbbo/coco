@@ -458,15 +458,12 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
         """ Does nothing but overwriting the method from superclass"""
         return dsl
 
-    def number_of_constraints(self, dimension, function_id, active_only=False):
+    @staticmethod
+    def number_of_constraints(dimension, function_id, active_only=False):
         """
         Mapping from function id + dimension to the number of constraints
         Returns the number of constraints as integer
         """
-
-        # test if we have a constrained test suite
-        if not isinstance(self, CONSBBOBTestbed):
-            return 0
 
         if active_only:
             n_constraints_number = [1, 2, 6, 6 + floor(dimension / 2),
@@ -480,7 +477,8 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
 
         return constraints_map[function_id % 6] #  is also len(n_constraints_number)
 
-    def constraint_category(self, function_id, active_only=False):
+    @staticmethod
+    def constraint_category(function_id, active_only=False):
         """
         Mapping from function id to the number of constraints
         Returns the number of constraints as a string formula
