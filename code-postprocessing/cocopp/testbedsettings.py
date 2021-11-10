@@ -468,24 +468,17 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
         if not isinstance(self, CONSBBOBTestbed):
             return 0
 
-        n_constraints_active = [
-            1, 2, 6, 6 + floor(dimension / 2),
-            6 + dimension, 6 + 3 * dimension
-        ]
-        n_constraints_total = [
-            1, 3, 9, 9 + floor(3 * dimension / 4),
-            9 + floor(3 * dimension / 2), 9 + floor(9 * dimension / 2)
-        ]
-
         if active_only:
-            n_constraints_number = n_constraints_active
+            n_constraints_number = [1, 2, 6, 6 + floor(dimension / 2),
+                                    6 + dimension, 6 + 3 * dimension]
         else:
-            n_constraints_number = n_constraints_total
+            n_constraints_number = [
+                1, 3, 9, 9 + floor(3 * dimension / 4),
+                9 + floor(3 * dimension / 2), 9 + floor(9 * dimension / 2)]
 
-        remainder = function_id % 6  # is also len(n_constraints_number)
         constraints_map = {k: n for k, n in enumerate(n_constraints_number)}
 
-        return constraints_map[remainder]
+        return constraints_map[function_id % 6] #  is also len(n_constraints_number)
 
     def constraint_category(self, function_id, active_only=False):
         """
@@ -493,18 +486,15 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
         Returns the number of constraints as a string formula
         which is a function of dimension n
         """
-        constraints_active = ['1', '2', '6', '6+n2', '6+n', '6+3n']
-        constraints_total = ['1', '3', '9', '9+3n4', '9+3n2', '9+9n2']
 
         if active_only:
-            constraints_number = constraints_active
+            constraints_number = ['1', '2', '6', '6+n2', '6+n', '6+3n']
         else:
-            constraints_number = constraints_total
+            constraints_number = ['1', '3', '9', '9+3n4', '9+3n2', '9+9n2']
 
-        remainder = function_id % 6  # is also len(constraints_number)
         constraints_map = {k: n for k, n in enumerate(constraints_number)}
 
-        return constraints_map[remainder]
+        return constraints_map[function_id % 6]  # is also len(constraints_number)
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
