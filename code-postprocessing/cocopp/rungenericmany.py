@@ -306,7 +306,7 @@ def main(args, outputdir):
                 print_done()  # of "ECDF runlength graphs..."
 
         if testbedsettings.current_testbed.name.startswith("bbob-constrained"):
-            print("Skipping the noise groups")
+            print("Skipping aggregation of all functions for bbob-constrained* suite")
         else:
             # ECDFs per noise groups
             print("ECDF graphs per noise group...")
