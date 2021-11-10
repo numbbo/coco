@@ -606,6 +606,7 @@ class DataSet(object):
         median_evals
         nbRuns
         nbRuns_raw
+        number_of_constraints
         pickle
         plot
         plot_funvals
@@ -1248,6 +1249,18 @@ class DataSet(object):
                 break
         print(sinfo)
         # return sinfo 
+
+    @property
+    def number_of_constraints(self):
+        """number of constraints of the function/problem the `DataSet` is based upon.
+
+        Remark: this is never used, so far.
+        """
+        try:
+            return self._number_of_constraints
+        except AttributeError:
+            self._number_of_constraints = testbedsettings.SuiteClass(self.suite_name).number_of_constraints(self.dim, self.funcId)
+        return self._number_of_constraints
 
     def mMaxEvals(self):
         """Returns the maximum number of function evaluations over all runs (trials), 
@@ -2240,9 +2253,9 @@ class DataSetList(list):
                     if getattr(i, 'pickleFile', False):
                         i.modsFromPickleVersion = True
 
-                    for j in i.__dict__:  # was: dir(i) which catches all properties
-                        if isinstance(getattr(i, j), list):
-                            getattr(i, j).extend(getattr(o, j))
+                    for name in i.__dict__:  # was: dir(i) which catches all properties
+                        if isinstance(getattr(i, name), list):
+                            getattr(i, name).extend(getattr(o, name))
 
                 else:
                     if getattr(i, 'pickleFile', False):
