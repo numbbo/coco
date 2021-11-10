@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import os
 import numpy as np
 import warnings
+from math import floor
 
 from . import dataformatsettings
 
@@ -454,6 +455,43 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
     def filter(self, dsl):
         """ Does nothing but overwriting the method from superclass"""
         return dsl
+
+    def number_of_constraints(self, dimension, function_id, active_only=False):
+        """
+        Returns the number of constraints for a COCO problem
+        (indexed by ID and dimension)
+        Returns the number of active constraints if active_only=True
+        """
+
+        # test if we have a constrained test suite
+        if not isinstance(self, CONSBBOBTestbed):
+            return 0
+
+        remainder = function_id % 6
+        n_constraints = 0
+        n_active = 0
+        if remainder == 0:
+            n_constraints = 1
+            n_active = 1
+        elif remainder == 1:
+            n_constraints = 3
+            n_active = 2
+        elif remainder == 2:
+            n_constraints = 9
+            n_active = 6
+        elif remainder == 3:
+            n_constraints = 9 + floor(3 * dimension / 4)
+            n_active = 6 + floor(dimension / 2)
+        elif remainder == 4:
+            n_constraints = 9 + floor(3 * dimension / 2)
+            n_active = 6 + floor(dimension)
+        elif remainder == 5:
+            n_constraints = 9 + floor(9 * dimension / 2)
+            n_active = 6 + 3 * dimension
+        if active_only:
+            return n_active
+        else:
+            return n_constraints
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
