@@ -2044,6 +2044,7 @@ class DataSetList(list):
 
     def isBiobjective(self):
         return any(i.isBiobjective() for i in self)
+
         
     def dictByFuncGroupBiobjective(self):
         """Returns a dictionary of instances of this class by function groups
@@ -2063,6 +2064,57 @@ class DataSetList(list):
 
         return sorted
 
+
+    def dictByFuncGroupSingleObjectiveTemp(self):
+        """Returns a dictionary of instances of this class by function groups
+        for single objective case.
+
+        The output dictionary has function group names as keys and the
+        corresponding slices as values. Current groups are based on the
+        GECCO-BBOB 2009-2013 function testbeds. 
+
+        """
+        sorted = {} 
+
+        # TODO: this should be done in the testbed, not here
+        if testbedsettings.current_testbed.name == 'bbob-constrained':
+            for i in self:
+                n_constraints = testbedsettings.current_testbed.number_of_constraints(
+                    i.dim, i.funcId
+                )
+                n_constraints = str(n_constraints)
+                if i.funcId in range(1, 19):
+                    sorted.setdefault('separ m=' + n_constraints, DataSetList()).append(i)
+                elif i.funcId in range(19, 43):
+                    sorted.setdefault('hcond m=' + n_constraints, DataSetList()).append(i)
+                elif i.funcId in range(43, 49):
+                    sorted.setdefault('multi m=' + n_constraints, DataSetList()).append(i)
+                else:
+                    warnings.warn('Unknown function id.')
+        else:
+            for i in self:
+                if i.funcId in range(1, 6):
+                    sorted.setdefault('separ', DataSetList()).append(i)
+                elif i.funcId in range(6, 10):
+                    sorted.setdefault('lcond', DataSetList()).append(i)
+                elif i.funcId in range(10, 15):
+                    sorted.setdefault('hcond', DataSetList()).append(i)
+                elif i.funcId in range(15, 20):
+                    sorted.setdefault('multi', DataSetList()).append(i)
+                elif i.funcId in range(20, 25):
+                    sorted.setdefault('mult2', DataSetList()).append(i)
+                elif i.funcId in range(101, 107):
+                    sorted.setdefault('nzmod', DataSetList()).append(i)
+                elif i.funcId in range(107, 122):
+                    sorted.setdefault('nzsev', DataSetList()).append(i)
+                elif i.funcId in range(122, 131):
+                    sorted.setdefault('nzsmm', DataSetList()).append(i)
+                else:
+                    warnings.warn('Unknown function id.')
+                    
+        return sorted
+
+
     def dictByFuncGroupSingleObjective(self):
         """Returns a dictionary of instances of this class by function groups
         for single objective case.
@@ -2077,12 +2129,13 @@ class DataSetList(list):
         # TODO: this should be done in the testbed, not here
         if testbedsettings.current_testbed.name == 'bbob-constrained':
             for i in self:
+                n_constraints = testbedsettings.current_testbed.constraint_category(i.funcId)
                 if i.funcId in range(1, 19):
-                    sorted.setdefault('separ', DataSetList()).append(i)
+                    sorted.setdefault('separ m=' + n_constraints, DataSetList()).append(i)
                 elif i.funcId in range(19, 43):
-                    sorted.setdefault('hcond', DataSetList()).append(i)
+                    sorted.setdefault('hcond m=' + n_constraints, DataSetList()).append(i)
                 elif i.funcId in range(43, 49):
-                    sorted.setdefault('multi', DataSetList()).append(i)
+                    sorted.setdefault('multi m=' + n_constraints, DataSetList()).append(i)
                 else:
                     warnings.warn('Unknown function id.')
         else:
@@ -2132,14 +2185,30 @@ class DataSetList(list):
             return groups
         elif testbedsettings.current_testbed.name == 'bbob-constrained':
             groups = []
-            if any(i.funcId in range(1, 19) for i in self):
-                groups.append(('separ', 'Separable functions'))
-            if any(i.funcId in range(19, 43) for i in self):
-                groups.append(('hcond', 'Ill-conditioned functions'))
-            if any(i.funcId in range(43, 49) for i in self):
-                groups.append(('multi', 'Multi-modal functions'))
-
-            return OrderedDict(groups)
+            for i in self:
+                n_constraints = testbedsettings.current_testbed.constraint_category(i.funcId)
+                if i.funcId in range(1, 19):
+                    groups.append(
+                        (
+                            'separ m=' + n_constraints,
+                            'Separable functions with' + n_constraints + 'constraints'
+                        )
+                    )
+                elif i.funcId in range(19, 43):
+                    groups.append(
+                        (
+                            'hcond m=' + n_constraints,
+                            'Ill-conditioned functions with' + n_constraints + 'constraints'
+                        )
+                    )
+                elif any(i.funcId in range(43, 49) for i in self):
+                    groups.append(
+                        (
+                            'multi m=' + n_constraints,
+                            'Multi-modal functions with' + n_constraints + 'constraints'
+                        )
+                    )
+            return OrderedDict(groups)  # remove duplicates, keep order
         else:
             groups = []
             if any(i.funcId in range(1, 6) for i in self):

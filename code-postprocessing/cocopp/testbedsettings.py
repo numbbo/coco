@@ -60,6 +60,8 @@ suite_to_testbed = {
     default_suite_bi: default_testbed_bi,
     'bbob-biobj-ext': default_testbed_bi_ext,
     'bbob-constrained': default_testbed_cons,
+    'bbob-constrained-active-only': default_testbed_cons,
+    'bbob-constrained-no-disguise': default_testbed_cons,
     'bbob-largescale': default_testbed_ls,
     'bbob-mixint': default_testbed_mixint,
     'bbob-biobj-mixint': 'GECCOBBOBBiObjMixintTestbed',
@@ -492,6 +494,24 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
             return n_active
         else:
             return n_constraints
+
+    def constraint_category(self, function_id):
+        remainder = function_id % 6
+        cat = None
+        if remainder == 0:
+            cat = '1'
+        elif remainder == 1:
+            cat = '3'
+        elif remainder == 2:
+            cat = '9'
+        elif remainder == 3:
+            cat = '9+3n4'
+        elif remainder == 4:
+            cat = '9+3n2'
+        elif remainder == 5:
+            cat = '9+9n2'
+        return cat
+
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
