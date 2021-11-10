@@ -225,7 +225,9 @@ class Testbed(object):
         """
         return dsl
 
-
+    @staticmethod
+    def number_of_constraints(dimension, funcId):
+        return 0
 
 
 class GECCOBBOBTestbed(Testbed):
