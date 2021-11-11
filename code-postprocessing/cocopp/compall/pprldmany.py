@@ -630,6 +630,16 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
         dictDim = dictDimList[dim]
         dictFunc = pp.dictAlgByFun(dictDim)
+
+        # determine a good samplesize
+        run_numbers = []
+        for dsl in dictDim.values():
+            run_numbers.extend([ds.nbRuns() for ds in dsl])
+        try: lcm = np.lcm.reduce(run_numbers)  # lowest common multiplier
+        except: lcm = max(run_numbers)  # fallback for old numpy versions
+        samplesize = lcm
+        if testbedsettings.current_testbed.instances_are_uniform:
+            samplesize = max(perfprofsamplesize, lcm)  # maybe more bootstrapping with unsuccessful trials
         for f, dictAlgperFunc in sorted(dictFunc.items()):
             # print(target_values((f, dim)))
             for j, t in enumerate(target_values((f, dim))):
@@ -637,7 +647,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 # funcsolved[j].add(f)
 
                 for alg in algorithms_with_data:
-                    x = [np.inf] * perfprofsamplesize
+                    x = [np.inf] * samplesize
                     runlengthunsucc = []
                     try:
                         entry = dictAlgperFunc[alg][0]  # one element per fun and per dim.
@@ -649,14 +659,14 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                             if testbedsettings.current_testbed.instances_are_uniform:
                                 x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
                                                       percentiles=[50],
-                                                      samplesize=perfprofsamplesize)[1]
+                                                      samplesize=samplesize)[1]
                             else:
                                 nruns = len(runlengthsucc) + len(runlengthunsucc)
-                                if perfprofsamplesize % nruns:
+                                if samplesize % nruns:
                                     warnings.warn("without simulated restarts nbsamples=%d"
                                                   " should be a multiple of nbruns=%d"
-                                                  % (perfprofsamplesize, nruns))
-                                idx = toolsstats.randint_derandomized(nruns, size=perfprofsamplesize)
+                                                  % (samplesize, nruns))
+                                idx = toolsstats.randint_derandomized(nruns, size=samplesize)
                                 x = np.hstack((runlengthsucc, len(runlengthunsucc) * [np.inf]))[idx]
                     except (KeyError, IndexError):
                         # set_trace()
@@ -695,9 +705,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                             runlengthunsucc = refalgentry.maxevals[refalgevals[1][j]][np.isnan(evals)] / divisor
                             x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
                                                   percentiles=[50],
-                                                  samplesize=perfprofsamplesize)[1]
+                                                  samplesize=samplesize)[1]
                         else:
-                            x = perfprofsamplesize * [np.inf]
+                            x = samplesize * [np.inf]
                             runlengthunsucc = []
                         xbest.extend(x)
                         maxevalsbest.extend(runlengthunsucc)
