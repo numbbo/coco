@@ -459,9 +459,10 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
 
     @staticmethod
     def number_of_constraints(dimension, function_id, active_only=False):
-        """
-        Mapping from function id + dimension to the number of constraints
-        Returns the number of constraints as integer
+        """Return the number of constraints of function `function_id`
+
+        in the given dimension. If `active_only`, it is the number of
+        constraints that are active in the global optimum.
         """
 
         if active_only:
@@ -473,14 +474,15 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
 
         map_id_to_number = {k: n for k, n in enumerate(numbers)}
 
-        return map_id_to_number[(function_id - 1) % 6]  # 6 is also len(n_constraints_number)
+        return map_id_to_number[(function_id - 1) % 6]  # 6 is also len(numbers)
 
     @staticmethod
     def constraint_category(function_id, active_only=False):
-        """
-        Mapping from function id to the number of constraints
-        Returns the number of constraints as a string formula
-        which is a function of dimension n
+        """Return the number of constraints as a string formula.
+
+        The formula is the same for all dimensions and may contain 'n'
+        which stands for dimension. If `active_only`, it gives the number
+        of constraints that are active in the global optimum.
         """
 
         if active_only:
@@ -490,7 +492,7 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
 
         map_id_to_number = {k: n for k, n in enumerate(numbers)}
 
-        return map_id_to_number[(function_id - 1) % 6]  # 6 is also len(constraints_number)
+        return map_id_to_number[(function_id - 1) % 6]  # 6 is also len(numbers)
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
