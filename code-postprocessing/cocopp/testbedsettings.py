@@ -59,6 +59,8 @@ suite_to_testbed = {
     default_suite_bi: default_testbed_bi,
     'bbob-biobj-ext': default_testbed_bi_ext,
     'bbob-constrained': default_testbed_cons,
+    'bbob-constrained-active-only': default_testbed_cons,
+    'bbob-constrained-no-disguise': default_testbed_cons,
     'bbob-largescale': default_testbed_ls,
     'bbob-mixint': default_testbed_mixint,
     'bbob-biobj-mixint': 'GECCOBBOBBiObjMixintTestbed',
@@ -456,6 +458,43 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
     def filter(self, dsl):
         """ Does nothing but overwriting the method from superclass"""
         return dsl
+
+    @staticmethod
+    def number_of_constraints(dimension, function_id, active_only=False):
+        """Return the number of constraints of function `function_id`
+
+        in the given dimension. If `active_only`, it is the number of
+        constraints that are active in the global optimum.
+        """
+
+        if active_only:
+            numbers = [1, 2, 6, 6 + int(dimension / 2),
+                       6 + dimension, 6 + 3 * dimension]
+        else:
+            numbers = [1, 3, 9, 9 + 3 * int(dimension / 4),
+                       9 + 3 * int(dimension / 2), 9 + 9 * int(dimension / 2)]
+
+        map_id_to_number = {k: n for k, n in enumerate(numbers)}
+
+        return map_id_to_number[(function_id - 1) % 6]  # 6 is also len(numbers)
+
+    @staticmethod
+    def constraint_category(function_id, active_only=False):
+        """Return the number of constraints as a string formula.
+
+        The formula is the same for all dimensions and may contain 'n'
+        which stands for dimension. If `active_only`, it gives the number
+        of constraints that are active in the global optimum.
+        """
+
+        if active_only:
+            numbers = ['1', '2', '6', '6+n2', '6+n', '6+3n']
+        else:
+            numbers = ['0n+1', '0n+3', '0n+9', '3ndiv4+9', '6ndiv4+9', '9ndiv2+9']
+
+        map_id_to_number = {k: n for k, n in enumerate(numbers)}
+
+        return map_id_to_number[(function_id - 1) % 6]  # 6 is also len(numbers)
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
