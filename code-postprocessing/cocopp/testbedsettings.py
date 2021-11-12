@@ -59,6 +59,8 @@ suite_to_testbed = {
     default_suite_bi: default_testbed_bi,
     'bbob-biobj-ext': default_testbed_bi_ext,
     'bbob-constrained': default_testbed_cons,
+    'bbob-constrained-active-only': default_testbed_cons,
+    'bbob-constrained-no-disguise': default_testbed_cons,
     'bbob-largescale': default_testbed_ls,
     'bbob-mixint': default_testbed_mixint,
     'bbob-biobj-mixint': 'GECCOBBOBBiObjMixintTestbed',
@@ -454,6 +456,41 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
     def filter(self, dsl):
         """ Does nothing but overwriting the method from superclass"""
         return dsl
+
+    @staticmethod
+    def number_of_constraints(dimension, function_id, active_only=False):
+        """
+        Mapping from function id + dimension to the number of constraints
+        Returns the number of constraints as integer
+        """
+
+        if active_only:
+            numbers = [1, 2, 6, 6 + int(dimension / 2),
+                       6 + dimension, 6 + 3 * dimension]
+        else:
+            numbers = [1, 3, 9, 9 + 3 * int(dimension / 4),
+                       9 + 3 * int(dimension / 2), 9 + 9 * int(dimension / 2)]
+
+        map_id_to_number = {k: n for k, n in enumerate(numbers)}
+
+        return map_id_to_number[(function_id - 1) % 6]  # 6 is also len(n_constraints_number)
+
+    @staticmethod
+    def constraint_category(function_id, active_only=False):
+        """
+        Mapping from function id to the number of constraints
+        Returns the number of constraints as a string formula
+        which is a function of dimension n
+        """
+
+        if active_only:
+            numbers = ['1', '2', '6', '6+n2', '6+n', '6+3n']
+        else:
+            numbers = ['0n+1', '0n+3', '0n+9', '3ndiv4+9', '6ndiv4+9', '9ndiv2+9']
+
+        map_id_to_number = {k: n for k, n in enumerate(numbers)}
+
+        return map_id_to_number[(function_id - 1) % 6]  # 6 is also len(constraints_number)
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):

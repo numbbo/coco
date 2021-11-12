@@ -292,11 +292,11 @@ def save_single_functions_html(filename,
         if function_groups is None:
             function_groups = OrderedDict([])
 
-        function_group = "nzall" if genericsettings.isNoisy else "noiselessall"
-        if htmlPage not in (HtmlPage.PPRLDMANY_BY_GROUP, HtmlPage.PPLOGLOSS):
-            temp_function_groups = OrderedDict([(function_group, 'All functions')])
-            temp_function_groups.update(function_groups)
-            function_groups = temp_function_groups
+        if not testbedsettings.current_testbed.name.startswith("bbob-constrained"):
+            function_group = "nzall" if genericsettings.isNoisy else "noiselessall"
+            if htmlPage not in (HtmlPage.PPRLDMANY_BY_GROUP, HtmlPage.PPLOGLOSS):
+                function_groups.update(
+                    OrderedDict([(function_group, 'All functions')]))  # append the noiselesall group at the end
 
         first_function_number = testbedsettings.current_testbed.first_function_number
         last_function_number = testbedsettings.current_testbed.last_function_number
