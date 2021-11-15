@@ -2381,7 +2381,7 @@ class DataSetList(list):
         for bi-objective case.
 
         The output dictionary has function group names as keys and the
-        corresponding slices as values. 
+        corresponding slices as values.
 
         """
         sorted = {} 
@@ -2400,9 +2400,10 @@ class DataSetList(list):
 
         The output dictionary has function group names as keys and the
         corresponding slices as values. Current groups are based on the
-        GECCO-BBOB 2009-2013 function testbeds. 
+        GECCO-BBOB 2009-2013 function testbeds.
 
         """
+
         sorted = {} 
 
         # TODO: this should be done in the testbed, not here
