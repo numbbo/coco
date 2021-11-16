@@ -320,14 +320,21 @@ def main(argv=None):
                 genericsettings.isTab = False
                 genericsettings.isRLDistr = False
                 genericsettings.isLogLoss = False
+                genericsettings.isScatter = False
             elif o == "--rld-only":
                 genericsettings.isTab = False
                 genericsettings.isFig = False
                 genericsettings.isLogLoss = False
+                genericsettings.isScatter = False
             elif o == "--los-only":
                 genericsettings.isTab = False
                 genericsettings.isFig = False
                 genericsettings.isRLDistr = False
+            elif o == "--cons-only":
+                genericsettings.isTab = False
+                genericsettings.isFig = False
+                genericsettings.isRLDistr = False
+                genericsettings.isLogLoss = False
             else:
                 is_assigned = False
                 if o in longoptlist or o in shortoptlist:
