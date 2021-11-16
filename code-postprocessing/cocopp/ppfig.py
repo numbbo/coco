@@ -33,7 +33,7 @@ def enum(*sequential, **named):
 
 
 HtmlPage = enum('NON_SPECIFIED', 'ONE', 'MANY', 'PPRLDMANY_BY_GROUP', 'PPRLDMANY_BY_GROUP_MANY',
-                'PPTABLE', 'PPTABLE2', 'PPTABLES', 'PPRLDISTR', 'PPRLDISTR2', 'PPLOGLOSS', 'PPSCATTER', 'PPFIGS')
+                'PPTABLE', 'PPTABLE2', 'PPTABLES', 'PPRLDISTR', 'PPRLDISTR2', 'PPLOGLOSS', 'PPSCATTER', 'PPFIGS', 'PPFIGCONS')
 
 
 def save_figure(filename,
@@ -200,6 +200,7 @@ def save_folder_index_file(filename, image_file_extension):
         links += add_image(image_file_name, True, 380)
 
     links += add_link(current_dir, None, genericsettings.ppfigs_file_name + '.html', 'Scaling with dimension')
+    links += add_link(current_dir, None, genericsettings.ppfigcons_file_name + '.html', 'Scaling with constraints')
     links += add_link(current_dir, None, genericsettings.pptables_file_name + '.html',
                       'Tables for selected targets')
     links += add_link(current_dir, None, genericsettings.ppscatter_file_name + '.html', 'Scatter plots')
@@ -318,6 +319,16 @@ def save_single_functions_html(filename,
             for function_number in range(first_function_number, last_function_number + 1):
                 f.write(add_image('ppfigs_f%03d%s.%s' % (function_number, add_to_names, extension), True))
             f.write(caption_string_format % '##bbobppfigslegend##')
+
+        elif htmlPage is HtmlPage.PPFIGCONS:
+            current_header = 'Scaling of run "time" with number of constraints'
+            f.write("\n<H2> %s </H2>\n" % current_header)
+            for function_name in ["Sphere", "Separable Ellipsoid"]:
+                for dimension in [2, 3, 5, 10, 20]:
+                    # TODO: redo this code with used dimension/functions only
+                    # TODO: naming is duplicated here and in ppfigcons
+                    f.write(add_image('ppfigcons_%s_d%s%s.%s' % (function_name, dimension, add_to_names, extension), True))
+            f.write(caption_string_format % '##bbobppfigconslegend##')
 
         elif htmlPage is HtmlPage.NON_SPECIFIED:
             current_header = header
