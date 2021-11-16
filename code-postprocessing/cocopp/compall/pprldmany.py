@@ -46,8 +46,7 @@ from .. import pptex  # numtotex
 PlotType = ppfig.enum('ALG', 'DIM', 'FUNC')
 
 displaybest = True
-x_limit = None  # not sure whether this is necessary/useful
-x_limit_default = 1e7  # better: 10 * genericsettings.evaluation_setting[1], noisy: 1e8, otherwise: 1e7. maximal run length shown
+x_limit = genericsettings.x_limit_pprldmany
 divide_by_dimension = True
 annotation_line_end_relative = 1.11  # lines between graph and annotation
 annotation_space_end_relative = 1.24  # figure space end relative to x_limit
@@ -567,10 +566,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     :param str parentHtmlFileName: defines the parent html page 
 
     """
-    global x_limit  # late assignment of default, because it can be set to None in config 
+    global x_limit  
     global divide_by_dimension  # not fully implemented/tested yet
-    if 'x_limit' not in globals() or x_limit is None:
-        x_limit = x_limit_default
 
     tmp = pp.dictAlgByDim(dictAlg)
     algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
