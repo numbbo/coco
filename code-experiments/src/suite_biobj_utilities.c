@@ -512,7 +512,8 @@ static double suite_biobj_get_best_hyp_value(const char *suite_name, const char 
   double best_value = 0;
   char *curr_key;
 
-  if (strcmp(suite_name, "bbob-biobj") == 0) {
+  if ((strcmp(suite_name, "bbob-biobj") == 0) ||
+      (strcmp(suite_name, "bbob-biobj-ext") == 0)) {
     curr_key = coco_allocate_string(COCO_PATH_MAX + 1);
     count = sizeof(suite_biobj_best_values_hyp) / sizeof(char *);
     for (i = 0; i < count; i++) {
@@ -542,7 +543,4 @@ static double suite_biobj_get_best_hyp_value(const char *suite_name, const char 
   coco_free_memory(curr_key);
   coco_warning("suite_biobj_get_best_hyp_value(): best value of %s could not be found; set to 1.0", key);
   return 1.0;
-
-  coco_error("suite_biobj_get_best_hyp_value(): unexpected exception");
-  return 0; /* Never reached */
 }

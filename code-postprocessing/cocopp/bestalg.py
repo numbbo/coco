@@ -227,7 +227,7 @@ class BestAlgSet(DataSet):
             self.comment = dict_alg[sortedAlgs[0]].comment.lstrip('%% ')
         self.ert = np.array(reserts)
         self.target = res[:, 0]
-        self.suite = getattr(dict_alg[sortedAlgs[0]], 'suite', None)
+        self.suite = dict_alg[sortedAlgs[0]].suite_name
         self.used_algorithms = sortedAlgs
         bestfinalfunvals = np.array([np.inf])
         for alg in sortedAlgs:
@@ -549,7 +549,13 @@ def custom_generate(args=algs2009, algId='bestCustomAlg', suite=None):
 
 def create_data_files(output_dir, result, suite):
 
-    info_filename = 'bbob-bestalg'
+    if not suite:
+        suite = result[list(result.keys())[0]].suite_name
+
+    print('create_data_files: %s ' % suite)
+
+
+    info_filename = '%s-bestalg' % suite
     filename_template = info_filename + '_f%02d_d%02d.%s'
     info_lines = []
     all_instances_used = []
@@ -584,19 +590,15 @@ def create_data_files(output_dir, result, suite):
         all_instances_used.extend(instances_used)
         instances_list = get_used_instance_list(instances_used)
 
-        test_suite = getattr(value, 'suite', None)
-        if test_suite is None:
-            test_suite = suite
-
         algorithm_id = value.algId
-        if result[list(result.keys())[0]].suite_name == testbedsettings.default_testbed_bi:
+        if suite in ['bbob-biobj', 'bbob-biobj-ext', testbedsettings.default_suite_bi]:
             info_lines.append("function = %d, dim = %d, %s, %s"
                               % (key[1], key[0], filename_template % (key[1], key[0], 'dat'), instance_data))
         else:
             header = "funcId = %d, DIM = %d, Precision = %10.15e, algId = '%s'" \
                      % (key[1], key[0], value.precision, algorithm_id)
-            if test_suite is not None:
-                header += ", suite = '%s'" % test_suite
+            if suite is not None:
+                header += ", suite = '%s'" % suite
             info_lines.append(header)
             info_lines.append("%% %s; instance_numbers: %s" % (value.comment, instances_list))
             info_lines.append("%s, %s" % (filename_template % (key[1], key[0], 'dat'), instance_data))
@@ -612,8 +614,8 @@ def create_data_files(output_dir, result, suite):
 
     if result[list(result.keys())[0]].suite_name == testbedsettings.default_testbed_bi:
         header = "algorithm = '%s', indicator = 'hyp'" % algorithm_id
-        if test_suite is not None:
-            header += ", suite = '%s'" % test_suite
+        if suite is not None:
+            header += ", suite = '%s'" % suite
         reference_values = testbedsettings.get_first_reference_values()
         if reference_values is not None:
             header += ", reference_values_hash = '%s'" % reference_values

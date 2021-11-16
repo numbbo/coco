@@ -8,17 +8,19 @@ numbbo/coco: Comparing Continuous Optimizers
 > Nikolaus Hansen, Dimo Brockhoff, Olaf Mersmann, Tea Tusar, Dejan Tusar, Ouassim Ait ElHara, Phillipe R. Sampaio, Asma Atamna, Konstantinos Varelas, Umut Batu, Duc Manh Nguyen, Filip Matzner, Anne Auger. COmparing Continuous Optimizers: numbbo/COCO on Github. Zenodo, [DOI:10.5281/zenodo.2594848](https://doi.org/10.5281/zenodo.2594848), March 2019.
 ---
 
-[This code](https://github.com/numbbo/coco) reimplements the original Comparing
-Continous Optimizer platform, now rewritten fully in `ANSI C` and `Python` with
-other languages calling the `C` code. As the name suggests, the code provides a
-platform to benchmark and compare continuous optimizers, AKA non-linear solvers
-for numerical optimization. Languages currently available are
+[This code](https://github.com/numbbo/coco) provides a platform to
+benchmark and compare continuous optimizers, AKA non-linear solvers
+for numerical optimization. It is fully written in `ANSI C` and
+`Python` (reimplementing the original Comparing Continous
+Optimizer platform) with other languages calling the `C` code.
+Languages currently available to connect a solver to the benchmarks are
 
   - `C/C++`
   - `Java`
   - `MATLAB/Octave`
   - `Python`
 
+Code for others might be available in branched code.
 Contributions to link further languages (including a better
 example in `C++`) are more than welcome.
 
@@ -30,12 +32,11 @@ from using the platform:
 ![General COCO Structure](coco.png)
 
 For more general information:
-- read our [benchmarking guidelines introduction](https://arxiv.org/pdf/1603.08785.pdf)
+- read our benchmarking guidelines introduction [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting (pdf)]((https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977)) or at [arXiv](https://arxiv.org/abs/1603.08785).
 - read the [COCO experimental setup](http://numbbo.github.io/coco-doc/experimental-setup) description
 - see the [`bbob-biobj` and `bbob-biobj-ext` COCO multi-objective functions testbed](http://numbbo.github.io/coco-doc/bbob-biobj/functions) documentation and the [specificities of the performance assessment for the bi-objective testbeds](http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment).
 - consult the [BBOB workshops series](http://numbbo.github.io/workshops),
-- consider to [register here](http://numbbo.github.io/register) for news, 
-- see the [previous COCO home page here](http://coco.gforge.inria.fr/) and 
+- consider to [register here](http://numbbo.github.io/register) for news, and 
 - see the [links below](#Links) to learn more about the ideas behind CoCO.
 
 
@@ -181,14 +182,15 @@ Getting Started <a name="Getting-Started"></a>
     containing a `*` and not ending with `!` or `*`. Otherwise, all matches are listed
     but none is processed with this call. For more information in how to obtain
     and display specific archived data, see
-    [`help(cocopp)`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html) or
-    [`help(cocopp.archives)`](https://coco.gforge.inria.fr/apidocs-cocopp/cocopp.archiving.OfficialArchives.html)
+    [`help(cocopp)`](https://numbbo.github.io/gforge/apidocs-cocopp/cocopp.html) or
+    [`help(cocopp.archives)`](https://numbbo.github.io/gforge/apidocs-cocopp/cocopp.archiving.OfficialArchives.html)
     or the class
-    [`COCODataArchive`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.archiving.COCODataArchive.html).
+    [`COCODataArchive`](https://numbbo.github.io/gforge/apidocs-cocopp/cocopp.archiving.COCODataArchive.html).
 
     Data descriptions can be found for the `bbob` test suite at
-    [coco-algorithms](http://coco.gforge.inria.fr/doku.php?id=algorithms) and for the `bbob-biobj`
-    test suite at [coco-algorithms-biobj](http://coco.gforge.inria.fr/doku.php?id=algorithms-biobj).
+    [coco-algorithms](https://numbbo.github.io/data-archive/bbob/) and for the `bbob-biobj`
+    test suite at [coco-algorithms-biobj](https://numbbo.github.io/data-archive/bbob-biobj/).
+    For other test suites, please see the [COCO data archive](https://numbbo.github.io/data-archive/).
 
     Local and archived data can be freely mixed like
 
@@ -220,7 +222,7 @@ Getting Started <a name="Getting-Started"></a>
     help(cocopp)
     ```
 
-    provides the [documentation entry pointer](https://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html).
+    provides the [documentation entry pointer](https://numbbo.github.io/gforge/apidocs-cocopp/cocopp.html).
 
 7. Once your algorithm runs well, **increase the budget** in your experiment
   script, if necessary implement randomized independent restarts, and follow 
@@ -591,16 +593,19 @@ Citation
 --------
 You may cite this work in a scientific context as
 
-N. Hansen, A. Auger, R. Ros, O. Mersmann, T. Tušar, D. Brockhoff. [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://doi.org/10.1080/10556788.2020.1808977), Optimization Methods and Software, 2020. [[arXiv version](https://arxiv.org/pdf/1603.08785.pdf)]
+N. Hansen, A. Auger, R. Ros, O. Mersmann, T. Tušar, D. Brockhoff. [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://doi.org/10.1080/10556788.2020.1808977), _Optimization Methods and Software_, 36(1), pp. 114-144, 2021. [[pdf](https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977), [arXiv](https://arxiv.org/abs/1603.08785)]
 ```
-@ARTICLE{hansen2020cocoplat, 
-  author = {Hansen, N. and Auger, A. and Ros, R. and Mersmann, O. and 
-             Tu{\v s}ar, T. and Brockhoff, D.},
-  title = {{COCO}: A Platform for Comparing Continuous Optimizers 
-             in a Black-Box Setting},
-  journal = {Optimization Methods and Software},
-  doi = {https://doi.org/10.1080/10556788.2020.1808977},
-  year = 2020
+@ARTICLE{hansen2021coco,
+author = {Hansen, N. and Auger, A. and Ros, R. and Mersmann, O.
+          and Tu{\v s}ar, T. and Brockhoff, D.},
+title = {{COCO}: A Platform for Comparing Continuous Optimizers 
+          in a Black-Box Setting},
+journal = {Optimization Methods and Software},
+doi = {https://doi.org/10.1080/10556788.2020.1808977},
+pages = {114--144},
+issue = {1},
+volume = {36},
+year = 2021
 }
 ```
 
@@ -610,27 +615,27 @@ Links and Documentation <a name="Links"></a>
   NumBBO/Coco framework extensively, can be tracked
   [here](http://numbbo.github.io/workshops "BBOB Workshops")
 * Data sets from previous experiments for many algorithms are available at
-  - http://coco.gforge.inria.fr/doku.php?id=algorithms-bbob for the `bbob` test suite
-  - http://coco.gforge.inria.fr/doku.php?id=algorithms-bbob-noisy for the `bbob-noisy` test suite
-  - http://coco.gforge.inria.fr/doku.php?id=algorithms-bbob-biobj for the `bbob-biobj` test suite, and at
-  - http://coco.gforge.inria.fr/doku.php?id=algorithms-bbob-largescale for the `bbob-largescale` test suite.
+  - https://numbbo.github.io/data-archive/bbob/ for the `bbob` test suite
+  - https://numbbo.github.io/data-archive/bbob-noisy/ for the `bbob-noisy` test suite
+  - https://numbbo.github.io/data-archive/bbob-biobj/ for the `bbob-biobj` test suite, and at
+  - https://numbbo.github.io/data-archive/bbob-largescale/ for the `bbob-largescale` test suite.
 * Postprocessed data for each year in which a BBOB workshop was taking place can be
-  found at http://coco.gforge.inria.fr/ppdata-archive
+  found at https://numbbo.github.io/ppdata-archive
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software 
-  by registering at http://coco.gforge.inria.fr/register
-* Read about the basic principles behind the Coco platform in [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://arxiv.org/pdf/1603.08785.pdf).
+  by registering via [this form](https://docs.google.com/forms/d/1GS48SXGjapUu6WY6Zt-Ma5HCl2izq4ydT7sMa5ujUDI)
+* Read about the basic principles behind the Coco platform in [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting (pdf)](https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977) or at [arXiv](https://arxiv.org/abs/1603.08785).
 * For details on the experimental set-up to carry out the benchmarking
   please refer to http://numbbo.github.io/coco-doc/experimental-setup/.
 * More detailed documentation of the existing benchmark suites can be found here:
-  - for the **`bbob`** problem suite at http://coco.gforge.inria.fr/downloads/download16.00/bbobdocfunctions.pdf 
+  - for the **`bbob`** problem suite at https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf 
     with the experimental setup at http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
   - for the **`bbob-biobj`** and **`bbob-biobj-ext`** problem suites
     at http://numbbo.github.io/coco-doc/bbob-biobj/functions
   - for the **`bbob-largescale`** problem suite
-    at http://numbbo.github.io/coco-doc/bbob-largescale/functions
+    at https://arxiv.org/pdf/1903.06396.pdf
   - for the **`bbob-mixint`** and **`bbob-biobj-mixint`** problem suites, we refer to 
     https://hal.inria.fr/hal-02067932/document and to
-    http://coco.gforge.inria.fr/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
+    https://numbbo.github.io/gforge/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
 * Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at 
   http://numbbo.github.io/coco-doc/C
 * More detailed documentation on how the performance assessement is done can 
@@ -642,16 +647,16 @@ Links and Documentation <a name="Links"></a>
   
 Comprehensive List of Documentations <a name="Documentations"></a>
 --------------------------------------------
-* General introduction: [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://arxiv.org/pdf/1603.08785.pdf)
+* General introduction: [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting (pdf)](https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977) or at [arXiv](https://arxiv.org/abs/1603.08785)
 * Experimental setup: http://numbbo.github.io/coco-doc/experimental-setup/
 * Testbeds
-  - bbob: http://coco.gforge.inria.fr/downloads/download16.00/bbobdocfunctions.pdf
+  - bbob: https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf
   - bbob-biobj: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
   - bbob-biobj-ext: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
   - bbob-noisy (only in old code basis): http://coco.lri.fr/downloads/download15.03/bbobdocnoisyfunctions.pdf
-  - bbob-largescale: http://numbbo.github.io/coco-doc/bbob-largescale/functions/
+  - bbob-largescale: https://arxiv.org/pdf/1903.06396.pdf
   - bbob-mixint and bbob-biobj-mixint: https://hal.inria.fr/hal-02067932/document and
-    http://coco.gforge.inria.fr/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
+    https://numbbo.github.io/gforge/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
   - bbob-constrained (in progress): http://numbbo.github.io/coco-doc/bbob-constrained/functions/
   
 
@@ -660,10 +665,10 @@ Comprehensive List of Documentations <a name="Documentations"></a>
 
 * APIs
   - ``C`` experiments code: http://numbbo.github.io/coco-doc/C
-  - Python experiments code (module `cocoex`): http://coco.gforge.inria.fr/apidocs-cocoex/cocoex.html
+  - Python experiments code (module `cocoex`): https://numbbo.github.io/gforge/apidocs-cocoex/cocoex.html
   - Python short [beginners example experiment](code-experiments/build/python/example_experiment_for_beginners.py)
-  - Python `example_experiment2.py`: http://coco.gforge.inria.fr/apidocs-example_experiment/example_experiment2.html
-  - Postprocessing code (module `cocopp`): http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html
+  - Python `example_experiment2.py`: https://numbbo.github.io/gforge/apidocs-example_experiment/example_experiment2.html
+  - Postprocessing code (module `cocopp`): https://numbbo.github.io/gforge/apidocs-cocopp/cocopp.html
 
 * Somewhat outdated documents:
   - Full description of the platform: http://coco.lri.fr/COCOdoc/

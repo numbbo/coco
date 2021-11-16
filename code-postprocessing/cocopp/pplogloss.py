@@ -138,7 +138,7 @@ def table_caption():
         (box), 10-90\%-ile (caps), and minimum and maximum \ERT\ loss ratio
         (points). The vertical line gives the maximal number of function evaluations
         in a single trial in this function subset. See also
-        Figure~\ref{fig:ERTlogloss} for results on each function subgroup.\cocoversion
+        Figure~\ref{fig:ERTlogloss} for results on each function subgroup.
         """
 
     table_caption = captions.replace(table_caption)

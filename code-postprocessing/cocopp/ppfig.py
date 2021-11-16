@@ -457,7 +457,7 @@ def write_dimension_links(dimension, dimensions, index):
 
 
 def write_tables(f, caption_string_format, best_alg_exists, html_key, legend_key, dimensions):
-    current_header = 'Table showing the ERT in number of function evaluations'
+    current_header = 'Table showing the ERT in number of evaluations'
     if best_alg_exists:
         current_header += ' divided by the best ERT measured during BBOB-2009'
 

@@ -75,7 +75,7 @@ For this:
      Archives can contain other archives as subfolders or,
      the other way around, additional subarchives can be
      created in any archive subfolder. This is how
-     http://coco.gforge.inria.fr/data-archive is organize.
+     https://numbbo.github.io/data-archive/ is organized.
      <details><summary>Alternative code (from a system shell, click to expand)</summary>
      <tt>python -c "import cocopp; cocopp.archiving.create('elisa_2020')"</tt>
      </details>
@@ -92,7 +92,7 @@ For this:
 ### Example of an resulting archive
 
 For example, the `bbob-mixint` archive at
-http://coco.gforge.inria.fr/data-archive/bbob-mixint
+https://github.com/numbbo/data-archive/tree/gh-pages/data-archive/bbob-mixint
 contains four datasets and the folder structure looks like
 <font size="1">
 

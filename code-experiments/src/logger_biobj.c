@@ -208,14 +208,13 @@ static void logger_biobj_node_free(logger_biobj_avl_item_t *item, void *userdata
 static int avl_tree_compare_by_last_objective(const logger_biobj_avl_item_t *item1,
                                               const logger_biobj_avl_item_t *item2,
                                               void *userdata) {
+  (void) userdata; /* To silence the compiler */
   if (coco_double_almost_equal(item1->normalized_y[1], item2->normalized_y[1], mo_precision))
     return 0;
   else if (item1->normalized_y[1] < item2->normalized_y[1])
     return -1;
   else
     return 1;
-
-  (void) userdata; /* To silence the compiler */
 }
 
 /**
@@ -227,14 +226,13 @@ static int avl_tree_compare_by_last_objective(const logger_biobj_avl_item_t *ite
 static int avl_tree_compare_by_eval_number(const logger_biobj_avl_item_t *item1,
                                            const logger_biobj_avl_item_t *item2,
                                            void *userdata) {
+  (void) userdata; /* To silence the compiler */
   if (item1->evaluation_number < item2->evaluation_number)
     return -1;
   else if (item1->evaluation_number > item2->evaluation_number)
     return 1;
   else
     return 0;
-
-  (void) userdata; /* To silence the compiler */
 }
 
 /**

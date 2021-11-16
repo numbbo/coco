@@ -6,46 +6,9 @@
 % algorithms should work with this template.
 %
 
+% include preamble:
+\include{templatepreamble.tex}
 
-\usepackage{booktabs} % For formal tables
-\usepackage{graphicx}
-\usepackage{rotating}
-\definecolor{Gray}{gray}{0.6}
-\usepackage{tabularx}
-\usepackage{xspace}
-\usepackage{float}
-\usepackage{xstring} % for string operations
-\usepackage{wasysym} % Table legend with symbols input from post-processing
-\usepackage{MnSymbol} % Table legend with symbols input from post-processing
-\usepackage{ifthen}
-
-
-
-
-
-% Copyright
-%\setcopyright{none}
-%\setcopyright{acmcopyright}
-%\setcopyright{acmlicensed}
-\setcopyright{rightsretained}
-%\setcopyright{usgov}
-%\setcopyright{usgovmixed}
-%\setcopyright{cagov}
-%\setcopyright{cagovmixed}
-
-
-% DOI
-\acmDOI{10.1145/123_4}
-
-% ISBN
-\acmISBN{123-4567-24-567/18/07}
-
-%Conference
-\acmConference[GECCO '19]{the Genetic and Evolutionary Computation Conference 2019}{July 13--17, 2019}{Prague, Czech Republic}
-\acmYear{2019}
-\copyrightyear{2019}
-
-\acmPrice{15.00}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% TO BE EDITED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -94,37 +57,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\DIM}{\ensuremath{\mathrm{DIM}}}
-\newcommand{\ERT}{\ensuremath{\mathrm{ERT}}}
-\newcommand{\FEvals}{\ensuremath{\mathrm{FEvals}}}
-\newcommand{\nruns}{\ensuremath{\mathrm{Nruns}}}
-\newcommand{\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
-\newcommand{\Df}{\ensuremath{\Delta f}}
-\newcommand{\DI}{\ensuremath{\Delta I_{\mathrm{HV}}^{\mathrm{COCO}}}}
-\newcommand{\nbFEs}{\ensuremath{\mathrm{\#FEs}}}
-\newcommand{\ftarget}{\ensuremath{f_\mathrm{t}}}
-\newcommand{\Itarget}{\ensuremath{I_\mathrm{target}}}
-\newcommand{\CrE}{\ensuremath{\mathrm{CrE}}}
-\newcommand{\hvref}{\ensuremath{I_\mathrm{ref}}}
-\newcommand{\fopt}{\hvref}
-\newcommand{\change}[1]{{\color{red} #1}}
-\newcommand{\TODO}[1]{{\color{orange} !!! #1 !!!}}
-\newcommand{\bbobbiobj}{{\ttfamily bbob-biobj}\xspace}
-\newcommand{\bbobnoisy}{{\ttfamily bbob-noisy}\xspace}
-\newcommand{\rot}[2][2.5]{
-  \hspace*{-3.5\baselineskip}%
-  \begin{rotate}{90}\hspace{#1em}#2
-  \end{rotate}}
-
-%%%%%%%%%%%%%%%%%%%%%%   END OF PREAMBLE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \begin{document}
 
 
 \title{Black-Box Optimization Benchmarking Template for the Comparison of Algorithms on the \bbobnoisy Testbed}
 \renewcommand{\shorttitle}{Template to Compare Algorithms on the \bbobnoisy Testbed}
-\titlenote{Submission deadline: April 3rd.}
-%Camera-ready paper due April 24th.}}
 \subtitle{Draft version}
 
 
@@ -265,7 +202,7 @@ Figures~\ref{fig:scaling}, \ref{fig:ECDFs}, and \ref{fig:ECDFsingleOne} and Tabl
 }{}}}
 %%
 The experiments were performed with COCO \cite{hansen2020cocoplat}, version
-\change{2.4}, the plots were produced with version \change{2.4}.
+\change{\version}, the plots were produced with version \change{\version}.
 
 The \textbf{expected runtime (ERT)}, used in the %figures and
 tables,
@@ -491,7 +428,7 @@ unsuccessful trial under consideration.
 \vspace{1em}
 
 \caption[Table of ERTs]{\label{tab:ERTs}
-\bbobpptablecaption{dimensions $5$ (left) and $20$ (right)}
+\bbobpptablecaption{dimensions $5$ (left) and $20$ (right)} \cocoversion
 }
 \end{table*}
 
@@ -512,7 +449,7 @@ unsuccessful trial under consideration.
 \input{\bbobdatapath\algfolder pploglosstable_05D_nzall}\\
 \input{\bbobdatapath\algfolder pploglosstable_20D_nzall}
 \caption{\label{tab:ERTloss}%
-\bbobloglosstablecaption{}
+\bbobloglosstablecaption{} \cocoversion
 }
 \end{figure}
 
@@ -731,7 +668,7 @@ versus dimension in log-log presentation]{\label{fig:scaling}%
 \end{tabularx}
 \end{minipage}}
  \caption{\label{tab:ERTs5}
-\bbobpptablesmanylegend{dimension $5$}
+\bbobpptablesmanylegend{dimension $5$} \cocoversion
 }
 \end{table*}
 
@@ -790,7 +727,7 @@ versus dimension in log-log presentation]{\label{fig:scaling}%
 \end{tabularx}
 \end{minipage}}
  \caption{\label{tab:ERTs20}
- \bbobpptablesmanylegend{dimension $20$}
+ \bbobpptablesmanylegend{dimension $20$} \cocoversion
  }
 \end{table*}
 
@@ -814,48 +751,42 @@ versus dimension in log-log presentation]{\label{fig:scaling}%
 \small
 \centering
 \begin{tabular}{@{}c@{}*{5}{@{}c@{}}}
- & {\sf 101 Sphere (moderate)} & {\sf 104 Rosenbrock (moderate)} & {\sf 107 Sphere} & {\sf 110 Rosenbrock} & {\sf 113 Step-ellipsoid} \\
 \begin{turn}{90}\parbox{0.175\textwidth}{\centering\sf Gauss noise\vspace{1em}}\end{turn} &
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f101}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f104}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f107}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f110}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f113}\\
- & {\sf 102 Sphere (moderate)} & {\sf 105 Rosenbrock (moderate)} & {\sf 108 Sphere} & {\sf 111 Rosenbrock} & {\sf 114 Step-ellipsoid}\\
+    \includegraphics[height=0.17\textwidth]{ppscatter_f101}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f104}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f107}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f110}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f113}\\
 \begin{turn}{90}\parbox{0.175\textwidth}{\centering\sf uniform noise\vspace{1em}}\end{turn} &
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f102}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f105}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f108}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f111}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f114}\\
- & {\sf 103 Sphere (moderate)} & {\sf 106 Rosenbrock (moderate)} & {\sf 109 Sphere} & {\sf 112 Rosenbrock} & {\sf 115 Step-ellipsoid}\\
+    \includegraphics[height=0.17\textwidth]{ppscatter_f102}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f105}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f108}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f111}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f114}\\
 \begin{turn}{90}\parbox{0.175\textwidth}{\centering\sf Cauchy noise\vspace{1em}}\end{turn} &
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f103}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f106}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f109}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f112}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f115}\\\hline
- & {\sf 116 Ellipsoid} & {\sf 119 Sum of diff.\ powers} & {\sf 122 Schaffer F7} & {\sf 125 Griewank-Rosenbrock} & {\sf 128 Gallagher}\\
+    \includegraphics[height=0.17\textwidth]{ppscatter_f103}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f106}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f109}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f112}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f115}\\\hline
 \begin{turn}{90}\parbox{0.175\textwidth}{\centering\sf Gauss noise\vspace{1em}}\end{turn} &
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f116}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f119}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f122}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f125}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f128}\\
- & {\sf 117 Ellipsoid} & {\sf 120 Sum of diff.\ powers} & {\sf 123 Schaffer F7} & {\sf 126 Griewank-Rosenbrock} & {\sf 129 Gallagher}\\
+    \includegraphics[height=0.17\textwidth]{ppscatter_f116}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f119}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f122}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f125}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f128}\\
 \begin{turn}{90}\parbox{0.175\textwidth}{\centering\sf uniform noise\vspace{1em}}\end{turn} &
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f117}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f120}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f123}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f126}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f129}\\
-& {\sf 118 Ellipsoid} & {\sf 121 Sum of diff.\ powers} & {\sf 124 Schaffer F7} & {\sf 127 Griewank-Rosenbrock} & {\sf 130 Gallagher}\\
+    \includegraphics[height=0.17\textwidth]{ppscatter_f117}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f120}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f123}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f126}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f129}\\
 \begin{turn}{90}\parbox{0.175\textwidth}{~\centering\sf Cauchy noise\vspace{1em}}\end{turn} &
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f118}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f121}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f124}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f127}&
-    \includegraphics[height=0.175\textwidth, trim= 30mm 4mm 28mm 12mm, clip]{ppscatter_f130}\\[-1em]
+    \includegraphics[height=0.17\textwidth]{ppscatter_f118}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f121}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f124}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f127}&
+    \includegraphics[height=0.17\textwidth]{ppscatter_f130}\\[-1em]
 \end{tabular}
 \caption{\label{fig:scatterplots}
 \bbobppscatterlegend{$f_{101}$--$f_{130}$} 

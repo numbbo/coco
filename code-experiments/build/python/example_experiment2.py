@@ -79,9 +79,9 @@ def random_search(f, lbounds, ubounds, evals):
 
 ### input (to be modified if necessary/desired)
 # fmin = scipy.optimize.fmin
-fmin = scipy.optimize.fmin_slsqp
+#fmin = scipy.optimize.fmin_slsqp
 # fmin = scipy.optimize.fmin_cobyla
-# fmin = cocoex.solvers.random_search
+fmin = cocoex.solvers.random_search
 # fmin = cma.fmin2
 
 suite_name = "bbob"  # see cocoex.known_suite_names
@@ -153,7 +153,7 @@ for batch_counter, problem in enumerate(suite):  # this loop may take hours or d
             # print(problem.dimension, problem.evaluations)
             stoppings[problem.index].append(output[3:])
         elif fmin in (cocoex.solvers.random_search, random_search):
-            fmin(problem, problem.dimension * [-5], problem.dimension * [5], evalsleft())
+            fmin(problem, problem.lower_bounds, problem.upper_bounds, evalsleft())
         elif fmin.__name__ == 'fmin2' and 'cma' in fmin.__module__:  # cma.fmin2:
             xopt, es = fmin(problem, propose_x0, 2,
                             {'maxfevals':evalsleft(), 'verbose':-9}, restarts=9)
