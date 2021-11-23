@@ -44,7 +44,11 @@ target_runlengths_ppscatter = np.logspace(np.log10(0.5), np.log10(50), 8) # used
 target_runlength = 10  # used in ppfigs.main
 single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)] # used in pprldistr
 
-xlimit_expensive = 1e3  # used in 
+xlimit_pprldmany = 1e7
+"""maximal run length used in pprldmany, noisy: rather 1e8
+   maybe better: 10 * genericsettings.evaluation_setting[1]"""
+xlimit_expensive = 1e3
+"""maximal run length in expensive setting, used in config for pprldmany and ppfigdim"""
 #tableconstant_target_function_values = (
 #1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7)  # used as input for pptables.main in rungenericmany
 # tableconstant_target_function_values = (1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7) # for post-workshop landscape tables
@@ -323,5 +327,3 @@ isLogLoss = True  # only affects rungeneric1
 isPickled = False  # only affects rungeneric1
 ##    
 isScatter = True  # only affects rungenericmany
-
-x_limit_pprldmany = 1e7  # better: 10 * genericsettings.evaluation_setting[1], noisy: 1e8, otherwise: 1e7. maximal run length shown

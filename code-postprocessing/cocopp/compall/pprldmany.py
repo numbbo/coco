@@ -46,7 +46,6 @@ from .. import pptex  # numtotex
 PlotType = ppfig.enum('ALG', 'DIM', 'FUNC')
 
 displaybest = True
-x_limit = genericsettings.x_limit_pprldmany
 divide_by_dimension = True
 annotation_line_end_relative = 1.11  # lines between graph and annotation
 annotation_space_end_relative = 1.24  # figure space end relative to x_limit
@@ -197,6 +196,7 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
     :param kwargs: optional arguments provided to plot function.
     
     """
+    x_limit = genericsettings.xlimit_pprldmany
 
     # Expect data to be a ndarray.
     x = data[np.isnan(data) == False]  # Take away the nans
@@ -566,8 +566,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     :param str parentHtmlFileName: defines the parent html page 
 
     """
-    global x_limit  
     global divide_by_dimension  # not fully implemented/tested yet
+    x_limit = genericsettings.xlimit_pprldmany
 
     tmp = pp.dictAlgByDim(dictAlg)
     algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
