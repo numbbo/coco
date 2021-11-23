@@ -474,8 +474,8 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
             numbers = [1, 2, 6, 6 + int(dimension / 2),
                        6 + dimension, 6 + 3 * dimension]
         else:
-            numbers = [1, 3, 9, 9 + 3 * int(dimension / 4),
-                       9 + 3 * int(dimension / 2), 9 + 9 * int(dimension / 2)]
+            numbers = [1, 3, 9, 9 + int(3 * dimension / 4),
+                       9 + int(3 * dimension / 2), 9 + int(9 * dimension / 2)]
 
         map_id_to_number = {k: n for k, n in enumerate(numbers)}
 
@@ -491,7 +491,7 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
         """
 
         if active_only:
-            numbers = ['1', '2', '6', '6+n2', '6+n', '6+3n']
+            numbers = ['1', '2', '6', '6+ndiv2', '6+n', '6+3n']
         else:
             numbers = ['0n+1', '0n+3', '0n+9', '3ndiv4+9', '6ndiv4+9', '9ndiv2+9']
 
