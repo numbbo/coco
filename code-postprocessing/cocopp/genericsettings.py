@@ -324,3 +324,4 @@ isPickled = False  # only affects rungeneric1
 ##    
 isScatter = True  # only affects rungenericmany
 
+x_limit_pprldmany = 1e7  # better: 10 * genericsettings.evaluation_setting[1], noisy: 1e8, otherwise: 1e7. maximal run length shown
