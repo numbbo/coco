@@ -473,11 +473,11 @@ Traceback (most recent call last):
    elif cmd == 'build-python': build_python()
  File "do.py", line 203, in build_python
    python('code-experiments/build/python', ['setup.py', 'install', '--user'])
- File "/vol2/twagner/numbbo/code-experiments/tools/cocoutils.py", line 92, in p                                         ython
+ File "/vol2/twagner/numbbo/code-experiments/tools/cocoutils.py", line 92, in python
    universal_newlines=True)
  File "/usr/local/lib/python2.7/subprocess.py", line 575, in check_output
    raise CalledProcessError(retcode, cmd, output=output)
-subprocess.CalledProcessError: Command '['/usr/local/bin/python', 'setup.py', 'i                                        nstall', '--user']' returned non-zero exit status 1
+subprocess.CalledProcessError: Command '['/usr/local/bin/python', 'setup.py', 'install', '--user']' returned non-zero exit status 1
 ```
 then `setuptools` needs to be installed: 
 ```
