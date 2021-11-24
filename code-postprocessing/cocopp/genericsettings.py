@@ -45,10 +45,15 @@ target_runlength = 10  # used in ppfigs.main
 single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)] # used in pprldistr
 
 xlimit_pprldmany = 1e7
-"""maximal run length used in pprldmany, noisy: rather 1e8
-   maybe better: 10 * genericsettings.evaluation_setting[1]"""
+"""maximal run length multiplier used in `pprldmany`, noisy: rather 1e8
+   maybe better: ``10 * genericsettings.evaluation_setting[1]``?"""
 xlimit_expensive = 1e3
-"""maximal run length in expensive setting, used in config for pprldmany and ppfigdim"""
+"""maximal run length multiplier in expensive setting, used in config for
+   `pprldmany` and `ppfigdim`"""
+len_of_names_in_pprldmany_legend = None
+"""set the length, for example when we want to remove characters that are
+   not fully displayed, 9 == len('best 2009')"""
+
 #tableconstant_target_function_values = (
 #1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7)  # used as input for pptables.main in rungenericmany
 # tableconstant_target_function_values = (1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7) # for post-workshop landscape tables
@@ -271,7 +276,7 @@ if 11 < 3:  # in case using my own linestyles
         {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'g'}
     ]
 
-minmax_algorithm_fontsize = [9, 17]  # depending on the number of algorithms
+minmax_algorithm_fontsize = [9, 14]  # used in pprldmany, depending on the number of algorithms
 
 rcaxeslarger = {"labelsize": 24, "titlesize": 28.8}
 rcticklarger = {"labelsize": 24}

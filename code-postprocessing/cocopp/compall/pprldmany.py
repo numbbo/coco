@@ -47,8 +47,8 @@ PlotType = ppfig.enum('ALG', 'DIM', 'FUNC')
 
 displaybest = True
 divide_by_dimension = True
-annotation_line_end_relative = 1.11  # lines between graph and annotation
-annotation_space_end_relative = 1.24  # figure space end relative to x_limit
+annotation_line_end_relative = 1.065  # lines between graph and annotation, was 1.11, see also subplots_adjust
+annotation_space_end_relative = 1.21  # figure space end relative to x_limit, space is however determined rather by subplots_adjust(...) below!?
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # number of bootstrap samples drawn for each fct+target in the performance profile
 nbperdecade = 1
@@ -179,7 +179,10 @@ def beautify():
             plt.xlabel('log10(# f-evals)', fontsize=label_fontsize)
     plt.ylabel('Fraction of function,target pairs', fontsize=label_fontsize)
     ppfig.logxticks()
+    plt.xticks(fontsize=label_fontsize)  # the "original" size is for some reason too large
     pprldistr.beautifyECDF()
+    plt.ylim(-0.0, 1.0)
+
 
 
 def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
@@ -286,14 +289,20 @@ def plotLegend(handles, maxval):
     ys = {}
     lh = 0
 
-    def get_label_length(label_list):
-        """ Finds the minimal length of the names used in the label so that 
-        all the names are different. Always at least 9 character are displayed.
+    def label_length(label_list):
+        """Return either `genericsettings.len_of_names_in_pprldmany_legend`
+        or the minimal length for the names in `label_list` so that all
+        names are different in 2 or more characters. At least 9 characters
+        are displayed unless ``0 <
+        genericsettings.len_of_names_in_pprldmany_legend < 9``. This
+        function is used for the algorithm names legend.
         """
+        if genericsettings.len_of_names_in_pprldmany_legend:
+            return genericsettings.len_of_names_in_pprldmany_legend
 
-        numberOfCharacters = 7
-        firstPart = [i[:numberOfCharacters] for i in label_list]
         maxLength = max(len(i) for i in label_list)
+        numberOfCharacters = 7  # == len("best 2009") - 2, we add 2 later
+        firstPart = [i[:numberOfCharacters] for i in label_list]
         while (len(firstPart) > len(set(firstPart)) and numberOfCharacters <= maxLength):
             numberOfCharacters += 1
             firstPart = [i[:numberOfCharacters] for i in label_list]
@@ -302,7 +311,7 @@ def plotLegend(handles, maxval):
 
     handles_with_legend = [h for h in handles if not plt.getp(h[-1], 'label').startswith('_line')]
     label_list = [toolsdivers.strip_pathname1(plt.getp(h[-1], 'label')) for h in handles_with_legend]
-    numberOfCharacters = get_label_length(label_list)
+    numberOfCharacters = label_length(label_list)
     for h in handles_with_legend:
         x2 = []
         y2 = []
@@ -329,7 +338,7 @@ def plotLegend(handles, maxval):
         lh = min(lh, len(show_algorithms))
     if lh <= 1:
         lh = 2
-    fontsize_interp = (20.0 - lh) / 10.0
+    fontsize_interp = (30.0 - lh) / 10.0
     if fontsize_interp > 1.0:
         fontsize_interp = 1.0
     if fontsize_interp < 0.0:
@@ -875,17 +884,19 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     a.xaxis.set_major_formatter(FuncFormatter(formatlabel))
     a.xaxis.set_minor_locator(FixedLocator(xminorticks))
     a.xaxis.set_minor_formatter(NullFormatter())
+    for pos in ['right', 'left']:  # top makes sense if figure ends at 1.0
+        a.spines[pos].set_visible(False)  # remove visible frame
 
     if save_figure:
         ppfig.save_figure(figureName,
                           dictAlg[algorithms_with_data[0]][0].algId,
-                          layout_rect=(0, 0, 0.735, 1),
+                          layout_rect=(0, 0, 0.783, 1),  # see also below
                           # Prevent clipping in matplotlib >=3:
                           # Relative additional space numbers are
                           # bottom, left, 1 - top, and 1 - right.
                           # bottom=0.13 still clips g in the log(#evals) xlabel
-                          subplots_adjust=dict(bottom=0.135, right=0.735,
-                                               top=0.92 if len(dictFunc) == 1 else 0.99  # space for a title
+                          subplots_adjust=dict(bottom=0.135, right=0.783,  # was: 0.735
+                                               top=0.92 if len(dictFunc) == 1 else 0.98  # space for a title or 1.0 y-tick annotation
                                                ),
                           )
         if plotType == PlotType.DIM:
