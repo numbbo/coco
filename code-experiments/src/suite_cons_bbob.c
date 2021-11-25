@@ -25,7 +25,7 @@ static coco_suite_t *suite_cons_bbob_initialize(const char *suite_name) {
   const size_t num_dimensions = sizeof(dimensions) / sizeof(dimensions[0]);
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate(suite_name, 48, num_dimensions, dimensions, "year: 2016");
+  suite = coco_suite_allocate(suite_name, 54, num_dimensions, dimensions, "year: 2016");
 
   return suite;
 }
@@ -140,13 +140,21 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
     problem = transform_obj_scale(problem, 1e2);  /* move initial feasible point to a delta-f between 100 and 1000 */
 
   } else if (obj_function_type(function) == 8) {
-	  
+      
     problem = f_rastrigin_c_linear_cons_bbob_problem_allocate(function, 
         dimension, instance, number_of_linear_constraints, rseed,
         feasible_direction, xopt, problem_id_template, 
         problem_name_template);
     problem = transform_obj_scale(problem, 10.);  /* move initial feasible point to a delta-f between 100 and 10000 */
-	  
+
+  } else if (obj_function_type(function) == 9) {
+      
+    problem = f_rastrigin_rotated_c_linear_cons_bbob_problem_allocate(function, 
+        dimension, instance, number_of_linear_constraints, rseed,
+        feasible_direction, xopt, problem_id_template, 
+        problem_name_template);
+    problem = transform_obj_scale(problem, 10.);  /* move initial feasible point to a delta-f between 100 and 10000 */
+      
   } else {
     coco_error("get_cons_bbob_problem(): cannot retrieve problem f%lu instance %lu in %luD", 
         function, instance, dimension);
