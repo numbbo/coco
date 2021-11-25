@@ -280,31 +280,6 @@ static void f_rastrigin_cons_compute_xopt(double *xopt, const long rseed, const 
     }
 }
 
-/**
- * @brief Computes xopt for constrained rotated Rastrigin (alternative to bbob2009_compute_xopt())
- * xopt is a vector such that M dot xopt is a vector of dim uniform random integers
- */
-static void f_rastrigin_rotated_cons_compute_xopt(double *xopt, const long rseed, const size_t dim, const double *M) {
-
-  size_t i;
-
-  bbob2009_unif(xopt, dim, rseed);
-
-  /*
-   * TODO
-   */
-
-  for (i = 0; i < dim; ++i) {
-    xopt[i] = 10 * xopt[i] - 5;
-    xopt[i] = (int) xopt[i];
-  }
-
-  /* In case (0, ..., 0) is sampled, set xopt to a different value */
-  if (coco_vector_is_zero(xopt, dim))
-    for (i = 0; i < dim; ++i) {
-        xopt[i] = (int) (i % 9) - 4;
-    }
-}
 
 /**
  * @brief Creates the Rastrigin problem for the constrained BBOB suite.
@@ -358,12 +333,12 @@ static coco_problem_t *f_rastrigin_rotated_cons_bbob_problem_allocate(const size
   bbob2009_free_matrix(rot1, dimension);
 
   xopt = coco_allocate_vector(dimension);
-  f_rastrigin_rotated_cons_compute_xopt(xopt, rseed, dimension, M);
+  f_rastrigin_cons_compute_xopt(xopt, rseed, dimension);
   fopt = bbob2009_compute_fopt(function, instance);
 
   problem = f_rastrigin_allocate(dimension);
-  problem = transform_vars_affine(problem, M, b, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
+  problem = transform_vars_affine(problem, M, b, dimension);  /* Rotate after shifting so R dot xopt is also rotated */
   problem = transform_obj_shift(problem, fopt);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
