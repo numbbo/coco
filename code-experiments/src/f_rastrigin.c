@@ -309,3 +309,43 @@ static coco_problem_t *f_rastrigin_cons_bbob_problem_allocate(const size_t funct
   return problem;
 }
 
+/**
+ * @brief Creates the rotated Rastrigin problem for the constrained BBOB suite.
+ */
+static coco_problem_t *f_rastrigin_rotated_cons_bbob_problem_allocate(const size_t function,
+                                                         const size_t dimension,
+                                                         const size_t instance,
+                                                         const long rseed,
+                                                         const char *problem_id_template,
+                                                         const char *problem_name_template) {
+
+  double *xopt, fopt;
+  coco_problem_t *problem = NULL;
+
+  double *M = coco_allocate_vector(dimension * dimension);
+  double *b = coco_allocate_vector(dimension);
+  double **rot1;
+
+  rot1 = bbob2009_allocate_matrix(dimension, dimension);
+  bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+  bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
+  bbob2009_free_matrix(rot1, dimension);
+
+  xopt = coco_allocate_vector(dimension);
+  f_rastrigin_cons_compute_xopt(xopt, rseed, dimension);
+  fopt = bbob2009_compute_fopt(function, instance);
+
+  problem = f_rastrigin_allocate(dimension);
+  problem = transform_vars_shift(problem, xopt, 0);
+  problem = transform_vars_affine(problem, M, b, dimension);  /* Rotate after shifting so R dot xopt is also rotated */
+  problem = transform_obj_shift(problem, fopt);
+
+  coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
+  coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+  coco_problem_set_type(problem, "1-separable");
+
+  coco_free_memory(M);
+  coco_free_memory(b);
+  coco_free_memory(xopt);
+  return problem;
+}
