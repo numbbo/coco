@@ -59,8 +59,6 @@ suite_to_testbed = {
     default_suite_bi: default_testbed_bi,
     'bbob-biobj-ext': default_testbed_bi_ext,
     'bbob-constrained': default_testbed_cons,
-    'bbob-constrained-active-only': default_testbed_cons,
-    'bbob-constrained-no-disguise': default_testbed_cons,
     'bbob-largescale': default_testbed_ls,
     'bbob-mixint': default_testbed_mixint,
     'bbob-biobj-mixint': 'GECCOBBOBBiObjMixintTestbed',
@@ -415,7 +413,6 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
         functions_with_legend=(1, 48),
         first_function_number=1,
         last_function_number=48,
-        instances_are_uniform = False,
         reference_algorithm_filename='',
         reference_algorithm_displayname='',  # TODO: should be read in from data set in reference_algorithm_filename
         scenario=scenario_constrainedfixed,
