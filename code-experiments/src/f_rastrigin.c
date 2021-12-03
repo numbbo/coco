@@ -350,4 +350,3 @@ static coco_problem_t *f_rastrigin_rotated_cons_bbob_problem_allocate(const size
   coco_free_memory(xopt);
   return problem;
 }
-

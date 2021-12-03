@@ -409,7 +409,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
     /* set gradient depending on instance number */
 
     if (i < number_of_active_constraints && coco_random_uniform(random_generator)
-          + 1e-23 > (double) inactive_constraints_left / number_of_linear_constraints
+          + 1e-23 > (double) inactive_constraints_left / (double) number_of_linear_constraints
         ) {  /* create an active constraint */
       gradient = (++i - 1 + instance) % number_of_active_constraints ? NULL : gradient_c1;
       shift_factor = 0.0;
@@ -458,8 +458,8 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
     fac = coco_vector_scalar_product(linear_combination, gradient, dimension);
     if (fac < 0)
       coco_error("scalar product between first constraint and linear combination = %f < 0 should be > 0", fac);
-    fac = fac <= 0 ? dimension : coco_double_min(dimension, norm * norm / fac);
-    fac *= (1 + coco_random_uniform(random_generator2)) / (2 + 1. / dimension);  /* bound to <1 and >1/3 */
+    fac = fac <= 0 ? (double) dimension : coco_double_min((double) dimension, norm * norm / fac);
+    fac *= (1 + coco_random_uniform(random_generator2)) / (2 + 1. / (double) dimension);  /* bound to <1 and >1/3 */
     for (i = 0; i < dimension; ++i)
       gradient[i] -= fac * linear_combination[i];
     fac = coco_vector_norm(gradient, dimension);  /* new gradient norm */
