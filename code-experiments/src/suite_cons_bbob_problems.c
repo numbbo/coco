@@ -796,3 +796,85 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   return problem;
  
 }
+
+/**
+ * @brief Objective function: rastrigin
+ *        Constraint(s): linear
+ */
+static coco_problem_t *f_rastrigin_rotated_c_linear_cons_bbob_problem_allocate(const size_t function,
+                                                      const size_t dimension,
+                                                      const size_t instance,
+                                                      const size_t number_of_linear_constraints,
+                                                      const long rseed,
+                                                      double *feasible_direction,
+                                                      const double *xopt,
+                                                      const char *problem_id_template,
+                                                      const char *problem_name_template) {
+                                      
+  size_t i;
+  coco_problem_t *problem = NULL;
+  coco_problem_t *problem_c = NULL;
+
+  double *all_zeros = NULL;
+  char *problem_type_temp = NULL;
+
+  all_zeros = coco_allocate_vector(dimension);
+
+  for (i = 0; i < dimension; ++i)
+    all_zeros[i] = 0.0;
+
+  /* Create the objective function */
+  problem = f_rastrigin_rotated_cons_bbob_problem_allocate(function, dimension, 
+      instance, rseed, problem_id_template, problem_name_template);
+  
+  bbob_evaluate_gradient(problem, all_zeros, feasible_direction);
+  feasible_direction_set_length(feasible_direction, xopt, dimension, rseed);
+     
+  /* Create the constraints. Use the feasible direction above
+   * to build the first constraint. 
+   */
+  problem_c = c_linear_cons_bbob_problem_allocate(function,
+      dimension, instance, number_of_linear_constraints,
+      problem_id_template, problem_name_template, feasible_direction);
+      
+  problem_type_temp = coco_strdup(problem->problem_type);
+  
+  /* Build the final constrained function by stacking the objective
+   * function and the constraints into one coco_problem_t type.
+   */
+  problem = coco_problem_stacked_allocate(problem, problem_c,
+      problem_c->smallest_values_of_interest, 
+      problem_c->largest_values_of_interest);
+  
+  /* Define problem->best_parameter as the origin and store its
+   * objective function value into problem->best_value.
+   */
+  for (i = 0; i < dimension; ++i)
+    problem->best_parameter[i] = 0.0;
+  assert(problem->evaluate_function != NULL);
+  problem->evaluate_function(problem, problem->best_parameter, problem->best_value);
+  
+  /* To be sure that everything is correct, reset the f-evaluations
+   * and g-evaluations counters to zero.
+   */
+  problem->evaluations = 0;
+  problem->evaluations_constraints = 0;
+  
+  problem = transform_vars_asymmetric(problem, 0.2);
+  problem = transform_vars_oscillate(problem);
+  
+  /* Apply a translation to the whole problem so that the constrained 
+   * minimum is no longer at the origin. 
+   */
+  problem = transform_vars_shift(problem, xopt, 0);
+ 
+  /* Construct problem type */
+  coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
+  problem_c->problem_type);
+ 
+  coco_free_memory(problem_type_temp);
+  coco_free_memory(all_zeros);
+  
+  return problem;
+ 
+}
