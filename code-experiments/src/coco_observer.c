@@ -522,9 +522,9 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     observer_biobj(observer, observer_options, &additional_option_keys);
   } else if (0 == strcmp(observer_name, "bbob-biobj-ext")) {
     observer_biobj(observer, observer_options, &additional_option_keys);
-  } else if (0 == strcmp(observer_name, "bbob-largescale")) {
+  } else if (0 == strncmp(observer_name, "bbob-constrained", 16)) {
     observer_bbob(observer, observer_options, &additional_option_keys);
-  } else if (0 == strcmp(observer_name, "bbob-constrained")) {
+  } else if (0 == strcmp(observer_name, "bbob-largescale")) {
     observer_bbob(observer, observer_options, &additional_option_keys);
   } else if (0 == strcmp(observer_name, "bbob-mixint")) {
     observer_bbob(observer, observer_options, &additional_option_keys);
