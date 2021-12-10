@@ -365,7 +365,7 @@ def beautify(legend=False, rightlegend=False):
     """
     # Get axis handle and set scale for each axis
     axisHandle = plt.gca()
-    #axisHandle.set_xscale("log")
+    axisHandle.set_xscale("log")
     try:
         axisHandle.set_yscale("log")
     except OverflowError:
@@ -472,19 +472,6 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
                     plt.plot(consert, ert, **line_styles[i])
                     # TODO: hack to not draw a line if inbetween data point is not succesfull
 
-                    # For legend
-                    # tmp = plt.plot([], [], label=alg.replace('..' + os.sep, '').strip(os.sep), **line_styles[i])
-                    algorithm_name = toolsdivers.str_to_latex(toolsdivers.strip_pathname1(alg))
-                    if plotting_style.in_background:
-                        algorithm_name = '_' + algorithm_name
-                    tmp = plt.plot([], [], label=algorithm_name[:legend_text_max_len], **line_styles[i])
-                    plt.setp(tmp[0], markersize=12.,
-                             markeredgecolor=plt.getp(tmp[0], 'color'))
-
-                    # needs to be done here since these are dimension-dependant
-                    plt.xticks(consticks)
-                    plt.xlim(0, 9 + 9 * numpy.floor(dim / 2) + 1)
-
                     if consmaxevals:
                         tmp = plt.plot(consmaxevals, maxevals, **line_styles[i])
                         plt.setp(tmp[0], markersize=20, #label=alg,
@@ -504,6 +491,37 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
                         handles.append(tmp)
                         sorted_algorithms = plotting_style.algorithm_list
                         styles = line_styles
+
+                # needs to be done here since these are dimension-dependant
+                plt.xticks(consticks, consticks)
+                plt.xlim(.8, 1.5 * (9 + 9 * numpy.floor(dim / 2)))
+
+                # For legend
+                # tmp = plt.plot([], [], label=alg.replace('..' + os.sep, '').strip(os.sep), **line_styles[i])
+                algorithm_name = toolsdivers.str_to_latex(toolsdivers.strip_pathname1(alg))
+                if plotting_style.in_background:
+                    algorithm_name = '_' + algorithm_name
+                tmp = plt.plot([], [], label=algorithm_name[:legend_text_max_len], **line_styles[i])
+                plt.setp(tmp[0], markersize=12.,
+                         markeredgecolor=plt.getp(tmp[0], 'color'))
+                functions_with_legend = testbedsettings.current_testbed.functions_with_legend
+                isLegend = False
+                if legend:
+                    plotLegend(handles)
+                elif dim == 2 and len(sorted_algorithms) < 1e6: # 6 elements at most in the boxed legend
+                        # plot legend for the first plot of each objective
+                        isLegend = True
+
+                beautify(legend=isLegend, rightlegend=legend)
+
+                # Vertical bar where dimension = number of active constraints
+                ymin, ymax = plt.ylim()
+                hy = ymax - ymin
+                plt.vlines(dim, *plt.ylim(), lw=1)
+                plt.annotate("m=dim", (dim, ymin + .05 * hy))
+
+                plt.vlines(dim * 1.5, *plt.ylim(), lw=1)
+                plt.annotate("m_act=dim", (dim * 1.5, ymin + hy.1 * hy))
 
             refalgentries = bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename)
 
@@ -550,16 +568,7 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
             fontSize = getFontSize(funInfos.values())
             plt.gca().set_title('%s, dim = %s' % (fname, dim), fontsize=0.9*fontSize)
 
-            functions_with_legend = testbedsettings.current_testbed.functions_with_legend
-            isLegend = False
-            if legend:
-                plotLegend(handles)
-            elif dim == 2 and len(sorted_algorithms) < 1e6: # 6 elements at most in the boxed legend
-                    # plot legend for the first plot of each objective
-                    isLegend = True
-
-            beautify(legend=isLegend, rightlegend=legend)
-
+            
             # bottom labels with #instances and type of targets:
             infotext = ''
             algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
