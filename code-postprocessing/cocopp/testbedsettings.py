@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import os
 import numpy as np
 import warnings
+from collections import OrderedDict
 
 from . import dataformatsettings
 
@@ -440,6 +441,17 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
 
     )
 
+    func_cons_groups = OrderedDict({
+        "Sphere": range(1, 7),
+        "Separable Ellipsoid": range(7, 13),
+        "Linear Slope": range(13, 19),
+        "Rotated Ellipsoid": range(19, 25),
+        "Discus": range(25, 31),
+        "Bent Cigar": range(31, 37),
+        "Different Powers": range(37, 43),
+        "Separable Rastrigin": range(43, 49),
+        "Rotated Rastrigin": range(49, 55)
+    })
 
     def __init__(self, target_values):
 

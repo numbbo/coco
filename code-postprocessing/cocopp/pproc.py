@@ -2345,8 +2345,10 @@ class DataSetList(list):
         return d
 
     def dictByFuncCons(self):
-        """Returns a dictionary of instances of this class by objective functions.
-        Shouldbe used only with the constrained test bed.
+        """Returns a dictionary of instances of this class
+        by objective functions (grouping over constraints).
+
+        Should be used only with the constrained test bed.
 
         Returns a dictionary with the function string identifiers as keys and the
         corresponding slices as values.
@@ -2355,25 +2357,12 @@ class DataSetList(list):
         assert testbedsettings.current_testbed.name.startswith("bbob-constrained")
         d = {}
         for i in self:
-            if i.funcId in range(1, 7):
-                d.setdefault("Sphere", DataSetList()).append(i)
-            elif i.funcId in range(7, 13):
-                d.setdefault("Separable Ellipsoid", DataSetList()).append(i)
-            elif i.funcId in range(13, 19):
-                d.setdefault("Linear Slope", DataSetList()).append(i)
-            elif i.funcId in range(19, 25):
-                d.setdefault("Rotated Ellipsoid", DataSetList()).append(i)
-            elif i.funcId in range(25, 31):
-                d.setdefault("Discus", DataSetList()).append(i)
-            elif i.funcId in range(31, 37):
-                d.setdefault("Bent Cigar", DataSetList()).append(i)
-            elif i.funcId in range(37, 43):
-                d.setdefault("Different Powers", DataSetList()).append(i)
-            elif i.funcId in range(43, 49):
-                d.setdefault("Separable Rastrigin", DataSetList()).append(i)
-            elif i.funcId in range(49, 55):
-                d.setdefault("Rotated Rastrigin", DataSetList()).append(i)
-            else:
+            found = False
+            for group_name, ids in testbedsettings.current_testbed.func_cons_groups.items():
+                if i.funcId in ids:
+                    d.setdefault(group_name, DataSetList()).append(i)
+                    found = True
+            if not found:
                 warnings.warn('Unknown function id: %s' % i.funcId)
         return d
 
