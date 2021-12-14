@@ -353,7 +353,15 @@ def plotLegend(handles, maxval=None):
         plt.axvline(maxval, color='k')
 
 
-def beautify(legend=False, rightlegend=False):
+def ylim_upperbound(ymax):
+    upper_bound = 1.1e2
+    while True:
+        if ymax < upper_bound:
+            return upper_bound
+        upper_bound *= 100
+
+
+def beautify(dim, legend=False, rightlegend=False):
     """Customize figure format.
 
     adding a legend, axis label, etc
@@ -374,6 +382,7 @@ def beautify(legend=False, rightlegend=False):
     # Grid options
     axisHandle.yaxis.grid(True)
 
+    xmin, xmax = plt.xlim()
     ymin, ymax = plt.ylim()
 
     # quadratic slanted "grid"
@@ -381,14 +390,34 @@ def beautify(legend=False, rightlegend=False):
         plt.plot((0.2, 20000), (10**i, 10**(i + 5)), 'k:',
                  linewidth=0.5)  # grid should be on top
 
-    plt.ylim(10**-0.2, ymax) # Set back the default maximum.
+    plt.xlim(10**-0.2, xmax)
+    upper_bound = ylim_upperbound(ymax)
+    plt.ylim(10**-0.2, upper_bound) # Set back the default maximum.
 
-    tick_locs = [n for n in axisHandle.get_yticks()
-                 if n > plt.ylim()[0] and n < plt.ylim()[1]]
-    tick_labels = ['%d' % round(numpy.log10(n)) if n < 1e10  # assure 1 digit for uniform figure sizes
-                   else '' for n in tick_locs]
-    axisHandle.set_yticks(tick_locs)
-    axisHandle.set_yticklabels(tick_labels)
+    # Vertical bar where dimension = number of active constraints
+    plt.vlines(dim, 0, upper_bound, lw=2, ls="--", alpha=.5, colors=["blue"],
+               label="m = dim")
+    plt.vlines(int(dim * 1.5), 0, upper_bound, lw=2, ls="--", alpha=.5,
+               colors=["green"], label="m(active) = dim")
+
+    # X ticks
+    xtick_locs = [[n, 3 * n] for n in axisHandle.get_xticks()
+                  if n > plt.xlim()[0] and n < plt.xlim()[1]]
+    xtick_locs = [n for sublist in xtick_locs for n in sublist]  # flatten
+    xtick_labels = ['%d' % int(n) if n < 1e10  # assure 1 digit for uniform figure sizes
+                   else '' for n in xtick_locs]
+    axisHandle.set_xticks(xtick_locs)
+    axisHandle.set_xticklabels(xtick_labels)
+
+    # Y ticks
+    ytick_locs = [n for n in axisHandle.get_yticks()
+                  if n > plt.ylim()[0] and n < plt.ylim()[1]]
+    ytick_labels = ['%d' % round(numpy.log10(n)) if n < 1e10  # assure 1 digit for uniform figure sizes
+                   else '' for n in ytick_locs]
+    axisHandle.set_yticks(ytick_locs)
+    axisHandle.set_yticklabels(ytick_labels)
+    if upper_bound < 1e3:
+        plt.grid(True, axis="y", which="both")
 
     if legend:
         toolsdivers.legend(loc=0, numpoints=1,
@@ -451,15 +480,23 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
                     consmedian = []
                     medianfes = []
                     consticks = []
+                    successes = []
+                    previous_success = False
                     for ds in dsl:
                         assert isinstance(ds, pproc.DataSet)
                         cons = ds.number_of_constraints
                         consticks.append(cons)
                         data = generateData(ds, 1e-6)  # TODO: target code is broken, hardcoded for now
-                        if 1 < 3 or data[2] == 0:  # No success
+                        if data[2] == 0:  # No success
+                            previous_success = False
                             consmaxevals.append(cons)
                             maxevals.append(float(data[3]) / dim)
                         if data[2] > 0:
+                            if previous_success:
+                                successes.append(True)
+                            else:
+                                successes.append(False)
+                            previous_success = True
                             consmedian.append(cons)
                             medianfes.append(data[4] / dim)
                             consert.append(cons)
@@ -469,9 +506,18 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
                                 ynbsucc.append(float(data[0]) / dim)
                                 nbsucc.append('%d' % data[2])
                     # Draw lines
-                    plt.plot(consert, ert, **line_styles[i])
-                    # TODO: hack to not draw a line if inbetween data point is not succesfull
-
+                    successes.append(False)
+                    for icons in range(len(consert)):
+                        # plot line only if the current data point in consert
+                        # comes just after the next, as monitored by successes
+                        if icons < len(consert) - 1 and successes[icons + 1]:
+                            tmp = plt.plot(
+                                consert[icons:icons + 2],
+                                ert[icons:icons + 2], **line_styles[i])
+                        else:  # plot remaining single points (some twice)
+                            tmp = plt.plot(
+                                consert[icons], ert[icons], **line_styles[i])
+                        plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
                     if consmaxevals:
                         tmp = plt.plot(consmaxevals, maxevals, **line_styles[i])
                         plt.setp(tmp[0], markersize=20, #label=alg,
@@ -492,36 +538,24 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
                         sorted_algorithms = plotting_style.algorithm_list
                         styles = line_styles
 
-                # needs to be done here since these are dimension-dependant
-                plt.xticks(consticks, consticks)
-                plt.xlim(.8, 1.5 * (9 + 9 * numpy.floor(dim / 2)))
+                    # For legend
+                    # tmp = plt.plot([], [], label=alg.replace('..' + os.sep, '').strip(os.sep), **line_styles[i])
+                    algorithm_name = toolsdivers.str_to_latex(toolsdivers.strip_pathname1(alg))
+                    if plotting_style.in_background:
+                        algorithm_name = '_' + algorithm_name
+                    tmp = plt.plot([], [], label=algorithm_name[:legend_text_max_len], **line_styles[i])
+                    plt.setp(tmp[0], markersize=12.,
+                             markeredgecolor=plt.getp(tmp[0], 'color'))
+                    functions_with_legend = testbedsettings.current_testbed.functions_with_legend
+                    isLegend = False
+                    if legend:
+                        plotLegend(handles)
+                    elif dim == 2 and len(sorted_algorithms) < 1e6: # 6 elements at most in the boxed legend
+                            # plot legend for the first plot of each objective
+                            isLegend = True
 
-                # For legend
-                # tmp = plt.plot([], [], label=alg.replace('..' + os.sep, '').strip(os.sep), **line_styles[i])
-                algorithm_name = toolsdivers.str_to_latex(toolsdivers.strip_pathname1(alg))
-                if plotting_style.in_background:
-                    algorithm_name = '_' + algorithm_name
-                tmp = plt.plot([], [], label=algorithm_name[:legend_text_max_len], **line_styles[i])
-                plt.setp(tmp[0], markersize=12.,
-                         markeredgecolor=plt.getp(tmp[0], 'color'))
-                functions_with_legend = testbedsettings.current_testbed.functions_with_legend
-                isLegend = False
-                if legend:
-                    plotLegend(handles)
-                elif dim == 2 and len(sorted_algorithms) < 1e6: # 6 elements at most in the boxed legend
-                        # plot legend for the first plot of each objective
-                        isLegend = True
+                beautify(dim, legend=isLegend, rightlegend=legend)
 
-                beautify(legend=isLegend, rightlegend=legend)
-
-                # Vertical bar where dimension = number of active constraints
-                ymin, ymax = plt.ylim()
-                hy = ymax - ymin
-                plt.vlines(dim, *plt.ylim(), lw=1)
-                plt.annotate("m=dim", (dim, ymin + .05 * hy))
-
-                plt.vlines(dim * 1.5, *plt.ylim(), lw=1)
-                plt.annotate("m_act=dim", (dim * 1.5, ymin + hy.1 * hy))
 
             refalgentries = bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename)
 

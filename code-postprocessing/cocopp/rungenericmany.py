@@ -435,7 +435,6 @@ def main(args, outputdir):
         print_done()
 
     if testbedsettings.current_testbed.name.startswith("bbob-constrained"):
-        #todo
         print("Scaling wrt constraints...")
         ppfigcons.main(dictAlg,
                        genericsettings.ppfigcons_file_name,
