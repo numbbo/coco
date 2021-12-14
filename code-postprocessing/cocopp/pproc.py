@@ -2406,6 +2406,8 @@ class DataSetList(list):
                 d.setdefault("Different Powers", DataSetList()).append(i)
             elif i.funcId in range(43, 49):
                 d.setdefault("Separable Rastrigin", DataSetList()).append(i)
+            elif i.funcId in range(49, 55):
+                d.setdefault("Rotated Rastrigin", DataSetList()).append(i)
             else:
                 warnings.warn('Unknown function id: %s' % i.funcId)
         return d
@@ -2484,7 +2486,7 @@ class DataSetList(list):
                 elif i.funcId in range(19, 43):
                     res.setdefault(
                         'hcond m=' + n_constraints, DataSetList()).append(i)
-                elif i.funcId in range(43, 49):
+                elif i.funcId in range(43, 55):
                     res.setdefault(
                         'multi m=' + n_constraints, DataSetList()).append(i)
                 else:
@@ -2553,7 +2555,7 @@ class DataSetList(list):
                         (1, n_cons_dim,
                          ('hcond m=' + n_constraints,
                          'Ill-conditioned functions with' + n_constraints + 'constraints')))
-                elif any(i.funcId in range(43, 49) for i in self):
+                elif any(i.funcId in range(43, 55) for i in self):
                     groups.append(
                         (2, n_cons_dim,
                          ('multi m=' + n_constraints,
