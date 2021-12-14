@@ -323,10 +323,8 @@ def save_single_functions_html(filename,
         elif htmlPage is HtmlPage.PPFIGCONS:
             current_header = 'Scaling of run "time" with number of constraints'
             f.write("\n<H2> %s </H2>\n" % current_header)
-            for function_name in ["Sphere", "Separable Ellipsoid"]:
-                for dimension in [2, 3, 5, 10, 20]:
-                    # TODO: redo this code with used dimension/functions only
-                    # TODO: naming is duplicated here and in ppfigcons
+            for function_name in testbedsettings.current_testbed.func_cons_groups.keys():
+                for dimension in dimensions if dimensions is not None else [2, 3, 5, 10, 20, 40]:
                     f.write(add_image('ppfigcons_%s_d%s%s.%s' % (function_name, dimension, add_to_names, extension), True))
             f.write(caption_string_format % '##bbobppfigconslegend##')
 
