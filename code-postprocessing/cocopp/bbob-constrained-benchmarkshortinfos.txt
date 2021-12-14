@@ -46,3 +46,9 @@
 46 Separable Rastrigin, 9+int(3n/4) constraints
 47 Separable Rastrigin, 9+int(3n/2) constraints
 48 Separable Rastrigin, 9+int(9n/2) constraints
+49 Rotated Rastrigin, 1 constraint
+50 Rotated Rastrigin, 3 constraints
+51 Rotated Rastrigin, 9 constraints
+52 Rotated Rastrigin, 9+int(3n/4) constraints
+53 Rotated Rastrigin, 9+int(3n/2) constraints
+54 Rotated Rastrigin, 9+int(9n/2) constraints

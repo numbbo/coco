@@ -62,3 +62,10 @@
 47 Constrained Separable Rastrigin function with 9+int(3n/2) constraints
 48 Constrained Separable Rastrigin function with 9+int(9n/2) constraints
 
+% CONSTRAINED ROTATED RASTRIGIN FUNCTION
+49 Constrained Rotated Rastrigin function with 1 constraint
+50 Constrained Rotated Rastrigin function with 3 constraints
+51 Constrained Rotated Rastrigin function with 9 constraints
+52 Constrained Rotated Rastrigin function with 9+int(3n/4) constraints
+53 Constrained Rotated Rastrigin function with 9+int(3n/2) constraints
+54 Constrained Rotated Rastrigin function with 9+int(9n/2) constraints
