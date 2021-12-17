@@ -401,9 +401,9 @@ def beautify(dim, legend=False, rightlegend=False):
                colors=["green"], label="m(active) = dim")
 
     # X ticks
-    xtick_locs = [[n, 3 * n] for n in axisHandle.get_xticks()
-                  if n > plt.xlim()[0] and n < plt.xlim()[1]]
+    xtick_locs = [[n, 3 * n] for n in axisHandle.get_xticks()]
     xtick_locs = [n for sublist in xtick_locs for n in sublist]  # flatten
+    xtick_locs = [n for n in xtick_locs if n > plt.xlim()[0] and n < plt.xlim()[1]]  # filter
     xtick_labels = ['%d' % int(n) if n < 1e10  # assure 1 digit for uniform figure sizes
                    else '' for n in xtick_locs]
     axisHandle.set_xticks(xtick_locs)
@@ -482,10 +482,12 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
                     consticks = []
                     successes = []
                     previous_success = False
+                    function_ids = []
                     for ds in dsl:
                         assert isinstance(ds, pproc.DataSet)
                         cons = ds.number_of_constraints
                         consticks.append(cons)
+                        function_ids.append(ds.funcId)
                         data = generateData(ds, 1e-6)  # TODO: target code is broken, hardcoded for now
                         if data[2] == 0:  # No success
                             previous_success = False
@@ -550,11 +552,12 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
                     isLegend = False
                     if legend:
                         plotLegend(handles)
-                    elif dim == 2 and len(sorted_algorithms) < 1e6: # 6 elements at most in the boxed legend
+                    elif set(function_ids).intersection(set(functions_with_legend)) and len(sorted_algorithms) < 1e6:  # 6 elements at most in the boxed legend
+                        if (functions_with_legend[0] in function_ids and dim == 2) or (functions_with_legend[-1] in function_ids and dim == 40):
                             # plot legend for the first plot of each objective
                             isLegend = True
 
-                beautify(dim, legend=isLegend, rightlegend=legend)
+            beautify(dim, legend=isLegend, rightlegend=legend)
 
 
             refalgentries = bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename)
