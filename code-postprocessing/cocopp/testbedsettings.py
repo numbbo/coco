@@ -412,9 +412,9 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
         shortinfo_filename=shortinfo_filename,
         short_names=get_short_names(shortinfo_filename),
         name=suite_name_cons,
-        functions_with_legend=(1, 48),
+        functions_with_legend=(1, 54),
         first_function_number=1,
-        last_function_number=48,
+        last_function_number=54,
         reference_algorithm_filename='',
         reference_algorithm_displayname='',  # TODO: should be read in from data set in reference_algorithm_filename
         scenario=scenario_constrainedfixed,
