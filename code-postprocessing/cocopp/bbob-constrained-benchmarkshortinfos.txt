@@ -1,54 +1,54 @@
-1 Sphere, 1 constraint
-2 Sphere, 3 constraints
-3 Sphere, 9 constraints
-4 Sphere, 9+int(3n/4) constraints
-5 Sphere, 9+int(3n/2) constraints
-6 Sphere, 9+int(9n/2) constraints
-7 Sep. Ellipsoid, 1 constraint
-8 Sep. Ellipsoid, 3 constraints
-9 Sep. Ellipsoid, 9 constraints
-10 Sep. Ellipsoid, 9+int(3n/4) constraints
-11 Sep. Ellipsoid, 9+int(3n/2) constraints
-12 Sep. Ellipsoid, 9+int(9n/2) constraints
-13 Linear Slope, 1 constraint
-14 Linear Slope, 3 constraints
-15 Linear Slope, 9 constraints
-16 Linear Slope, 9+int(3n/4) constraints
-17 Linear Slope, 9+int(3n/2) constraints
-18 Linear Slope, 9+int(9n/2) constraints
-19 Rotated Ellipsoid, 1 constraint
-20 Rotated Ellipsoid, 3 constraints
-21 Rotated Ellipsoid, 9 constraints
-22 Rotated Ellipsoid, 9+int(3n/4) constraints
-23 Rotated Ellipsoid, 9+int(3n/2) constraints
-24 Rotated Ellipsoid, 9+int(9n/2) constraints
-25 Discus, 1 constraint
-26 Discus, 3 constraints
-27 Discus, 9 constraints
-28 Discus, 9+int(3n/4) constraints
-29 Discus, 9+int(3n/2) constraints
-30 Discus, 9+int(9n/2) constraints
-31 Bent Cigar, 1 constraint
-32 Bent Cigar, 3 constraints
-33 Bent Cigar, 9 constraints
-34 Bent Cigar, 9+int(3n/4) constraints
-35 Bent Cigar, 9+int(3n/2) constraints
-36 Bent Cigar, 9+int(9n/2) constraints
-37 Different Powers, 1 constraint
-38 Different Powers, 3 constraints
-39 Different Powers, 9 constraints
-40 Different Powers, 9+int(3n/4) constraints
-41 Different Powers, 9+int(3n/2) constraints
-42 Different Powers, 9+int(9n/2) constraints
-43 Separable Rastrigin, 1 constraint
-44 Separable Rastrigin, 3 constraints
-45 Separable Rastrigin, 9 constraints
-46 Separable Rastrigin, 9+int(3n/4) constraints
-47 Separable Rastrigin, 9+int(3n/2) constraints
-48 Separable Rastrigin, 9+int(9n/2) constraints
-49 Rotated Rastrigin, 1 constraint
-50 Rotated Rastrigin, 3 constraints
-51 Rotated Rastrigin, 9 constraints
-52 Rotated Rastrigin, 9+int(3n/4) constraints
-53 Rotated Rastrigin, 9+int(3n/2) constraints
-54 Rotated Rastrigin, 9+int(9n/2) constraints
+1 Sphere, m=1 
+2 Sphere, m=3
+3 Sphere, m=9
+4 Sphere, m=9+int(3n/4)
+5 Sphere, m=9+int(3n/2)
+6 Sphere, m=9+int(9n/2)
+7 Sep. Ellipsoid, m=1
+8 Sep. Ellipsoid, m=3
+9 Sep. Ellipsoid, m=9
+10 Sep. Ellipsoid, m=9+int(3n/4)
+11 Sep. Ellipsoid, m=9+int(3n/2)
+12 Sep. Ellipsoid, m=9+int(9n/2)
+13 Linear Slope, m=1
+14 Linear Slope, m=3
+15 Linear Slope, m=9
+16 Linear Slope, m=9+int(3n/4)
+17 Linear Slope, m=9+int(3n/2)
+18 Linear Slope, m=9+int(9n/2)
+19 Rotated Ellipsoid, m=1
+20 Rotated Ellipsoid, m=3
+21 Rotated Ellipsoid, m=9
+22 Rotated Ellipsoid, m=9+int(3n/4)
+23 Rotated Ellipsoid, m=9+int(3n/2)
+24 Rotated Ellipsoid, m=9+int(9n/2)
+25 Discus, m=1
+26 Discus, m=3
+27 Discus, m=9
+28 Discus, m=9+int(3n/4)
+29 Discus, m=9+int(3n/2)
+30 Discus, m=9+int(9n/2)
+31 Bent Cigar, m=1
+32 Bent Cigar, m=3
+33 Bent Cigar, m=9
+34 Bent Cigar, m=9+int(3n/4)
+35 Bent Cigar, m=9+int(3n/2)
+36 Bent Cigar, m=9+int(9n/2)
+37 Different Powers, m=1
+38 Different Powers, m=3
+39 Different Powers, m=9
+40 Different Powers, m=9+int(3n/4)
+41 Different Powers, m=9+int(3n/2)
+42 Different Powers, m=9+int(9n/2)
+43 Separable Rastrigin, m=1
+44 Separable Rastrigin, m=3
+45 Separable Rastrigin, m=9
+46 Separable Rastrigin, m=9+int(3n/4)
+47 Separable Rastrigin, m=9+int(3n/2)
+48 Separable Rastrigin, m=9+int(9n/2)
+49 Rotated Rastrigin, m=1
+50 Rotated Rastrigin, m=3
+51 Rotated Rastrigin, m=9
+52 Rotated Rastrigin, m=9+int(3n/4)
+53 Rotated Rastrigin, m=9+int(3n/2)
+54 Rotated Rastrigin, m=9+int(9n/2)
