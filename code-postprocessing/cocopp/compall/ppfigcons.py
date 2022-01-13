@@ -603,7 +603,7 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
                          markersize=styles[0]['markersize'])
             
             fontSize = getFontSize(funInfos.values())
-            plt.gca().set_title('%s, dim = %s' % (fname, dim), fontsize=0.9*fontSize)
+            plt.gca().set_title('%s, %s-D' % (fname, dim), fontsize=0.9*fontSize)
 
             
             # bottom labels with #instances and type of targets:
