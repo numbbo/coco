@@ -187,6 +187,7 @@ class Testbed(object):
     reference_algorithm_displayname = None
     instances_are_uniform = True
     "False for biobjective suites, used (so far only) for simulated restarts in pprldmany"
+    has_constraints = False  # default
 
     def info(self, fun_number=None):
         """info on the testbed if ``fun_number is None`` or one-line info
@@ -402,6 +403,7 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
     min_target_latex = '-6'
     min_target_exponent = -6.2
     min_target_scatter = -6
+    has_constraints = True
 
     shortinfo_filename = 'bbob-constrained-benchmarkshortinfos.txt'
     pptable_targetsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, min_target)  # for pptable and pptablemany
