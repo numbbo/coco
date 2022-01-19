@@ -529,6 +529,7 @@ class DataSet(object):
       - *evals* -- data aligned by function values (2xarray, list of data rows [f_val, eval_run1, eval_run2,...]); caveat: in a portfolio, data rows can have different lengths
       - *funvals* -- data aligned by function evaluations (2xarray)
       - *maxevals* -- maximum number of function evaluations (array)
+      - *maxfgevals* -- maximum (i.e. last) weighted sum of evaluations+constraints_evals per instance (array)
       - *finalfunvals* -- final function values (array)
       - *readmaxevals* -- maximum number of function evaluations read
                           from index file (array)
@@ -603,6 +604,7 @@ class DataSet(object):
         mMaxEvals
         max_eval
         maxevals
+        maxfgevals
         median_evals
         nbRuns
         nbRuns_raw
@@ -920,8 +922,6 @@ class DataSet(object):
                    % (dataFiles, len(data), len(self.instancenumbers)))
         
         if data:
-            # TODO: maxevals and evals in the constrained case will give
-            # values inconsistent with the above evals attribute
             self.funvals, maxevals, finalfunvals = align_data(
                 data, 
                 dataformatsettings.current_data_format.evaluation_idx,
@@ -936,6 +936,12 @@ class DataSet(object):
                 self._maxevals = maxevals
                 self.finalfunvals = finalfunvals
             #TODO: take for maxevals the max for each trial, for finalfunvals the min...
+
+            # maxevals and evals in the constrained case will give
+            # values inconsistent with the previously set evals attribute
+            # hence we read _lasttdatfilelines to be used in the maxfgevals property
+            # which is constistent with the evals attribute also with constraints
+            self._lasttdatfilelines = [d[-1] for d in datasets]
     
             #extensions = {'.dat':(HMultiReader, 'evals'), '.tdat':(VMultiReader, 'funvals')}
             #for ext, info in extensions.items(): # ext is defined as global
@@ -1327,6 +1333,34 @@ class DataSet(object):
                               for i, m in enumerate(self.instance_multipliers)
                                     if m > 1])])
         return self._maxevals
+
+    @property
+    def maxfgevals(self):
+        """maximum of the weighted f+g sum per instance.
+
+        These weighted evaluation numbers are consistent with the
+        numbers in the `evals` class attribute, unless the weights
+        have been changed after setting `_evals`.
+
+        The values are based on the last entry of the `.tdat` files, hence
+        they reflect the very last evaluation by the algorithm if
+        `isFinalized`, and they are computed using the current
+        ``genericsettings.weight_evaluations_constraints``.
+
+        Yet to be implemented: for class instances of `bestalg.BestAlgSet`
+        or `algportfolio.DataSet`, `maxevals` is a dictionary with maxevals
+        as values and the source file or folder as key.
+        """
+        if testbedsettings.current_testbed.has_constraints:
+            raw = [sum(a[:2] * genericsettings.weight_evaluations_constraints)
+                        for a in self._lasttdatfilelines]
+        else:  # prevent wrong data when second column is f-values rather than constraints
+            raw = [a[0] for a in self._lasttdatfilelines]
+        if self._need_balancing:
+            return np.hstack([raw, np.hstack([(m - 1) * [raw[i]]
+                              for i, m in enumerate(self.instance_multipliers)
+                                    if m > 1])])
+        return np.asarray(raw)  # type consistent with maxevals
 
     @property
     def nbRuns_raw(self):
