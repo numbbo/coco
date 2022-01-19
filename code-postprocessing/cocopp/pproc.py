@@ -1254,7 +1254,8 @@ class DataSet(object):
     def number_of_constraints(self):
         """number of constraints of the function/problem the `DataSet` is based upon.
 
-        Remark: this is never used, so far.
+        Remark: this is never used so far and needs to be implemented in
+        the class ``testbedsettings.SuiteClass(self.suite_name)``.
         """
         try:
             return self._number_of_constraints

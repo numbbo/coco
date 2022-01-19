@@ -227,6 +227,7 @@ class Testbed(object):
 
     @staticmethod
     def number_of_constraints(dimension, function_id, **kwargs):
+        raise NotImplementedError  # this needs to be implemented for the constrained testbed class
         return 0
 
 
