@@ -78,8 +78,8 @@ class BBOBNewDataFormat(DataFormat):
         # check whether all constraints evaluations are zero
         # we then conclude that we don't need the evals_function and
         # evals_constraints attributes
-        if np.nanmax(dataset.evals_constraints) == 0 and np.nanmax(dataset.evals_function) > 1:
-            # if evals_function <= 1 we rather keep attributes to be on the save side for debugging
+        if not dataset.evals_constraints[:, 1:].any():  # all zero, should it better depend on testbed.has_constraints?
+            # if evals_function <= 1 we rather keep attributes to be on the save side for debugging?
             dataset._evals = dataset.evals_function
             del dataset.evals_function  # clean dataset namespace
             del dataset.evals_constraints
