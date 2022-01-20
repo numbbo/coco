@@ -427,7 +427,12 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
             runlengthunsucc = []
             evals = entry.detEvals([t])[0]
             runlengthsucc = evals[np.isnan(evals) == False] / divisor
-            runlengthunsucc = entry.maxevals[np.isnan(evals)] / divisor
+            if testbedsettings.current_testbed.has_constraints:
+                # maxevals is inconsistent in that case
+                maxevals_column = entry.maxfgevals
+            else:
+                maxevals_column = entry.maxevals
+            runlengthunsucc = maxevals_column[np.isnan(evals)] / divisor
             if len(runlengthsucc) > 0:  # else x == [inf, inf,...]
                 if testbedsettings.current_testbed.instances_are_uniform:
                     x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
@@ -660,7 +665,12 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                         evals = entry.detEvals([t])[0]
                         assert entry.dim == dim
                         runlengthsucc = evals[np.isnan(evals) == False] / divisor
-                        runlengthunsucc = entry.maxevals[np.isnan(evals)] / divisor
+                        if testbedsettings.current_testbed.has_constraints:
+                            # maxevals is inconsistent in that case
+                            maxevals_column = entry.maxfgevals
+                        else:
+                            maxevals_column = entry.maxevals
+                        runlengthunsucc = maxevals_column[np.isnan(evals)] / divisor
                         if len(runlengthsucc) > 0:  # else x == [inf, inf,...]
                             if testbedsettings.current_testbed.instances_are_uniform:
                                 x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
