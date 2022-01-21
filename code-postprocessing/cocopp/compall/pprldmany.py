@@ -213,6 +213,7 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
     if n == 0:
         # res = plt.plot((1., ), (0., ), **kwargs)
         res = pprldistr.plotECDF(np.array((1.,)), n=np.inf, **kwargs)
+        maxval = np.inf  # trick to plot the cross later if maxevals
     else:
         dictx = {}  # number of appearances of each value in x
         for i in x:
@@ -240,30 +241,33 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
                                         logscale=False, clip_on=False, **kwargs)
         # res = plotUnifLogXMarkers(x2, y2, nbperdecade, logscale=False, **kwargs)
 
-        if maxevals:  # Should cover the case where maxevals is None or empty
-            x3 = np.median(maxevals)
-            if (x3 <= maxval and
-                # np.any(x2 <= x3) and   # maxval < median(maxevals)
-                not plt.getp(res[-1], 'label').startswith('best')
-                ): # TODO: HACK for not considering a "best" algorithm line
-                
+    if maxevals:  # Should cover the case where maxevals is None or empty
+        x3 = np.median(maxevals)  # change it only here
+        if (x3 <= maxval and
+            # np.any(x2 <= x3) and   # maxval < median(maxevals)
+            not plt.getp(res[-1], 'label').startswith('best')
+            ): # TODO: HACK for not considering a "best" algorithm line
+            # Setting y3
+            if n == 0:
+                y3 = 0
+            else:
                 try:
                     y3 = y2[x2 <= x3][-1]  # find right y-value for x3==median(maxevals)
                 except IndexError:  # median(maxevals) is smaller than any data, can only happen because of CrE?
                     y3 = y2[0]
-                h = plt.plot((x3,), (y3,),
-                             marker=median_max_evals_marker_format[0],
-                             markersize=median_max_evals_marker_format[1],
-                             markeredgewidth=median_max_evals_marker_format[2],
-                             # marker='x', markersize=24, markeredgewidth=3, 
-                             markeredgecolor=plt.getp(res[0], 'color'),
-                             ls=plt.getp(res[0], 'linestyle'),
-                             color=plt.getp(res[0], 'color'),
-                             # zorder=1.6   # zorder=0;1;1.5 is behind the grid lines, 2 covers other lines, 1.6 is between
-                             )
-                h.extend(res)
-                res = h  # so the last element in res still has the label.
-                # Only take sequences for x and y!
+            h = plt.plot((x3,), (y3,),
+                         marker=median_max_evals_marker_format[0],
+                         markersize=median_max_evals_marker_format[1],
+                         markeredgewidth=median_max_evals_marker_format[2],
+                         # marker='x', markersize=24, markeredgewidth=3, 
+                         markeredgecolor=plt.getp(res[0], 'color'),
+                         ls=plt.getp(res[0], 'linestyle'),
+                         color=plt.getp(res[0], 'color'),
+                         # zorder=1.6   # zorder=0;1;1.5 is behind the grid lines, 2 covers other lines, 1.6 is between
+                         )
+            h.extend(res)
+            res = h  # so the last element in res still has the label.
+            # Only take sequences for x and y!
 
     return res
 
