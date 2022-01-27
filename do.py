@@ -741,6 +741,65 @@ def test_java():
 
 
 ################################################################################
+## Rust
+def build_rust():
+    """ Builds the example experiment in Rust """
+    global RELEASE
+
+    amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_c.c'],
+               'code-experiments/build/rust/coco-sys/vendor/coco.c', RELEASE,
+               {"COCO_VERSION": git_version(pep440=True)})
+    expand_file('code-experiments/src/coco.h',
+                'code-experiments/build/rust/coco-sys/vendor/coco.h',
+                {'COCO_VERSION': git_version(pep440=True)})
+    copy_file('code-experiments/src/coco_internal.h',
+              'code-experiments/build/rust/coco-sys/vendor/coco_internal.h')
+
+    write_file(git_revision(), "code-experiments/build/rust/REVISION")
+    write_file(git_version(), "code-experiments/build/rust/VERSION")
+
+    cargo_path = executable_path('cargo')
+    if not cargo_path:
+        raise RuntimeError('Can not find cargo path')
+
+    bindgen_path = executable_path('bindgen')
+    if not bindgen_path:
+        raise RuntimeError('Can not find bindgen path')
+
+    bindgen_call = ['bindgen', 'wrapper.h', '-o', 'vendor/coco.rs',
+                    '--blocklist-item', 'FP_NORMAL',
+                    '--blocklist-item', 'FP_SUBNORMAL',
+                    '--blocklist-item', 'FP_ZERO',
+                    '--blocklist-item', 'FP_INFINITE',
+                    '--blocklist-item', 'FP_NAN']
+    run('code-experiments/build/rust/coco-sys', bindgen_call, verbose=_verbosity)
+
+    run('code-experiments/build/rust', ['cargo', 'build'], verbose=_verbosity)
+
+
+def run_rust():
+    """ Builds and runs the example experiment in Rust """
+    build_rust()
+    try:
+        run('code-experiments/build/rust',
+            ['cargo', 'run', '--example', 'example-experiment'],
+            verbose=_verbosity)
+    except subprocess.CalledProcessError:
+        sys.exit(-1)
+
+
+def test_rust():
+    """ Builds and runs the test in Rust """
+    build_rust()
+    try:
+        run('code-experiments/build/rust',
+            ['cargo', 'test'],
+            verbose=_verbosity)
+    except subprocess.CalledProcessError:
+        sys.exit(-1)
+
+
+################################################################################
 ## Post processing
 def test_postprocessing(all_tests=False, package_install_option=[]):
     install_postprocessing(package_install_option = package_install_option)
@@ -776,7 +835,7 @@ for ee.suite_name, ee.observer_options['result_folder'] in [
         else:
             python('code-postprocessing/cocopp', ['test.py', sys.executable],
                    verbose=_verbosity)
-        
+
         # also run the doctests in aRTAplots/generate_aRTA_plot.py:
         python('code-postprocessing/aRTAplots', ['generate_aRTA_plot.py'], verbose=_verbosity)
     except subprocess.CalledProcessError:
@@ -825,6 +884,7 @@ def build(package_install_option = []):
         # build_matlab,
         build_python(package_install_option = package_install_option),
         build_java,
+        build_rust
     ]
     for builder in builders:
         try:
@@ -842,12 +902,14 @@ def run_all(package_install_option = []):
     run_c()
     run_java()
     run_python(package_install_option = package_install_option)
+    run_rust()
 
 
 def test(package_install_option = []):
     test_c()
     test_java()
     test_python(package_install_option = package_install_option)
+    test_rust()
 
 
 def verbose(args):
@@ -911,6 +973,7 @@ Available commands for users:
 
   build-c                 - Build C module
   build-java              - Build Java module
+  build-rust              - Build Rust module
   build-matlab            - Build Matlab module
   build-matlab-sms        - Build SMS-EMOA example in Matlab
   build-octave            - Build Matlab module in Octave
@@ -919,6 +982,7 @@ Available commands for users:
 
   run-c                   - Build and run example experiment in C
   run-java                - Build and run example experiment in Java
+  run-rust                - Build and run example experiment in Rust
   run-matlab              - Build and run example experiment in MATLAB
   run-matlab-sms          - Build and run SMS-EMOA on bbob-biobj suite in
                             MATLAB
@@ -930,8 +994,8 @@ Available commands for users:
 
 Available commands for developers:
 
-  build                   - Build C, Java and Python modules (see NOTE below)
-  run                     - Run example experiments in C, Java and Python (see
+  build                   - Build C, Java, Rust and Python modules (see NOTE below)
+  run                     - Run example experiments in C, Java, Rust and Python (see
                             NOTE below)
   silent cmd ...          - Calls "do.py cmd ..." and remains silent if no
                             error occurs
@@ -947,6 +1011,7 @@ Available commands for developers:
   test-c-integration      - Build and run integration tests in C
   test-c-example          - Build and run an example experiment test in C
   test-java               - Build and run a test in Java
+  test-rust               - Build and run a test in Rust
   test-python             - Build and run minimal test of Python module
   test-octave             - Build and run example experiment in Octave
   test-postprocessing     - Runs some of the post-processing tests (see NOTE
@@ -957,16 +1022,16 @@ Available commands for developers:
   verify-postprocessing   - Checks if the generated html is up-to-date (see
                             NOTE below)
   leak-check              - Check for memory leaks in C
-  
+
   install-preprocessing   - Install preprocessing (user-locally) (see NOTE
                             below)
   test-preprocessing      - Runs preprocessing tests [needs access to the
                             internet] (see NOTE below)
-  
+
 NOTE: These commands install Python packages to the global site packages by
       by default. This behavior can be modified by providing one of the
       following arguments.
-  
+
        --user OR install-user              - (recommended) installs under the user directory
        --home=<dir> OR install-home=<dir>  - Installs under the specified home directory
 
@@ -994,6 +1059,7 @@ def main(args):
     elif cmd == 'test': test(package_install_option = package_install_option)
     elif cmd == 'build-c': build_c()
     elif cmd == 'build-java': build_java()
+    elif cmd == 'build-rust': build_rust()
     elif cmd == 'build-matlab': build_matlab()
     elif cmd == 'build-matlab-sms': build_matlab_sms()
     elif cmd == 'build-octave': build_octave()
@@ -1002,6 +1068,7 @@ def main(args):
     elif cmd == 'install-postprocessing': install_postprocessing(package_install_option = package_install_option)
     elif cmd == 'run-c': run_c()
     elif cmd == 'run-java': run_java()
+    elif cmd == 'run-rust': run_rust()
     elif cmd == 'run-matlab': run_matlab()
     elif cmd == 'run-matlab-sms': run_matlab_sms()
     elif cmd == 'run-octave': run_octave()
@@ -1015,6 +1082,7 @@ def main(args):
     elif cmd == 'test-c-integration': test_c_integration()
     elif cmd == 'test-c-example': test_c_example()
     elif cmd == 'test-java': test_java()
+    elif cmd == 'test-rust': test_rust()
     elif cmd == 'test-python': test_python()
     elif cmd == 'test-octave': test_octave()
     elif cmd == 'test-postprocessing': test_postprocessing(all_tests = False, package_install_option = package_install_option)

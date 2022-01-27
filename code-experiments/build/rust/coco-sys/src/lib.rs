@@ -5,4 +5,4 @@
 #![allow(deref_nullptr)]
 #![allow(clippy::approx_constant)]
 
-include!("../vendor/coco-prebuilt/coco.rs");
+include!("../vendor/coco.rs");
