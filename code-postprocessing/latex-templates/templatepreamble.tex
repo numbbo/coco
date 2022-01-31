@@ -1,0 +1,120 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% preamble for the BBOB ACM-compliant LaTeX templates                         %
+%                                                                             %
+% copyright 2009--2022 the BBOBies                                            %
+% (under BSD licence, see https://github.com/numbbo/coco/blob/master/LICENSE) %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% to be updated from year to year:
+\titlenote{Submission deadline: April 11th.}
+\newcommand{\version}{2.5.1}
+
+
+% Packages
+\usepackage{booktabs} % For formal tables
+\usepackage{graphicx}
+\usepackage{rotating}
+\usepackage{tabularx}
+\usepackage{xspace}  % automatic white space after macros
+\usepackage{xstring} % for string operations
+\usepackage{wasysym} % Table legend with symbols input from post-processing
+\usepackage{MnSymbol} % Table legend with symbols input from post-processing
+\usepackage{float}
+%\usepackage[dvipsnames]{xcolor}
+%\usepackage[colorlinks=true, linkcolor=blue]{hyperref} % make COCO papers clickable
+\usepackage{ifthen}
+\usepackage{xcolor}
+
+
+
+% define some COCO/dvipsnames colors because
+% ACM style does not allow to use them directly
+\definecolor{Gray}{gray}{0.6}
+\definecolor{NavyBlue}{rgb}{0.0, 0.0, 0.5}
+\definecolor{Magenta}{rgb}{1.0, 0.0, 1.0}
+\definecolor{Black}{rgb}{0.0, 0.0, 0.0}
+%\definecolor{NavyBlue}{HTML}{000080}
+%\definecolor{Magenta}{HTML}{FF00FF}
+%\definecolor{Orange}{HTML}{FFA500}
+%\definecolor{CornflowerBlue}{HTML}{6495ED}
+%\definecolor{YellowGreen}{HTML}{9ACD32}
+%\definecolor{Gray}{HTML}{BEBEBE}
+%\definecolor{Yellow}{HTML}{FFFF00}
+%\definecolor{GreenYellow}{HTML}{ADFF2F}
+%\definecolor{ForestGreen}{HTML}{228B22}
+%\definecolor{Lavender}{HTML}{FFC0CB}
+%\definecolor{SkyBlue}{HTML}{87CEEB}
+%\definecolor{NavyBlue}{HTML}{000080}
+%\definecolor{Goldenrod}{HTML}{DDF700}
+%\definecolor{VioletRed}{HTML}{D02090}
+%\definecolor{CornflowerBlue}{HTML}{6495ED}
+%\definecolor{LimeGreen}{HTML}{32CD32}
+
+% COCO LaTeX commands:
+\newcommand{\includeperfprof}[1]{% include and annotate at the side
+  \input{\bbobdatapath\algsfolder #1}%
+  \includegraphics[height=0.24\textheight]{#1}%
+  %\raisebox{.12\textheight}{
+	%\parbox[b][.24\textheight]{.0868\textwidth}{\begin{scriptsize}
+  %  \perfprofsidepanel % this is "\algaperfprof \vfill \algbperfprof \vfill" etc
+  %\end{scriptsize}}
+	%}
+}
+\newcommand{\rot}[2][2.5]{
+  \hspace*{-3.5\baselineskip}%
+  \begin{rotate}{90}\hspace{#1em}#2
+  \end{rotate}}
+\newcommand{\DIM}{\ensuremath{\mathrm{DIM}}}
+\newcommand{\ERT}{\ensuremath{\mathrm{ERT}}}
+\newcommand{\FEvals}{\ensuremath{\mathrm{FEvals}}}
+\newcommand{\nruns}{\ensuremath{\mathrm{Nruns}}}
+\newcommand{\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
+\newcommand{\Df}{\ensuremath{\Delta f}}
+\newcommand{\nbFEs}{\ensuremath{\mathrm{\#FEs}}}
+\newcommand{\fopt}{\ensuremath{f_\mathrm{opt}}}
+\newcommand{\ftarget}{\ensuremath{f_\mathrm{t}}}
+\newcommand{\Itarget}{\ensuremath{I_\mathrm{target}}}
+\newcommand{\CrE}{\ensuremath{\mathrm{CrE}}}
+\newcommand{\change}[1]{{\color{red} #1}}
+\newcommand{\TODO}[1]{{\color{orange} !!! #1 !!!}}
+\newcommand{\bbob}{{\ttfamily bbob}\xspace}
+\newcommand{\bbobnoisy}{{\ttfamily bbob-noisy}\xspace}
+\newcommand{\bbobbiobj}{{\ttfamily bbob-biobj}\xspace}
+\newcommand{\bbobls}{{\ttfamily bbob-largescale}\xspace}
+\newcommand{\bbobmixint}{{\ttfamily bbob-mixint}\xspace}
+\newcommand{\DI}{\ensuremath{\Delta I_{\mathrm{HV}}^{\mathrm{COCO}}}}
+\newcommand{\hvref}{\ensuremath{I_\mathrm{ref}}}
+
+%%%%%%%%%%%%%%%%%%%%%%   END OF PREAMBLE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% Copyright
+%\setcopyright{none}
+%\setcopyright{acmcopyright}
+%\setcopyright{acmlicensed}
+\setcopyright{rightsretained}
+%\setcopyright{usgov}
+%\setcopyright{usgovmixed}
+%\setcopyright{cagov}
+%\setcopyright{cagovmixed}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% DOI
+\acmDOI{10.1145/123_4}
+
+% ISBN
+\acmISBN{123-4567-89-101/11/21}
+
+%Conference
+\acmConference[GECCO '22]{the Genetic and Evolutionary Computation Conference 2022}{July 9--13, 2022}{Boston, MA, USA}
+\acmYear{2022}
+\copyrightyear{2022}
+
+\acmPrice{15.00}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%   END OF PREAMBLE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
