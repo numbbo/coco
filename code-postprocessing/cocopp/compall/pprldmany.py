@@ -168,13 +168,13 @@ def beautify():
 
     global divide_by_dimension
     if divide_by_dimension:
-        if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons:
-            plt.xlabel('log10(# (f+g)-evals / dimension)', fontsize=label_fontsize)
+        if testbedsettings.current_testbed.has_constraints:
+            plt.xlabel('log10(evals / dimension)', fontsize=label_fontsize)
         else:
             plt.xlabel('log10(# f-evals / dimension)', fontsize=label_fontsize)
     else:
-        if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons:
-            plt.xlabel('log10(# (f+g)-evals)', fontsize=label_fontsize)
+        if testbedsettings.current_testbed.has_constraints:
+            plt.xlabel('log10(evals)', fontsize=label_fontsize)
         else:
             plt.xlabel('log10(# f-evals)', fontsize=label_fontsize)
     plt.ylabel('Fraction of function,target pairs', fontsize=label_fontsize)
@@ -856,7 +856,13 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     else:
         text += (str(len(targetstrings)) + ' targets: ' +
                  targetstrings[0] + '..' +
-                 targetstrings[len(targetstrings)-1])        
+                 targetstrings[len(targetstrings)-1])
+    # add weights for constrained testbeds
+    if testbedsettings.current_testbed.has_constraints:
+        w = genericsettings.weight_evaluations_constraints
+        text += ("\nevals = "
+                 + ("%s x " % w[0] if w[0] != 1 else "") + "#f-evals + "
+                 + ("%s x " % w[1] if w[1] != 1 else "") + "#g-evals")
     # add number of instances 
     text += '\n'
     num_of_instances = []
@@ -865,7 +871,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             num_of_instances.append(len((dictAlgperFunc[alg])[0].instancenumbers))
         except IndexError:
             pass
-    # issue a warning if number of instances is inconsistant, but always
+    # issue a warning if number of instances is inconsistent, but always
     # display only the present number of instances, i.e. remove copies
     if len(set(num_of_instances)) > 1 and genericsettings.warning_level >= 5:
         warnings.warn('Number of instances inconsistent over all algorithms: %s instances found.' % str(num_of_instances))
