@@ -146,13 +146,13 @@ def caption_single():
          #1"""
     caption_left_fixed_targets = r"""%
          Left subplots: ECDF of the number of function evaluations """ + (
-         r"""((f+g)-evals)""" if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons
+         r"""((f+g)-evals)""" if testbedsettings.current_testbed.has_constraints
          else r"""(FEvals)""") + (r""" divided by search space dimension $D$,
          to fall below $!!FOPT!!+!!DF!!$ with $!!DF!!=10^{k}$, where $k$ is the first value in the legend.
          The thick red line represents the most difficult target value $!!FOPT!!+ !!HARDEST-TARGET-LATEX!!$. """)
     caption_left_rlbased_targets = r"""%
          Left subplots: ECDF of number of function evaluations """ + (
-         r"""((f+g)-evals)""" if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons
+         r"""((f+g)-evals)""" if testbedsettings.current_testbed.has_constraints
          else r"""(FEvals)""") + r""" divided by search space dimension $D$,
          to fall below $!!FOPT!!+!!DF!!$ where !!DF!!{} is the
          target just not reached by !!THE-REF-ALG!! within a budget of
@@ -319,7 +319,7 @@ def beautifyRLD(xlimit_max=None):
     """
     a = plt.gca()
     a.set_xscale('log')
-    if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons:
+    if testbedsettings.current_testbed.has_constraints:
         a.set_xlabel('log10 of (f+g)-evals / dimension')
     else:
         a.set_xlabel('log10 of FEvals / DIM')
@@ -656,7 +656,7 @@ def beautify():
     plt.subplot(121)
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
-    if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons:
+    if testbedsettings.current_testbed.has_constraints:
         axisHandle.set_xlabel('log10 of (f+g)-evals / dimension')
     else:
         axisHandle.set_xlabel('log10 of FEvals / DIM')
