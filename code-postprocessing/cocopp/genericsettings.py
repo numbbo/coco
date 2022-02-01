@@ -35,7 +35,7 @@ appended_evals_minimal_trials = 6
     """
 weight_evaluations_constraints = (1, 1)
 """ weights used to sum function evaluations and constraints evaluations
-    in attribute DataSet._evals, if any constraints evaluations are found
+    in the attribute DataSet._evals when data are loaded.
     """
 target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
 target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
