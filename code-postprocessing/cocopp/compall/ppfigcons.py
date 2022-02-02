@@ -27,9 +27,10 @@ from .. import captions
 from ..ppfig import save_figure, get_plotting_styles, getFontSize
 from ..pptex import color_to_latex, marker_to_latex, marker_to_html, writeLabels
 from .ppfigs import generateData
+from .pprldmany import text_infigure_if_constraints
 
 show_significance = 0.01  # for zero nothing is shown
-
+ratio_nbsucc_to_display = .5  # annotate symbol if ratio of success < this
 refcolor = 'wheat'
 
 show_algorithms = []
@@ -80,6 +81,8 @@ def prepare_scaling_figure_caption():
     scaling_figure_caption_end = (
         r"Different symbols " +
         r"correspond to different algorithms given in the legend of #1. " +
+        r"If the success ratio is < %d/%d " % ratio_nbsucc_to_display.as_integer_ratio() +
+        r"and > 0 the symbol is annotated with the number of successes. " +
         r"Light symbols give the maximum number of function evaluations from the longest trial " +
         r"divided by dimension. " +
         (r"Black stars indicate a statistically better result compared to all other algorithms " +
@@ -503,7 +506,7 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
                             medianfes.append(data[4] / dim)
                             consert.append(cons)
                             ert.append(float(data[0]) / dim)
-                            if data[1] < 1.:
+                            if data[1] < ratio_nbsucc_to_display:
                                 consnbsucc.append(cons)
                                 ynbsucc.append(float(data[0]) / dim)
                                 nbsucc.append('%d' % data[2])
@@ -527,13 +530,10 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
                                  markeredgewidth=1,
                                  markerfacecolor='None', linestyle='None')
 
-                    #tmp2 = plt.plot(dimmedian, medianfes, ls='', marker='+',
-                    #               markersize=30, markeredgewidth=5,
-                    #               markeredgecolor=plt.getp(tmp, 'color'))[0]
-                    #for i, n in enumerate(nbsucc):
-                    #    plt.text(dimnbsucc[i], numpy.array(ynbsucc[i])*1.85, n,
-                    #             verticalalignment='bottom',
-                    #             horizontalalignment='center')
+                    for i, n in enumerate(nbsucc):
+                        plt.text(consnbsucc[i], numpy.array(ynbsucc[i])*1.85, n,
+                                 verticalalignment='bottom',
+                                 horizontalalignment='center')
 
                     if not plotting_style.in_background:
                         handles.append(tmp)
@@ -633,6 +633,7 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
             infotext = infotext.rstrip(', ')
             infotext += ' instances\n'
             infotext += 'target ' + target.label_name() + ': ' + target.label(0)
+            infotext += text_infigure_if_constraints()
             plt.text(plt.xlim()[0], plt.ylim()[0],
                      infotext, fontsize=fontsize, horizontalalignment="left",
                      verticalalignment="bottom")

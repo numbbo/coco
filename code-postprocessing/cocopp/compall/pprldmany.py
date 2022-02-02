@@ -57,6 +57,24 @@ label_fontsize = 17
 title_fontsize = 20
 styles = [d.copy() for d in genericsettings.line_styles]  # deep copy
 
+def text_infigure_if_constraints():
+    """to be displayed in the figure corner
+
+    TODO: is a method with no arguments
+    because if made a variable, an error is raised
+    as it is computed before testbedsettings.current_testbed is instantiated
+    in some import
+    """
+    if testbedsettings.current_testbed.has_constraints:
+        w = genericsettings.weight_evaluations_constraints
+        _text = ("\nevals = "
+                 + ("%sx" % w[0] if w[0] != 1 else "") + "f-evals + "
+                 + ("%sx" % w[1] if w[1] != 1 else "") + "g-evals")
+    else:
+        _text = ""
+    return _text
+
+
 refcolor = 'wheat'
 """color of reference (best) algorithm"""
 
@@ -858,11 +876,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                  targetstrings[0] + '..' +
                  targetstrings[len(targetstrings)-1])
     # add weights for constrained testbeds
-    if testbedsettings.current_testbed.has_constraints:
-        w = genericsettings.weight_evaluations_constraints
-        text += ("\nevals = "
-                 + ("%s x " % w[0] if w[0] != 1 else "") + "#f-evals + "
-                 + ("%s x " % w[1] if w[1] != 1 else "") + "#g-evals")
+    text += text_infigure_if_constraints()
     # add number of instances 
     text += '\n'
     num_of_instances = []
