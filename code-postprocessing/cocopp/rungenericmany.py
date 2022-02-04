@@ -314,7 +314,7 @@ def main(args, outputdir):
                                            '%s' % fGroup)
                 print_done()  # of "ECDF runlength graphs..."
 
-        if testbedsettings.current_testbed.name.startswith("bbob-constrained"):
+        if testbedsettings.current_testbed.has_constraints:
             print("Skipping aggregation of all functions for bbob-constrained* suite")
         else:
             # ECDFs per noise groups
@@ -435,7 +435,7 @@ def main(args, outputdir):
                     latex_commands_file)
         print_done()
 
-    if testbedsettings.current_testbed.name.startswith("bbob-constrained"):
+    if testbedsettings.current_testbed.has_constraints:
         print("Scaling wrt constraints...")
         ppfigcons.main(dictAlg,
                        genericsettings.ppfigcons_file_name,
