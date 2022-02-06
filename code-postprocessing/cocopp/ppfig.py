@@ -33,7 +33,8 @@ def enum(*sequential, **named):
 
 
 HtmlPage = enum('NON_SPECIFIED', 'ONE', 'MANY', 'PPRLDMANY_BY_GROUP', 'PPRLDMANY_BY_GROUP_MANY',
-                'PPTABLE', 'PPTABLE2', 'PPTABLES', 'PPRLDISTR', 'PPRLDISTR2', 'PPLOGLOSS', 'PPSCATTER', 'PPFIGS', 'PPFIGCONS')
+                'PPTABLE', 'PPTABLE2', 'PPTABLES', 'PPRLDISTR', 'PPRLDISTR2', 'PPLOGLOSS',
+                'PPSCATTER', 'PPFIGS', 'PPFIGCONS', 'PPFIGCONS1')
 
 
 def save_figure(filename,
@@ -201,6 +202,7 @@ def save_folder_index_file(filename, image_file_extension):
 
     links += add_link(current_dir, None, genericsettings.ppfigs_file_name + '.html', 'Scaling with dimension')
     links += add_link(current_dir, None, genericsettings.ppfigcons_file_name + '.html', 'Scaling with constraints')
+    links += add_link(current_dir, None, genericsettings.ppfigcons1_file_name + '.html', 'Scaling with constraints for selected targets')
     links += add_link(current_dir, None, genericsettings.pptables_file_name + '.html',
                       'Tables for selected targets')
     links += add_link(current_dir, None, genericsettings.ppscatter_file_name + '.html', 'Scatter plots')
@@ -310,10 +312,6 @@ def save_single_functions_html(filename,
             f.write("\n<H2> %s </H2>\n" % current_header)
             for function_number in range(first_function_number, last_function_number + 1):
                 f.write(add_image('ppscatter_f%03d%s.%s' % (function_number, add_to_names, extension), True))
-
-            f.write(caption_string_format % '##bbobppscatterlegend##')
-
-        elif htmlPage is HtmlPage.PPFIGS:
             current_header = 'Scaling of run "time" with dimension'
             f.write("\n<H2> %s </H2>\n" % current_header)
             for function_number in range(first_function_number, last_function_number + 1):
@@ -327,6 +325,14 @@ def save_single_functions_html(filename,
                 for dimension in dimensions if dimensions is not None else [2, 3, 5, 10, 20, 40]:
                     f.write(add_image('ppfigcons_%s_d%s%s.%s' % (function_name, dimension, add_to_names, extension), True))
             f.write(caption_string_format % '##bbobppfigconslegend##')
+
+        elif htmlPage is HtmlPage.PPFIGCONS1:
+            current_header = 'Scaling of run "time" with number of constraints for selected targets'
+            f.write("\n<H2> %s </H2>\n" % current_header)
+            for function_name in testbedsettings.current_testbed.func_cons_groups.keys():
+                for dimension in dimensions if dimensions is not None else [2, 3, 5, 10, 20, 40]:
+                    f.write(add_image('ppfigcons1_%s_d%s%s.%s' % (function_name, dimension, add_to_names, extension), True))
+            f.write(caption_string_format % '##bbobppfigcons1legend##')
 
         elif htmlPage is HtmlPage.NON_SPECIFIED:
             current_header = header
