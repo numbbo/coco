@@ -190,6 +190,9 @@ def save_folder_index_file(filename, image_file_extension):
     links += get_rld_link(current_dir)
     links += add_link(current_dir, None, genericsettings.ppfigdim_file_name + '.html',
                       'Scaling with dimension for selected targets')
+    links += add_link(current_dir, None, genericsettings.ppfigcons1_file_name + '.html',
+                      'Scaling with constraints for selected targets')
+
     links += add_link(current_dir, None, 'pptable.html', 'Tables for selected targets')
     links += add_link(current_dir, None, 'pprldistr.html',
                       'Runtime distribution for selected targets and f-distributions')
@@ -202,7 +205,6 @@ def save_folder_index_file(filename, image_file_extension):
 
     links += add_link(current_dir, None, genericsettings.ppfigs_file_name + '.html', 'Scaling with dimension')
     links += add_link(current_dir, None, genericsettings.ppfigcons_file_name + '.html', 'Scaling with constraints')
-    links += add_link(current_dir, None, genericsettings.ppfigcons1_file_name + '.html', 'Scaling with constraints for selected targets')
     links += add_link(current_dir, None, genericsettings.pptables_file_name + '.html',
                       'Tables for selected targets')
     links += add_link(current_dir, None, genericsettings.ppscatter_file_name + '.html', 'Scatter plots')
