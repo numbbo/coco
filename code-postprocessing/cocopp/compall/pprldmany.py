@@ -186,15 +186,9 @@ def beautify():
 
     global divide_by_dimension
     if divide_by_dimension:
-        if testbedsettings.current_testbed.has_constraints:
-            plt.xlabel('log10(evals / dimension)', fontsize=label_fontsize)
-        else:
-            plt.xlabel('log10(# f-evals / dimension)', fontsize=label_fontsize)
+        plt.xlabel('log10(%s / dimension)' % testbedsettings.current_testbed.string_evals_legend, fontsize=label_fontsize)
     else:
-        if testbedsettings.current_testbed.has_constraints:
-            plt.xlabel('log10(evals)', fontsize=label_fontsize)
-        else:
-            plt.xlabel('log10(# f-evals)', fontsize=label_fontsize)
+        plt.xlabel('log10(%s)' % testbedsettings.current_testbed.string_evals_legend, fontsize=label_fontsize)
     plt.ylabel('Fraction of function,target pairs', fontsize=label_fontsize)
     ppfig.logxticks()
     plt.xticks(fontsize=label_fontsize)  # the "original" size is for some reason too large

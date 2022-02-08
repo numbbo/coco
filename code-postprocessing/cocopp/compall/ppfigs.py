@@ -115,14 +115,16 @@ def prepare_ecdfs_figure_caption():
     ecdfs_figure_caption_standard = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of %s divided by dimension " % testbedsettings.current_testbed.string_evals +
-                r"(FEvals/DIM) for $!!NUM-OF-TARGETS-IN-ECDF!!$ " +
+                "(%s/DIM) " % testbedsettings.current_testbed.string_evals_short +
+                r"for $!!NUM-OF-TARGETS-IN-ECDF!!$ " +
                 r"targets with target precision in !!TARGET-RANGES-IN-ECDF!! " +
                 r"for all functions and subgroups in #1-D. "
                 )
     ecdfs_figure_caption_rlbased = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of %s divided by dimension " % testbedsettings.current_testbed.string_evals +
-                r"(FEvals/DIM) for all functions and subgroups in #1-D. " +
+                "(%s/DIM) " % testbedsettings.current_testbed.string_evals_short +
+                r"for all functions and subgroups in #1-D. " +
                 r"The targets are chosen from !!TARGET-RANGES-IN-ECDF!! " +
                 r"such that !!THE-REF-ALG!! just " +
                 r"not reached them within a given budget of $k$ $\times$ DIM, " +
@@ -406,7 +408,7 @@ def beautify(legend=False, rightlegend=False):
 
     if genericsettings.scaling_plots_with_axis_labels:
         plt.xlabel('dimension')
-        plt.ylabel('log10(# f-evals / dimension)')
+        plt.ylabel('log10(%s / dimension)' % testbedsettings.current_testbed.string_evals_legend)
 
 
 def generateData(dataSet, target):

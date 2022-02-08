@@ -144,28 +144,26 @@ def caption_single():
          Empirical cumulative distribution functions (ECDF), plotting the fraction of
          trials with an outcome not larger than the respective value on the $x$-axis.
          #1"""
-    caption_left_fixed_targets = r"""%
-         Left subplots: ECDF of the number of function evaluations """ + (
-         r"""((f+g)-evals)""" if testbedsettings.current_testbed.has_constraints
-         else r"""(FEvals)""") + (r""" divided by search space dimension $D$,
+    caption_left_fixed_targets = r"%"+ """
+         Left subplots: ECDF of the number of %s """ % testbedsettings.current_testbed.string_evals + (
+         r""" divided by search space dimension $D$,
          to fall below $!!FOPT!!+!!DF!!$ with $!!DF!!=10^{k}$, where $k$ is the first value in the legend.
          The thick red line represents the most difficult target value $!!FOPT!!+ !!HARDEST-TARGET-LATEX!!$. """)
-    caption_left_rlbased_targets = r"""%
-         Left subplots: ECDF of number of function evaluations """ + (
-         r"""((f+g)-evals)""" if testbedsettings.current_testbed.has_constraints
-         else r"""(FEvals)""") + r""" divided by search space dimension $D$,
+    caption_left_rlbased_targets = r"%" + """
+         Left subplots: ECDF of number of %s """ % testbedsettings.current_testbed.string_evals + (
+         r""" divided by search space dimension $D$,
          to fall below $!!FOPT!!+!!DF!!$ where !!DF!!{} is the
          target just not reached by !!THE-REF-ALG!! within a budget of
-         $k\times!!DIM!!$ evaluations, where $k$ is the first value in the legend. """
+         $k\times!!DIM!!$ evaluations, where $k$ is the first value in the legend. """)
     caption_right = r"""%
          Legends indicate for each target the number of functions that were solved in at
          least one trial within the displayed budget.
          Right subplots: ECDF of the best achieved $!!DF!!$
-         for running times of !!SINGLE-RUNLENGTH-FACTORS!!
-         function evaluations
-         (from right to left cycling cyan-magenta-black\dots) and final $!!DF!!$-value (red),
+         for running times of !!SINGLE-RUNLENGTH-FACTORS!!""" + (
+         " %s " % testbedsettings.current_testbed.string_evals ) + (
+         r"""(from right to left cycling cyan-magenta-black\dots) and final $!!DF!!$-value (red),
          where !!DF!! and \textsf{Df} denote the difference to the optimal function value. 
-         !!LIGHT-BROWN-LINES!!"""
+         !!LIGHT-BROWN-LINES!!""")
 
     if testbedsettings.current_testbed.name in [testbedsettings.suite_name_single,
                                                 testbedsettings.default_testbed_single_noisy,
@@ -188,12 +186,17 @@ def caption_single():
 
 def caption_two():
 
-    caption_two_part_one = r"""%
+    caption_two_part_one = (r"""%
         Empirical cumulative distributions (ECDF)
-        of run lengths and speed-up ratios """ + ("""in %d-D (left) and %d-D (right).""" % tuple(testbedsettings.current_testbed.tabDimsOfInterest)) + r"""
-        Left sub-columns: ECDF of
-        the number of function evaluations divided by dimension $D$
-        (FEvals/D) """
+        of run lengths and speed-up ratios """
+        + ("""in %d-D (left) and %d-D (right).""" % tuple(testbedsettings.current_testbed.tabDimsOfInterest))
+        + """
+            Left sub-columns: ECDF of the number of """
+        + testbedsettings.current_testbed.string_evals
+        + r""" divided by dimension $D$ ("""
+        + testbedsettings.current_testbed.string_evals_short
+        + r"""/D)
+        """)
 
     symbAlgorithmA = r'{%s%s}' % (color_to_latex('k'),
                                   marker_to_latex(styles[0]['marker']))
@@ -205,32 +208,36 @@ def caption_two():
         \algorithmA\ ("""
     caption_two_fixed_targets_part2 = r""") and \algorithmB\ ("""
     caption_two_fixed_targets_part3 = r""")%
-        . """ + (r"""Light beige lines show the ECDF of FEvals for target value
+        . """ + (r"""Light beige lines show the ECDF of evals for target value
         $!!DF!!=!!HARDEST-TARGET-LATEX!!$ of all algorithms benchmarked during
         BBOB-2009. """ if testbedsettings.current_testbed.name in [testbedsettings.suite_name_single,
                                                                    testbedsettings.suite_name_single_noisy]
-        else "") + r"""Right sub-columns:
-        ECDF of FEval ratios of \algorithmA\ divided by \algorithmB\ for target
-        function values $10^k$ with $k$ given in the legend; all
+        else "") + """Right sub-columns:
+        ECDF of %s ratios"""  % testbedsettings.current_testbed.string_evals_short+ (
+        r""" of \algorithmA\ divided by \algorithmB\ for fixed target
+        precision values $10^k$ with $k$ given in the legend; all
         trial pairs for each function. Pairs where both trials failed are disregarded,
         pairs where one trial failed are visible in the limits being $>0$ or $<1$. The
         legend also indicates, after the colon, the number of functions that were
-        solved in at least one trial (\algorithmA\ first)."""
+        solved in at least one trial (\algorithmA\ first).""")
     caption_two_rlbased_targets_part1 = r"""%
         to fall below $!!FOPT!!+!!DF!!$ for
         \algorithmA\ ("""
     caption_two_rlbased_targets_part2 = r""") and \algorithmB\ ("""
     caption_two_rlbased_targets_part3 = r"""%
         ) where $!!DF!!$ is the target just not reached by !!THE-REF-ALG!! 
-        within a budget of $k\times\DIM$ evaluations, with $k$ being the
-        value in the legend. 
-        Right sub-columns:
-        ECDF of FEval ratios of \algorithmA\ divided by \algorithmB\ for
+        within a budget of $k\times\DIM$ """ + testbedsettings.current_testbed.string_evals + (
+        r""", with $k$ being the
+        value in the legend.
+        Right sub-columns:""") + (
+        """ECDF of %s ratios""" %  testbedsettings.current_testbed.string_evals
+        + r"""of \algorithmA\ divided by \algorithmB\ for
         run-length-based targets; all trial pairs for each function. Pairs where
         both trials failed are disregarded, pairs where one trial failed are visible
         in the limits being $>0$ or $<1$. The legends indicate the target budget of
-        $k\times\DIM$ evaluations and, after the colon, the number of functions that
-        were solved in at least one trial (\algorithmA\ first)."""
+        $k\times\DIM$ """ + testbedsettings.current_testbed.string_evals_short
+        + r""" and, after the colon, the number of functions that
+        were solved in at least one trial (\algorithmA\ first).""")
 
     caption_two_fixed = (caption_two_part_one
                          + caption_two_fixed_targets_part1
@@ -319,10 +326,7 @@ def beautifyRLD(xlimit_max=None):
     """
     a = plt.gca()
     a.set_xscale('log')
-    if testbedsettings.current_testbed.has_constraints:
-        a.set_xlabel('log10 of (f+g)-evals / dimension')
-    else:
-        a.set_xlabel('log10 of FEvals / DIM')
+    a.set_xlabel('log10 of %s / DIM' % testbedsettings.current_testbed.string_evals_short)
     a.set_ylabel('proportion of trials')
     logxticks()
     if xlimit_max:
@@ -656,10 +660,7 @@ def beautify():
     plt.subplot(121)
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
-    if testbedsettings.current_testbed.has_constraints:
-        axisHandle.set_xlabel('log10 of (f+g)-evals / dimension')
-    else:
-        axisHandle.set_xlabel('log10 of FEvals / DIM')
+    axisHandle.set_xlabel('log10 of %s / DIM' % testbedsettings.current_testbed.string_evals_short)
     axisHandle.set_ylabel('proportion of trials')
     # Grid options
     logxticks()

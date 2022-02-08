@@ -48,19 +48,21 @@ def scaling_figure_caption():
        replacing common texts, abbreviations, etc.
     """
 
-    caption_text = r"""%
-        Scaling of runtime with number of constraints to reach certain target values !!DF!!.
+    caption_text = (r"""%
+        Scaling of runtime with number of constraints to reach certain target values.
         Lines: expected runtime (\ERT);
         Cross (+): median runtime of successful runs to reach the most difficult
         target that was reached at least once (but not always);
         Cross ({\color{red}$\times$}): maximum number of
-        $f$-evaluations in any trial. !!NOTCHED-BOXES!!
+        """
+        + testbedsettings.current_testbed.string_evals
+        + r""" in any trial. !!NOTCHED-BOXES!!
         All values are !!DIVIDED-BY-DIMENSION!! 
         plotted as $\log_{10}$ values versus dimension. %
-        """
+        """)
     
     caption_part_absolute_targets = (r"""%
-        Shown is the \ERT\ for fixed values of $!!DF!! = 10^k$ with $k$ given
+        Shown is the \ERT\ for fixed target precision values of $10^k$ with $k$ given
         in the legend.
         Numbers above \ERT-symbols (if appearing) indicate the number of trials
         reaching the respective target. """ + # TODO: add here "(out of XYZ trials)"
