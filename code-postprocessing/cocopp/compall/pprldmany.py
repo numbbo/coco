@@ -849,8 +849,19 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         dictFG = pp.dictAlgByFuncGroup(dictAlg)
         dictKey = list(dictFG.keys())[0]
         functionGroups = dictAlg[list(dictAlg.keys())[0]].getFuncGroups()
+        if testbedsettings.current_testbed.has_constraints:
+            # HACK: because a function is in at least two groups:
+            # {{separ or hcond or multi} and all} with {m} constraints
+            # the original method is broken for bbob-constrained
+            listGroups = list(functionGroups.values())
+            if len(functionGroups) == 2:
+                groupName = listGroups[0]  # all is the last one
+            if len(functionGroups) > 2:
+                groupName = listGroups[-1]  # same reason
+        else:
+            groupName = functionGroups[dictKey]
         text = '%s\n%s, %d-D' % (testbedsettings.current_testbed.name,
-                                 functionGroups[dictKey],
+                                 groupName,
                                  dimList[0])
     else:
         text = '%s %s' % (testbedsettings.current_testbed.name,
@@ -889,7 +900,6 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             
     text = text.rstrip(', ')
     text += ' instances'
-
     plt.text(0.01, 0.99, text,
              horizontalalignment="left",
              verticalalignment="top",
