@@ -481,19 +481,16 @@ def main(dsList, _valuesOfInterest, outputdir):
     dictFuncCons = dsList.dictByFuncCons()
     dimensions = list(dsList.dictByDim().keys())
     values_of_interest = testbedsettings.current_testbed.ppfigdim_target_values
-
     key = 'bbobppfigcons1legend' + testbedsettings.current_testbed.scenario
     joined_values_of_interest = ', '.join(values_of_interest.labels()) if genericsettings.runlength_based_targets else ', '.join(values_of_interest.loglabels())
     caption = htmldesc.getValue('##' + key + '##').replace('valuesofinterest', joined_values_of_interest)
-    header = 'Average number of evaluations to reach target'
 
     ppfig.save_single_functions_html(
         os.path.join(outputdir, 'ppfigcons1'),
         htmlPage = ppfig.HtmlPage.PPFIGCONS1,
         parentFileName=genericsettings.single_algorithm_file_name,
-        header = header,
-        caption = caption,
-        dimensions=dimensions)
+        dimensions=dimensions,
+        caption=caption)
 
     ppfig.save_single_functions_html(
         os.path.join(outputdir, 'pprldistr'),

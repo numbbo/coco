@@ -284,7 +284,7 @@ def save_single_functions_html(filename,
                                function_groups=None,
                                parentFileName=None,  # used only with HtmlPage.NON_SPECIFIED
                                header=None,  # used only with HtmlPage.NON_SPECIFIED
-                               caption=None):  # used only with HtmlPage.NON_SPECIFIED
+                               caption=None):  # used only with HtmlPage.NON_SPECIFIED and PPFIGCONS1 (dynamic caption setting)
 
     name = filename.split(os.sep)[-1]
     current_dir = os.path.dirname(os.path.realpath(filename))
@@ -337,7 +337,7 @@ def save_single_functions_html(filename,
             for function_name in testbedsettings.current_testbed.func_cons_groups.keys():
                 for dimension in dimensions if dimensions is not None else [2, 3, 5, 10, 20, 40]:
                     f.write(add_image('ppfigcons1_%s_d%s%s.%s' % (function_name, dimension, add_to_names, extension), True))
-            f.write(caption_string_format % '##bbobppfigcons1legend##')
+            # caption given by caption in this case
 
         elif htmlPage is HtmlPage.NON_SPECIFIED:
             current_header = header
