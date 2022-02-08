@@ -241,6 +241,12 @@ class Testbed(object):
         else:
             return "$f$-evaluations"
 
+    @property
+    def string_evals_short(self):
+        if self.has_constraints:
+            return "evals"
+        else:
+            return "FEvals"
 
 class GECCOBBOBTestbed(Testbed):
     """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015,
