@@ -510,9 +510,9 @@ def main(dsList, _valuesOfInterest, outputdir):
     funInfos = ppfigparam.read_fun_infos()
     fontSize = ppfig.getFontSize(funInfos.values())
 
-    for func in dictFuncCons:
+    for ifunc, func in enumerate(dictFuncCons):
         dd = dictFuncCons[func].dictByDim()
-        for dim in dd.keys():
+        for idim, dim in enumerate(dd.keys()):
             plot(dd[dim], _valuesOfInterest, styles=styles)  # styles might have changed via config
             beautify(dim)
             plt.title("%s, %s-D" % (func, dim))
@@ -523,17 +523,18 @@ def main(dsList, _valuesOfInterest, outputdir):
                 display_text = 'instances %s' % [d.instancenumbers for d in dd[dim]]
             display_text += _valuesOfInterest.short_info
             display_text += text_infigure_if_constraints()
-            plt.text(plt.xlim()[0], plt.ylim()[0],
-                     display_text, fontsize=14, horizontalalignment="left",
-                     verticalalignment="bottom")
+            if ifunc == 0 and idim == 0:
+                # because of legend, put annotation somewhere else
+                toolsdivers.legend(loc="lower left", fontsize=12, ncol=3)
+                loc = (plt.xlim()[0], plt.ylim()[1])
+                align = ("left", "top")
+            else:
+                loc = (plt.xlim()[0], plt.ylim()[0])
+                align = ("left", "bottom")
 
-            # TODO one plot is manyfunctions here
-            # Another rule for the legend then
-            #if func in testbedsettings.current_testbed.functions_with_legend:
-            #    toolsdivers.legend(loc="best", fontsize=16)
-            #if func in funInfos.keys():
-            #    funcName = funInfos[func]
-            #    plt.gca().set_title(funcName, fontsize=fontSize)
+            plt.text(*loc, display_text,
+                     fontsize=12, horizontalalignment=align[0],
+                     verticalalignment=align[1])
 
             if genericsettings.scaling_plots_with_axis_labels:
                 plt.xlabel('Number of constraints')
