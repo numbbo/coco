@@ -82,7 +82,7 @@ def scaling_figure_caption():
         figure_caption = captions.replace(caption_text + caption_part_rlbased_targets)
     else:
         figure_caption = captions.replace(caption_text + caption_part_absolute_targets)
-        
+
     return figure_caption
 
 def beautify(dim, axesLabel=True):
@@ -483,7 +483,7 @@ def main(dsList, _valuesOfInterest, outputdir):
     dictFuncCons = dsList.dictByFuncCons()
     dimensions = list(dsList.dictByDim().keys())
     values_of_interest = testbedsettings.current_testbed.ppfigdim_target_values
-    key = 'bbobppfigcons1legend' + testbedsettings.current_testbed.scenario
+    key = 'bbobppfigconsonelegend' + testbedsettings.current_testbed.scenario
     joined_values_of_interest = ', '.join(values_of_interest.labels()) if genericsettings.runlength_based_targets else ', '.join(values_of_interest.loglabels())
     caption = htmldesc.getValue('##' + key + '##').replace('valuesofinterest', joined_values_of_interest)
 

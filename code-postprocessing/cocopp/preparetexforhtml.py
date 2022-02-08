@@ -11,9 +11,9 @@ import os
 import sys
 import warnings
 
-from . import genericsettings, pplogloss, ppfigdim, pptable, pprldistr, config
+from . import genericsettings, pplogloss, ppfigdim, ppfigcons1, pptable, pprldistr, config
 from . import testbedsettings
-from .compall import pptables, ppfigs
+from .compall import pptables, ppfigs, ppfigcons
 from .comp2 import ppscatter
 
 # Initialization
@@ -87,7 +87,7 @@ def main(latex_commands_for_html):
             genericsettings.runlength_based_targets = False
             config.config(testbedsettings.suite_name_mixint)
         else:
-            warnings.warn("Scenario not supported yet in HTML")
+            warnings.warn("Scenario '%s' not supported yet in HTML" % scenario)
 
         # prepare LaTeX captions first
         # 1. ppfigs
@@ -128,6 +128,14 @@ def main(latex_commands_for_html):
                                             pplogloss.figure_caption().replace('Figure~\\ref{tab:ERTloss}',
                                                                                'the previous figure')))
 
+        if scenario == testbedsettings.scenario_constrainedfixed:
+            # 8. ppfigcons and ppfigcons1
+            f.writelines(prepare_providecommand('bbobppfigconslegend', scenario, 
+                                                ppfigcons.prepare_scaling_figure_caption()))
+            f.writelines(prepare_providecommand('bbobppfigconsonelegend', scenario, 
+                                                ppfigcons1.scaling_figure_caption()
+                                                .replace('values_of_interest', 'valuesofinterest')))
+
         # prepare tags for later HTML preparation
         testbed = testbedsettings.current_testbed
         # 1. ppfigs
@@ -151,6 +159,11 @@ def main(latex_commands_for_html):
         # 7. pplogloss
         f.write(prepare_item('bbobloglosstablecaption' + scenario))
         f.write(prepare_item('bbobloglossfigurecaption' + scenario))
+
+        if scenario == testbedsettings.scenario_constrainedfixed:
+            # 8. ppfigcons and ppfigcons1
+            f.write(prepare_item('bbobppfigconslegend' + scenario, param=param))
+            f.write(prepare_item('bbobppfigconsonelegend' + scenario))
 
     f.write('\n\#\#\#\n\\end{document}\n')
     f.close()
