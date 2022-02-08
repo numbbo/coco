@@ -126,8 +126,8 @@ def get_light_brown_line_text(testbedname):
             over all 48 functions in the last row."""  # TODO: check whether this makes sense
     elif (testbedname in [testbedsettings.suite_name_single,
                           testbedsettings.suite_name_single_noisy]):
-        return (r"""Light brown lines in the background show ECDFs for the most difficult target of """ +
-            get_reference_algorithm_text(True))
+        return r"""Light brown lines in the background show ECDFs for the most difficult target of all
+            algorithms benchmarked during BBOB-2009."""
     elif (testbedname in [testbedsettings.suite_name_ls,
                           testbedsettings.suite_name_mixint]):
         return ""
