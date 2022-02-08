@@ -314,18 +314,15 @@ def main(args, outputdir):
                                            '%s' % fGroup)
                 print_done()  # of "ECDF runlength graphs..."
 
-        if testbedsettings.current_testbed.has_constraints:
-            print("Skipping aggregation of all functions for bbob-constrained* suite")
-        else:
-            # ECDFs per noise groups
-            print("ECDF graphs per noise group...")
-            grouped_ecdf_graphs(pproc.dictAlgByNoi(dictAlg),
-                                sortedAlgs,
-                                many_algorithms_output,
-                                dictAlg[sortedAlgs[0]].getFuncGroups(),
-                                genericsettings,
-                                genericsettings.many_algorithm_file_name)
-            print_done()
+        # ECDFs per noise groups
+        print("ECDF graphs per noise group...")
+        grouped_ecdf_graphs(pproc.dictAlgByNoi(dictAlg),
+                            sortedAlgs,
+                            many_algorithms_output,
+                            dictAlg[sortedAlgs[0]].getFuncGroups(),
+                            genericsettings,
+                            genericsettings.many_algorithm_file_name)
+        print_done()
 
         # ECDFs per function groups
         print("ECDF graphs per function group...")
