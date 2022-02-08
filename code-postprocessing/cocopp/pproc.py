@@ -2533,22 +2533,22 @@ class DataSetList(list):
                 groups.append(
                     (3, n_cons_dim,
                      ('all m=' + n_constraints,
-                     'All functions with n_constraints' + 'constraints')))
+                     'All functions with ' + n_constraints + ' constraints')))
                 if i.funcId in range(1, 19):
                     groups.append( # first two entries are for sorting only, dropped later
                         (0, n_cons_dim,
                          ('separ m=' + n_constraints,
-                         'Separable functions with' + n_constraints + 'constraints')))
+                         'Separable functions with ' + n_constraints + ' constraints')))
                 elif i.funcId in range(19, 43):
                     groups.append(
                         (1, n_cons_dim,
                          ('hcond m=' + n_constraints,
-                         'Ill-conditioned functions with' + n_constraints + 'constraints')))
+                         'Ill-conditioned functions with ' + n_constraints + ' constraints')))
                 elif any(i.funcId in range(43, 55) for i in self):
                     groups.append(
                         (2, n_cons_dim,
                          ('multi m=' + n_constraints,
-                         'Multi-modal functions with' + n_constraints + 'constraints')))
+                         'Multi-modal functions with ' + n_constraints + ' constraints')))
             return OrderedDict([_[-1] for _ in sorted(groups)])  # remove duplicates, keep order
         else:
             groups = []
