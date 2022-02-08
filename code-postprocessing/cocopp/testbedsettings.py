@@ -234,6 +234,13 @@ class Testbed(object):
         raise NotImplementedError  # this needs to be implemented for the constrained testbed class
         return 0
 
+    @property
+    def string_evals(self):
+        if self.has_constraints:
+            return "evaluations"
+        else:
+            return "$f$-evaluations"
+
 
 class GECCOBBOBTestbed(Testbed):
     """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015,

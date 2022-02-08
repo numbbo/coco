@@ -67,15 +67,15 @@ def fix_styles(plotting_styles, line_styles):
 
 def prepare_scaling_figure_caption():
 
-    scaling_figure_caption_start_fixed = (r"""Expected running time (\ERT\ in number of $f$-evaluations
+    scaling_figure_caption_start_fixed = (r"""Expected running time (\ERT\ in number of %s
                     as $\log_{10}$ value), divided by dimension for target function value $!!PPFIGS-FTARGET!!$
-                    versus number of constraints. Slanted grid lines indicate quadratic scaling with the dimension. """
+                    versus number of constraints. Slanted grid lines indicate quadratic scaling with the dimension. """ % testbedsettings.current_testbed.string_evals
                                           )
 
-    scaling_figure_caption_start_rlbased = (r"""Expected running time (\ERT\ in number of $f$-evaluations
+    scaling_figure_caption_start_rlbased = (r"""Expected running time (\ERT\ in number of %s
                         as $\log_{10}$ value) divided by dimension versus number of constraints. The target function value
                         is chosen such that !!THE-REF-ALG!! just failed to achieve
-                        an \ERT\ of $!!PPFIGS-FTARGET!!\times\DIM$. """
+                        an \ERT\ of $!!PPFIGS-FTARGET!!\times\DIM$. """ % testbedsettings.current_testbed.string_evals
                                             )
 
     scaling_figure_caption_end = (
@@ -83,7 +83,7 @@ def prepare_scaling_figure_caption():
         r"correspond to different algorithms given in the legend of #1. " +
         r"If the success ratio is < %d/%d " % ratio_nbsucc_to_display.as_integer_ratio() +
         r"and > 0 the symbol is annotated with the number of successes. " +
-        r"Light symbols give the maximum number of function evaluations from the longest trial " +
+        r"Light symbols give the maximum number of evaluations from the longest trial " +
         r"divided by dimension. " +
         (r"Black stars indicate a statistically better result compared to all other algorithms " +
          r"with $p<0.01$ and Bonferroni correction number of constraints (six).  ")
@@ -135,14 +135,14 @@ def prepare_ecdfs_figure_caption():
 
     ecdfs_figure_caption_standard = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
-                r"of objective function evaluations divided by dimension " +
+                r"of %s divided by dimension " % testbedsettings.current_testbed.string_evals +
                 r"(FEvals/DIM) for $!!NUM-OF-TARGETS-IN-ECDF!!$ " +
                 r"targets with target precision in !!TARGET-RANGES-IN-ECDF!! " +
                 r"for all functions and subgroups in #1-D. "
                 )
     ecdfs_figure_caption_rlbased = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
-                r"of objective function evaluations divided by dimension " +
+                r"of %s divided by dimension " % testbedsettings.current_testbed.string_evals +
                 r"(FEvals/DIM) for all functions and subgroups in #1-D. " +
                 r"The targets are chosen from !!TARGET-RANGES-IN-ECDF!! " +
                 r"such that !!THE-REF-ALG!! just " +
@@ -188,17 +188,17 @@ def get_ecdfs_single_fcts_caption():
 
     if genericsettings.runlength_based_targets:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes in number
-             of objective function evaluations divided by dimension (FEvals/DIM) for  
+             of %s divided by dimension (FEvals/DIM) for  
              targets in !!TARGET-RANGES-IN-ECDF!! that have just not
              been reached by !!THE-REF-ALG!!
              in a given budget of $k$ $\times$ DIM, with $!!NUM-OF-TARGETS-IN-ECDF!!$ 
              different values of $k$ chosen equidistant in logscale within the interval $\{0.5, \dots, 50\}$.
-             Shown are functions $f_{#1}$ to $f_{#2}$ and all dimensions. """)
+             Shown are functions $f_{#1}$ to $f_{#2}$ and all dimensions. """ % testbedsettings.current_testbed.string_evals)
     else:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes in number
-             of objective function evaluations divided by dimension (FEvals/DIM) for the 
+             of %s divided by dimension (FEvals/DIM) for the 
              $!!NUM-OF-TARGETS-IN-ECDF!!$ targets !!TARGET-RANGES-IN-ECDF!!
-             for functions $f_{#1}$ to $f_{#2}$ and all dimensions. """
+             for functions $f_{#1}$ to $f_{#2}$ and all dimensions. """ % testbedsettings.current_testbed.string_evals
              )
 
     return captions.replace(s)
@@ -209,7 +209,7 @@ def get_ecdfs_all_groups_caption():
     
     if genericsettings.runlength_based_targets:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
-             runtimes, measured in number of objective function evaluations 
+             runtimes, measured in number of %s 
              divided by dimension (FEvals/DIM) for all function groups and all 
              dimensions and for those targets in
              !!TARGET-RANGES-IN-ECDF!! that have just not been reached by 
@@ -217,15 +217,15 @@ def get_ecdfs_all_groups_caption():
              $!!NUM-OF-TARGETS-IN-ECDF!!$ different values of $k$ chosen 
              equidistant in logscale within the interval $\{0.5, \dots, 50\}$.             
              The aggregation over all !!TOTAL-NUM-OF-FUNCTIONS!! 
-             functions is shown in the last plot."""
+             functions is shown in the last plot.""" % testbedsettings.current_testbed.string_evals
              )
     else:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
-             runtimes, measured in number of objective function evaluations,
+             runtimes, measured in number of %s,
              divided by dimension (FEvals/DIM) for the $!!NUM-OF-TARGETS-IN-ECDF!!$ 
              targets !!TARGET-RANGES-IN-ECDF!! for all function groups and all 
              dimensions. The aggregation over all !!TOTAL-NUM-OF-FUNCTIONS!! 
-             functions is shown in the last plot."""
+             functions is shown in the last plot.""" % testbedsettings.current_testbed.string_evals
              )
     return captions.replace(s)
 
@@ -236,19 +236,19 @@ def get_ecdfs_single_functions_single_dim_caption():
     
     if genericsettings.runlength_based_targets:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
-             runtimes, measured in number of objective function evaluations 
+             runtimes, measured in number of %s 
              divided by dimension (FEvals/DIM) in 
              dimension #1 and for those targets in
              !!TARGET-RANGES-IN-ECDF!! that have just not been reached by 
              !!THE-REF-ALG!! in a given budget of $k$ $\times$ DIM, with 
              $!!NUM-OF-TARGETS-IN-ECDF!!$ different values of $k$ chosen 
-             equidistant in logscale within the interval $\{0.5, \dots, 50\}$."""
+             equidistant in logscale within the interval $\{0.5, \dots, 50\}$.""" % testbedsettings.current_testbed.string_evals
              )
     else:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
-             runtimes, measured in number of objective function evaluations,
+             runtimes, measured in number of %s,
              divided by dimension (FEvals/DIM) for the $!!NUM-OF-TARGETS-IN-ECDF!!$ 
-             targets !!TARGET-RANGES-IN-ECDF!! in dimension #1."""
+             targets !!TARGET-RANGES-IN-ECDF!! in dimension #1.""" % testbedsettings.current_testbed.string_evals
              )
     return captions.replace(s)
 
