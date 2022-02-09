@@ -129,7 +129,7 @@ def beautify(dim, axesLabel=True):
     for i in range(-2, 7, 1 if ymax < 1e5 else 2):
         plt.plot((0.2, 20000), (10**i, 10**(i + 5)), 'k:', linewidth=0.5)
         # TODO: this should be done before the real lines are plotted?
-    plt.xlim(10**-0.2, xmax)
+    plt.xlim(.8, xmax)
 
     # for x in dimensions:
     #     plt.plot(2 * [x], [0.1, 1e11], 'k:', linewidth=0.5)

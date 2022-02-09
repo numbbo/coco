@@ -393,7 +393,7 @@ def beautify(dim, legend=False, rightlegend=False):
         plt.plot((0.2, 20000), (10**i, 10**(i + 5)), 'k:',
                  linewidth=0.5)  # grid should be on top
 
-    plt.xlim(10**-0.2, xmax)
+    plt.xlim(.8, xmax)
     upper_bound = ylim_upperbound(ymax)
     plt.ylim(10**-0.2, upper_bound) # Set back the default maximum.
 
