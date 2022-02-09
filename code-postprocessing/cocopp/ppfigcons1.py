@@ -534,7 +534,7 @@ def main(dsList, _valuesOfInterest, outputdir):
                 loc = (plt.xlim()[0], plt.ylim()[0])
                 align = ("left", "bottom")
 
-            plt.text(*loc, display_text,
+            plt.text(loc[0], loc[1], display_text,
                      fontsize=12, horizontalalignment=align[0],
                      verticalalignment=align[1])
 
