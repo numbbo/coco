@@ -657,7 +657,7 @@ Comprehensive List of Documentations <a name="Documentations"></a>
   - bbob-largescale: https://arxiv.org/pdf/1903.06396.pdf
   - bbob-mixint and bbob-biobj-mixint: https://hal.inria.fr/hal-02067932/document and
     https://numbbo.github.io/gforge/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
-  - bbob-constrained (in progress): http://numbbo.github.io/coco-doc/bbob-constrained/functions/
+  - bbob-constrained (in progress)
   
 
 * Performance assessment: http://numbbo.github.io/coco-doc/perf-assessment/
