@@ -519,7 +519,7 @@ def main(dsList, _valuesOfInterest, outputdir):
             beautify(dim)
             plt.title("%s, %s-D" % (func, dim))
             # display number of instances in data and used targets type:
-            if all(d.instancenumbers == dd[dim][0].instancenumbers for d in dd[dim]):
+            if all(set(d.instancenumbers) == set(dd[dim][0].instancenumbers) for d in dd[dim]):
                 display_text = '%d instances\n' % len(((dd[dim][0]).instancenumbers))
             else:
                 display_text = 'instances %s' % [d.instancenumbers for d in dd[dim]]
@@ -540,7 +540,7 @@ def main(dsList, _valuesOfInterest, outputdir):
 
             if genericsettings.scaling_plots_with_axis_labels:
                 plt.xlabel('Number of constraints')
-                plt.ylabel('log10(# f-evals / dimension)')
+                plt.ylabel('log10(%s / dimension)' % testbedsettings.current_testbed.string_evals_legend)
 
             plot_previous_algorithms(func, _valuesOfInterest)
             filename = os.path.join(outputdir, 'ppfigcons1_%s_d%d' % (func, dim))
