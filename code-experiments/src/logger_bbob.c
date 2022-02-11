@@ -548,6 +548,9 @@ static void logger_bbob_free(void *stuff) {
    * that can have problem as input
    */
   logger_bbob_data_t *logger = (logger_bbob_data_t *) stuff;
+  
+  if (stuff == NULL)
+    return;
 
   if ((coco_log_level >= COCO_DEBUG) && logger && logger->number_of_evaluations > 0) {
     coco_debug("best f=%e after %lu fevals (done observing)\n", logger->best_fvalue,
