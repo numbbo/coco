@@ -189,9 +189,10 @@ static int coco_mkdir(const char *path) {
     return 0;
   else if (errno == EEXIST)
     return 1;
-  else 
+  else  {
     coco_error("coco_mkdir(): unable to create %s, mkdir error: %s", path, strerror(errno));
     return 1; /* Never reached */
+  }
 }
 
 /**
