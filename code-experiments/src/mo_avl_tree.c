@@ -885,8 +885,6 @@ static void avl_rebalance(avl_tree_t *avltree, avl_node_t *avlnode) {
   avl_node_t *parent;
   avl_node_t **superparent;
 
-  parent = avlnode;
-
   while (avlnode) {
     parent = avlnode->parent;
 

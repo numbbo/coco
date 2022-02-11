@@ -78,7 +78,6 @@ static void transform_vars_blockrotation_evaluate(coco_problem_t *problem, const
 
   transform_vars_blockrotation_apply(problem, x, data->Bx);
   
-  inner_problem = coco_problem_transformed_get_inner_problem(problem);
   coco_evaluate_function(inner_problem, data->Bx, y);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }

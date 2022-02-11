@@ -420,11 +420,6 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
   /* first_condition satisfies the old code and the doc but seems wrong in that it is, with very high
    * probability, not the largest condition level!!! */
 
-  /* Done to silence unused function warnings */
-  coco_problem_t *(*fun_ptr1)(coco_problem_t *) = transform_vars_gallagher_blockrotation;
-  coco_problem_t *(*fun_ptr2)(coco_problem_t *) = fun_ptr1;
-  fun_ptr1 = fun_ptr2;
-
   fopt = bbob2009_compute_fopt(function, instance);
   if (number_of_peaks == peaks_101) {
     first_condition = 1000;

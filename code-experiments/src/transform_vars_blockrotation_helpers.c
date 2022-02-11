@@ -126,7 +126,6 @@ static double **coco_copy_block_matrix(const double *const *B, const size_t dime
 
   dest = coco_allocate_blockmatrix(dimension, block_sizes, nb_blocks);
   idx_blocksize = 0;
-  current_blocksize = block_sizes[idx_blocksize];
   next_bs_change = block_sizes[idx_blocksize];
   assert(nb_blocks != 0); /*tmp*/ /*to silence warning*/
   for (i = 0; i < dimension; i++) {

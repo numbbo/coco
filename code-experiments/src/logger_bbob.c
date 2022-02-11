@@ -287,7 +287,6 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
     if ((tmp_file) && (bbob_current_dim == logger->number_of_variables)
         && (bbob_current_funId == logger->function_id)) {
         /* new instance of current funId and current dim */
-      newLine = 0;
       *target_file = fopen(file_path, "a+");
       if (*target_file == NULL) {
         errnum = errno;
