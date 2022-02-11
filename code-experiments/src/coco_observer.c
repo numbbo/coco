@@ -214,7 +214,7 @@ static int coco_observer_evaluations_trigger_first(coco_observer_evaluations_t *
 
   if (evaluation_number >= evaluations->value1) {
     /* Compute the next value for the first trigger */
-    while (coco_double_to_size_t(floor(pow(10, (double) evaluations->exponent1 / (double) evaluations->number_of_triggers)) <= evaluations->value1)) {
+    while (coco_double_to_size_t(floor(pow(10, (double) evaluations->exponent1 / (double) evaluations->number_of_triggers))) <= evaluations->value1) {
       evaluations->exponent1++;
     }
     evaluations->value1 = coco_double_to_size_t(floor(pow(10, (double) evaluations->exponent1 / (double) evaluations->number_of_triggers)));
