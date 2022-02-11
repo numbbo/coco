@@ -176,9 +176,9 @@ def beautify(dim, axesLabel=True):
 
     plt.ylim(10**-0.2, upper_bound) # Set back the default maximum.
     # Vertical bar where dimension = number of active constraints
-    plt.vlines(dim, 0, upper_bound, lw=2, ls="--", alpha=.5, colors=["blue"],
+    plt.vlines(dim, 0, upper_bound, lw=2, linestyles="--", alpha=.5, colors=["blue"],
                label="m = dim")
-    plt.vlines(int(dim * 1.5), 0, upper_bound, lw=2, ls="--", alpha=.5,
+    plt.vlines(int(dim * 1.5), 0, upper_bound, lw=2, linestyles="--", alpha=.5,
                colors=["green"], label="m(active) = dim")
             
 
