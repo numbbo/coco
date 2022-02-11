@@ -533,6 +533,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   } else if (0 == strcmp(observer_name, "rw")) {
     observer_rw(observer, observer_options, &additional_option_keys);
   } else {
+    coco_observer_free(observer);
     coco_warning("Unknown observer!");
     return NULL;
   }
