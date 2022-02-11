@@ -465,7 +465,7 @@ void coco_free_memory(void *data);
 /**
  * @brief Signals a fatal error.
  */
-void coco_error(const char *message, ...);
+void coco_error(const char *message, ...) __attribute__((noreturn)) __attribute__((__noreturn__));
 
 /**
  * @brief Warns about error conditions.

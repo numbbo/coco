@@ -13,7 +13,7 @@
 #include "coco.h"
 #include "coco_utilities.c"
 
-void coco_error(const char *message, ...) {
+void __attribute__((noreturn)) __attribute__((__noreturn__)) coco_error(const char *message, ...) {
   va_list args;
 
   fprintf(stderr, "COCO FATAL ERROR: ");
