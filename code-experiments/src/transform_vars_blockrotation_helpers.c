@@ -88,12 +88,9 @@ static void coco_compute_blockrotation(double **B, long seed, size_t n, size_t *
   double **current_block;
   size_t i, j;
   size_t idx_block, current_blocksize, cumsum_prev_block_sizes, sum_block_sizes;
-  size_t nb_entries;
-  nb_entries = 0;
   sum_block_sizes = 0;
   for (i = 0; i < nb_blocks; i++){
     sum_block_sizes += block_sizes[i];
-    nb_entries += block_sizes[i] * block_sizes[i];
   }
   assert(sum_block_sizes == n);
 
