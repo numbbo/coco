@@ -60,8 +60,6 @@ suite_to_testbed = {
     default_suite_bi: default_testbed_bi,
     'bbob-biobj-ext': default_testbed_bi_ext,
     'bbob-constrained': default_testbed_cons,
-    'bbob-constrained-active-only': default_testbed_cons,
-    'bbob-constrained-no-disguise': default_testbed_cons,
     'bbob-largescale': default_testbed_ls,
     'bbob-mixint': default_testbed_mixint,
     'bbob-biobj-mixint': 'GECCOBBOBBiObjMixintTestbed',
