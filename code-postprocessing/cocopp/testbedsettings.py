@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import os
 import numpy as np
 import warnings
+from collections import OrderedDict
 
 from . import dataformatsettings
 
@@ -231,6 +232,26 @@ class Testbed(object):
         raise NotImplementedError  # this needs to be implemented for the constrained testbed class
         return 0
 
+    @property
+    def string_evals(self):
+        if self.has_constraints:
+            return "evaluations"
+        else:
+            return "$f$-evaluations"
+
+    @property
+    def string_evals_short(self):
+        if self.has_constraints:
+            return "evals"
+        else:
+            return "FEvals"
+
+    @property
+    def string_evals_legend(self):
+        if self.has_constraints:
+            return "evals"
+        else:
+            return "# f-evals"
 
 class GECCOBBOBTestbed(Testbed):
     """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015,
@@ -413,9 +434,9 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
         shortinfo_filename=shortinfo_filename,
         short_names=get_short_names(shortinfo_filename),
         name=suite_name_cons,
-        functions_with_legend=(1, 48),
+        functions_with_legend=(1, 54),
         first_function_number=1,
-        last_function_number=48,
+        last_function_number=54,
         reference_algorithm_filename='',
         reference_algorithm_displayname='',  # TODO: should be read in from data set in reference_algorithm_filename
         scenario=scenario_constrainedfixed,
@@ -441,6 +462,17 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
 
     )
 
+    func_cons_groups = OrderedDict({
+        "Sphere": range(1, 7),
+        "Separable Ellipsoid": range(7, 13),
+        "Linear Slope": range(13, 19),
+        "Rotated Ellipsoid": range(19, 25),
+        "Discus": range(25, 31),
+        "Bent Cigar": range(31, 37),
+        "Different Powers": range(37, 43),
+        "Separable Rastrigin": range(43, 49),
+        "Rotated Rastrigin": range(49, 55)
+    })
 
     def __init__(self, target_values):
 
@@ -459,6 +491,43 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
     def filter(self, dsl):
         """ Does nothing but overwriting the method from superclass"""
         return dsl
+
+    @staticmethod
+    def number_of_constraints(dimension, function_id, active_only=False):
+        """Return the number of constraints of function `function_id`
+
+        in the given dimension. If `active_only`, it is the number of
+        constraints that are active in the global optimum.
+        """
+
+        if active_only:
+            numbers = [1, 2, 6, 6 + int(dimension / 2),
+                       6 + dimension, 6 + 3 * dimension]
+        else:
+            numbers = [1, 3, 9, 9 + int(3 * dimension / 4),
+                       9 + int(3 * dimension / 2), 9 + int(9 * dimension / 2)]
+
+        map_id_to_number = {k: n for k, n in enumerate(numbers)}
+
+        return map_id_to_number[(function_id - 1) % 6]  # 6 is also len(numbers)
+
+    @staticmethod
+    def constraint_category(function_id, active_only=False):
+        """Return the number of constraints as a string formula.
+
+        The formula is the same for all dimensions and may contain 'n'
+        which stands for dimension. If `active_only`, it gives the number
+        of constraints that are active in the global optimum.
+        """
+
+        if active_only:
+            numbers = ['1', '2', '6', '6+ndiv2', '6+n', '6+3n']
+        else:
+            numbers = ['0n+1', '0n+3', '0n+9', '3ndiv4+9', '6ndiv4+9', '9ndiv2+9']
+
+        map_id_to_number = {k: n for k, n in enumerate(numbers)}
+
+        return map_id_to_number[(function_id - 1) % 6]  # 6 is also len(numbers)
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):

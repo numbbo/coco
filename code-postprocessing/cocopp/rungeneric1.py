@@ -24,7 +24,7 @@ import matplotlib
 
 import warnings, getopt, numpy as np
 
-from . import genericsettings, testbedsettings, ppfig, pptable, pprldistr, ppfigdim, pplogloss, findfiles
+from . import genericsettings, testbedsettings, ppfig, pptable, pprldistr, ppfigdim, ppfigcons1, pplogloss, findfiles
 from .pproc import DataSetList, store_reference_values, dictAlgByDim
 from .ppfig import Usage
 from .toolsdivers import print_done, prepend_to_file, strip_pathname1, str_to_latex, get_version_label, replace_in_file
@@ -153,6 +153,11 @@ def main(alg, outputdir, argv=None):
         # ERT/dim vs dim.
         ppfigdim.main(dsList, values_of_interest, algoutputdir)
 
+        print_done()
+
+    if testbedsettings.current_testbed.has_constraints:
+        print("Scaling wrt constraints...")
+        ppfigcons1.main(dsList, values_of_interest, algoutputdir)
         print_done()
 
     if genericsettings.isConv:

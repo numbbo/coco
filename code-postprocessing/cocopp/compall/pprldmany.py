@@ -57,6 +57,24 @@ label_fontsize = 17
 title_fontsize = 20
 styles = [d.copy() for d in genericsettings.line_styles]  # deep copy
 
+def text_infigure_if_constraints():
+    """to be displayed in the figure corner
+
+    TODO: is a method with no arguments
+    because if made a variable, an error is raised
+    as it is computed before testbedsettings.current_testbed is instantiated
+    in some import
+    """
+    if testbedsettings.current_testbed.has_constraints:
+        w = genericsettings.weight_evaluations_constraints
+        _text = ("\nevals = "
+                 + ("%sx" % w[0] if w[0] != 1 else "") + "f-evals + "
+                 + ("%sx" % w[1] if w[1] != 1 else "") + "g-evals")
+    else:
+        _text = ""
+    return _text
+
+
 refcolor = 'wheat'
 """color of reference (best) algorithm"""
 
@@ -168,15 +186,9 @@ def beautify():
 
     global divide_by_dimension
     if divide_by_dimension:
-        if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons:
-            plt.xlabel('log10(# (f+g)-evals / dimension)', fontsize=label_fontsize)
-        else:
-            plt.xlabel('log10(# f-evals / dimension)', fontsize=label_fontsize)
+        plt.xlabel('log10(%s / dimension)' % testbedsettings.current_testbed.string_evals_legend, fontsize=label_fontsize)
     else:
-        if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons:
-            plt.xlabel('log10(# (f+g)-evals)', fontsize=label_fontsize)
-        else:
-            plt.xlabel('log10(# f-evals)', fontsize=label_fontsize)
+        plt.xlabel('log10(%s)' % testbedsettings.current_testbed.string_evals_legend, fontsize=label_fontsize)
     plt.ylabel('Fraction of function,target pairs', fontsize=label_fontsize)
     ppfig.logxticks()
     plt.xticks(fontsize=label_fontsize)  # the "original" size is for some reason too large
@@ -213,6 +225,7 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
     if n == 0:
         # res = plt.plot((1., ), (0., ), **kwargs)
         res = pprldistr.plotECDF(np.array((1.,)), n=np.inf, **kwargs)
+        maxval = np.inf  # trick to plot the cross later if maxevals
     else:
         dictx = {}  # number of appearances of each value in x
         for i in x:
@@ -240,30 +253,33 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
                                         logscale=False, clip_on=False, **kwargs)
         # res = plotUnifLogXMarkers(x2, y2, nbperdecade, logscale=False, **kwargs)
 
-        if maxevals:  # Should cover the case where maxevals is None or empty
-            x3 = np.median(maxevals)
-            if (x3 <= maxval and
-                # np.any(x2 <= x3) and   # maxval < median(maxevals)
-                not plt.getp(res[-1], 'label').startswith('best')
-                ): # TODO: HACK for not considering a "best" algorithm line
-                
+    if maxevals:  # Should cover the case where maxevals is None or empty
+        x3 = np.median(maxevals)  # change it only here
+        if (x3 <= maxval and
+            # np.any(x2 <= x3) and   # maxval < median(maxevals)
+            not plt.getp(res[-1], 'label').startswith('best')
+            ): # TODO: HACK for not considering a "best" algorithm line
+            # Setting y3
+            if n == 0:
+                y3 = 0
+            else:
                 try:
                     y3 = y2[x2 <= x3][-1]  # find right y-value for x3==median(maxevals)
                 except IndexError:  # median(maxevals) is smaller than any data, can only happen because of CrE?
                     y3 = y2[0]
-                h = plt.plot((x3,), (y3,),
-                             marker=median_max_evals_marker_format[0],
-                             markersize=median_max_evals_marker_format[1],
-                             markeredgewidth=median_max_evals_marker_format[2],
-                             # marker='x', markersize=24, markeredgewidth=3, 
-                             markeredgecolor=plt.getp(res[0], 'color'),
-                             ls=plt.getp(res[0], 'linestyle'),
-                             color=plt.getp(res[0], 'color'),
-                             # zorder=1.6   # zorder=0;1;1.5 is behind the grid lines, 2 covers other lines, 1.6 is between
-                             )
-                h.extend(res)
-                res = h  # so the last element in res still has the label.
-                # Only take sequences for x and y!
+            h = plt.plot((x3,), (y3,),
+                         marker=median_max_evals_marker_format[0],
+                         markersize=median_max_evals_marker_format[1],
+                         markeredgewidth=median_max_evals_marker_format[2],
+                         # marker='x', markersize=24, markeredgewidth=3, 
+                         markeredgecolor=plt.getp(res[0], 'color'),
+                         ls=plt.getp(res[0], 'linestyle'),
+                         color=plt.getp(res[0], 'color'),
+                         # zorder=1.6   # zorder=0;1;1.5 is behind the grid lines, 2 covers other lines, 1.6 is between
+                         )
+            h.extend(res)
+            res = h  # so the last element in res still has the label.
+            # Only take sequences for x and y!
 
     return res
 
@@ -427,7 +443,12 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
             runlengthunsucc = []
             evals = entry.detEvals([t])[0]
             runlengthsucc = evals[np.isnan(evals) == False] / divisor
-            runlengthunsucc = entry.maxevals[np.isnan(evals)] / divisor
+            if testbedsettings.current_testbed.has_constraints:
+                # maxevals is inconsistent in that case
+                maxevals_column = entry.maxfgevals
+            else:
+                maxevals_column = entry.maxevals
+            runlengthunsucc = maxevals_column[np.isnan(evals)] / divisor
             if len(runlengthsucc) > 0:  # else x == [inf, inf,...]
                 if testbedsettings.current_testbed.instances_are_uniform:
                     x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
@@ -660,7 +681,12 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                         evals = entry.detEvals([t])[0]
                         assert entry.dim == dim
                         runlengthsucc = evals[np.isnan(evals) == False] / divisor
-                        runlengthunsucc = entry.maxevals[np.isnan(evals)] / divisor
+                        if testbedsettings.current_testbed.has_constraints:
+                            # maxevals is inconsistent in that case
+                            maxevals_column = entry.maxfgevals
+                        else:
+                            maxevals_column = entry.maxevals
+                        runlengthunsucc = maxevals_column[np.isnan(evals)] / divisor
                         if len(runlengthsucc) > 0:  # else x == [inf, inf,...]
                             if testbedsettings.current_testbed.instances_are_uniform:
                                 x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
@@ -823,8 +849,19 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         dictFG = pp.dictAlgByFuncGroup(dictAlg)
         dictKey = list(dictFG.keys())[0]
         functionGroups = dictAlg[list(dictAlg.keys())[0]].getFuncGroups()
+        if testbedsettings.current_testbed.has_constraints:
+            # HACK: because a function is in at least two groups:
+            # {{separ or hcond or multi} and all} with {m} constraints
+            # the original method is broken for bbob-constrained
+            listGroups = list(functionGroups.values())
+            if len(functionGroups) == 2:
+                groupName = listGroups[0]  # all is the last one
+            if len(functionGroups) > 2:
+                groupName = listGroups[-1]  # same reason
+        else:
+            groupName = functionGroups[dictKey]
         text = '%s\n%s, %d-D' % (testbedsettings.current_testbed.name,
-                                 functionGroups[dictKey],
+                                 groupName,
                                  dimList[0])
     else:
         text = '%s %s' % (testbedsettings.current_testbed.name,
@@ -842,7 +879,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     else:
         text += (str(len(targetstrings)) + ' targets: ' +
                  targetstrings[0] + '..' +
-                 targetstrings[len(targetstrings)-1])        
+                 targetstrings[len(targetstrings)-1])
+    # add weights for constrained testbeds
+    text += text_infigure_if_constraints()
     # add number of instances 
     text += '\n'
     num_of_instances = []
@@ -851,7 +890,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             num_of_instances.append(len((dictAlgperFunc[alg])[0].instancenumbers))
         except IndexError:
             pass
-    # issue a warning if number of instances is inconsistant, but always
+    # issue a warning if number of instances is inconsistent, but always
     # display only the present number of instances, i.e. remove copies
     if len(set(num_of_instances)) > 1 and genericsettings.warning_level >= 5:
         warnings.warn('Number of instances inconsistent over all algorithms: %s instances found.' % str(num_of_instances))
@@ -861,7 +900,6 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             
     text = text.rstrip(', ')
     text += ' instances'
-
     plt.text(0.01, 0.99, text,
              horizontalalignment="left",
              verticalalignment="top",
