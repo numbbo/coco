@@ -34,6 +34,15 @@ cmake ../
 ninja # or make, depending on your version of CMake
 ```
 
+### meson
+
+Instead of `make` you can use `meson` and `ninja`: 
+
+```
+meson setup build
+meson compile -C build
+```
+
 Getting Started
 ---------------
 
