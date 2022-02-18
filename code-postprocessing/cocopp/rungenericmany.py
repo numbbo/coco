@@ -184,14 +184,15 @@ def main(args, outputdir):
 
     dimensions = sorted(pproc.dictAlgByDim(dictAlg))
 
-    ppfig.save_single_functions_html(
-        os.path.join(many_algorithms_output, genericsettings.ppfigcons_file_name),
-        '',  # algorithms names are clearly visible in the figure
-        dimensions=dimensions,
-        htmlPage=ppfig.HtmlPage.PPFIGCONS,
-        function_groups=dictAlg[sortedAlgs[0]].getFuncGroups(),
-        parentFileName=genericsettings.many_algorithm_file_name
-    )
+    if testbedsettings.current_testbed.has_constraints:
+        ppfig.save_single_functions_html(
+            os.path.join(many_algorithms_output, genericsettings.ppfigcons_file_name),
+            '',  # algorithms names are clearly visible in the figure
+            dimensions=dimensions,
+            htmlPage=ppfig.HtmlPage.PPFIGCONS,
+            function_groups=dictAlg[sortedAlgs[0]].getFuncGroups(),
+            parentFileName=genericsettings.many_algorithm_file_name
+        )
 
     ppfig.save_single_functions_html(
         os.path.join(many_algorithms_output, genericsettings.pptables_file_name),
