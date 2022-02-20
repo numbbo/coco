@@ -1,0 +1,26 @@
+name: CMake
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+    branches: [ master, development ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build C amalgamation
+      run: python ${{github.workspace}}/do.py build-c
+      
+    - name: Configure CMake
+      run: cmake -S ${{github.workspace}}/code-experiments/build/c/ -B ${{github.workspace}}/code-experiments/build/c/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/code-experiments/build/c/build --config ${{env.BUILD_TYPE}}
