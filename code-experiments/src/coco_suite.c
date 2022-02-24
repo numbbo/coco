@@ -599,7 +599,7 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
  * (2, 3, 5, 10, 20, 40)
  * - "bbob-largescale" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 6 large dimensions (40, 80, 160, 320, 640, 1280)
- * - "bbob-constrained" contains 48 linearly-constrained problems, which are combinations of 8 single 
+ * - "bbob-constrained" contains 54 linearly-constrained problems, which are combinations of 8 single 
  * objective functions with 6 different numbers of active linear constraints (1, 2, 10, dimension/2, dimension-1,
  * dimension+1), in 6 dimensions (2, 3, 5, 10, 20, 40).
  * - "bbob-mixint" contains mixed-integer single-objective functions in 6 dimensions (2, 3, 5, 10, 20, 40)

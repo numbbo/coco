@@ -2,7 +2,7 @@
  * @file  suite_cons_bbob_problems.c
  * @brief Implementation of the problems in the constrained BBOB suite.
  * 
- * This suite contains 48 constrained functions in continuous domain 
+ * This suite contains 54 constrained functions in continuous domain
  * which are derived from combining 8 single-objective functions of the
  * noiseless bbob test suite with randomly-generated 
  * linear constraints perturbed by nonlinear transformations.
