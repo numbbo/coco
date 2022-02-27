@@ -1,9 +1,7 @@
 \documentclass[sigconf]{acmart}
 
 % include preamble:
-\include{templatepreamble.tex}
-
-
+\input{templatepreamble.tex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% TO BE EDITED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -16,8 +14,7 @@
 % \newcommand{\algDtables}{ALGO4}  % forth argument in the post-processing
 % ...
 % location of pictures files
-\newcommand{\bbobdatapath}{ppdata2/} % change default output folder of COCO if desired
-
+\newcommand{\bbobdatapath}{ppdata/} % change default output folder of COCO if desired
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -411,35 +408,25 @@ unsuccessful trial under consideration.
 \begin{tabular}{l@{\hspace*{-0.00\textwidth}}l@{\hspace*{0.01\textwidth}}|l@{\hspace*{-0.00\textwidth}}l}
 \multicolumn{2}{c}{$D=5$} & \multicolumn{2}{c}{$D=20$}\\[-0.5ex]
 \rot[3]{all functions}
-\includegraphics[width=0.2362\textwidth]{pprldistr_05D_noiselessall} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_05D_noiselessall} &
-\includegraphics[width=0.2362\textwidth]{pprldistr_20D_noiselessall} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_20D_noiselessall} \\[-0.2em]
+\includegraphics[width=0.2362\textwidth]{"pprldistr_05D_all m=0n+1"} &
+\includegraphics[width=0.2362\textwidth]{"ppfvdistr_05D_all m=0n+1"} &
+\includegraphics[width=0.2362\textwidth]{"pprldistr_20D_all m=0n+1"} &
+\includegraphics[width=0.2362\textwidth]{"ppfvdistr_20D_all m=0n+1"} \\[-0.2em]
 \rot[2.9]{separable fcts}
-\includegraphics[width=0.2362\textwidth]{pprldistr_05D_separ} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_05D_separ} &
-\includegraphics[width=0.2362\textwidth]{pprldistr_20D_separ} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_20D_separ} \\[-0.2em]
-\rot[1.45]{misc.\ moderate fcts}
-\includegraphics[width=0.2362\textwidth]{pprldistr_05D_lcond} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_05D_lcond} &
-\includegraphics[width=0.2362\textwidth]{pprldistr_20D_lcond} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_20D_lcond} \\[-0.2em]
+\includegraphics[width=0.2362\textwidth]{"pprldistr_05D_separ m=0n+1"} &
+\includegraphics[width=0.2362\textwidth]{"ppfvdistr_05D_separ m=0n+1"} &
+\includegraphics[width=0.2362\textwidth]{"pprldistr_20D_separ m=0n+1"} &
+\includegraphics[width=0.2362\textwidth]{"ppfvdistr_20D_separ m=0n+1"} \\[-0.2em]
 \rot[1.5]{ill-conditioned fcts}
-\includegraphics[width=0.2362\textwidth]{pprldistr_05D_hcond} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_05D_hcond} &
-\includegraphics[width=0.2362\textwidth]{pprldistr_20D_hcond} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_20D_hcond} \\[-0.2em]
+\includegraphics[width=0.2362\textwidth]{"pprldistr_05D_hcond m=0n+1"} &
+\includegraphics[width=0.2362\textwidth]{"ppfvdistr_05D_hcond m=0n+1"} &
+\includegraphics[width=0.2362\textwidth]{"pprldistr_20D_hcond m=0n+1"} &
+\includegraphics[width=0.2362\textwidth]{"ppfvdistr_20D_hcond m=0n+1"} \\[-0.2em]
 \rot[2.3]{multi-modal fcts}
-\includegraphics[width=0.2362\textwidth]{pprldistr_05D_multi} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_05D_multi} &
-\includegraphics[width=0.2362\textwidth]{pprldistr_20D_multi} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_20D_multi} \\[-0.2em]
-\rot[1.7]{weak structure fcts}
-\includegraphics[width=0.2362\textwidth]{pprldistr_05D_mult2} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_05D_mult2} &
-\includegraphics[width=0.2362\textwidth]{pprldistr_20D_mult2} &
-\includegraphics[width=0.2362\textwidth]{ppfvdistr_20D_mult2}
+\includegraphics[width=0.2362\textwidth]{"pprldistr_05D_multi m=0n+1"} &
+\includegraphics[width=0.2362\textwidth]{"ppfvdistr_05D_multi m=0n+1"} &
+\includegraphics[width=0.2362\textwidth]{"pprldistr_20D_multi m=0n+1"} &
+\includegraphics[width=0.2362\textwidth]{"ppfvdistr_20D_multi m=0n+1"}
 \vspace*{-1ex}
 \end{tabular}
  \caption{\label{fig:ECDFs}
@@ -483,7 +470,58 @@ unsuccessful trial under consideration.
 \vspace*{-1ex}
 \end{tabular}
  \caption{\label{fig:ECDFsingleOne}
-	\bbobecdfcaptionsinglefunctionssingledim{$\!\!$s 20 to 640}
+	\bbobecdfcaptionsinglefunctionssingledim{$\!\!$s 2 to 40 and problem IDs 1 to 24}
+}
+\end{figure*}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure*}
+\centering
+\begin{tabular}{l@{\hspace*{-0.00\textwidth}}l@{\hspace*{0.01\textwidth}}|l@{\hspace*{-0.00\textwidth}}l}
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f025}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f026}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f027}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f028}\\[-0.2em]
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f029}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f030}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f031}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f032}\\[-0.2em]
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f033}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f034}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f035}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f036}\\[-0.2em]
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f037}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f038}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f039}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f040}\\[-0.2em]
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f041}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f042}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f043}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f044}\\[-0.2em]
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f045}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f046}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f047}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f048}
+\vspace*{-1ex}
+\end{tabular}
+ \caption{\label{fig:ECDFsingleOne}
+   \bbobecdfcaptionsinglefunctionssingledim{$\!\!$s 2 to 40 and problem IDs 25 to 48}
+}
+\end{figure*}
+
+\begin{figure*}
+\centering
+\begin{tabular}{l@{\hspace*{-0.00\textwidth}}l@{\hspace*{0.01\textwidth}}|l@{\hspace*{-0.00\textwidth}}l}
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f049}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f050}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f051}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f052}\\[-0.2em]
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f053}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f054}
+\vspace*{-1ex}
+\end{tabular}
+ \caption{\label{fig:ECDFsingleOne}
+   \bbobecdfcaptionsinglefunctionssingledim{$\!\!$s 2 to 40 and problem IDs 49 to 54.}
 }
 \end{figure*}
 
@@ -655,7 +693,7 @@ $m=9$ & $m=\lfloor \frac{3}{4}n\rfloor + 9$ \\
  \begin{tabular}{@{}c@{}c@{}c@{}}
  \includegraphics[width=0.3\textwidth]{ppfigcons_Sphere_d20} & 
  \includegraphics[width=0.3\textwidth]{"ppfigcons_Separable Ellipsoid_d20"} &
- \includegraphics[width=0.3\textwidth]{ppfigcons_Linear Slope_d20}\\ 
+ \includegraphics[width=0.3\textwidth]{"ppfigcons_Linear Slope_d20"}\\
  \includegraphics[width=0.3\textwidth]{"ppfigcons_Rotated Ellipsoid_d20"} & 
  \includegraphics[width=0.3\textwidth]{ppfigcons_Discus_d20} &
  \includegraphics[width=0.3\textwidth]{"ppfigcons_Bent Cigar_d20"}\\ 
