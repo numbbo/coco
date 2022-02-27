@@ -774,6 +774,7 @@ def build_rust():
                     '--blocklist-item', 'FP_NAN']
     run('code-experiments/build/rust/coco-sys', bindgen_call, verbose=_verbosity)
 
+    run('code-experiments/build/rust/coco-sys', ['cargo', 'build'], verbose=_verbosity)
     run('code-experiments/build/rust', ['cargo', 'build'], verbose=_verbosity)
 
 
@@ -792,6 +793,9 @@ def test_rust():
     """ Builds and runs the test in Rust """
     build_rust()
     try:
+        run('code-experiments/build/rust/coco-sys',
+            ['cargo', 'test'],
+            verbose=_verbosity)
         run('code-experiments/build/rust',
             ['cargo', 'test'],
             verbose=_verbosity)
