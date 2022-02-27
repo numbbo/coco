@@ -36,6 +36,7 @@ test_script:
   - cmd: python do.py build-python
   - cmd: python do.py test-python
   - cmd: python do.py test-java
+  - cmd: python do.py test-rust
   - cmd: python do.py test-preprocessing
   - cmd: python do.py test-postprocessing
   - cmd: python do.py test-suites
