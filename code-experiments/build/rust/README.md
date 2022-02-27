@@ -7,22 +7,33 @@ Rust bindings for the COCO Numerical Black-Box Optimization Benchmarking Framewo
 
 See https://github.com/numbbo/coco and https://numbbo.github.io/coco/.
 
-## Building coco-sys
-
-This is only necessary when updating COCO. A regular build only requires compilers for Rust and C as well as a call to `cargo build`.
+## Building and packaging
 
 ### Requirements
 
 - `git`
 - `gcc` (or any other C compiler)
 - `bindgen` (`cargo install bindgen`)
+    - and `libclang` (install `libclang-dev` on Ubuntu)
 - `bash` (for `generate.sh`)
 
-### Build Steps
+### coco-sys
 
 ```sh
-$ git submodule update --init --recursive
-$ cd coco-sys
-$ ./generate.sh
+$ python do.py build-rust
+$ cd code-experiments/build/rust/coco-sys
 $ cargo build
+$ # and when publishing
+$ cargo package --allow-dirty
+$ cargo publish --allow-dirty
+```
+
+### coco-rs
+
+```sh
+$ cd code-experiments/build/rust
+$ cargo build
+$ # and when publishing
+$ cargo package
+$ cargo publish
 ```
