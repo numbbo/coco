@@ -51,4 +51,5 @@ We acknowledge in particular:
 * the MinUnit code used as the basis for the implementation in 
   ``code-experiments/test/unit-test/minunit_c89.h``, distributed under
   the terms of the MIT Licence.
+* the Rust code by Leopold Luley in `code-experiments/build/rust/`, distributed unter the terms of the MIT License.
 
