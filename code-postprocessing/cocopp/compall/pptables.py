@@ -38,7 +38,7 @@ def get_table_caption():
         and, in braces as dispersion measure, the half difference between 10 and 
         90\%-tile of (bootstrapped) runtimes is shown for the different
         target """
-        + ("!!DF!!-" if not testbedsettings.current_testbed.has_constraints else "")
+        + ("!!DF!!-" if not testbedsettings.current_testbed.has_constraints else "precision ")
         + r"""values as shown in the top row. 
         \#succ is the number of trials that reached the last target
         $!!FOPT!! + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.

@@ -76,7 +76,7 @@ def get_table_caption():
         \#succ is the number of trials that reached the target value of the last column.
         """)
     table_caption_rest = r"""%
-        The median number of conducted function evaluations is additionally given in 
+        The median number of conducted evaluations is additionally given in 
         \textit{italics}, if the target in the last column was never reached. 
         \textbf{Bold} entries are statistically significantly better (according to
         the rank-sum test) compared to !!THE-REF-ALG!!, with
