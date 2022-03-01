@@ -102,8 +102,9 @@ static void transform_vars_gallagher_blockrotation_evaluate(coco_problem_t *prob
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
+static COCO_UNUSED coco_problem_t *transform_vars_gallagher_blockrotation(coco_problem_t *inner_problem);
 
-static coco_problem_t *transform_vars_gallagher_blockrotation(coco_problem_t *inner_problem) {
+static coco_problem_t *transform_vars_gallagher_blockrotation(coco_problem_t *inner_problem) { 
   coco_problem_t *problem;
   transform_vars_gallagher_blockrotation_t *data;
 

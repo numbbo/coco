@@ -189,9 +189,10 @@ static int coco_mkdir(const char *path) {
     return 0;
   else if (errno == EEXIST)
     return 1;
-  else 
+  else  {
     coco_error("coco_mkdir(): unable to create %s, mkdir error: %s", path, strerror(errno));
     return 1; /* Never reached */
+  }
 }
 
 /**
@@ -949,7 +950,7 @@ static int coco_is_nan(const double x) {
 static int coco_vector_contains_nan(const double *x, const size_t dim) {
 	size_t i;
 	for (i = 0; i < dim; i++) {
-		if (coco_is_nan(x[i]))
+		if (COCO_UNLIKELY(coco_is_nan(x[i])))
 		  return 1;
 	}
 	return 0;
@@ -980,7 +981,7 @@ static int coco_is_inf(const double x) {
 static int coco_vector_isfinite(const double *x, const size_t dim) {
 	size_t i;
 	for (i = 0; i < dim; i++) {
-		if (coco_is_nan(x[i]) || coco_is_inf(x[i]))
+		if (COCO_UNLIKELY(coco_is_nan(x[i])) || COCO_UNLIKELY(coco_is_inf(x[i])))
 		  return 0;
 	}
 	return 1;

@@ -296,121 +296,119 @@ static coco_problem_t *coco_get_biobj_problem(const size_t function,
             floor(-0.5 + sqrt(0.25 + 2.0 * (double) (55 - function_idx - 1)))) - 1;
     function2_idx = function_idx - (function1_idx * num_sel_bbob_functions) +
         (function1_idx * (function1_idx + 1)) / 2;
-        
+  } else if (function_idx == 55) { /* There is not a simple "magic" formula for functions >= 55 */
+    function1_idx = 0;
+    function2_idx = 2;
+  } else if (function_idx == 56) {
+    function1_idx = 0;
+    function2_idx = 3;
+  } else if (function_idx == 57) {
+    function1_idx = 0;
+    function2_idx = 4;
+  } else if (function_idx == 58) {
+    function1_idx = 1;
+    function2_idx = 2;
+  } else if (function_idx == 59) {
+    function1_idx = 1;
+    function2_idx = 3;
+  } else if (function_idx == 60) {
+    function1_idx = 1;
+    function2_idx = 4;
+  } else if (function_idx == 61) {
+    function1_idx = 2;
+    function2_idx = 3;
+  } else if (function_idx == 62) {
+    function1_idx = 2;
+    function2_idx = 4;
+  } else if (function_idx == 63) {
+    function1_idx = 3;
+    function2_idx = 4;
+  } else if (function_idx == 64) {
+    function1_idx = 5;
+    function2_idx = 6;
+  } else if (function_idx == 65) {
+    function1_idx = 5;
+    function2_idx = 8;
+  } else if (function_idx == 66) {
+    function1_idx = 6;
+    function2_idx = 7;
+  } else if (function_idx == 67) {
+    function1_idx = 6;
+    function2_idx = 8;
+  } else if (function_idx == 68) {
+    function1_idx = 7;
+    function2_idx = 8;
+  } else if (function_idx == 69) {
+    function1_idx = 9;
+    function2_idx = 10;
+  } else if (function_idx == 70) {
+    function1_idx = 9;
+    function2_idx = 11;
+  } else if (function_idx == 71) {
+    function1_idx = 9;
+    function2_idx = 12;
+  } else if (function_idx == 72) {
+    function1_idx = 9;
+    function2_idx = 13;
+  } else if (function_idx == 73) {
+    function1_idx = 10;
+    function2_idx = 11;
+  } else if (function_idx == 74) {
+    function1_idx = 10;
+    function2_idx = 12;
+  } else if (function_idx == 75) {
+    function1_idx = 10;
+    function2_idx = 13;
+  } else if (function_idx == 76) {
+    function1_idx = 11;
+    function2_idx = 12;
+  } else if (function_idx == 77) {
+    function1_idx = 11;
+    function2_idx = 13;
+  } else if (function_idx == 78) {
+    function1_idx = 14;
+    function2_idx = 17;
+  } else if (function_idx == 79) {
+    function1_idx = 14;
+    function2_idx = 18;
+  } else if (function_idx == 80) {
+    function1_idx = 16;
+    function2_idx = 17;
+  } else if (function_idx == 81) {
+    function1_idx = 16;
+    function2_idx = 18;
+  } else if (function_idx == 82) {
+    function1_idx = 17;
+    function2_idx = 18;
+  } else if (function_idx == 83) {
+    function1_idx = 19;
+    function2_idx = 21;
+  } else if (function_idx == 84) {
+    function1_idx = 19;
+    function2_idx = 22;
+  } else if (function_idx == 85) {
+    function1_idx = 19;
+    function2_idx = 23;
+  } else if (function_idx == 86) {
+    function1_idx = 20;
+    function2_idx = 21;
+  } else if (function_idx == 87) {
+    function1_idx = 20;
+    function2_idx = 22;
+  } else if (function_idx == 88) {
+    function1_idx = 20;
+    function2_idx = 23;
+  } else if (function_idx == 89) {
+    function1_idx = 21;
+    function2_idx = 22;
+  } else if (function_idx == 90) {
+    function1_idx = 21;
+    function2_idx = 23;
+  } else if (function_idx == 91) {
+    function1_idx = 22;
+    function2_idx = 23;
   } else {
-    /* There is not a simple "magic" formula for functions >= 55 */
-    if (function_idx == 55) {
-        function1_idx = 0;
-        function2_idx = 2;
-    } else if (function_idx == 56) {
-        function1_idx = 0;
-        function2_idx = 3;
-    } else if (function_idx == 57) {
-        function1_idx = 0;
-        function2_idx = 4;
-    } else if (function_idx == 58) {
-        function1_idx = 1;
-        function2_idx = 2;
-    } else if (function_idx == 59) {
-        function1_idx = 1;
-        function2_idx = 3;
-    } else if (function_idx == 60) {
-        function1_idx = 1;
-        function2_idx = 4;
-    } else if (function_idx == 61) {
-        function1_idx = 2;
-        function2_idx = 3;
-    } else if (function_idx == 62) {
-        function1_idx = 2;
-        function2_idx = 4;
-    } else if (function_idx == 63) {
-        function1_idx = 3;
-        function2_idx = 4;
-    } else if (function_idx == 64) {
-        function1_idx = 5;
-        function2_idx = 6;
-    } else if (function_idx == 65) {
-        function1_idx = 5;
-        function2_idx = 8;
-    } else if (function_idx == 66) {
-        function1_idx = 6;
-        function2_idx = 7;
-    } else if (function_idx == 67) {
-        function1_idx = 6;
-        function2_idx = 8;
-    } else if (function_idx == 68) {
-        function1_idx = 7;
-        function2_idx = 8;
-    } else if (function_idx == 69) {
-        function1_idx = 9;
-        function2_idx = 10;
-    } else if (function_idx == 70) {
-        function1_idx = 9;
-        function2_idx = 11;
-    } else if (function_idx == 71) {
-        function1_idx = 9;
-        function2_idx = 12;
-    } else if (function_idx == 72) {
-        function1_idx = 9;
-        function2_idx = 13;
-    } else if (function_idx == 73) {
-        function1_idx = 10;
-        function2_idx = 11;
-    } else if (function_idx == 74) {
-        function1_idx = 10;
-        function2_idx = 12;
-    } else if (function_idx == 75) {
-        function1_idx = 10;
-        function2_idx = 13;
-    } else if (function_idx == 76) {
-        function1_idx = 11;
-        function2_idx = 12;
-    } else if (function_idx == 77) {
-        function1_idx = 11;
-        function2_idx = 13;
-    } else if (function_idx == 78) {
-        function1_idx = 14;
-        function2_idx = 17;
-    } else if (function_idx == 79) {
-        function1_idx = 14;
-        function2_idx = 18;
-    } else if (function_idx == 80) {
-        function1_idx = 16;
-        function2_idx = 17;
-    } else if (function_idx == 81) {
-        function1_idx = 16;
-        function2_idx = 18;
-    } else if (function_idx == 82) {
-        function1_idx = 17;
-        function2_idx = 18;
-    } else if (function_idx == 83) {
-        function1_idx = 19;
-        function2_idx = 21;
-    } else if (function_idx == 84) {
-        function1_idx = 19;
-        function2_idx = 22;
-    } else if (function_idx == 85) {
-        function1_idx = 19;
-        function2_idx = 23;
-    } else if (function_idx == 86) {
-        function1_idx = 20;
-        function2_idx = 21;
-    } else if (function_idx == 87) {
-        function1_idx = 20;
-        function2_idx = 22;
-    } else if (function_idx == 88) {
-        function1_idx = 20;
-        function2_idx = 23;
-    } else if (function_idx == 89) {
-        function1_idx = 21;
-        function2_idx = 22;
-    } else if (function_idx == 90) {
-        function1_idx = 21;
-        function2_idx = 23;
-    } else if (function_idx == 91) {
-        function1_idx = 22;
-        function2_idx = 23;
-    } 
+    coco_error("coco_get_biobj_problem(): Invalid function index %i.", function_idx);
   }
       
   /* Determine the instances */

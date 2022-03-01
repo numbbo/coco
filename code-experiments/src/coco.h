@@ -11,6 +11,48 @@
 
 #include <stddef.h>
 
+/* Macro to tag function declarations:
+ *
+ * COCO_NORETURN:
+ *   Function never returns. Mainly useful for linters and static analysis 
+ *   tools.
+ *
+ * COCO_UNUSED:
+ *   Function is not used. Useful to suppress false warnings.
+ *
+ * The next two macros are useful to give hints to the optimizer. This can
+ * lead to much bette code generation and ultimately faster runtimes.
+ *
+ * COCO_LIKELY(e):
+ *   Mark expression `e` as likely true. Usually used in if() or while() 
+ *   statements to give the compiler a hint.
+ *
+ * COCO_UNLIKELY(e):
+ *   Mark expression `e` as likely false.
+ *
+ */
+#ifdef __GNUC__
+#define COCO_NORETURN __attribute__((noreturn))
+#define COCO_UNUSED __attribute__((unused))
+#define COCO_LIKELY(x) __builtin_expect((x),1)
+#define COCO_UNLIKELY(x) __builtin_expect((x),0)
+#elif __clang__
+#define COCO_NORETURN __attribute__((noreturn))
+#define COCO_UNUSED __attribute__((unused))
+#define COCO_LIKELY(x) __builtin_expect((x),1)
+#define COCO_UNLIKELY(x) __builtin_expect((x),0)
+#elif _MSC_VER
+#define COCO_NORETURN __declspec(noreturn)
+#define COCO_UNUSED
+#define COCO_LIKELY(x) (x)
+#define COCO_UNLIKELY(x) (x)
+#else
+#define COCO_NORETURN 
+#define COCO_UNUSED
+#define COCO_LIKELY(x) (x)
+#define COCO_UNLIKELY(x) (x)
+#endif
+
 /* Definitions of some 32 and 64-bit types (used by the random number generator) */
 #ifdef _MSC_VER
 typedef __int32 int32_t;
@@ -465,7 +507,7 @@ void coco_free_memory(void *data);
 /**
  * @brief Signals a fatal error.
  */
-void coco_error(const char *message, ...);
+void COCO_NORETURN coco_error(const char *message, ...);
 
 /**
  * @brief Warns about error conditions.

@@ -302,18 +302,22 @@ static void con_update_linear_combination(double *linear_combination,
 
   data = (linear_constraint_data_t *) coco_problem_transformed_get_data(problem);
   if (data->gradient == NULL) {
-    if (weight != 0) coco_error("con_update_linear_combination(): gradient of constraint was zero");
-    else coco_warning("con_update_linear_combination(): gradient of constraint was zero");
+    if (weight != 0) {
+      coco_error("con_update_linear_combination(): gradient of constraint was zero");
+    } else {
+      coco_warning("con_update_linear_combination(): gradient of constraint was zero");
+    }
+  } else {
+    if (data->x_shift_factor != 0)
+      coco_warning("Inactive constraint passed to update_linear_combination, x_shift_factor=%f",
+          data->x_shift_factor);
+    if (weight == 0)
+      return; /* nothing to add */
+    if (weight < 0)
+      coco_warning("con_update_linear_combination: weight=%f < 0, should be > 0", weight);
+    for (i = 0; i < problem->number_of_variables; ++i)
+      linear_combination[i] += weight * data->gradient[i];
   }
-  if (data->x_shift_factor != 0)
-    coco_warning("Inactive constraint passed to update_linear_combination, x_shift_factor=%f",
-                 data->x_shift_factor);
-  if (weight == 0)
-    return; /* nothing to add */
-  if (weight < 0)
-    coco_warning("con_update_linear_combination: weight=%f < 0, should be > 0", weight);
-  for (i = 0; i < problem->number_of_variables; ++i)
-    linear_combination[i] += weight * data->gradient[i];
 }
 
 /**
