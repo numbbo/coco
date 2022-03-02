@@ -7,7 +7,7 @@
 
 % to be updated from year to year:
 \titlenote{Submission deadline: April 11th.}
-\newcommand{\version}{2.5.1}
+\newcommand{\version}{2.6}
 
 
 % Packages
@@ -70,9 +70,11 @@
 \newcommand{\nruns}{\ensuremath{\mathrm{Nruns}}}
 \newcommand{\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
 \newcommand{\Df}{\ensuremath{\Delta f}}
+\newcommand{\Dfg}{\ensuremath{\Delta \tau}}
 \newcommand{\nbFEs}{\ensuremath{\mathrm{\#FEs}}}
 \newcommand{\fopt}{\ensuremath{f_\mathrm{opt}}}
 \newcommand{\ftarget}{\ensuremath{f_\mathrm{t}}}
+\newcommand{\fgtarget}{\ensuremath{\tau_\mathrm{t}}}
 \newcommand{\Itarget}{\ensuremath{I_\mathrm{target}}}
 \newcommand{\CrE}{\ensuremath{\mathrm{CrE}}}
 \newcommand{\change}[1]{{\color{red} #1}}
@@ -82,8 +84,17 @@
 \newcommand{\bbobbiobj}{{\ttfamily bbob-biobj}\xspace}
 \newcommand{\bbobls}{{\ttfamily bbob-largescale}\xspace}
 \newcommand{\bbobmixint}{{\ttfamily bbob-mixint}\xspace}
+\newcommand{\bbobcons}{{\ttfamily bbob-constrained}\xspace}
 \newcommand{\DI}{\ensuremath{\Delta I_{\mathrm{HV}}^{\mathrm{COCO}}}}
 \newcommand{\hvref}{\ensuremath{I_\mathrm{ref}}}
+
+
+\usepackage{xcolor}
+\usepackage{colortbl}
+%It sets your colour line and then sets back to default (black)
+\newcommand{\blueline}{\arrayrulecolor{blue}\hline\arrayrulecolor{black}}
+\newcommand{\greenline}{\arrayrulecolor{green}\hline\arrayrulecolor{black}}
+
 
 %%%%%%%%%%%%%%%%%%%%%%   END OF PREAMBLE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

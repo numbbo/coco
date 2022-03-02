@@ -169,17 +169,22 @@ def get_ecdfs_single_fcts_caption():
 
     if genericsettings.runlength_based_targets:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes in number
-             of %s divided by dimension (FEvals/DIM) for  
+             of %s divided by dimension (%s/DIM) for  
              targets in !!TARGET-RANGES-IN-ECDF!! that have just not
              been reached by !!THE-REF-ALG!!
              in a given budget of $k$ $\times$ DIM, with $!!NUM-OF-TARGETS-IN-ECDF!!$ 
              different values of $k$ chosen equidistant in logscale within the interval $\{0.5, \dots, 50\}$.
-             Shown are functions $f_{#1}$ to $f_{#2}$ and all dimensions. """ % testbedsettings.current_testbed.string_evals)
+             Shown are functions $f_{#1}$ to $f_{#2}$ and all dimensions. """ % (
+                testbedsettings.current_testbed.string_evals,
+                testbedsettings.current_testbed.string_evals_short)
+             )
     else:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes in number
-             of %s divided by dimension (FEvals/DIM) for the 
+             of %s divided by dimension (%s/DIM) for the 
              $!!NUM-OF-TARGETS-IN-ECDF!!$ targets !!TARGET-RANGES-IN-ECDF!!
-             for functions $f_{#1}$ to $f_{#2}$ and all dimensions. """ % testbedsettings.current_testbed.string_evals
+             for functions $f_{#1}$ to $f_{#2}$ and all dimensions. """ % (
+                testbedsettings.current_testbed.string_evals,
+                testbedsettings.current_testbed.string_evals_short)
              )
 
     return captions.replace(s)
@@ -190,22 +195,27 @@ def get_ecdfs_all_groups_caption():
     if genericsettings.runlength_based_targets:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
              runtimes, measured in number of %s 
-             divided by dimension (FEvals/DIM) for all function groups and all 
+             divided by dimension (%s/DIM) for all function groups and all 
              dimensions and for those targets in
              !!TARGET-RANGES-IN-ECDF!! that have just not been reached by 
              !!THE-REF-ALG!! in a given budget of $k$ $\times$ DIM, with 
              $!!NUM-OF-TARGETS-IN-ECDF!!$ different values of $k$ chosen 
-             equidistant in logscale within the interval $\{0.5, \dots, 50\}$.             
-             The aggregation over all !!TOTAL-NUM-OF-FUNCTIONS!! 
-             functions is shown in the last plot.""" % testbedsettings.current_testbed.string_evals
+             equidistant in logscale within the interval $\{0.5, \dots, 50\}$.""" % (
+                testbedsettings.current_testbed.string_evals,
+                testbedsettings.current_testbed.string_evals_short)
+             + (r""" The aggregation over all !!TOTAL-NUM-OF-FUNCTIONS!! 
+             functions is shown in the last plot.""" if not testbedsettings.current_testbed.has_constraints else "")
              )
     else:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
              runtimes, measured in number of %s,
-             divided by dimension (FEvals/DIM) for the $!!NUM-OF-TARGETS-IN-ECDF!!$ 
+             divided by dimension (%s/DIM) for the $!!NUM-OF-TARGETS-IN-ECDF!!$ 
              targets !!TARGET-RANGES-IN-ECDF!! for all function groups and all 
-             dimensions. The aggregation over all !!TOTAL-NUM-OF-FUNCTIONS!! 
-             functions is shown in the last plot.""" % testbedsettings.current_testbed.string_evals
+             dimensions.""" % (
+                testbedsettings.current_testbed.string_evals,
+                testbedsettings.current_testbed.string_evals_short)
+             + (r""" The aggregation over all !!TOTAL-NUM-OF-FUNCTIONS!! 
+             functions is shown in the last plot.""" if not testbedsettings.current_testbed.has_constraints else "")
              )
     return captions.replace(s)
 
@@ -216,18 +226,22 @@ def get_ecdfs_single_functions_single_dim_caption():
     if genericsettings.runlength_based_targets:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
              runtimes, measured in number of %s 
-             divided by dimension (FEvals/DIM) in 
+             divided by dimension (%s/DIM) in 
              dimension #1 and for those targets in
              !!TARGET-RANGES-IN-ECDF!! that have just not been reached by 
              !!THE-REF-ALG!! in a given budget of $k$ $\times$ DIM, with 
              $!!NUM-OF-TARGETS-IN-ECDF!!$ different values of $k$ chosen 
-             equidistant in logscale within the interval $\{0.5, \dots, 50\}$.""" % testbedsettings.current_testbed.string_evals
+             equidistant in logscale within the interval $\{0.5, \dots, 50\}$.""" % (
+                testbedsettings.current_testbed.string_evals,
+                testbedsettings.current_testbed.string_evals_short)
              )
     else:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
              runtimes, measured in number of %s,
-             divided by dimension (FEvals/DIM) for the $!!NUM-OF-TARGETS-IN-ECDF!!$ 
-             targets !!TARGET-RANGES-IN-ECDF!! in dimension #1.""" % testbedsettings.current_testbed.string_evals
+             divided by dimension (%s/DIM) for the $!!NUM-OF-TARGETS-IN-ECDF!!$ 
+             targets !!TARGET-RANGES-IN-ECDF!! in dimension #1.""" % (
+                testbedsettings.current_testbed.string_evals,
+                testbedsettings.current_testbed.string_evals_short)
              )
     return captions.replace(s)
 
