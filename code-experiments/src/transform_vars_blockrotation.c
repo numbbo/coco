@@ -103,7 +103,7 @@ static void transform_vars_blockrotation_test(coco_problem_t *problem, double pr
       transform_vars_blockrotation_get_row(problem, i, y);
       transform_vars_blockrotation_apply(problem, y, y);
       for (j = 0; j < number_of_variables; ++j) {  /* check result */
-        if (!coco_double_almost_equal(y[j], i == j, precision)) {
+        if (!coco_double_almost_equal(y[j], (i == j)? 1.0 : 0.0, precision)) {
           coco_error("transform_vars_blockrotation_test() with precision %e failed on row %i",
                      precision, i);
         }
