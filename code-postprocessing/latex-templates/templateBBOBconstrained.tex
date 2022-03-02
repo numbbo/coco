@@ -396,45 +396,6 @@ unsuccessful trial under consideration.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Empirical cumulative distribution functions (ECDFs) per function group.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{figure*}
-\begin{tabular}{l@{\hspace*{-0.00\textwidth}}l@{\hspace*{0.01\textwidth}}|l@{\hspace*{-0.00\textwidth}}l}
-\multicolumn{2}{c}{$D=5$} & \multicolumn{2}{c}{$D=20$}\\[-0.5ex]
-\rot[3]{all functions}
-\includegraphics[width=0.2362\textwidth]{"pprldistr_05D_all m=0n+1"} &
-\includegraphics[width=0.2362\textwidth]{"ppfvdistr_05D_all m=0n+1"} &
-\includegraphics[width=0.2362\textwidth]{"pprldistr_20D_all m=0n+1"} &
-\includegraphics[width=0.2362\textwidth]{"ppfvdistr_20D_all m=0n+1"} \\[-0.2em]
-\rot[2.9]{separable fcts}
-\includegraphics[width=0.2362\textwidth]{"pprldistr_05D_separ m=0n+1"} &
-\includegraphics[width=0.2362\textwidth]{"ppfvdistr_05D_separ m=0n+1"} &
-\includegraphics[width=0.2362\textwidth]{"pprldistr_20D_separ m=0n+1"} &
-\includegraphics[width=0.2362\textwidth]{"ppfvdistr_20D_separ m=0n+1"} \\[-0.2em]
-\rot[1.5]{ill-conditioned fcts}
-\includegraphics[width=0.2362\textwidth]{"pprldistr_05D_hcond m=0n+1"} &
-\includegraphics[width=0.2362\textwidth]{"ppfvdistr_05D_hcond m=0n+1"} &
-\includegraphics[width=0.2362\textwidth]{"pprldistr_20D_hcond m=0n+1"} &
-\includegraphics[width=0.2362\textwidth]{"ppfvdistr_20D_hcond m=0n+1"} \\[-0.2em]
-\rot[2.3]{multi-modal fcts}
-\includegraphics[width=0.2362\textwidth]{"pprldistr_05D_multi m=0n+1"} &
-\includegraphics[width=0.2362\textwidth]{"ppfvdistr_05D_multi m=0n+1"} &
-\includegraphics[width=0.2362\textwidth]{"pprldistr_20D_multi m=0n+1"} &
-\includegraphics[width=0.2362\textwidth]{"ppfvdistr_20D_multi m=0n+1"}
-\vspace*{-1ex}
-\end{tabular}
- \caption{\label{fig:ECDFs}
- \bbobpprldistrlegend{}
- }
-\end{figure*}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ECDFs per function
@@ -514,8 +475,54 @@ unsuccessful trial under consideration.
    \bbobecdfcaptionsinglefunctionssingledim{$\!\!$s 2 to 40 and problem IDs 31 to 54}
 }
 \end{figure*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Empirical cumulative distribution functions (ECDFs) per function group.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure*}
+\centering
+\begin{tabular}{ll@{\hspace*{-0.00\textwidth}}l@{\hspace*{0.01\textwidth}}l@{\hspace*{-0.00\textwidth}}l}
+& separable fcts & ill-conditioned fcts & multimodal fcts & all functions \\
+\rot[3]{$m = 1$}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_separ m=0n+1"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_hcond m=0n+1"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_multi m=0n+1"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_all m=0n+1"}\\[-0.2em]
+\rot[3]{$m = 3$}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_separ m=0n+3"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_hcond m=0n+3"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_multi m=0n+3"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_all m=0n+3"}\\[-0.2em]
+\rot[3]{$m = 9$}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_separ m=0n+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_hcond m=0n+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_multi m=0n+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_all m=0n+9"}\\[-0.2em]
+\rot[3]{$m = \lfloor 3n / 4 \rfloor +9$}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_separ m=3ndiv4+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_hcond m=3ndiv4+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_multi m=3ndiv4+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_all m=3ndiv4+9"}\\[-0.2em]
+\rot[3]{$m = \lfloor 3n / 2 \rfloor +9$}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_separ m=6ndiv4+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_hcond m=6ndiv4+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_multi m=6ndiv4+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_all m=6ndiv4+9"}\\[-0.2em]
+\rot[3]{$m = \lfloor 9n / 2 \rfloor +9$}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_separ m=9ndiv2+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_hcond m=9ndiv2+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_multi m=9ndiv2+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_all m=9ndiv2+9"}
+\vspace*{-1ex}
+\end{tabular}
+ \caption{\label{fig:ECDFsingleOne}
+ \bbobecdfcaptionallgroups{}
+ }
+\end{figure*}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
