@@ -200,21 +200,22 @@ def get_ecdfs_all_groups_caption():
              !!TARGET-RANGES-IN-ECDF!! that have just not been reached by 
              !!THE-REF-ALG!! in a given budget of $k$ $\times$ DIM, with 
              $!!NUM-OF-TARGETS-IN-ECDF!!$ different values of $k$ chosen 
-             equidistant in logscale within the interval $\{0.5, \dots, 50\}$.             
-             The aggregation over all !!TOTAL-NUM-OF-FUNCTIONS!! 
-             functions is shown in the last plot.""" % (
+             equidistant in logscale within the interval $\{0.5, \dots, 50\}$.""" % (
                 testbedsettings.current_testbed.string_evals,
                 testbedsettings.current_testbed.string_evals_short)
+             + (r""" The aggregation over all !!TOTAL-NUM-OF-FUNCTIONS!! 
+             functions is shown in the last plot.""" if not testbedsettings.current_testbed.has_constraints else "")
              )
     else:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
              runtimes, measured in number of %s,
              divided by dimension (%s/DIM) for the $!!NUM-OF-TARGETS-IN-ECDF!!$ 
              targets !!TARGET-RANGES-IN-ECDF!! for all function groups and all 
-             dimensions. The aggregation over all !!TOTAL-NUM-OF-FUNCTIONS!! 
-             functions is shown in the last plot.""" % (
+             dimensions.""" % (
                 testbedsettings.current_testbed.string_evals,
                 testbedsettings.current_testbed.string_evals_short)
+             + (r""" The aggregation over all !!TOTAL-NUM-OF-FUNCTIONS!! 
+             functions is shown in the last plot.""" if not testbedsettings.current_testbed.has_constraints else "")
              )
     return captions.replace(s)
 
