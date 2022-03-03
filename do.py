@@ -51,8 +51,8 @@ _build_verbosity = True
 
 ################################################################################
 ## C
-def build_c():
-    """ Builds the C source code """
+def amalgamate_c():
+    """Only amalgamte the C files"""
     global RELEASE
     amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_c.c'],
                'code-experiments/build/c/coco.c', RELEASE,
@@ -67,12 +67,12 @@ def build_c():
                 {'COCO_VERSION': git_version(pep440=True)})
     write_file(git_revision(), "code-experiments/build/c/REVISION")
     write_file(git_version(), "code-experiments/build/c/VERSION")
-    if 11 < 3:
-        python('code-experiments/build/c', ['make.py', 'clean'], verbose=_build_verbosity)
-        python('code-experiments/build/c', ['make.py', 'all'], verbose=_build_verbosity)
-    else:
-        make("code-experiments/build/c", "clean", verbose=_build_verbosity)
-        make("code-experiments/build/c", "all", verbose=_build_verbosity)
+
+def build_c():
+    """ Builds the C source code """
+    amalgamate_c()
+    make("code-experiments/build/c", "clean", verbose=_build_verbosity)
+    make("code-experiments/build/c", "all", verbose=_build_verbosity)
 
 
 def run_c():
@@ -909,6 +909,7 @@ and you are all set.
 
 Available commands for users:
 
+  amalgamate-c            - Amalgamate C module
   build-c                 - Build C module
   build-java              - Build Java module
   build-matlab            - Build Matlab module
@@ -992,6 +993,7 @@ def main(args):
     if cmd == 'build': build(package_install_option = package_install_option)
     elif cmd == 'run': run_all(package_install_option = package_install_option)
     elif cmd == 'test': test(package_install_option = package_install_option)
+    elif cmd == 'amalgamate-c': amalgamate_c()
     elif cmd == 'build-c': build_c()
     elif cmd == 'build-java': build_java()
     elif cmd == 'build-matlab': build_matlab()
