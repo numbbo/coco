@@ -62,9 +62,8 @@ def amalgamate_c():
                 {"COCO_VERSION": git_version(pep440=True)})
     copy_file('code-experiments/build/c/coco.c',
               'code-experiments/examples/bbob2009-c-cmaes/coco.c')
-    expand_file('code-experiments/build/c/coco.h',
-                'code-experiments/examples/bbob2009-c-cmaes/coco.h',
-                {'COCO_VERSION': git_version(pep440=True)})
+    copy_file('code-experiments/build/c/coco.h',
+              'code-experiments/examples/bbob2009-c-cmaes/coco.h')
     write_file(git_revision(), "code-experiments/build/c/REVISION")
     write_file(git_version(), "code-experiments/build/c/VERSION")
 
