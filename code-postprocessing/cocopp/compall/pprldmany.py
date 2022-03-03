@@ -46,11 +46,9 @@ from .. import pptex  # numtotex
 PlotType = ppfig.enum('ALG', 'DIM', 'FUNC')
 
 displaybest = True
-x_limit = None  # not sure whether this is necessary/useful
-x_limit_default = 1e7  # better: 10 * genericsettings.evaluation_setting[1], noisy: 1e8, otherwise: 1e7. maximal run length shown
 divide_by_dimension = True
-annotation_line_end_relative = 1.11  # lines between graph and annotation
-annotation_space_end_relative = 1.24  # figure space end relative to x_limit
+annotation_line_end_relative = 1.065  # lines between graph and annotation, was 1.11, see also subplots_adjust
+annotation_space_end_relative = 1.21  # figure space end relative to x_limit, space is however determined rather by subplots_adjust(...) below!?
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # number of bootstrap samples drawn for each fct+target in the performance profile
 nbperdecade = 1
@@ -58,6 +56,24 @@ median_max_evals_marker_format = ['x', 24, 1]
 label_fontsize = 17
 title_fontsize = 20
 styles = [d.copy() for d in genericsettings.line_styles]  # deep copy
+
+def text_infigure_if_constraints():
+    """to be displayed in the figure corner
+
+    TODO: is a method with no arguments
+    because if made a variable, an error is raised
+    as it is computed before testbedsettings.current_testbed is instantiated
+    in some import
+    """
+    if testbedsettings.current_testbed.has_constraints:
+        w = genericsettings.weight_evaluations_constraints
+        _text = ("\nevals = "
+                 + ("%sx" % w[0] if w[0] != 1 else "") + "f-evals + "
+                 + ("%sx" % w[1] if w[1] != 1 else "") + "g-evals")
+    else:
+        _text = ""
+    return _text
+
 
 refcolor = 'wheat'
 """color of reference (best) algorithm"""
@@ -170,18 +186,15 @@ def beautify():
 
     global divide_by_dimension
     if divide_by_dimension:
-        if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons:
-            plt.xlabel('log10(# (f+g)-evals / dimension)', fontsize=label_fontsize)
-        else:
-            plt.xlabel('log10(# f-evals / dimension)', fontsize=label_fontsize)
+        plt.xlabel('log10(%s / dimension)' % testbedsettings.current_testbed.string_evals_legend, fontsize=label_fontsize)
     else:
-        if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons:
-            plt.xlabel('log10(# (f+g)-evals)', fontsize=label_fontsize)
-        else:
-            plt.xlabel('log10(# f-evals)', fontsize=label_fontsize)
+        plt.xlabel('log10(%s)' % testbedsettings.current_testbed.string_evals_legend, fontsize=label_fontsize)
     plt.ylabel('Fraction of function,target pairs', fontsize=label_fontsize)
     ppfig.logxticks()
+    plt.xticks(fontsize=label_fontsize)  # the "original" size is for some reason too large
     pprldistr.beautifyECDF()
+    plt.ylim(-0.0, 1.0)
+
 
 
 def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
@@ -198,6 +211,7 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
     :param kwargs: optional arguments provided to plot function.
     
     """
+    x_limit = genericsettings.xlimit_pprldmany
 
     # Expect data to be a ndarray.
     x = data[np.isnan(data) == False]  # Take away the nans
@@ -211,6 +225,7 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
     if n == 0:
         # res = plt.plot((1., ), (0., ), **kwargs)
         res = pprldistr.plotECDF(np.array((1.,)), n=np.inf, **kwargs)
+        maxval = np.inf  # trick to plot the cross later if maxevals
     else:
         dictx = {}  # number of appearances of each value in x
         for i in x:
@@ -238,30 +253,33 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
                                         logscale=False, clip_on=False, **kwargs)
         # res = plotUnifLogXMarkers(x2, y2, nbperdecade, logscale=False, **kwargs)
 
-        if maxevals:  # Should cover the case where maxevals is None or empty
-            x3 = np.median(maxevals)
-            if (x3 <= maxval and
-                # np.any(x2 <= x3) and   # maxval < median(maxevals)
-                not plt.getp(res[-1], 'label').startswith('best')
-                ): # TODO: HACK for not considering a "best" algorithm line
-                
+    if maxevals:  # Should cover the case where maxevals is None or empty
+        x3 = np.median(maxevals)  # change it only here
+        if (x3 <= maxval and
+            # np.any(x2 <= x3) and   # maxval < median(maxevals)
+            not plt.getp(res[-1], 'label').startswith('best')
+            ): # TODO: HACK for not considering a "best" algorithm line
+            # Setting y3
+            if n == 0:
+                y3 = 0
+            else:
                 try:
                     y3 = y2[x2 <= x3][-1]  # find right y-value for x3==median(maxevals)
                 except IndexError:  # median(maxevals) is smaller than any data, can only happen because of CrE?
                     y3 = y2[0]
-                h = plt.plot((x3,), (y3,),
-                             marker=median_max_evals_marker_format[0],
-                             markersize=median_max_evals_marker_format[1],
-                             markeredgewidth=median_max_evals_marker_format[2],
-                             # marker='x', markersize=24, markeredgewidth=3, 
-                             markeredgecolor=plt.getp(res[0], 'color'),
-                             ls=plt.getp(res[0], 'linestyle'),
-                             color=plt.getp(res[0], 'color'),
-                             # zorder=1.6   # zorder=0;1;1.5 is behind the grid lines, 2 covers other lines, 1.6 is between
-                             )
-                h.extend(res)
-                res = h  # so the last element in res still has the label.
-                # Only take sequences for x and y!
+            h = plt.plot((x3,), (y3,),
+                         marker=median_max_evals_marker_format[0],
+                         markersize=median_max_evals_marker_format[1],
+                         markeredgewidth=median_max_evals_marker_format[2],
+                         # marker='x', markersize=24, markeredgewidth=3, 
+                         markeredgecolor=plt.getp(res[0], 'color'),
+                         ls=plt.getp(res[0], 'linestyle'),
+                         color=plt.getp(res[0], 'color'),
+                         # zorder=1.6   # zorder=0;1;1.5 is behind the grid lines, 2 covers other lines, 1.6 is between
+                         )
+            h.extend(res)
+            res = h  # so the last element in res still has the label.
+            # Only take sequences for x and y!
 
     return res
 
@@ -287,14 +305,20 @@ def plotLegend(handles, maxval):
     ys = {}
     lh = 0
 
-    def get_label_length(label_list):
-        """ Finds the minimal length of the names used in the label so that 
-        all the names are different. Always at least 9 character are displayed.
+    def label_length(label_list):
+        """Return either `genericsettings.len_of_names_in_pprldmany_legend`
+        or the minimal length for the names in `label_list` so that all
+        names are different in 2 or more characters. At least 9 characters
+        are displayed unless ``0 <
+        genericsettings.len_of_names_in_pprldmany_legend < 9``. This
+        function is used for the algorithm names legend.
         """
+        if genericsettings.len_of_names_in_pprldmany_legend:
+            return genericsettings.len_of_names_in_pprldmany_legend
 
-        numberOfCharacters = 7
-        firstPart = [i[:numberOfCharacters] for i in label_list]
         maxLength = max(len(i) for i in label_list)
+        numberOfCharacters = 7  # == len("best 2009") - 2, we add 2 later
+        firstPart = [i[:numberOfCharacters] for i in label_list]
         while (len(firstPart) > len(set(firstPart)) and numberOfCharacters <= maxLength):
             numberOfCharacters += 1
             firstPart = [i[:numberOfCharacters] for i in label_list]
@@ -303,7 +327,7 @@ def plotLegend(handles, maxval):
 
     handles_with_legend = [h for h in handles if not plt.getp(h[-1], 'label').startswith('_line')]
     label_list = [toolsdivers.strip_pathname1(plt.getp(h[-1], 'label')) for h in handles_with_legend]
-    numberOfCharacters = get_label_length(label_list)
+    numberOfCharacters = label_length(label_list)
     for h in handles_with_legend:
         x2 = []
         y2 = []
@@ -330,7 +354,7 @@ def plotLegend(handles, maxval):
         lh = min(lh, len(show_algorithms))
     if lh <= 1:
         lh = 2
-    fontsize_interp = (20.0 - lh) / 10.0
+    fontsize_interp = (30.0 - lh) / 10.0
     if fontsize_interp > 1.0:
         fontsize_interp = 1.0
     if fontsize_interp < 0.0:
@@ -419,7 +443,12 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
             runlengthunsucc = []
             evals = entry.detEvals([t])[0]
             runlengthsucc = evals[np.isnan(evals) == False] / divisor
-            runlengthunsucc = entry.maxevals[np.isnan(evals)] / divisor
+            if testbedsettings.current_testbed.has_constraints:
+                # maxevals is inconsistent in that case
+                maxevals_column = entry.maxfgevals
+            else:
+                maxevals_column = entry.maxevals
+            runlengthunsucc = maxevals_column[np.isnan(evals)] / divisor
             if len(runlengthsucc) > 0:  # else x == [inf, inf,...]
                 if testbedsettings.current_testbed.instances_are_uniform:
                     x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
@@ -567,10 +596,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     :param str parentHtmlFileName: defines the parent html page 
 
     """
-    global x_limit  # late assignment of default, because it can be set to None in config 
     global divide_by_dimension  # not fully implemented/tested yet
-    if 'x_limit' not in globals() or x_limit is None:
-        x_limit = x_limit_default
+    x_limit = genericsettings.xlimit_pprldmany
 
     tmp = pp.dictAlgByDim(dictAlg)
     algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
@@ -630,6 +657,16 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
         dictDim = dictDimList[dim]
         dictFunc = pp.dictAlgByFun(dictDim)
+
+        # determine a good samplesize
+        run_numbers = []
+        for dsl in dictDim.values():
+            run_numbers.extend([ds.nbRuns() for ds in dsl])
+        try: lcm = np.lcm.reduce(run_numbers)  # lowest common multiplier
+        except: lcm = max(run_numbers)  # fallback for old numpy versions
+        samplesize = lcm
+        if testbedsettings.current_testbed.instances_are_uniform:
+            samplesize = max(perfprofsamplesize, lcm)  # maybe more bootstrapping with unsuccessful trials
         for f, dictAlgperFunc in sorted(dictFunc.items()):
             # print(target_values((f, dim)))
             for j, t in enumerate(target_values((f, dim))):
@@ -637,26 +674,31 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 # funcsolved[j].add(f)
 
                 for alg in algorithms_with_data:
-                    x = [np.inf] * perfprofsamplesize
+                    x = [np.inf] * samplesize
                     runlengthunsucc = []
                     try:
                         entry = dictAlgperFunc[alg][0]  # one element per fun and per dim.
                         evals = entry.detEvals([t])[0]
                         assert entry.dim == dim
                         runlengthsucc = evals[np.isnan(evals) == False] / divisor
-                        runlengthunsucc = entry.maxevals[np.isnan(evals)] / divisor
+                        if testbedsettings.current_testbed.has_constraints:
+                            # maxevals is inconsistent in that case
+                            maxevals_column = entry.maxfgevals
+                        else:
+                            maxevals_column = entry.maxevals
+                        runlengthunsucc = maxevals_column[np.isnan(evals)] / divisor
                         if len(runlengthsucc) > 0:  # else x == [inf, inf,...]
                             if testbedsettings.current_testbed.instances_are_uniform:
                                 x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
                                                       percentiles=[50],
-                                                      samplesize=perfprofsamplesize)[1]
+                                                      samplesize=samplesize)[1]
                             else:
                                 nruns = len(runlengthsucc) + len(runlengthunsucc)
-                                if perfprofsamplesize % nruns:
+                                if samplesize % nruns:
                                     warnings.warn("without simulated restarts nbsamples=%d"
                                                   " should be a multiple of nbruns=%d"
-                                                  % (perfprofsamplesize, nruns))
-                                idx = toolsstats.randint_derandomized(nruns, size=perfprofsamplesize)
+                                                  % (samplesize, nruns))
+                                idx = toolsstats.randint_derandomized(nruns, size=samplesize)
                                 x = np.hstack((runlengthsucc, len(runlengthunsucc) * [np.inf]))[idx]
                     except (KeyError, IndexError):
                         # set_trace()
@@ -695,9 +737,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                             runlengthunsucc = refalgentry.maxevals[refalgevals[1][j]][np.isnan(evals)] / divisor
                             x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
                                                   percentiles=[50],
-                                                  samplesize=perfprofsamplesize)[1]
+                                                  samplesize=samplesize)[1]
                         else:
-                            x = perfprofsamplesize * [np.inf]
+                            x = samplesize * [np.inf]
                             runlengthunsucc = []
                         xbest.extend(x)
                         maxevalsbest.extend(runlengthunsucc)
@@ -807,8 +849,19 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         dictFG = pp.dictAlgByFuncGroup(dictAlg)
         dictKey = list(dictFG.keys())[0]
         functionGroups = dictAlg[list(dictAlg.keys())[0]].getFuncGroups()
+        if testbedsettings.current_testbed.has_constraints:
+            # HACK: because a function is in at least two groups:
+            # {{separ or hcond or multi} and all} with {m} constraints
+            # the original method is broken for bbob-constrained
+            listGroups = list(functionGroups.values())
+            if len(functionGroups) == 2:
+                groupName = listGroups[0]  # all is the last one
+            if len(functionGroups) > 2:
+                groupName = listGroups[-1]  # same reason
+        else:
+            groupName = functionGroups[dictKey]
         text = '%s\n%s, %d-D' % (testbedsettings.current_testbed.name,
-                                 functionGroups[dictKey],
+                                 groupName,
                                  dimList[0])
     else:
         text = '%s %s' % (testbedsettings.current_testbed.name,
@@ -826,7 +879,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     else:
         text += (str(len(targetstrings)) + ' targets: ' +
                  targetstrings[0] + '..' +
-                 targetstrings[len(targetstrings)-1])        
+                 targetstrings[len(targetstrings)-1])
+    # add weights for constrained testbeds
+    text += text_infigure_if_constraints()
     # add number of instances 
     text += '\n'
     num_of_instances = []
@@ -835,7 +890,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             num_of_instances.append(len((dictAlgperFunc[alg])[0].instancenumbers))
         except IndexError:
             pass
-    # issue a warning if number of instances is inconsistant, but always
+    # issue a warning if number of instances is inconsistent, but always
     # display only the present number of instances, i.e. remove copies
     if len(set(num_of_instances)) > 1 and genericsettings.warning_level >= 5:
         warnings.warn('Number of instances inconsistent over all algorithms: %s instances found.' % str(num_of_instances))
@@ -845,7 +900,6 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             
     text = text.rstrip(', ')
     text += ' instances'
-
     plt.text(0.01, 0.99, text,
              horizontalalignment="left",
              verticalalignment="top",
@@ -868,17 +922,19 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     a.xaxis.set_major_formatter(FuncFormatter(formatlabel))
     a.xaxis.set_minor_locator(FixedLocator(xminorticks))
     a.xaxis.set_minor_formatter(NullFormatter())
+    for pos in ['right', 'left']:  # top makes sense if figure ends at 1.0
+        a.spines[pos].set_visible(False)  # remove visible frame
 
     if save_figure:
         ppfig.save_figure(figureName,
                           dictAlg[algorithms_with_data[0]][0].algId,
-                          layout_rect=(0, 0, 0.735, 1),
+                          layout_rect=(0, 0, 0.783, 1),  # see also below
                           # Prevent clipping in matplotlib >=3:
                           # Relative additional space numbers are
                           # bottom, left, 1 - top, and 1 - right.
                           # bottom=0.13 still clips g in the log(#evals) xlabel
-                          subplots_adjust=dict(bottom=0.135, right=0.735,
-                                               top=0.92 if len(dictFunc) == 1 else 0.99  # space for a title
+                          subplots_adjust=dict(bottom=0.135, right=0.783,  # was: 0.735
+                                               top=0.92 if len(dictFunc) == 1 else 0.98  # space for a title or 1.0 y-tick annotation
                                                ),
                           )
         if plotType == PlotType.DIM:

@@ -19,7 +19,7 @@ from . import pproc, pptex, pprldistr
 from .pproc import DataSetList, processInputArgs
 from .ppfig import Usage
 from .toolsdivers import prepend_to_file, strip_pathname1, str_to_latex, replace_in_file
-from .compall import pprldmany, pptables, ppfigs
+from .compall import pprldmany, pptables, ppfigs, ppfigcons
 from .comp2 import pprldistr2, ppscatter
 
 import matplotlib.pyplot as plt
@@ -183,6 +183,16 @@ def main(args, outputdir):
     )
 
     dimensions = sorted(pproc.dictAlgByDim(dictAlg))
+
+    if testbedsettings.current_testbed.has_constraints:
+        ppfig.save_single_functions_html(
+            os.path.join(many_algorithms_output, genericsettings.ppfigcons_file_name),
+            '',  # algorithms names are clearly visible in the figure
+            dimensions=dimensions,
+            htmlPage=ppfig.HtmlPage.PPFIGCONS,
+            function_groups=dictAlg[sortedAlgs[0]].getFuncGroups(),
+            parentFileName=genericsettings.many_algorithm_file_name
+        )
 
     ppfig.save_single_functions_html(
         os.path.join(many_algorithms_output, genericsettings.pptables_file_name),
@@ -421,6 +431,15 @@ def main(args, outputdir):
                     sortedAlgs,
                     many_algorithms_output,
                     latex_commands_file)
+        print_done()
+
+    if testbedsettings.current_testbed.has_constraints:
+        print("Scaling wrt constraints...")
+        ppfigcons.main(dictAlg,
+                       genericsettings.ppfigcons_file_name,
+                       sortedAlgs,
+                       many_algorithms_output,
+                       latex_commands_file)
         print_done()
 
     print("Output data written to folder %s" %

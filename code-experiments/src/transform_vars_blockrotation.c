@@ -78,7 +78,6 @@ static void transform_vars_blockrotation_evaluate(coco_problem_t *problem, const
 
   transform_vars_blockrotation_apply(problem, x, data->Bx);
   
-  inner_problem = coco_problem_transformed_get_inner_problem(problem);
   coco_evaluate_function(inner_problem, data->Bx, y);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
@@ -104,7 +103,7 @@ static void transform_vars_blockrotation_test(coco_problem_t *problem, double pr
       transform_vars_blockrotation_get_row(problem, i, y);
       transform_vars_blockrotation_apply(problem, y, y);
       for (j = 0; j < number_of_variables; ++j) {  /* check result */
-        if (!coco_double_almost_equal(y[j], i == j, precision)) {
+        if (!coco_double_almost_equal(y[j], (i == j)? 1.0 : 0.0, precision)) {
           coco_error("transform_vars_blockrotation_test() with precision %e failed on row %i",
                      precision, i);
         }
@@ -122,13 +121,9 @@ static coco_problem_t *transform_vars_blockrotation(coco_problem_t *inner_proble
                                                     const size_t nb_blocks) {
   coco_problem_t *problem;
   transform_vars_blockrotation_t *data;
-  size_t entries_in_M, idx_blocksize, next_bs_change, current_blocksize;
+  size_t idx_blocksize, next_bs_change, current_blocksize;
   size_t i;
-  entries_in_M = 0;
   assert(number_of_variables > 0);/*tmp*/
-  for (i = 0; i < nb_blocks; i++) {
-    entries_in_M += block_sizes[i] * block_sizes[i];
-  }
   data = (transform_vars_blockrotation_t *) coco_allocate_memory(sizeof(*data));
   data->dimension = number_of_variables;
   data->B = coco_copy_block_matrix(B, number_of_variables, block_sizes, nb_blocks);

@@ -287,7 +287,6 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
     if ((tmp_file) && (bbob_current_dim == logger->number_of_variables)
         && (bbob_current_funId == logger->function_id)) {
         /* new instance of current funId and current dim */
-      newLine = 0;
       *target_file = fopen(file_path, "a+");
       if (*target_file == NULL) {
         errnum = errno;
@@ -549,6 +548,9 @@ static void logger_bbob_free(void *stuff) {
    * that can have problem as input
    */
   logger_bbob_data_t *logger = (logger_bbob_data_t *) stuff;
+  
+  if (stuff == NULL)
+    return;
 
   if ((coco_log_level >= COCO_DEBUG) && logger && logger->number_of_evaluations > 0) {
     coco_debug("best f=%e after %lu fevals (done observing)\n", logger->best_fvalue,

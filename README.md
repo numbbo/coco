@@ -32,7 +32,7 @@ from using the platform:
 ![General COCO Structure](coco.png)
 
 For more general information:
-- read our benchmarking guidelines introduction [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting (pdf)]((https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977)) or at [arXiv](https://arxiv.org/abs/1603.08785).
+- read our benchmarking guidelines introduction [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting (pdf)](https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977) or at [arXiv](https://arxiv.org/abs/1603.08785).
 - read the [COCO experimental setup](http://numbbo.github.io/coco-doc/experimental-setup) description
 - see the [`bbob-biobj` and `bbob-biobj-ext` COCO multi-objective functions testbed](http://numbbo.github.io/coco-doc/bbob-biobj/functions) documentation and the [specificities of the performance assessment for the bi-objective testbeds](http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment).
 - consult the [BBOB workshops series](http://numbbo.github.io/workshops),

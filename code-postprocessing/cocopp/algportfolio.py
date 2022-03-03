@@ -166,9 +166,9 @@ class DataSet(pp.DataSet):
             for j in tmpfunvals:
                 tmpres.append(min(j[1:]))
             funvals.append(np.column_stack((tmpfunvals[:, 0], tmpres)))
-        self.maxevals = np.array(maxevals)
+        self._maxevals = np.array(maxevals)
         self.finalfunvals = np.array(finalfunvals)
-        self.evals = ra.alignArrayData(ra.HArrayMultiReader(evals))
+        self._evals = ra.alignArrayData(ra.HArrayMultiReader(evals))
         self.funvals = ra.alignArrayData(ra.VArrayMultiReader(funvals))
         self.computeERTfromEvals()
 

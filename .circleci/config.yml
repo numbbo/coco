@@ -18,7 +18,7 @@ jobs:
           command: ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime 
       - run:
           name: Install python-dev with apt-get
-          command: DEBIAN_FRONTEND="noninteractive" apt-get install -y python3-dev
+          command: DEBIAN_FRONTEND=noninteractive apt-get install -y python3-dev
       - run:
           name: Install pip with apt-get
           command: apt-get install -y python3-pip
@@ -40,10 +40,10 @@ jobs:
           command: ln -s /usr/bin/python3 /usr/bin/python
       - run:
           name: Install coco python
-          command: python3 do.py run-python
+          command: python3 do.py run-python install-user
       - run:
           name: Install coco post-processing
-          command: python3 do.py install-postprocessing
+          command: python3 do.py install-postprocessing install-user
       - run:
           name: Run the example experiment
           command: |
@@ -83,11 +83,11 @@ jobs:
           no_output_timeout: 1800
       - run:
           name: Run coco pre-processing tests
-          command: python3 do.py test-preprocessing
+          command: python3 do.py test-preprocessing install-user
           no_output_timeout: 1800
       - run:
           name: Run coco post-processing tests
-          command: python3 do.py test-postprocessing
+          command: python3 do.py test-postprocessing install-user
           no_output_timeout: 5400
       - run:
           name: Run coco C
