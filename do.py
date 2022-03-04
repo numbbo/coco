@@ -52,7 +52,7 @@ _build_verbosity = True
 ################################################################################
 ## C
 def amalgamate_c():
-    """Only amalgamte the C files"""
+    """Only amalgamate the C files"""
     global RELEASE
     amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_c.c'],
                'code-experiments/build/c/coco.c', RELEASE,
