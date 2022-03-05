@@ -28,6 +28,9 @@ jobs:
       - run:
           name: Install git with apt-get
           command: apt-get install -y git
+      - run:
+          name: Install cargo with apt-get
+          command: apt-get install -y rust-all
 #      - run:
 #          name: Install tkinter with apt-get
 #          command: apt-get install -y python3-tk
