@@ -19,6 +19,7 @@ Languages currently available to connect a solver to the benchmarks are
   - `Java`
   - `MATLAB/Octave`
   - `Python`
+  - `Rust`
 
 Code for others might be available in branched code.
 Contributions to link further languages (including a better
@@ -69,7 +70,8 @@ _Additional_ requirements for running an algorithm in a specific language.
 
 * **C**: `make`, such as GNU make (when using [GNU make for Windows](http://gnuwin32.sourceforge.net/packages/make.htm), make sure that your ``CC`` environment variable is set to `gcc` by potentially typing `set CC=gcc` if you see an error). 
 * **Java**: `gcc` and any Java Development Kit (JDK), such that `javac` and `javah` are accessible 
-  (i.e. in the system path). 
+  (i.e. in the system path).
+* **Rust**: For details, take a look at the [Rust Readme](./code-experiments/build/rust/README.md)
 * **MATLAB**: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.md)
 * **Python on Windows with MinGW**: Python 2.7 and the Microsoft compiler package for Python 2.7 
   containing VC9, available [here](https://www.microsoft.com/en-us/download/details.aspx?id=44266). 
