@@ -31,6 +31,9 @@ jobs:
       - run:
           name: Install cargo with apt-get
           command: apt-get install -y rust-all
+      - run:
+          name: Install bindgen with cargo
+          command: cargo install bindgen
 #      - run:
 #          name: Install tkinter with apt-get
 #          command: apt-get install -y python3-tk
