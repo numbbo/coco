@@ -104,10 +104,14 @@ jobs:
           no_output_timeout: 1800
       - run:
           name: Run coco Rust
-          command: python do.py run-rust
+          command: |
+            export PATH=~/.cargo/bin:$PATH
+            python do.py run-rust
       - run:
           name: Run coco Rust tests
-          command: python do.py test-rust
+          command: |
+            export PATH=~/.cargo/bin:$PATH
+            python do.py test-rust
           no_output_timeout: 1800
       - run:
           name: Run regression test
