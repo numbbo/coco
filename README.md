@@ -666,8 +666,8 @@ Comprehensive List of Documentations <a name="Documentations"></a>
 * APIs
   - ``C`` experiments code: http://numbbo.github.io/coco-doc/C
   - Python experiments code (module `cocoex`): https://numbbo.github.io/coco-doc/apidocs/cocoex
-  - Python short [beginners example experiment](code-experiments/build/python/example_experiment_for_beginners.py)
-  - Python `example_experiment2.py`: https://numbbo.github.io/coco-doc/apidocs/example
+  - Python [short experiment code example for beginners](code-experiments/build/python/example_experiment_for_beginners.py)
+  - Python [`example_experiment2.py`](https://github.com/numbbo/coco/blob/master/code-experiments/build/python/example_experiment2.py): https://numbbo.github.io/coco-doc/apidocs/example
   - Postprocessing code (module `cocopp`): https://numbbo.github.io/coco-doc/apidocs/cocopp
 
 * Somewhat outdated documents:
