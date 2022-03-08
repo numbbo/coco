@@ -609,8 +609,8 @@ year = 2021
 }
 ```
 
-Links and Documentation <a name="Links"></a>
------------------------
+Links About the Workshops and Data <a name="Links"></a>
+----------------------------------
 * The [_BBOB workshop series_](http://numbbo.github.io/workshops), which uses the
   NumBBO/Coco framework extensively, can be tracked
   [here](http://numbbo.github.io/workshops "BBOB Workshops")
@@ -623,9 +623,6 @@ Links and Documentation <a name="Links"></a>
   found at https://numbbo.github.io/ppdata-archive
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software 
   by registering via [this form](https://docs.google.com/forms/d/1GS48SXGjapUu6WY6Zt-Ma5HCl2izq4ydT7sMa5ujUDI)
-* Read about the basic principles behind the Coco platform in [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting (pdf)](https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977) or at [arXiv](https://arxiv.org/abs/1603.08785).
-* For details on the experimental set-up to carry out the benchmarking
-  please refer to http://numbbo.github.io/coco-doc/experimental-setup/.
 * Downloading this repository 
   - via the above green "Clone or Download" button or 
   - by typing `git clone https://github.com/numbbo/coco.git` or 
@@ -641,11 +638,10 @@ Comprehensive List of Documentations <a name="Documentations"></a>
   - `bbob-biobj-ext`: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
   - `bbob-noisy` (only in old code basis): http://coco.lri.fr/downloads/download15.03/bbobdocnoisyfunctions.pdf
   - `bbob-largescale`: https://arxiv.org/pdf/1903.06396.pdf
-  - `bbob-mixint` and `bbob-biobj-mixint`: https://hal.inria.fr/hal-02067932/document and
-    https://numbbo.github.io/gforge/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
+  - `bbob-mixint`: https://hal.inria.fr/hal-02067932/document
+  - `bbob-biobj-mixint`: https://numbbo.github.io/gforge/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
   - `bbob-constrained` (in progress): http://numbbo.github.io/coco-doc/bbob-constrained/functions/
   
-
 * Performance assessment: http://numbbo.github.io/coco-doc/perf-assessment/
 * Performance assessment for biobjective testbeds: http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment/
 
