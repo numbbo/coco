@@ -965,7 +965,11 @@ class DataSet(object):
             tmp = []
             for i in range(min((len(self._maxevals), len(self.readmaxevals)))):
                 tmp.append(self._maxevals[i] == self.readmaxevals[i])
-            if not all(tmp) or len(self._maxevals) != len(self.readmaxevals):
+            if testbedsettings.current_testbed.has_constraints:
+                tmp = False
+            else:
+                tmp = not all(tmp)
+            if tmp or len(self._maxevals) != len(self.readmaxevals):
                 warnings.warn('There is a difference between the maxevals in the '
                               '*.info file and in the data files.')
 
