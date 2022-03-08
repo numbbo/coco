@@ -671,6 +671,7 @@ Comprehensive List of Documentations <a name="Documentations"></a>
   - Postprocessing code (module `cocopp`): https://numbbo.github.io/coco-doc/apidocs/cocopp
 
 * Somewhat outdated documents:
+  - Former home page: https://web.archive.org/web/20210504150230/https://coco.gforge.inria.fr/
   - Full description of the platform: http://coco.lri.fr/COCOdoc/
   - Experimental setup before 2016: http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
   - Old framework software documentation: http://coco.lri.fr/downloads/download15.03/bbobdocsoftware.pdf
