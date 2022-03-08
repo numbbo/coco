@@ -675,5 +675,5 @@ Comprehensive List of Documentations <a name="Documentations"></a>
   - Experimental setup before 2016: http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
   - Old framework software documentation: http://coco.lri.fr/downloads/download15.03/bbobdocsoftware.pdf
  
- * Some examples of [results](https://github.com/numbbo/coco/wiki/COCO-Wiki-Home).
+ * Some examples of [results](https://github.com/numbbo/coco/wiki/).
 
