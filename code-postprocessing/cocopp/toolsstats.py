@@ -187,7 +187,9 @@ def drawSP_from_dataset(data_set, ftarget, percentiles, samplesize=genericsettin
     
     The expected value of ``all_sampled_values_sorted`` is the expected
     runtime ERT, as obtained by ``data_set.detERT([ftarget])[0]``.
-    
+
+    Details: `samplesize` is adjusted (increased) such that it is zero when taken
+    modulo `data_set.nbRuns()`.
     """
     try:
         evals = data_set.detEvals([ftarget])[0]
@@ -195,7 +197,7 @@ def drawSP_from_dataset(data_set, ftarget, percentiles, samplesize=genericsettin
         print('drawSP_from_dataset expects a DataSet instance as first input, was: ' + str(type(data_set)))
         raise 
     nanidx = np.isnan(evals)
-    return drawSP(evals[~nanidx], data_set.maxevals[nanidx], percentiles, samplesize)
+    return drawSP(evals[~nanidx], data_set.maxevals[nanidx], percentiles, data_set.bootstrap_sample_size(samplesize))
 
 def drawSP_from_dataset_new(data_set, ftarget, dummy,
                             samplesize=genericsettings.simulated_runlength_bootstrap_sample_size):
@@ -698,6 +700,7 @@ def significancetest(entry0, entry1, targets):
     frequent instances are more different than the less frequent instances.
 
     """
+    balance_instances_saved, genericsettings.balance_instances = genericsettings.balance_instances, False
 
     bootstraps = False  # future extension
     res = []
@@ -820,6 +823,7 @@ def significancetest(entry0, entry1, targets):
 
         res.append(z_and_p)
 
+    genericsettings.balance_instances = balance_instances_saved
     return res
 
 def significance_all_best_vs_other(datasets, targets, best_alg_idx=None):
@@ -843,7 +847,9 @@ def significance_all_best_vs_other(datasets, targets, best_alg_idx=None):
             erts.append(ds.detERT(targets))
           
         best_alg_idx2 = np.array(erts).argsort(0)[0, :]  # indexed by target index
-        assert all(best_alg_idx2 == best_alg_idx)
+        # assert all(best_alg_idx2 == best_alg_idx)
+        if not all(best_alg_idx2 == best_alg_idx):
+            warnings.warn("best_alg_idx2 is different " + str((best_alg_idx2, best_alg_idx, datasets)))
         
     # significance test of best given algorithm against all others
     significance_versus_others = []  # indexed by target index

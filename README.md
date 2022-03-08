@@ -19,6 +19,7 @@ Languages currently available to connect a solver to the benchmarks are
   - `Java`
   - `MATLAB/Octave`
   - `Python`
+  - `Rust`
 
 Code for others might be available in branched code.
 Contributions to link further languages (including a better
@@ -32,7 +33,7 @@ from using the platform:
 ![General COCO Structure](coco.png)
 
 For more general information:
-- read our benchmarking guidelines introduction [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting (pdf)]((https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977)) or at [arXiv](https://arxiv.org/abs/1603.08785).
+- read our benchmarking guidelines introduction [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting (pdf)](https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977) or at [arXiv](https://arxiv.org/abs/1603.08785).
 - read the [COCO experimental setup](http://numbbo.github.io/coco-doc/experimental-setup) description
 - see the [`bbob-biobj` and `bbob-biobj-ext` COCO multi-objective functions testbed](http://numbbo.github.io/coco-doc/bbob-biobj/functions) documentation and the [specificities of the performance assessment for the bi-objective testbeds](http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment).
 - consult the [BBOB workshops series](http://numbbo.github.io/workshops),
@@ -69,7 +70,8 @@ _Additional_ requirements for running an algorithm in a specific language.
 
 * **C**: `make`, such as GNU make (when using [GNU make for Windows](http://gnuwin32.sourceforge.net/packages/make.htm), make sure that your ``CC`` environment variable is set to `gcc` by potentially typing `set CC=gcc` if you see an error). 
 * **Java**: `gcc` and any Java Development Kit (JDK), such that `javac` and `javah` are accessible 
-  (i.e. in the system path). 
+  (i.e. in the system path).
+* **Rust**: For details, take a look at the [Rust Readme](./code-experiments/build/rust/README.md)
 * **MATLAB**: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.md)
 * **Python on Windows with MinGW**: Python 2.7 and the Microsoft compiler package for Python 2.7 
   containing VC9, available [here](https://www.microsoft.com/en-us/download/details.aspx?id=44266). 
@@ -609,8 +611,8 @@ year = 2021
 }
 ```
 
-Links and Documentation <a name="Links"></a>
------------------------
+Links About the Workshops and Data <a name="Links"></a>
+----------------------------------
 * The [_BBOB workshop series_](http://numbbo.github.io/workshops), which uses the
   NumBBO/Coco framework extensively, can be tracked
   [here](http://numbbo.github.io/workshops "BBOB Workshops")
@@ -623,23 +625,6 @@ Links and Documentation <a name="Links"></a>
   found at https://numbbo.github.io/ppdata-archive
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software 
   by registering via [this form](https://docs.google.com/forms/d/1GS48SXGjapUu6WY6Zt-Ma5HCl2izq4ydT7sMa5ujUDI)
-* Read about the basic principles behind the Coco platform in [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting (pdf)](https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977) or at [arXiv](https://arxiv.org/abs/1603.08785).
-* For details on the experimental set-up to carry out the benchmarking
-  please refer to http://numbbo.github.io/coco-doc/experimental-setup/.
-* More detailed documentation of the existing benchmark suites can be found here:
-  - for the **`bbob`** problem suite at https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf 
-    with the experimental setup at http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
-  - for the **`bbob-biobj`** and **`bbob-biobj-ext`** problem suites
-    at http://numbbo.github.io/coco-doc/bbob-biobj/functions
-  - for the **`bbob-largescale`** problem suite
-    at https://arxiv.org/pdf/1903.06396.pdf
-  - for the **`bbob-mixint`** and **`bbob-biobj-mixint`** problem suites, we refer to 
-    https://hal.inria.fr/hal-02067932/document and to
-    https://numbbo.github.io/gforge/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
-* Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at 
-  http://numbbo.github.io/coco-doc/C
-* More detailed documentation on how the performance assessement is done can 
-  be found at http://numbbo.github.io/coco-doc/perf-assessment/.
 * Downloading this repository 
   - via the above green "Clone or Download" button or 
   - by typing `git clone https://github.com/numbbo/coco.git` or 
@@ -650,30 +635,30 @@ Comprehensive List of Documentations <a name="Documentations"></a>
 * General introduction: [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting (pdf)](https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977) or at [arXiv](https://arxiv.org/abs/1603.08785)
 * Experimental setup: http://numbbo.github.io/coco-doc/experimental-setup/
 * Testbeds
-  - bbob: https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf
-  - bbob-biobj: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
-  - bbob-biobj-ext: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
-  - bbob-noisy (only in old code basis): http://coco.lri.fr/downloads/download15.03/bbobdocnoisyfunctions.pdf
-  - bbob-largescale: https://arxiv.org/pdf/1903.06396.pdf
-  - bbob-mixint and bbob-biobj-mixint: https://hal.inria.fr/hal-02067932/document and
-    https://numbbo.github.io/gforge/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
-  - bbob-constrained (in progress): http://numbbo.github.io/coco-doc/bbob-constrained/functions/
+  - `bbob`: https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf
+  - `bbob-biobj`: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
+  - `bbob-biobj-ext`: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
+  - `bbob-noisy` (only in old code basis): http://coco.lri.fr/downloads/download15.03/bbobdocnoisyfunctions.pdf
+  - `bbob-largescale`: https://arxiv.org/pdf/1903.06396.pdf
+  - `bbob-mixint`: https://hal.inria.fr/hal-02067932/document
+  - `bbob-biobj-mixint`: https://numbbo.github.io/gforge/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
+  - `bbob-constrained` (in progress): http://numbbo.github.io/coco-doc/bbob-constrained
   
-
 * Performance assessment: http://numbbo.github.io/coco-doc/perf-assessment/
 * Performance assessment for biobjective testbeds: http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment/
 
 * APIs
   - ``C`` experiments code: http://numbbo.github.io/coco-doc/C
-  - Python experiments code (module `cocoex`): https://numbbo.github.io/gforge/apidocs-cocoex/cocoex.html
-  - Python short [beginners example experiment](code-experiments/build/python/example_experiment_for_beginners.py)
-  - Python `example_experiment2.py`: https://numbbo.github.io/gforge/apidocs-example_experiment/example_experiment2.html
-  - Postprocessing code (module `cocopp`): https://numbbo.github.io/gforge/apidocs-cocopp/cocopp.html
+  - Python experiments code (module `cocoex`): https://numbbo.github.io/coco-doc/apidocs/cocoex
+  - Python [short experiment code example for beginners](code-experiments/build/python/example_experiment_for_beginners.py)
+  - Python [`example_experiment2.py`](https://github.com/numbbo/coco/blob/master/code-experiments/build/python/example_experiment2.py): https://numbbo.github.io/coco-doc/apidocs/example
+  - Postprocessing code (module `cocopp`): https://numbbo.github.io/coco-doc/apidocs/cocopp
 
 * Somewhat outdated documents:
+  - Former home page: https://web.archive.org/web/20210504150230/https://coco.gforge.inria.fr/
   - Full description of the platform: http://coco.lri.fr/COCOdoc/
   - Experimental setup before 2016: http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
   - Old framework software documentation: http://coco.lri.fr/downloads/download15.03/bbobdocsoftware.pdf
  
- * Some examples of [results](https://github.com/numbbo/coco/wiki/COCO-Wiki-Home).
+ * Some examples of [results](https://github.com/numbbo/coco/wiki/).
 

@@ -87,19 +87,23 @@ def scaling_figure_caption():
        replacing common texts, abbreviations, etc.
     """
 
-    caption_text = r"""%
-        Scaling of runtime with dimension to reach certain target values !!DF!!.
+    caption_text = (r"""%
+        Scaling of runtime with dimension to reach certain target values"""
+        + (" !!DF!!." if not testbedsettings.current_testbed.has_constraints else ".")
+        + r"""
         Lines: expected runtime (\ERT);
         Cross (+): median runtime of successful runs to reach the most difficult
         target that was reached at least once (but not always);
         Cross ({\color{red}$\times$}): maximum number of
-        $f$-evaluations in any trial. !!NOTCHED-BOXES!!
+        """
+        + testbedsettings.current_testbed.string_evals
+        + r""" in any trial. !!NOTCHED-BOXES!!
         All values are !!DIVIDED-BY-DIMENSION!! 
         plotted as $\log_{10}$ values versus dimension. %
-        """
+        """)
     
     caption_part_absolute_targets = (r"""%
-        Shown is the \ERT\ for fixed values of $!!DF!! = 10^k$ with $k$ given
+        Shown is the \ERT\ for fixed target precision values of $10^k$ with $k$ given
         in the legend.
         Numbers above \ERT-symbols (if appearing) indicate the number of trials
         reaching the respective target. """ + # TODO: add here "(out of XYZ trials)"
@@ -533,9 +537,7 @@ def main(dsList, _valuesOfInterest, outputdir):
     key = 'bbobppfigdimlegend' + testbedsettings.current_testbed.scenario
     joined_values_of_interest = ', '.join(values_of_interest.labels()) if genericsettings.runlength_based_targets else ', '.join(values_of_interest.loglabels())
     caption = htmldesc.getValue('##' + key + '##').replace('valuesofinterest', joined_values_of_interest)
-    header = 'Average number of <i>f</i>-evaluations to reach target'
-    if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons:
-        header = header.replace('<i>f</i>', '<i>(f+g)</i>')
+    header = 'Scaling of run "time" with problem dimension'
 
     ppfig.save_single_functions_html(
         os.path.join(outputdir, 'ppfigdim'),
@@ -567,7 +569,7 @@ def main(dsList, _valuesOfInterest, outputdir):
         beautify(axesLabel=False)
         
         # display number of instances in data and used targets type:
-        if all(d.instancenumbers == dictFunc[func][0].instancenumbers
+        if all(set(d.instancenumbers) == set(dictFunc[func][0].instancenumbers)
                for d in dictFunc[func]): # all the same?
             display_text = '%d instances\n' % len(((dictFunc[func][0]).instancenumbers))
         else:

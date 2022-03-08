@@ -115,7 +115,7 @@ static long coco_strfind(const char *base, const char *seq) {
           break;
       }
       if (j == strlen_seq) {
-        if (i > 1e9)
+        if (i > 1000000000UL)
           coco_error("coco_strfind(): strange values observed i=%lu, j=%lu, strlen(base)=%lu",
           		(unsigned long) i, (unsigned long) j, (unsigned long) strlen(base));
         return (long) i;

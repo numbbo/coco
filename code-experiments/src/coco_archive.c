@@ -234,6 +234,7 @@ int coco_archive_add_solution(coco_archive_t *archive, const double y1, const do
     }
 
     if(avl_item_insert(archive->tree, insert_item) == NULL) {
+      coco_archive_node_item_free(insert_item, NULL);
       coco_warning("Solution %s did not update the archive", text);
       update = 0;
     }
@@ -270,7 +271,6 @@ static void coco_archive_update(coco_archive_t *archive) {
       node_item = (coco_archive_avl_item_t *) node->item;
       left_node_item = (coco_archive_avl_item_t *) left_node->item;
       if (mo_is_within_ROI(left_node_item->normalized_y, archive->number_of_objectives)) {
-        hyp = 0;
         if (mo_is_within_ROI(node_item->normalized_y, archive->number_of_objectives))
           hyp = (node_item->normalized_y[0] - left_node_item->normalized_y[0]) * (1 - left_node_item->normalized_y[1]);
         else

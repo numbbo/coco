@@ -23,6 +23,25 @@ the following is lacking:
 
 Instead of `make` and `Makefile` you can use `nmake` and the corresponding `NMakefile`
 
+### CMake
+
+Instead of `make` you can use `cmake` and the corresponding `CMakeLists.txt`:
+
+```
+mkdir build
+cd build
+cmake ../
+ninja # or make, depending on your version of CMake
+```
+
+### meson
+
+Instead of `make` you can use `meson` and `ninja`: 
+
+```
+meson setup build
+meson compile -C build
+```
 
 Getting Started
 ---------------

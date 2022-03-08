@@ -25,10 +25,18 @@ figure_file_formats = ['svg', 'pdf']
 scaling_figures_with_boxes = True
 scaling_plots_with_axis_labels = False
 
+balance_instances = True
+""" give even weight to all instances by added columns with copies of
+    underrepresented instances in DataSet.evals
+    """
+appended_evals_minimal_trials = 6
+""" minimum number of instances required in the ``appended_evals`` array such
+    that `DataSet.appended_evals` is created to be different from `DataSet.evals`
+    """
 weight_evaluations_constraints = (1, 1)
-"""weights used to sum function evaluations and constraints evaluations
-in attribute DataSet.evals, if any constraints evaluations are found"""
-
+""" weights used to sum function evaluations and constraints evaluations
+    in the attribute DataSet._evals when data are loaded.
+    """
 target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
 target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
 target_runlengths_pprldmany = np.logspace(np.log10(0.5), np.log10(50), 31) # used in config
@@ -36,7 +44,16 @@ target_runlengths_ppscatter = np.logspace(np.log10(0.5), np.log10(50), 8) # used
 target_runlength = 10  # used in ppfigs.main
 single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)] # used in pprldistr
 
-xlimit_expensive = 1e3  # used in 
+xlimit_pprldmany = 1e7
+"""maximal run length multiplier used in `pprldmany`, noisy: rather 1e8
+   maybe better: ``10 * genericsettings.evaluation_setting[1]``?"""
+xlimit_expensive = 1e3
+"""maximal run length multiplier in expensive setting, used in config for
+   `pprldmany` and `ppfigdim`"""
+len_of_names_in_pprldmany_legend = None
+"""set the length, for example when we want to remove characters that are
+   not fully displayed, 9 == len('best 2009')"""
+
 #tableconstant_target_function_values = (
 #1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7)  # used as input for pptables.main in rungenericmany
 # tableconstant_target_function_values = (1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7) # for post-workshop landscape tables
@@ -259,7 +276,7 @@ if 11 < 3:  # in case using my own linestyles
         {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'g'}
     ]
 
-minmax_algorithm_fontsize = [9, 17]  # depending on the number of algorithms
+minmax_algorithm_fontsize = [9, 14]  # used in pprldmany, depending on the number of algorithms
 
 rcaxeslarger = {"labelsize": 24, "titlesize": 28.8}
 rcticklarger = {"labelsize": 24}
@@ -278,6 +295,8 @@ ppconv_file_name = 'ppconv'
 pprldmany_file_name = 'pprldmany'
 pprldmany_group_file_name = 'pprldmany_gr'
 ppfigs_file_name = 'ppfigs'
+ppfigcons_file_name = 'ppfigcons'
+ppfigcons1_file_name = 'ppfigcons1'
 ppscatter_file_name = 'ppscatter'
 pptables_file_name = 'pptables'
 pprldistr2_file_name = 'pprldistr2'
@@ -315,4 +334,3 @@ isLogLoss = True  # only affects rungeneric1
 isPickled = False  # only affects rungeneric1
 ##    
 isScatter = True  # only affects rungenericmany
-

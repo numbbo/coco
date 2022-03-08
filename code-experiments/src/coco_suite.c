@@ -44,8 +44,8 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
     suite = suite_biobj_initialize(suite_name);
   } else if (strcmp(suite_name, "bbob-largescale") == 0) {
     suite = suite_largescale_initialize();
-  } else if (strcmp(suite_name, "bbob-constrained") == 0) {
-    suite = suite_cons_bbob_initialize();
+  } else if (strncmp(suite_name, "bbob-constrained", 16) == 0) {
+    suite = suite_cons_bbob_initialize(suite_name);
   } else if (strcmp(suite_name, "bbob-mixint") == 0) {
     suite = suite_bbob_mixint_initialize(suite_name);
   } else if (strcmp(suite_name, "bbob-biobj-mixint") == 0) {
@@ -69,11 +69,11 @@ static const char *coco_suite_get_instances_by_year(const coco_suite_t *suite, c
 
   if (strcmp(suite->suite_name, "bbob") == 0) {
     year_string = suite_bbob_get_instances_by_year(year);
-  } else if (strcmp(suite->suite_name, "bbob-constrained") == 0) {
-    year_string = suite_cons_bbob_get_instances_by_year(year);
   } else if ((strcmp(suite->suite_name, "bbob-biobj") == 0) ||
       (strcmp(suite->suite_name, "bbob-biobj-ext") == 0)) {
     year_string = suite_biobj_get_instances_by_year(year);
+  } else if (strncmp(suite->suite_name, "bbob-constrained", 16) == 0) {
+    year_string = suite_cons_bbob_get_instances_by_year(year);
   } else if (strcmp(suite->suite_name, "bbob-largescale") == 0) {
     year_string = suite_largescale_get_instances_by_year(year);
   } else if (strcmp(suite->suite_name, "bbob-mixint") == 0) {
@@ -115,10 +115,10 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
   } else if ((strcmp(suite->suite_name, "bbob-biobj") == 0) ||
       (strcmp(suite->suite_name, "bbob-biobj-ext") == 0)) {
     problem = suite_biobj_get_problem(suite, function_idx, dimension_idx, instance_idx);
+  } else if (strncmp(suite->suite_name, "bbob-constrained", 16) == 0) {
+    problem = suite_cons_bbob_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-largescale") == 0) {
     problem = suite_largescale_get_problem(suite, function_idx, dimension_idx, instance_idx);
-  } else if (strcmp(suite->suite_name, "bbob-constrained") == 0) {
-    problem = suite_cons_bbob_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-mixint") == 0) {
     problem = suite_bbob_mixint_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-biobj-mixint") == 0) {
@@ -599,8 +599,8 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
  * (2, 3, 5, 10, 20, 40)
  * - "bbob-largescale" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 6 large dimensions (40, 80, 160, 320, 640, 1280)
- * - "bbob-constrained" contains 48 linearly-constrained problems, which are combinations of 8 single 
- * objective functions with 6 different numbers of linear constraints (1, 2, 10, dimension/2, dimension-1, 
+ * - "bbob-constrained" contains 54 linearly-constrained problems, which are combinations of 8 single 
+ * objective functions with 6 different numbers of active linear constraints (1, 2, 10, dimension/2, dimension-1,
  * dimension+1), in 6 dimensions (2, 3, 5, 10, 20, 40).
  * - "bbob-mixint" contains mixed-integer single-objective functions in 6 dimensions (2, 3, 5, 10, 20, 40)
  * - "bbob-biobj-mixint" contains 92 mixed-integer bi-objective functions in 6 dimensions (2, 3, 5, 10, 20, 40)

@@ -54,24 +54,29 @@ def get_table_caption():
         and genericsettings.runlength_based_targets.
     """    
 
-    table_caption_start = r"""%
-        Expected running time (\ERT\ in number of function 
-        evaluations) divided by the \ERT\ of !!THE-REF-ALG!! in #1. This \ERT\
+    table_caption_start = (r"""%
+        Expected runtime (\ERT\ in number of """
+        + testbedsettings.current_testbed.string_evals
+        + r""") divided by the \ERT\ of !!THE-REF-ALG!! in #1. This \ERT\
         ratio and, in braces as dispersion measure, the half difference between 90 and
         10\%-tile of bootstrapped run lengths appear in the second row of each cell,  
         the best \ERT\
-        """
+        """)
     table_caption_rlbased = (r"""%
-        in the first. The different target !!DF!!-values are shown in the top row. 
+        in the first. The different target """
+        + ("!!DF!!-" if not testbedsettings.current_testbed.has_constraints else "precision ")
+        + r"""values are shown in the top row. 
         \#succ is the number of trials that reached the (final) target $!!FOPT!! 
         + !!HARDEST-TARGET-LATEX!!$.
         """)
-    table_caption_fixedtargets = r"""%
-        (preceded by the target !!DF!!-value in \textit{italics}) in the first. 
+    table_caption_fixedtargets = (r"""%
+        (preceded by the target """
+        + ("!!DF!!-" if not testbedsettings.current_testbed.has_constraints else "precision ")
+        + r"""value in \textit{italics}) in the first. 
         \#succ is the number of trials that reached the target value of the last column.
-        """
+        """)
     table_caption_rest = r"""%
-        The median number of conducted function evaluations is additionally given in 
+        The median number of conducted evaluations is additionally given in 
         \textit{italics}, if the target in the last column was never reached. 
         \textbf{Bold} entries are statistically significantly better (according to
         the rank-sum test) compared to !!THE-REF-ALG!!, with
@@ -79,18 +84,22 @@ def get_table_caption():
         $\downarrow$ symbol, with Bonferroni correction by the number of
         functions (!!TOTAL-NUM-OF-FUNCTIONS!!).
         """
-    table_caption_no_reference_algorithm = r"""%
+    table_caption_no_reference_algorithm = (r"""%
         Expected runtime (\ERT) to reach given targets, measured
-        in number of function evaluations in #1. For each function, the \ERT\ 
+        in number of """
+        + testbedsettings.current_testbed.string_evals
+        + r""" in #1. For each function, the \ERT\ 
         and, in braces as dispersion measure, the half difference between 10 and 
         90\%-tile of (bootstrapped) runtimes is shown for the different
-        target !!DF!!-values as shown in the top row. 
+        target """
+        + ("!!DF!!-" if not testbedsettings.current_testbed.has_constraints else "precision ")
+        + r"""values as shown in the top row. 
         \#succ is the number of trials that reached the last target 
         $!!FOPT!! + !!HARDEST-TARGET-LATEX!!$.
-        The median number of conducted function evaluations is additionally given in 
+        The median number of conducted evaluations is additionally given in 
         \textit{italics}, if the target in the last column was never reached. 
-        """        
-        
+        """)
+
     table_caption = None
     if testbedsettings.current_testbed.name in ['bbob', 'bbob-noisy', 'bbob-biobj']:
         if genericsettings.runlength_based_targets:
@@ -239,12 +248,19 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                 #   set_trace()
                 if any(succ):
                     tmp2 = toolsstats.drawSP(tmp[succ], tmp[succ==False],
-                                (10, 50, 90), genericsettings.simulated_runlength_bootstrap_sample_size)[0]
+                                (10, 50, 90), entry.bootstrap_sample_size())[0]
                     dispersion.append((tmp2[-1] - tmp2[0]) / 2.)
                 else: 
                     dispersion.append(None)
             if data != ertdata:
-                warnings.warn("data != ertdata " + str((entry, data, ertdata)))
+                # comment before computeERT was called unconditionally at the end of DataSet.__init__:
+                # warning comes only in balance_instances=True setting only for bfgs but not for randsearch or bipop
+                # ertdata values are consistently slightly larger than data values, after calling entry.computeERTfromEvals
+                # the ertdata values become the same as the data values
+                warnings.warn("data != ertdata " + str((entry,
+                                                        getattr(entry, 'instancenumbers', '`instancenumbers` attribute is missing'),
+                                                        entry.instance_multipliers, data, ertdata)))
+                # assert data == ertdata
             for i, ert in enumerate(data):
                 alignment = 'c'
                 if i == len(data) - 1: # last element

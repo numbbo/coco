@@ -15,10 +15,10 @@ jobs:
           command: apt-get update -qy
       - run:
           name: Set time zone
-          command: ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime 
+          command: ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime
       - run:
           name: Install python-dev with apt-get
-          command: DEBIAN_FRONTEND="noninteractive" apt-get install -y python3-dev
+          command: DEBIAN_FRONTEND=noninteractive apt-get install -y python3-dev
       - run:
           name: Install pip with apt-get
           command: apt-get install -y python3-pip
@@ -28,6 +28,15 @@ jobs:
       - run:
           name: Install git with apt-get
           command: apt-get install -y git
+      - run:
+          name: Install cargo with apt-get
+          command: apt-get install -y rust-all
+      - run:
+          name: Install libclang for bindgen with apt-get
+          command: apt-get install -y libclang-dev
+      - run:
+          name: Install bindgen with cargo
+          command: cargo install bindgen
 #      - run:
 #          name: Install tkinter with apt-get
 #          command: apt-get install -y python3-tk
@@ -40,10 +49,10 @@ jobs:
           command: ln -s /usr/bin/python3 /usr/bin/python
       - run:
           name: Install coco python
-          command: python3 do.py run-python
+          command: python3 do.py run-python install-user
       - run:
           name: Install coco post-processing
-          command: python3 do.py install-postprocessing
+          command: python3 do.py install-postprocessing install-user
       - run:
           name: Run the example experiment
           command: |
@@ -83,11 +92,11 @@ jobs:
           no_output_timeout: 1800
       - run:
           name: Run coco pre-processing tests
-          command: python3 do.py test-preprocessing
+          command: python3 do.py test-preprocessing install-user
           no_output_timeout: 1800
       - run:
           name: Run coco post-processing tests
-          command: python3 do.py test-postprocessing
+          command: python3 do.py test-postprocessing install-user
           no_output_timeout: 5400
       - run:
           name: Run coco C
@@ -95,6 +104,17 @@ jobs:
       - run:
           name: Run coco C tests
           command: python do.py test-c
+          no_output_timeout: 1800
+      - run:
+          name: Run coco Rust
+          command: |
+            export PATH=~/.cargo/bin:$PATH
+            python do.py run-rust
+      - run:
+          name: Run coco Rust tests
+          command: |
+            export PATH=~/.cargo/bin:$PATH
+            python do.py test-rust
           no_output_timeout: 1800
       - run:
           name: Run regression test

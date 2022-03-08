@@ -214,7 +214,7 @@ static int coco_observer_evaluations_trigger_first(coco_observer_evaluations_t *
 
   if (evaluation_number >= evaluations->value1) {
     /* Compute the next value for the first trigger */
-    while (coco_double_to_size_t(floor(pow(10, (double) evaluations->exponent1 / (double) evaluations->number_of_triggers)) <= evaluations->value1)) {
+    while (coco_double_to_size_t(floor(pow(10, (double) evaluations->exponent1 / (double) evaluations->number_of_triggers))) <= evaluations->value1) {
       evaluations->exponent1++;
     }
     evaluations->value1 = coco_double_to_size_t(floor(pow(10, (double) evaluations->exponent1 / (double) evaluations->number_of_triggers)));
@@ -522,9 +522,9 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     observer_biobj(observer, observer_options, &additional_option_keys);
   } else if (0 == strcmp(observer_name, "bbob-biobj-ext")) {
     observer_biobj(observer, observer_options, &additional_option_keys);
-  } else if (0 == strcmp(observer_name, "bbob-largescale")) {
+  } else if (0 == strncmp(observer_name, "bbob-constrained", 16)) {
     observer_bbob(observer, observer_options, &additional_option_keys);
-  } else if (0 == strcmp(observer_name, "bbob-constrained")) {
+  } else if (0 == strcmp(observer_name, "bbob-largescale")) {
     observer_bbob(observer, observer_options, &additional_option_keys);
   } else if (0 == strcmp(observer_name, "bbob-mixint")) {
     observer_bbob(observer, observer_options, &additional_option_keys);
@@ -533,6 +533,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   } else if (0 == strcmp(observer_name, "rw")) {
     observer_rw(observer, observer_options, &additional_option_keys);
   } else {
+    coco_observer_free(observer);
     coco_warning("Unknown observer!");
     return NULL;
   }

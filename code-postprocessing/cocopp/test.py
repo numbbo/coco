@@ -15,6 +15,8 @@ import shutil
 import subprocess
 import doctest
 
+from cocopp import archiving
+
 import matplotlib  # just to make sure the following is actually done first
 
 matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
@@ -228,6 +230,17 @@ def delete_files(all_files=False):
         os.remove(join_path(cwd, 'acmcopyright.sty'))
         os.remove(join_path(cwd, 'bbob.bib'))
 
+def tmp_test_constrained(python, command):
+    url = "https://numbbo.github.io/cocopp-playground/bbob-constrained/testdata/bbob-constrained"
+    archive = archiving.get(url)
+    t0 = time.time()
+    data_path = archive.get("fmincon_consbbob")
+    print(python + command + data_path)
+    with InfolderGoneWithTheWind():
+        result = os.system(python + command + data_path)
+    print('**  subtest 19 finished in ', time.time() - t0, ' seconds')
+    assert result == 0, 'Test failed: rungeneric on one bbob-constrained algorithm.'
+
 
 def main(arguments):
     """these tests are executed when ``python cocopp`` is called.
@@ -275,6 +288,8 @@ def main(arguments):
     print('**  subtest 2 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one bi-objective algorithm.'
     #run_latex_template("templateBIOBJarticle.tex", run_all_tests)
+
+    tmp_test_constrained(python, command)
 
     if run_all_tests:
         data_paths = data_archive_get([

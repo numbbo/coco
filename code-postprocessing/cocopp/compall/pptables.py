@@ -22,22 +22,27 @@ def get_table_caption():
        and genericsettings.runlength_based_targets.
     """
 
-    table_caption_one = r"""%
-        Expected runtime (\ERT\ in number of function 
-        evaluations) divided by the respective !!BEST-ERT!! in
+    table_caption_one = (r"""%
+        Expected runtime (\ERT\ in number of """
+        + testbedsettings.current_testbed.string_evals
+        + r""") divided by the respective !!BEST-ERT!! in
         #1.
         This \ERT\ ratio and, in braces as dispersion measure, the half difference between
         10 and 90\%-tile of bootstrapped run lengths appear for each algorithm and 
-        """
-    table_caption_one_noreference = r"""%
+        """)
+    table_caption_one_noreference = (r"""%
         Expected runtime (\ERT) to reach given targets, measured
-        in number of function evaluations, in #1. For each function, the \ERT\ 
+        in number of """
+        + testbedsettings.current_testbed.string_evals
+        + r""", in #1. For each function, the \ERT\ 
         and, in braces as dispersion measure, the half difference between 10 and 
         90\%-tile of (bootstrapped) runtimes is shown for the different
-        target !!DF!!-values as shown in the top row. 
+        target """
+        + ("!!DF!!-" if not testbedsettings.current_testbed.has_constraints else "precision ")
+        + r"""values as shown in the top row. 
         \#succ is the number of trials that reached the last target
         $!!FOPT!! + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
-        """
+        """)
     table_caption_two1 = r"""%
         target, the corresponding reference \ERT\
         in the first row. The different target !!DF!!-values are shown in the top row.
@@ -349,7 +354,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                 # tmpdata.append(ert/refalgert[i])
                 if succ.any():
                     tmp = toolsstats.drawSP(ec[succ], entry.maxevals[succ == False],
-                                            [10, 50, 90], samplesize=samplesize)[0]
+                                            [10, 50, 90], samplesize=entry.bootstrap_sample_size(samplesize))[0]
                     tmpdisp.append((tmp[-1] - tmp[0]) / 2.)
                 else:
                     tmpdisp.append(numpy.nan)
