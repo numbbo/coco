@@ -461,7 +461,7 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin.
    */
-  problem = transform_vars_shift(problem, xopt, 0);
+  problem = transform_vars_shift(problem, xopt, 1);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
