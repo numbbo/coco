@@ -110,12 +110,10 @@ static void transform_vars_shift_free(void *thing) {
  */
 static coco_problem_t *transform_vars_shift(coco_problem_t *inner_problem,
                                             const double *offset,
-                                            const int shift_bounds) {
+                                            const int shift_constraint_only) {
   transform_vars_shift_data_t *data;
   coco_problem_t *problem;
   size_t i;
-  if (shift_bounds)
-    coco_error("shift_bounds not implemented.");
 
   data = (transform_vars_shift_data_t *) coco_allocate_memory(sizeof(*data));
   data->offset = coco_duplicate_vector(offset, inner_problem->number_of_variables);
@@ -124,7 +122,7 @@ static coco_problem_t *transform_vars_shift(coco_problem_t *inner_problem,
   problem = coco_problem_transformed_allocate(inner_problem, data, 
     transform_vars_shift_free, "transform_vars_shift");
     
-  if (inner_problem->number_of_objectives > 0)
+  if (inner_problem->number_of_objectives > 0 && shift_constraint_only == 0)
     problem->evaluate_function = transform_vars_shift_evaluate_function;
     
   if (inner_problem->number_of_constraints > 0)
