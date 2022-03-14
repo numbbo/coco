@@ -7,7 +7,7 @@ description: >-
 github_repo: "numbbo/coco"
 
 # Build settings
-remote_theme: just-the-docs/just-the-docs
+theme: just-the-docs
 # search_enabled: false # Use this to disable search
 
 plugins:

@@ -17,6 +17,6 @@ In your repository checkout folder, run
    
 Then look at the webpage locally by typing
    "bundle exec jekyll serve"
-and finally copy the shown URL (http://127.0.0.something) to your browser.
+and finally copy the shown URL (http://127.0.0.something) to your browser. In some cases, you might need to use the provided local config file by typing `bundle exec jekyll serve --config _config_local.yml` instead.
 
 All these steps are automatically running on the remote side when you push changes to the repository. So no need to do anything here but the above is handy to test your changes before to push.
