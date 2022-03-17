@@ -86,12 +86,13 @@ fmin = cocoex.solvers.random_search
 
 suite_name = "bbob"  # see cocoex.known_suite_names
 budget_multiplier = 2  # times dimension, increase to 10, 100, ...
-suite_filter_options = (""  # without filtering a suite has instance_indices 1-15
+suite_filter_options = (""  # without filtering, a suite has instance_indices 1-15
                         # "dimensions: 2,3,5,10,20 "  # skip dimension 40
                         # "instance_indices: 1-5 "  # relative to suite instances
-                        # "year:2019 "  # select instances by year
                        )
 # for more suite filter options see http://numbbo.github.io/coco-doc/C/#suite-parameters
+suite_year_option = ""  # "year: 2022"  # determine instances by year, not all years work for all suites :-(
+
 batches = 1  # number of batches, batch=3/32 works to set both, current_batch and batches
 current_batch = 1  # only current_batch modulo batches is relevant
 output_folder = ''
@@ -113,7 +114,7 @@ if batches > 1:
     output_folder += "_batch%03dof%d" % (current_batch, batches)
 
 ### prepare
-suite = cocoex.Suite(suite_name, "", suite_filter_options)
+suite = cocoex.Suite(suite_name, suite_year_option, suite_filter_options)
 observer = cocoex.Observer(suite_name, "result_folder: " + output_folder)
 minimal_print = cocoex.utilities.MiniPrint()
 stoppings = defaultdict(list)  # dict of lists, key is the problem index
