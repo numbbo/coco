@@ -449,6 +449,12 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
    */
   for (i = 0; i < dimension; ++i)
     problem->best_parameter[i] = 0.0;
+     
+  /* Apply a translation to the whole problem so that the constrained 
+   * minimum is no longer at the origin.
+   */
+  problem = transform_vars_shift(problem, xopt, 1);
+ 
   assert(problem->evaluate_function != NULL);
   problem->evaluate_function(problem, problem->best_parameter, problem->best_value);
   
@@ -457,12 +463,7 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
    */
   problem->evaluations = 0;
   problem->evaluations_constraints = 0;
-     
-  /* Apply a translation to the whole problem so that the constrained 
-   * minimum is no longer at the origin.
-   */
-  problem = transform_vars_shift(problem, xopt, 1);
- 
+
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
   problem_c->problem_type);
