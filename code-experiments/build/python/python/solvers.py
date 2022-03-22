@@ -16,8 +16,9 @@ def random_search(fun, lbounds, ubounds, budget):
         # about five times faster than "for k in range(budget):..."
         X = lbounds + (ubounds - lbounds) * np.random.rand(chunk, dim)
         if fun.number_of_constraints > 0:
-            C = [fun.constraint(x) for x in X]  # call constraints
-            F = [fun(x) for i, x in enumerate(X) if np.all(C[i] <= 0)]
+            FC = [(fun(x), fun.constraint(x)) for x in X]  # call  objective and constraints
+            F = [fc[0] for fc in FC if all(fc[1] <= 0)]
+            budget -= chunk  # one more to account for constraint evals
         else:
             F = [fun(x) for x in X]
         if fun.number_of_objectives == 1:

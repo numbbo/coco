@@ -277,123 +277,32 @@ unsuccessful trial under consideration.
  \bbobppfigdimlegend{$f_{54}$}
  }
 \end{figure*}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- 
-% Table showing the expected runtime (ERT in number of function
-% evaluations) for functions $f_1$--$f_{30} for dimension 10$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Scaling graphs with respect to the number of constraints
+% in dimension 20
 
-\begin{table*}\tiny
-{\normalsize \color{red}
-\ifthenelse{\isundefined{\algorithmG}}{}{more than 6 algorithms: please split the tables below by hand until it fits to the page limits}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure*}
+ \begin{tabular}{@{}c@{}c@{}c@{}}
+ \includegraphics[width=0.3\textwidth]{ppfigcons1_Sphere_d20} &
+ \includegraphics[width=0.3\textwidth]{"ppfigcons1_Separable Ellipsoid_d20"} &
+ \includegraphics[width=0.3\textwidth]{"ppfigcons1_Linear Slope_d20"}\\
+ \includegraphics[width=0.3\textwidth]{"ppfigcons1_Rotated Ellipsoid_d20"} &
+ \includegraphics[width=0.3\textwidth]{ppfigcons1_Discus_d20} &
+ \includegraphics[width=0.3\textwidth]{"ppfigcons1_Bent Cigar_d20"}\\
+ \includegraphics[width=0.3\textwidth]{"ppfigcons1_Different Powers_d20"} &
+ \includegraphics[width=0.3\textwidth]{"ppfigcons1_Separable Rastrigin_d20"} &
+ \includegraphics[width=0.3\textwidth]{"ppfigcons1_Rotated Rastrigin_d20"}\\
+ \end{tabular}
+\caption{
+\label{fig:scalingconstraints20D}
+Scaling of ERT divided by dimension with the number of constraints for all nine raw functions in the \bbobcons suite in dimension 20, for multiple targets, as in Figures~\ref{fig:ERTgraphsOne} and~\ref{fig:ERTgraphsTwo}. The vertical dashed lines depict the number of active (blue) and overall number (green) of constraints.
 }
-\mbox{\begin{minipage}[t]{0.499\textwidth}\tiny
-\centering
-\pptableheader 
-
-\input{\bbobdatapath\algfolder pptable_f001_10D} 
-\input{\bbobdatapath\algfolder pptable_f002_10D}
-\input{\bbobdatapath\algfolder pptable_f003_10D}
-\input{\bbobdatapath\algfolder pptable_f004_10D}
-\input{\bbobdatapath\algfolder pptable_f005_10D}
-\input{\bbobdatapath\algfolder pptable_f006_10D}
-\input{\bbobdatapath\algfolder pptable_f007_10D}
-\input{\bbobdatapath\algfolder pptable_f008_10D}
-\input{\bbobdatapath\algfolder pptable_f009_10D}
-\input{\bbobdatapath\algfolder pptable_f010_10D}
-\input{\bbobdatapath\algfolder pptable_f011_10D}
-\input{\bbobdatapath\algfolder pptable_f012_10D}
-\input{\bbobdatapath\algfolder pptable_f013_10D}
-\input{\bbobdatapath\algfolder pptable_f014_10D}
-\input{\bbobdatapath\algfolder pptable_f015_10D}
-
-\pptablefooter
-
-\end{minipage}
-\hspace{0.002\textwidth}
-\begin{minipage}[t]{0.499\textwidth}\tiny
-\centering
-
-\pptableheader 
-
-\input{\bbobdatapath\algfolder pptable_f016_10D}
-\input{\bbobdatapath\algfolder pptable_f017_10D}
-\input{\bbobdatapath\algfolder pptable_f018_10D}
-\input{\bbobdatapath\algfolder pptable_f019_10D}
-\input{\bbobdatapath\algfolder pptable_f020_10D}
-\input{\bbobdatapath\algfolder pptable_f021_10D}
-\input{\bbobdatapath\algfolder pptable_f022_10D}
-\input{\bbobdatapath\algfolder pptable_f023_10D}
-\input{\bbobdatapath\algfolder pptable_f024_10D}
-\input{\bbobdatapath\algfolder pptable_f025_10D}
-\input{\bbobdatapath\algfolder pptable_f026_10D}
-\input{\bbobdatapath\algfolder pptable_f027_10D}
-\input{\bbobdatapath\algfolder pptable_f028_10D}
-\input{\bbobdatapath\algfolder pptable_f029_10D}
-\input{\bbobdatapath\algfolder pptable_f030_10D}
-
-\pptablefooter
-\end{minipage}}
-
-\caption[Table of ERTs]{\label{tab:ERTs10:1}\bbobpptablecaption{dimension $10$} \cocoversion
-}
-\end{table*}
-
-
-\begin{table*}\tiny
-{\normalsize \color{red}
-\ifthenelse{\isundefined{\algorithmG}}{}{more than 6 algorithms: please split the tables below by hand until it fits to the page limits}
-}
-\mbox{\begin{minipage}[t]{0.499\textwidth}\tiny
-\centering
-\pptableheader 
-
-\input{\bbobdatapath\algfolder pptable_f031_10D} 
-\input{\bbobdatapath\algfolder pptable_f032_10D}
-\input{\bbobdatapath\algfolder pptable_f033_10D}
-\input{\bbobdatapath\algfolder pptable_f034_10D}
-\input{\bbobdatapath\algfolder pptable_f035_10D}
-\input{\bbobdatapath\algfolder pptable_f036_10D}
-\input{\bbobdatapath\algfolder pptable_f037_10D}
-\input{\bbobdatapath\algfolder pptable_f038_10D}
-\input{\bbobdatapath\algfolder pptable_f039_10D}
-\input{\bbobdatapath\algfolder pptable_f040_10D}
-\input{\bbobdatapath\algfolder pptable_f041_10D}
-\input{\bbobdatapath\algfolder pptable_f042_10D}
-
-\pptablefooter
-
-\end{minipage}
-\hspace{0.002\textwidth}
-\begin{minipage}[t]{0.499\textwidth}\tiny
-\centering
-
-\pptableheader 
-
-\input{\bbobdatapath\algfolder pptable_f043_10D}
-\input{\bbobdatapath\algfolder pptable_f044_10D}
-\input{\bbobdatapath\algfolder pptable_f045_10D}
-\input{\bbobdatapath\algfolder pptable_f046_10D}
-\input{\bbobdatapath\algfolder pptable_f047_10D}
-\input{\bbobdatapath\algfolder pptable_f048_10D}
-\input{\bbobdatapath\algfolder pptable_f049_10D}
-\input{\bbobdatapath\algfolder pptable_f050_10D}
-\input{\bbobdatapath\algfolder pptable_f051_10D}
-\input{\bbobdatapath\algfolder pptable_f052_10D}
-\input{\bbobdatapath\algfolder pptable_f053_10D}
-\input{\bbobdatapath\algfolder pptable_f054_10D}
-
-\pptablefooter
-\end{minipage}}
-
-\caption[Table of ERTs]{\label{tab:ERTs10:2}\bbobpptablecaption{dimension $10$} \cocoversion
-}
-\end{table*}
-
+\end{figure*}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -476,56 +385,6 @@ unsuccessful trial under consideration.
 }
 \end{figure*}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Empirical cumulative distribution functions (ECDFs) per function group.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{figure*}
-\centering
-\begin{tabular}{ll@{\hspace*{-0.00\textwidth}}l@{\hspace*{0.01\textwidth}}l@{\hspace*{-0.00\textwidth}}l}
-& separable fcts & ill-conditioned fcts & multimodal fcts & all functions \\
-\rot[3]{$m = 1$}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_separ m=0n+1"}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_hcond m=0n+1"}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_multi m=0n+1"}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_all m=0n+1"}\\[-0.2em]
-\rot[3]{$m = 3$}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_separ m=0n+3"}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_hcond m=0n+3"}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_multi m=0n+3"}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_all m=0n+3"}\\[-0.2em]
-\rot[3]{$m = 9$}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_separ m=0n+9"}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_hcond m=0n+9"}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_multi m=0n+9"}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_all m=0n+9"}\\[-0.2em]
-\rot[3]{$m = \lfloor 3n / 4 \rfloor +9$}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_separ m=3ndiv4+9"}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_hcond m=3ndiv4+9"}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_multi m=3ndiv4+9"}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_all m=3ndiv4+9"}\\[-0.2em]
-\rot[3]{$m = \lfloor 3n / 2 \rfloor +9$}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_separ m=6ndiv4+9"}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_hcond m=6ndiv4+9"}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_multi m=6ndiv4+9"}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_all m=6ndiv4+9"}\\[-0.2em]
-\rot[3]{$m = \lfloor 9n / 2 \rfloor +9$}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_separ m=9ndiv2+9"}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_hcond m=9ndiv2+9"}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_multi m=9ndiv2+9"}&
-\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_all m=9ndiv2+9"}
-\vspace*{-1ex}
-\end{tabular}
- \caption{\label{fig:ECDFgroups}
- \bbobecdfcaptionallgroups{}
- }
-\end{figure*}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 }{} % end of 1 algorithm template
 
 
@@ -628,61 +487,12 @@ versus dimension in log-log presentation]{
 }
 % 
 \end{figure*}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- 
-% Empirical cumulative distribution functions (ECDFs) aggregated over all
-% functions with the same number of constraints
-% for dimensions 5 and 20
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{figure*}
- \begin{tabular}{@{}c@{\hspace*{0.05\textwidth}}c@{}}
- $m=1$ & $m=3$ \\
- \includeperfprof{"pprldmany_05D_all m=0n+1"} &
- \includeperfprof{"pprldmany_05D_all m=0n+3"} \\ 
-$m=9$ & $m=\lfloor \frac{3}{4}n\rfloor + 9$ \\
- \includeperfprof{"pprldmany_05D_all m=0n+9"} &
- \includeperfprof{"pprldmany_05D_all m=3ndiv4+9"} \\ 
- $m=\lfloor \frac{3}{2}n\rfloor + 9$ & $m=\lfloor \frac{9}{2}n\rfloor + 9$\\
- \includeperfprof{"pprldmany_05D_all m=6ndiv4+9"} & 
- \includeperfprof{"pprldmany_05D_all m=9ndiv2+9"} 
- \end{tabular}
-\caption{
-\label{fig:ECDFs05D}
-\bbobECDFslegend{5}
-}
-\end{figure*}
-
-
-\begin{figure*}
- \begin{tabular}{@{}c@{\hspace*{0.05\textwidth}}c@{}}
- $m=1$ & $m=3$ \\
- \includeperfprof{"pprldmany_20D_all m=0n+1"} &
- \includeperfprof{"pprldmany_20D_all m=0n+3"} \\ 
-$m=9$ & $m=\lfloor \frac{3}{4}n\rfloor + 9$ \\
- \includeperfprof{"pprldmany_20D_all m=0n+9"} &
- \includeperfprof{"pprldmany_20D_all m=3ndiv4+9"} \\ 
- $m=\lfloor \frac{3}{2}n\rfloor + 9$ & $m=\lfloor \frac{9}{2}n\rfloor + 9$\\
- \includeperfprof{"pprldmany_20D_all m=6ndiv4+9"} & 
- \includeperfprof{"pprldmany_20D_all m=9ndiv2+9"} 
- \end{tabular}
-\caption{
-\label{fig:ECDFs20D}
-\bbobECDFslegend{20}
-}
-\end{figure*}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
 % Scaling graphs with respect to the number of constraints
-% in dimension 10
+% in dimension 20
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -700,15 +510,11 @@ $m=9$ & $m=\lfloor \frac{3}{4}n\rfloor + 9$ \\
  \end{tabular}
 \caption{
 \label{fig:scalingconstraints20D}
-Scaling of ERT divided by dimension with the number of constraints for all nine raw functions in the \bbobcons suite. The vertical dashed lines depict the number of active (blue) and overall number (green) of constraints.
+Scaling of ERT divided by dimension with the number of constraints for all nine raw functions in the \bbobcons suite, in dimension 20 for a single target. The vertical dashed lines depict the number of active (blue) and overall number (green) of constraints.
 }
 \end{figure*}
-
-
-
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % ECDFs per function in dimension 20, part I
@@ -752,6 +558,7 @@ Scaling of ERT divided by dimension with the number of constraints for all nine 
 \end{tabular}
  \caption{\label{fig:ECDFsingleOne}
 	\bbobecdfcaptionsinglefunctionssingledim{20 and problem IDs 1 to 30}
+   Above the blue (rsp. green) line are problems where there are less overall (rsp. active) constraints than dimension.
 }
 \end{figure*}
 
@@ -776,10 +583,12 @@ Scaling of ERT divided by dimension with the number of constraints for all nine 
 \includegraphics[height=0.135\textwidth]{pprldmany-single-functions/pprldmany_f039_20D}&
 \includegraphics[height=0.135\textwidth]{pprldmany-single-functions/pprldmany_f045_20D}&
 \includegraphics[height=0.135\textwidth]{pprldmany-single-functions/pprldmany_f051_20D}\\
+\blueline
 \includegraphics[height=0.135\textwidth]{pprldmany-single-functions/pprldmany_f034_20D}&
 \includegraphics[height=0.135\textwidth]{pprldmany-single-functions/pprldmany_f040_20D}&
 \includegraphics[height=0.135\textwidth]{pprldmany-single-functions/pprldmany_f046_20D}&
 \includegraphics[height=0.135\textwidth]{pprldmany-single-functions/pprldmany_f052_20D}\\
+\greenline
 \includegraphics[height=0.135\textwidth]{pprldmany-single-functions/pprldmany_f035_20D}&
 \includegraphics[height=0.135\textwidth]{pprldmany-single-functions/pprldmany_f041_20D}&
 \includegraphics[height=0.135\textwidth]{pprldmany-single-functions/pprldmany_f047_20D}&
@@ -791,116 +600,10 @@ Scaling of ERT divided by dimension with the number of constraints for all nine 
 \end{tabular}
  \caption{\label{fig:ECDFsingleOne}
    \bbobecdfcaptionsinglefunctionssingledim{20 and problem IDs 31 to 54}
+   Above the blue (rsp. green) line are problems where there are less overall (rsp. active) constraints than dimension.
 }
 \end{figure*}
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- 
-% Table showing the expected runtime (ERT in number of function
-% evaluations) for functions $f_1$--$f_{24}$ for dimension 5.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{table*}\tiny
-%\hfill5-D\hfill~\\[1ex]
-{\normalsize \color{red}
-\ifthenelse{\isundefined{\algorithmG}}{}{more than 6 algorithms: please split the tables below by hand until it fits to the page limits}
-}
-\mbox{\begin{minipage}[t]{0.495\textwidth}
-\centering
-\pptablesheader
-\input{\bbobdatapath\algsfolder pptables_f001_05D} 
-\input{\bbobdatapath\algsfolder pptables_f002_05D}
-\input{\bbobdatapath\algsfolder pptables_f003_05D}
-\input{\bbobdatapath\algsfolder pptables_f004_05D}
-\input{\bbobdatapath\algsfolder pptables_f005_05D}
-\input{\bbobdatapath\algsfolder pptables_f006_05D}
-\input{\bbobdatapath\algsfolder pptables_f007_05D}
-\input{\bbobdatapath\algsfolder pptables_f008_05D}
-\input{\bbobdatapath\algsfolder pptables_f009_05D}
-\input{\bbobdatapath\algsfolder pptables_f010_05D}
-\input{\bbobdatapath\algsfolder pptables_f011_05D}
-\input{\bbobdatapath\algsfolder pptables_f012_05D}
-\end{tabularx}
-\end{minipage}
-\hspace{0.002\textwidth}
-\begin{minipage}[t]{0.499\textwidth}\tiny
-\centering
-\pptablesheader
-\input{\bbobdatapath\algsfolder pptables_f013_05D}
-\input{\bbobdatapath\algsfolder pptables_f014_05D}
-\input{\bbobdatapath\algsfolder pptables_f015_05D}
-\input{\bbobdatapath\algsfolder pptables_f016_05D}
-\input{\bbobdatapath\algsfolder pptables_f017_05D}
-\input{\bbobdatapath\algsfolder pptables_f018_05D}
-\input{\bbobdatapath\algsfolder pptables_f019_05D}
-\input{\bbobdatapath\algsfolder pptables_f020_05D}
-\input{\bbobdatapath\algsfolder pptables_f021_05D}
-\input{\bbobdatapath\algsfolder pptables_f022_05D}
-\input{\bbobdatapath\algsfolder pptables_f023_05D}
-\input{\bbobdatapath\algsfolder pptables_f024_05D}
-\end{tabularx}
-\end{minipage}}
-
-\caption{\label{tab:ERTs05}
-\bbobpptablesmanylegend{dimension $5$} \cocoversion
-}
-\end{table*}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- 
-% Table showing the expected runtime (ERT in number of function
-% evaluations) for functions $f_1$--$f_{24}$ for dimension 20.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{table*}\tiny
-%\hfill20-D\hfill~\\[1ex]
-{\normalsize \color{red}
-\ifthenelse{\isundefined{\algorithmG}}{}{more than 6 algorithms: please split the tables below by hand until it fits to the page limits}
-}
-\mbox{\begin{minipage}[t]{0.495\textwidth}
-\centering
-\pptablesheader
-\input{\bbobdatapath\algsfolder pptables_f001_20D} 
-\input{\bbobdatapath\algsfolder pptables_f002_20D}
-\input{\bbobdatapath\algsfolder pptables_f003_20D}
-\input{\bbobdatapath\algsfolder pptables_f004_20D}
-\input{\bbobdatapath\algsfolder pptables_f005_20D}
-\input{\bbobdatapath\algsfolder pptables_f006_20D}
-\input{\bbobdatapath\algsfolder pptables_f007_20D}
-\input{\bbobdatapath\algsfolder pptables_f008_20D}
-\input{\bbobdatapath\algsfolder pptables_f009_20D}
-\input{\bbobdatapath\algsfolder pptables_f010_20D}
-\input{\bbobdatapath\algsfolder pptables_f011_20D}
-\input{\bbobdatapath\algsfolder pptables_f012_20D}
-\end{tabularx}
-\end{minipage}
-\hspace{0.002\textwidth}
-\begin{minipage}[t]{0.499\textwidth}\tiny
-\centering
-\pptablesheader
-\input{\bbobdatapath\algsfolder pptables_f013_20D}
-\input{\bbobdatapath\algsfolder pptables_f014_20D}
-\input{\bbobdatapath\algsfolder pptables_f015_20D}
-\input{\bbobdatapath\algsfolder pptables_f016_20D}
-\input{\bbobdatapath\algsfolder pptables_f017_20D}
-\input{\bbobdatapath\algsfolder pptables_f018_20D}
-\input{\bbobdatapath\algsfolder pptables_f019_20D}
-\input{\bbobdatapath\algsfolder pptables_f020_20D}
-\input{\bbobdatapath\algsfolder pptables_f021_20D}
-\input{\bbobdatapath\algsfolder pptables_f022_20D}
-\input{\bbobdatapath\algsfolder pptables_f023_20D}
-\input{\bbobdatapath\algsfolder pptables_f024_20D}
-\end{tabularx}
-\end{minipage}}
-
-\caption{\label{tab:ERTs20}
-\bbobpptablesmanylegend{dimension $20$} \cocoversion
-}
-\end{table*}
 
 
 }{} % end of all that comes for 2 or 3+ algorithms
@@ -967,4 +670,347 @@ Scaling of ERT divided by dimension with the number of constraints for all nine 
 \bibliography{bbob}  % bbob.bib is the name of the Bibliography in this case
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% APPENDIX
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\clearpage
+\appendix
+%\section{Appendix}
+
+\ifthenelse{\equal{\numofalgs}{1}}{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Table showing the expected runtime (ERT in number of function
+% evaluations) for functions $f_1$--$f_{30} for dimension 10$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{table*}\tiny
+{\normalsize \color{red}
+\ifthenelse{\isundefined{\algorithmG}}{}{more than 6 algorithms: please split the tables below by hand until it fits to the page limits}
+}
+\mbox{\begin{minipage}[t]{0.499\textwidth}\tiny
+\centering
+\pptableheader
+
+\input{\bbobdatapath\algfolder pptable_f001_10D}
+\input{\bbobdatapath\algfolder pptable_f002_10D}
+\input{\bbobdatapath\algfolder pptable_f003_10D}
+\input{\bbobdatapath\algfolder pptable_f004_10D}
+\input{\bbobdatapath\algfolder pptable_f005_10D}
+\input{\bbobdatapath\algfolder pptable_f006_10D}
+\input{\bbobdatapath\algfolder pptable_f007_10D}
+\input{\bbobdatapath\algfolder pptable_f008_10D}
+\input{\bbobdatapath\algfolder pptable_f009_10D}
+\input{\bbobdatapath\algfolder pptable_f010_10D}
+\input{\bbobdatapath\algfolder pptable_f011_10D}
+\input{\bbobdatapath\algfolder pptable_f012_10D}
+\input{\bbobdatapath\algfolder pptable_f013_10D}
+\input{\bbobdatapath\algfolder pptable_f014_10D}
+\input{\bbobdatapath\algfolder pptable_f015_10D}
+
+\pptablefooter
+
+\end{minipage}
+\hspace{0.002\textwidth}
+\begin{minipage}[t]{0.499\textwidth}\tiny
+\centering
+
+\pptableheader
+
+\input{\bbobdatapath\algfolder pptable_f016_10D}
+\input{\bbobdatapath\algfolder pptable_f017_10D}
+\input{\bbobdatapath\algfolder pptable_f018_10D}
+\input{\bbobdatapath\algfolder pptable_f019_10D}
+\input{\bbobdatapath\algfolder pptable_f020_10D}
+\input{\bbobdatapath\algfolder pptable_f021_10D}
+\input{\bbobdatapath\algfolder pptable_f022_10D}
+\input{\bbobdatapath\algfolder pptable_f023_10D}
+\input{\bbobdatapath\algfolder pptable_f024_10D}
+\input{\bbobdatapath\algfolder pptable_f025_10D}
+\input{\bbobdatapath\algfolder pptable_f026_10D}
+\input{\bbobdatapath\algfolder pptable_f027_10D}
+\input{\bbobdatapath\algfolder pptable_f028_10D}
+\input{\bbobdatapath\algfolder pptable_f029_10D}
+\input{\bbobdatapath\algfolder pptable_f030_10D}
+
+\pptablefooter
+\end{minipage}}
+
+\caption[Table of ERTs]{\label{tab:ERTs10:1}\bbobpptablecaption{dimension $10$} \cocoversion
+}
+\end{table*}
+
+
+\begin{table*}\tiny
+{\normalsize \color{red}
+\ifthenelse{\isundefined{\algorithmG}}{}{more than 6 algorithms: please split the tables below by hand until it fits to the page limits}
+}
+\mbox{\begin{minipage}[t]{0.499\textwidth}\tiny
+\centering
+\pptableheader
+
+\input{\bbobdatapath\algfolder pptable_f031_10D}
+\input{\bbobdatapath\algfolder pptable_f032_10D}
+\input{\bbobdatapath\algfolder pptable_f033_10D}
+\input{\bbobdatapath\algfolder pptable_f034_10D}
+\input{\bbobdatapath\algfolder pptable_f035_10D}
+\input{\bbobdatapath\algfolder pptable_f036_10D}
+\input{\bbobdatapath\algfolder pptable_f037_10D}
+\input{\bbobdatapath\algfolder pptable_f038_10D}
+\input{\bbobdatapath\algfolder pptable_f039_10D}
+\input{\bbobdatapath\algfolder pptable_f040_10D}
+\input{\bbobdatapath\algfolder pptable_f041_10D}
+\input{\bbobdatapath\algfolder pptable_f042_10D}
+
+\pptablefooter
+
+\end{minipage}
+\hspace{0.002\textwidth}
+\begin{minipage}[t]{0.499\textwidth}\tiny
+\centering
+
+\pptableheader
+
+\input{\bbobdatapath\algfolder pptable_f043_10D}
+\input{\bbobdatapath\algfolder pptable_f044_10D}
+\input{\bbobdatapath\algfolder pptable_f045_10D}
+\input{\bbobdatapath\algfolder pptable_f046_10D}
+\input{\bbobdatapath\algfolder pptable_f047_10D}
+\input{\bbobdatapath\algfolder pptable_f048_10D}
+\input{\bbobdatapath\algfolder pptable_f049_10D}
+\input{\bbobdatapath\algfolder pptable_f050_10D}
+\input{\bbobdatapath\algfolder pptable_f051_10D}
+\input{\bbobdatapath\algfolder pptable_f052_10D}
+\input{\bbobdatapath\algfolder pptable_f053_10D}
+\input{\bbobdatapath\algfolder pptable_f054_10D}
+
+\pptablefooter
+\end{minipage}}
+
+\caption[Table of ERTs]{\label{tab:ERTs10:2}\bbobpptablecaption{dimension $10$} \cocoversion
+}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Empirical cumulative distribution functions (ECDFs) per function group.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure*}
+\centering
+\begin{tabular}{ll@{\hspace*{-0.00\textwidth}}l@{\hspace*{0.01\textwidth}}l@{\hspace*{-0.00\textwidth}}l}
+& separable fcts & ill-conditioned fcts & multimodal fcts & all functions \\
+\rot[3]{$m = 1$}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_separ m=0n+1"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_hcond m=0n+1"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_multi m=0n+1"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_all m=0n+1"}\\[-0.2em]
+\rot[3]{$m = 3$}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_separ m=0n+3"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_hcond m=0n+3"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_multi m=0n+3"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_all m=0n+3"}\\[-0.2em]
+\rot[3]{$m = 9$}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_separ m=0n+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_hcond m=0n+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_multi m=0n+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_all m=0n+9"}\\[-0.2em]
+\rot[3]{$m = \lfloor 3n / 4 \rfloor +9$}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_separ m=3ndiv4+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_hcond m=3ndiv4+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_multi m=3ndiv4+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_all m=3ndiv4+9"}\\[-0.2em]
+\rot[3]{$m = \lfloor 3n / 2 \rfloor +9$}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_separ m=6ndiv4+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_hcond m=6ndiv4+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_multi m=6ndiv4+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_all m=6ndiv4+9"}\\[-0.2em]
+\rot[3]{$m = \lfloor 9n / 2 \rfloor +9$}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_separ m=9ndiv2+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_hcond m=9ndiv2+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_multi m=9ndiv2+9"}&
+\includegraphics[width=0.24\textwidth]{"pprldmany-single-functions/pprldmany_all m=9ndiv2+9"}
+\vspace*{-1ex}
+\end{tabular}
+ \caption{\label{fig:ECDFgroups}
+ \bbobecdfcaptionallgroups{}
+ }
+\end{figure*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+}{} % end of 1 algorithm appendix
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ifthenelse{\numofalgs > 1}{
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Empirical cumulative distribution functions (ECDFs) aggregated over all
+% functions with the same number of constraints
+% for dimensions 5 and 20
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure*}
+ \begin{tabular}{@{}c@{\hspace*{0.05\textwidth}}c@{}}
+ $m=1$ & $m=3$ \\
+ \includeperfprof{"pprldmany_05D_all m=0n+1"} &
+ \includeperfprof{"pprldmany_05D_all m=0n+3"} \\
+$m=9$ & $m=\lfloor \frac{3}{4}n\rfloor + 9$ \\
+ \includeperfprof{"pprldmany_05D_all m=0n+9"} &
+ \includeperfprof{"pprldmany_05D_all m=3ndiv4+9"} \\
+ $m=\lfloor \frac{3}{2}n\rfloor + 9$ & $m=\lfloor \frac{9}{2}n\rfloor + 9$\\
+ \includeperfprof{"pprldmany_05D_all m=6ndiv4+9"} &
+ \includeperfprof{"pprldmany_05D_all m=9ndiv2+9"}
+ \end{tabular}
+\caption{
+\label{fig:ECDFs05D}
+\bbobECDFslegend{5}
+}
+\end{figure*}
+
+
+\begin{figure*}
+ \begin{tabular}{@{}c@{\hspace*{0.05\textwidth}}c@{}}
+ $m=1$ & $m=3$ \\
+ \includeperfprof{"pprldmany_20D_all m=0n+1"} &
+ \includeperfprof{"pprldmany_20D_all m=0n+3"} \\
+$m=9$ & $m=\lfloor \frac{3}{4}n\rfloor + 9$ \\
+ \includeperfprof{"pprldmany_20D_all m=0n+9"} &
+ \includeperfprof{"pprldmany_20D_all m=3ndiv4+9"} \\
+ $m=\lfloor \frac{3}{2}n\rfloor + 9$ & $m=\lfloor \frac{9}{2}n\rfloor + 9$\\
+ \includeperfprof{"pprldmany_20D_all m=6ndiv4+9"} &
+ \includeperfprof{"pprldmany_20D_all m=9ndiv2+9"}
+ \end{tabular}
+\caption{
+\label{fig:ECDFs20D}
+\bbobECDFslegend{20}
+}
+\end{figure*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Table showing the expected runtime (ERT in number of function
+% evaluations) for functions $f_1$--$f_{24}$ for dimension 20.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}\tiny
+%\hfill20-D\hfill~\\[1ex]
+{\normalsize \color{red}
+\ifthenelse{\isundefined{\algorithmG}}{}{more than 6 algorithms: please split the tables below by hand until it fits to the page limits}
+}
+\mbox{\begin{minipage}[t]{0.495\textwidth}
+\centering
+\pptablesheader
+\input{\bbobdatapath\algsfolder pptables_f001_20D}
+\input{\bbobdatapath\algsfolder pptables_f002_20D}
+\input{\bbobdatapath\algsfolder pptables_f003_20D}
+\input{\bbobdatapath\algsfolder pptables_f004_20D}
+\input{\bbobdatapath\algsfolder pptables_f005_20D}
+\input{\bbobdatapath\algsfolder pptables_f006_20D}
+\input{\bbobdatapath\algsfolder pptables_f007_20D}
+\input{\bbobdatapath\algsfolder pptables_f008_20D}
+\input{\bbobdatapath\algsfolder pptables_f009_20D}
+\input{\bbobdatapath\algsfolder pptables_f010_20D}
+\input{\bbobdatapath\algsfolder pptables_f011_20D}
+\input{\bbobdatapath\algsfolder pptables_f012_20D}
+\end{tabularx}
+\end{minipage}
+\hspace{0.002\textwidth}
+\begin{minipage}[t]{0.499\textwidth}\tiny
+\centering
+\pptablesheader
+\input{\bbobdatapath\algsfolder pptables_f013_20D}
+\input{\bbobdatapath\algsfolder pptables_f014_20D}
+\input{\bbobdatapath\algsfolder pptables_f015_20D}
+\input{\bbobdatapath\algsfolder pptables_f016_20D}
+\input{\bbobdatapath\algsfolder pptables_f017_20D}
+\input{\bbobdatapath\algsfolder pptables_f018_20D}
+\input{\bbobdatapath\algsfolder pptables_f019_20D}
+\input{\bbobdatapath\algsfolder pptables_f020_20D}
+\input{\bbobdatapath\algsfolder pptables_f021_20D}
+\input{\bbobdatapath\algsfolder pptables_f022_20D}
+\input{\bbobdatapath\algsfolder pptables_f023_20D}
+\input{\bbobdatapath\algsfolder pptables_f024_20D}
+\end{tabularx}
+\end{minipage}}
+
+\caption{\label{tab:ERTs20}
+\bbobpptablesmanylegend{dimension $20$} \cocoversion
+}
+\end{table*}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Table showing the expected runtime (ERT in number of function
+% evaluations) for functions $f_1$--$f_{24}$ for dimension 20.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}\tiny
+%\hfill20-D\hfill~\\[1ex]
+{\normalsize \color{red}
+\ifthenelse{\isundefined{\algorithmG}}{}{more than 6 algorithms: please split the tables below by hand until it fits to the page limits}
+}
+\mbox{\begin{minipage}[t]{0.495\textwidth}
+\centering
+\pptablesheader
+\input{\bbobdatapath\algsfolder pptables_f025_20D}
+\input{\bbobdatapath\algsfolder pptables_f026_20D}
+\input{\bbobdatapath\algsfolder pptables_f027_20D}
+\input{\bbobdatapath\algsfolder pptables_f028_20D}
+\input{\bbobdatapath\algsfolder pptables_f029_20D}
+\input{\bbobdatapath\algsfolder pptables_f030_20D}
+\input{\bbobdatapath\algsfolder pptables_f031_20D}
+\input{\bbobdatapath\algsfolder pptables_f032_20D}
+\input{\bbobdatapath\algsfolder pptables_f033_20D}
+\input{\bbobdatapath\algsfolder pptables_f034_20D}
+\input{\bbobdatapath\algsfolder pptables_f035_20D}
+\input{\bbobdatapath\algsfolder pptables_f036_20D}
+\input{\bbobdatapath\algsfolder pptables_f037_20D}
+\input{\bbobdatapath\algsfolder pptables_f038_20D}
+\input{\bbobdatapath\algsfolder pptables_f039_20D}
+\end{tabularx}
+\end{minipage}
+\hspace{0.002\textwidth}
+\begin{minipage}[t]{0.499\textwidth}\tiny
+\centering
+\pptablesheader
+\input{\bbobdatapath\algsfolder pptables_f040_20D}
+\input{\bbobdatapath\algsfolder pptables_f041_20D}
+\input{\bbobdatapath\algsfolder pptables_f042_20D}
+\input{\bbobdatapath\algsfolder pptables_f043_20D}
+\input{\bbobdatapath\algsfolder pptables_f044_20D}
+\input{\bbobdatapath\algsfolder pptables_f045_20D}
+\input{\bbobdatapath\algsfolder pptables_f046_20D}
+\input{\bbobdatapath\algsfolder pptables_f047_20D}
+\input{\bbobdatapath\algsfolder pptables_f048_20D}
+\input{\bbobdatapath\algsfolder pptables_f049_20D}
+\input{\bbobdatapath\algsfolder pptables_f050_20D}
+\input{\bbobdatapath\algsfolder pptables_f051_20D}
+\input{\bbobdatapath\algsfolder pptables_f052_20D}
+\input{\bbobdatapath\algsfolder pptables_f053_20D}
+\input{\bbobdatapath\algsfolder pptables_f054_20D}
+\end{tabularx}
+\end{minipage}}
+
+\caption{\label{tab:ERTs20}
+\bbobpptablesmanylegend{dimension $20$} \cocoversion
+}
+\end{table*}
+
+
+} % end of 2 algorithms appendix
+
 \end{document}
