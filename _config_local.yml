@@ -12,7 +12,8 @@ theme: just-the-docs
 
 plugins:
   - jekyll-feed
-  
+  - jekyll-redirect-from
+    
 kramdown:
     math-engine: katex
 
@@ -23,3 +24,4 @@ exclude:
   - Gemfile
   - Gemfile.lock
   - README.md
+
