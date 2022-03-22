@@ -107,6 +107,9 @@ static void transform_vars_shift_free(void *thing) {
 
 /**
  * @brief Creates the transformation.
+ * 
+ * CAVEAT: when shifting the constraint only, the best_value of best_parameter
+ *         will get in an inconsistent state.
  */
 static coco_problem_t *transform_vars_shift(coco_problem_t *inner_problem,
                                             const double *offset,
