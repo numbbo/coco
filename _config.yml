@@ -1,4 +1,4 @@
-title: COCO webpage
+title: COCO Home
 description: >- 
   This is the webpage of the
   Comparing Continous Optimizers (COCO) platform
@@ -25,3 +25,10 @@ exclude:
   - Gemfile.lock
   - README.md
 
+aux_links:
+  "data archive":
+    - "http://numbbo.github.io/data-archive/"
+  "postprocessed data":
+    - "http://numbbo.github.io/ppdata-archive/"
+  "COCO Home":
+    - "http://numbbo.github.io/coco/"
