@@ -1,10 +1,9 @@
 ---
 layout: default
 permalink: /
-nav_order: 1
+nav_exclude: true
 title: Home
 ---
-
 # COCO: COmparing Continuous Optimizers  #
 ---
 
@@ -21,18 +20,12 @@ The COCO experiment source code has been rewritten in the years 2014-2015 and th
 
 
 
-## ! Webpage currently under construction ! ##
-Due to the shutdown of our old COCO page at coco.gforge.inria.fr, we are going to create a new and better version here. Stay tuned for all
-information coming back shortly. In the meantime, please consider getting information from the sources below. Especially
-in the development branch of the main [COCO code page](https://github.com/numbbo/coco/tree/development), you will find the most
-updated links to code and documentation.
-If you want to visit the old COCO webpage, please use a static version on the [Internet Archive](https://web.archive.org/web/20210504150230/https://coco.gforge.inria.fr/).
 
 
 
 
-
-<h2>Related links</h2>
+Related links
+-------------
 
 <ul>
 <li><a href="https://github.com/numbbo/coco">Code web page</a>
@@ -48,6 +41,31 @@ If you want to visit the old COCO webpage, please use a static version on the [I
 </li><li>
   <a href="https://github.com/numbbo/coco/blob/master/code-postprocessing/cocopp/archiving.py">
   how to create and use COCO data archives with the <tt>cocopp.archiving</tt> Python module</a>
+</li><li>
+  If you want to go back in time and visit the old COCO webpage, please go the <a href="https://web.archive.org/web/20210504150230/https://coco.gforge.inria.fr/">Internet Archive</a>.
 </li></ul>
+
+
+Citation
+--------
+
+You may cite this work in a scientific context as
+
+N. Hansen, A. Auger, R. Ros, O. Mersmann, T. Tušar, D. Brockhoff. [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://doi.org/10.1080/10556788.2020.1808977), _Optimization Methods and Software_, 36(1), pp. 114-144, 2021. [[pdf](https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977), [arXiv](https://arxiv.org/abs/1603.08785)]
+
+{% raw %}
+```latex
+    @ARTICLE{hansen2021coco,
+    author = {Hansen, N. and Auger, A. and Ros, R. and Mersmann, O. and Tu{\v s}ar, T. and Brockhoff, D.},
+    title = {{COCO}: A Platform for Comparing Continuous Optimizers in a Black-Box Setting},
+    journal = {Optimization Methods and Software},
+    doi = {https://doi.org/10.1080/10556788.2020.1808977},
+    pages = {114--144},
+    issue = {1},
+    volume = {36},
+    year = 2021
+    }
+```
+{% endraw %}
 
 <link rel="stylesheet" href="{{ '/assets/css/custom.css' | relative_url }}"/>

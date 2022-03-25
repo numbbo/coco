@@ -26,6 +26,8 @@ exclude:
   - README.md
 
 aux_links:
+  "COCO code":
+    - "https://github.com/numbbo/coco"
   "data archive":
     - "http://numbbo.github.io/data-archive/"
   "postprocessed data":

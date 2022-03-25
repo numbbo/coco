@@ -26,7 +26,7 @@ exclude:
   - README.md
   
 aux_links:
-  "code@github":
+  "COCO code":
     - "https://github.com/numbbo/coco"
   "data archive":
     - "http://numbbo.github.io/data-archive/"

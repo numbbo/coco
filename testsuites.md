@@ -1,8 +1,8 @@
 ---
 layout: default
 permalink: /testsuites
+nav_order: 2
 has_children: true
-nav_order: 1
 title: test suites
 has_toc: false
 ---
