@@ -28,6 +28,8 @@ Related links
 -------------
 
 <ul>
+<li>Get news about COCO by <a href="https://web.archive.org/web/20210504150230/http://numbbo.github.io/register">registering here</a>.
+<\li>
 <li><a href="https://github.com/numbbo/coco">Code web page</a>
 </li>
 <li><a href="https://numbbo.github.io/data-archive">

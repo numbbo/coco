@@ -12,7 +12,16 @@ has_toc: false
 
 ---
 
-The blackbox optimization benchmarking (bbob) test suite is COCO's standard and most established test suite with 24 noiseless, scalable test functions. Each function is provided in various dimensions (2, 3, 5, 10, 20, 40) and available in an arbitrary number of instances. Direct links to their definition as well as to visualizations of their properties can be found below. A list of all so-far benchmarked algorithms on the bbob suite together with their links to papers describing the experiment can be found in our [bbob data archive](https://numbbo.github.io/data-archive/bbob/). Postprocessed data can be found [here](https://numbbo.github.io/ppdata-archive). For detailed explanations of how to use the functions in a COCO benchmarking experiment, please go to the [COCO code page](https://github.com/numbbo/coco) on Github.
+<table>
+	<tr>
+		<td style="width=50%">
+			The blackbox optimization benchmarking (bbob) test suite is COCO's standard and most established test suite with 24 noiseless, scalable test functions. Each function is provided in various dimensions (2, 3, 5, 10, 20, 40) and available in an arbitrary number of instances. Direct links to their definition as well as to visualizations of their properties can be found below. A list of all so-far benchmarked algorithms on the bbob suite together with their links to papers describing the experiment can be found in our <a href="https://numbbo.github.io/data-archive/bbob/">bbob data archive</a>. Postprocessed data can be found <a href="https://numbbo.github.io/ppdata-archive">here</a>. For detailed explanations of how to use the functions in a COCO benchmarking experiment, please go to the <a href="https://github.com/numbbo/coco">COCO code page</a> on Github.
+		</td>
+		<td>
+			<a href="ecdf-bbob.html"><img src="examplefigure_all.png" alt="ECDF of runtimes for 31 algorithms on the bbob suite" width="100%"/></a>
+		</td>
+	</tr>
+</table>
 
 
 The bbob functions
