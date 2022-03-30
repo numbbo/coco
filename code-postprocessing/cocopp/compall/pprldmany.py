@@ -662,11 +662,20 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         run_numbers = []
         for dsl in dictDim.values():
             run_numbers.extend([ds.nbRuns() for ds in dsl])
-        try: lcm = np.lcm.reduce(run_numbers)  # lowest common multiplier
-        except: lcm = max(run_numbers)  # fallback for old numpy versions
-        samplesize = lcm
+        if genericsettings.in_a_hurry >= 100:
+            samplesize = max(run_numbers)
+        else:
+            try: lcm = np.lcm.reduce(run_numbers)  # lowest common multiplier
+            except: lcm = max(run_numbers)  # fallback for old numpy versions
+            # slight abuse of bootstrap_sample_size to avoid a huge number
+            samplesize = min((genericsettings.simulated_runlength_bootstrap_sample_size, lcm))
         if testbedsettings.current_testbed.instances_are_uniform:
-            samplesize = max(perfprofsamplesize, lcm)  # maybe more bootstrapping with unsuccessful trials
+            samplesize = max((genericsettings.simulated_runlength_bootstrap_sample_size,
+                              samplesize))  # maybe more bootstrapping with unsuccessful trials
+        if samplesize > 1e4:
+            warntxt = ("Sample size equals {} which may take very long. "
+                       "This is likely to be unintended, hence a bug.".format(samplesize))
+            warnings.warn(warntxt)
         for f, dictAlgperFunc in sorted(dictFunc.items()):
             # print(target_values((f, dim)))
             for j, t in enumerate(target_values((f, dim))):
