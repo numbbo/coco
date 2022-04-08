@@ -668,14 +668,25 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             try: lcm = np.lcm.reduce(run_numbers)  # lowest common multiplier
             except: lcm = max(run_numbers)  # fallback for old numpy versions
             # slight abuse of bootstrap_sample_size to avoid a huge number
-            samplesize = min((genericsettings.simulated_runlength_bootstrap_sample_size, lcm))
+            samplesize = min((int(genericsettings.simulated_runlength_bootstrap_sample_size), lcm))
         if testbedsettings.current_testbed.instances_are_uniform:
-            samplesize = max((genericsettings.simulated_runlength_bootstrap_sample_size,
+            samplesize = max((int(genericsettings.simulated_runlength_bootstrap_sample_size),
                               samplesize))  # maybe more bootstrapping with unsuccessful trials
         if samplesize > 1e4:
             warntxt = ("Sample size equals {} which may take very long. "
                        "This is likely to be unintended, hence a bug.".format(samplesize))
             warnings.warn(warntxt)
+        if not isinstance(samplesize, int):
+            warntxt = ("samplesize={} was of type {}. This must be considered a bug."
+                       "\n run_numbers={} \n lcm={}"
+                       "\n genericsettings.simulated_runlength_bootstrap_sample_size={}".format(
+                           samplesize,
+                           type(samplesize),
+                           run_numbers,
+                           lcm if 'lcm' in locals() else '"not computed"',
+                           genericsettings.simulated_runlength_bootstrap_sample_size))
+            warnings.warn(warntxt)
+            samplesize = int(samplesize)
         for f, dictAlgperFunc in sorted(dictFunc.items()):
             # print(target_values((f, dim)))
             for j, t in enumerate(target_values((f, dim))):

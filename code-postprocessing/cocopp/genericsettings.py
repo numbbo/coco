@@ -66,7 +66,7 @@ dim_related_colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm'
 
 simulated_runlength_bootstrap_sample_size = 30 + int(970 / (1 + 10 * max((0, in_a_hurry))))
 """bootstrap samples, 30 is a multiple of 10 and 15.
-   Used for tables and plots. 1e4 would be preferable
+   Used for tables and plots. `int(1e4)` would be preferable
    for a final camera-ready paper version.
    """
 
