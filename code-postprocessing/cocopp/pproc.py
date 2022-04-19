@@ -1332,6 +1332,9 @@ class DataSet(object):
         `maxevals` is a dictionary with maxevals as values and the source
         file or folder as key.
         """
+        if testbedsettings.current_testbed.has_constraints:
+            return self.maxfgevals
+
         if self._need_balancing:
             return np.hstack([self._maxevals, np.hstack([(m - 1) * [self._maxevals[i]]
                               for i, m in enumerate(self.instance_multipliers)
