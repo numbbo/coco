@@ -47,10 +47,8 @@ single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)] #
 xlimit_pprldmany = 1e7
 """maximal run length multiplier used in `pprldmany`.
 
-   After a manual change like ``cocopp.genericsettings.xlimit_pprldmany =
-   1e5``, ``cocopp.config.config()`` needs to be called to "activate" the change.
-   Alternatively, we could also directly set
-   ``cocopp.compall.pprldmany.x_limit = 1e5``.
+   This sets ``cocopp.compall.pprldmany.x_limit`` via
+   calling `cocopp.config.config()``.
 
    Noisy setting should be rather 1e8?
    ?maybe better: ``10 * genericsettings.evaluation_setting[1]``?"""
