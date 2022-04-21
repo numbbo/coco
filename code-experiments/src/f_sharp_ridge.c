@@ -19,7 +19,8 @@
 static double f_sharp_ridge_raw(const double *x, const size_t number_of_variables) {
 
   static const double alpha = 100.0;
-  const double vars_40 = 1; /* generalized: number_of_variables <= 40 ? 1 : number_of_variables / 40.0; */
+  const double d_vars_40 = 1.0; /* generalized: number_of_variables <= 40 ? 1 : number_of_variables / 40.0; */
+  const size_t vars_40 = coco_double_to_size_t(ceil(d_vars_40));
   size_t i = 0;
   double result;
 
@@ -29,12 +30,12 @@ static double f_sharp_ridge_raw(const double *x, const size_t number_of_variable
   	return NAN;
 
   result = 0.0;
-  for (i = coco_double_to_size_t(ceil(vars_40)); i < number_of_variables; ++i) {
+  for (i = vars_40; i < number_of_variables; ++i) {
     result += x[i] * x[i];
   }
-  result = alpha * sqrt(result / vars_40);
-  for (i = 0; i < ceil(vars_40); ++i)
-    result += x[i] * x[i] / vars_40;
+  result = alpha * sqrt(result / d_vars_40);
+  for (i = 0; i < vars_40; ++i)
+    result += x[i] * x[i] / d_vars_40;
 
   return result;
 }
