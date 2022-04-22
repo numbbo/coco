@@ -749,7 +749,7 @@ class BBOBLargeScaleTestbed(GECCOBBOBTestbed):
         pptable_targetsOfInterest=pptable_targetsOfInterest,
         pptablemany_targetsOfInterest=pptable_targetsOfInterest,
         scenario=scenario_largescalefixed,
-        reference_algorithm_filename='',  # TODO produce correct reference algo and update this line
+        reference_algorithm_filename='',
         reference_algorithm_displayname='',  # TODO: should be read in from data set in reference_algorithm_filename
         pptable_target_runlengths=pptable_target_runlengths,
         pptables_target_runlengths=pptable_target_runlengths,
@@ -770,8 +770,8 @@ class BBOBLargeScaleTestbed(GECCOBBOBTestbed):
 
         if 11 < 3:
             # override settings if needed...
-            self.settings.reference_algorithm_filename = 'refalgs/best2018-bbob-largescale.tar.gz'
-            self.settings.reference_algorithm_displayname = 'best 2018'  # TODO: should be read in from data set in reference_algorithm_filename
+            self.settings.reference_algorithm_filename = 'refalgs/best2019-bbob-largescale.tar.gz'
+            self.settings.reference_algorithm_displayname = 'best 2019'  # TODO: should be read in from data set in reference_algorithm_filename
             self.settings.short_names = get_short_names(self.shortinfo_filename)
             self.settings.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
 
