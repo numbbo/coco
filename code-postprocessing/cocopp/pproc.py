@@ -975,7 +975,7 @@ class DataSet(object):
 
             self._cut_data()
         if len(self._evals):
-            self.target = self._evals[:,0]  # needed for biobj best alg computation
+            self._target = self._evals[:,0]  # needed for biobj best alg computation
         # Compute ERT (will be done lazy from .ert access)
         # self.computeERTfromEvals()
         # asserts don't help though
@@ -999,11 +999,6 @@ class DataSet(object):
             i += 1
             if i < Ndata:
                 self._evals = self._evals[:i, :]  # assumes that evals is an array
-                try:
-                    self.target = self.target[:i]
-                    assert self.target[-1] == self._evals[-1][0] 
-                except AttributeError:
-                    pass
                 try:
                     self._ert = self._ert[:i]
                 except AttributeError:
@@ -1084,7 +1079,7 @@ class DataSet(object):
             return
         self._ert = []
         self._ert_nb_of_data = len(self.evals[0]) - 1
-        self.target = []
+        self._target = []  # computed here for historical reasons
         for row in self.evals:
             data = row[1:]
             if 1 < 3:
@@ -1102,10 +1097,10 @@ class DataSet(object):
                     data[numpy.isnan(data)] = self.maxevals[numpy.isnan(data)]
                 ert_val = toolsstats.sp(data, issuccessful=succ)[0]
                 assert np.isclose(ert_val, self._ert[-1])
-            self.target.append(row[0])
+            self._target.append(row[0])
 
         self._ert = numpy.array(self._ert)
-        self.target = numpy.array(self.target)
+        self._target = numpy.array(self._target)
         # asserts don't help though
         # assert self._evals.shape[1] - 1 == len(self.instancenumbers), self
         # assert self.evals.shape[1] - 1 == len(self.maxevals), self
@@ -1296,6 +1291,14 @@ class DataSet(object):
         return res
 
     @property
+    def target(self):
+        """target values (`np.array`) corresponding to `ert` (which all have finite values)"""
+        if hasattr(self, '_target'):
+            return self._target  # was set in `computeERTfromEvals` (or elsewhere)
+        # this fallback may never be useful?
+        return np.asarray([row[0] for row in self._evals if any(np.isfinite(row[1:]))])
+
+    @property
     def ert(self):
         """expected runtimes for the targets in `target`.
 
@@ -1303,7 +1306,7 @@ class DataSet(object):
         evaluations to reach or surpass the given target for the
         first time.
 
-        Details: The values are precomputed using `computeERTfromEvals`.
+        Details: The values are (pre-)computed using `computeERTfromEvals`.
         Depending on `genericsettings.balance_instances`, the average is
         weighted to make up for unbalanced problem instance occurances.
         """
@@ -1610,7 +1613,8 @@ class DataSet(object):
         Details: uses attribute ``self.ert``.
         """
         res = {}
-        tmparray = numpy.vstack((self.target, self.ert)).transpose()
+        _ert = self.ert  # for the side effect of correctly setting self._target
+        tmparray = numpy.vstack((self.target, _ert)).transpose()
         it = reversed(tmparray)
         # expect this array to be sorted by decreasing function values
 
