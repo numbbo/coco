@@ -2294,7 +2294,7 @@ class DataSetList(list):
                     i.finalfunvals = numpy.r_[i.finalfunvals, o.finalfunvals]
                     i._evals = alignArrayData(HArrayMultiReader([i._evals, o._evals]))
                     i._maxevals = numpy.r_[i._maxevals, o._maxevals]
-                    i.computeERTfromEvals()
+                    # i.computeERTfromEvals()  # breaks with constrained testbed and there is no need to do this now as .ert is now a property
                     i.reference_values.update(o.reference_values)
                     if getattr(i, 'pickleFile', False):
                         i.modsFromPickleVersion = True
