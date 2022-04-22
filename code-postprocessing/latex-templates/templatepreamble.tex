@@ -91,9 +91,12 @@
 
 \usepackage{xcolor}
 \usepackage{colortbl}
+\usepackage{booktabs}
 %It sets your colour line and then sets back to default (black)
-\newcommand{\blueline}{\arrayrulecolor{blue}\hline\arrayrulecolor{black}}
-\newcommand{\greenline}{\arrayrulecolor{green}\hline\arrayrulecolor{black}}
+\definecolor{bbobblue}{HTML}{7f7fff}
+\definecolor{bbobgreen}{HTML}{7fbf7f}
+\newcommand{\blueline}{\arrayrulecolor{bbobblue}\specialrule{0.15em}{0em}{0em}\arrayrulecolor{black}}
+\newcommand{\greenline}{\arrayrulecolor{bbobgreen}\specialrule{0.15em}{0em}{0em}\arrayrulecolor{black}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%   END OF PREAMBLE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
