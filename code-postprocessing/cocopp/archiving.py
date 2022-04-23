@@ -1374,6 +1374,12 @@ class OfficialArchives(object):
         return self._get(name, 1) or COCODataArchive
 
     def update_all(self):
+        """update archive definition files from their remote location.
+
+        The update is necessary to account for newly added data. This
+        method requires www connectivity with only a few KB of transmitted
+        data.
+        """
         # self.set_as_attributes_in(update=True)
         for name in self.names:
             name = name.replace('-', '_')
