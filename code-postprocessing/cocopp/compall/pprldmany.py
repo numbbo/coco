@@ -46,6 +46,7 @@ from .. import pptex  # numtotex
 PlotType = ppfig.enum('ALG', 'DIM', 'FUNC')
 
 displaybest = True
+x_limit = genericsettings.xlimit_pprldmany  # also (re-)set via config
 divide_by_dimension = True
 annotation_line_end_relative = 1.065  # lines between graph and annotation, was 1.11, see also subplots_adjust
 annotation_space_end_relative = 1.21  # figure space end relative to x_limit, space is however determined rather by subplots_adjust(...) below!?
@@ -211,8 +212,6 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
     :param kwargs: optional arguments provided to plot function.
     
     """
-    x_limit = genericsettings.xlimit_pprldmany
-
     # Expect data to be a ndarray.
     x = data[np.isnan(data) == False]  # Take away the nans
     nn = len(x)
@@ -597,7 +596,6 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
     """
     global divide_by_dimension  # not fully implemented/tested yet
-    x_limit = genericsettings.xlimit_pprldmany
 
     tmp = pp.dictAlgByDim(dictAlg)
     algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
@@ -662,11 +660,31 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         run_numbers = []
         for dsl in dictDim.values():
             run_numbers.extend([ds.nbRuns() for ds in dsl])
-        try: lcm = np.lcm.reduce(run_numbers)  # lowest common multiplier
-        except: lcm = max(run_numbers)  # fallback for old numpy versions
-        samplesize = lcm
+        if genericsettings.in_a_hurry >= 100:
+            samplesize = max(run_numbers)
+        else:
+            try: lcm = np.lcm.reduce(run_numbers)  # lowest common multiplier
+            except: lcm = max(run_numbers)  # fallback for old numpy versions
+            # slight abuse of bootstrap_sample_size to avoid a huge number
+            samplesize = min((int(genericsettings.simulated_runlength_bootstrap_sample_size), lcm))
         if testbedsettings.current_testbed.instances_are_uniform:
-            samplesize = max(perfprofsamplesize, lcm)  # maybe more bootstrapping with unsuccessful trials
+            samplesize = max((int(genericsettings.simulated_runlength_bootstrap_sample_size),
+                              samplesize))  # maybe more bootstrapping with unsuccessful trials
+        if samplesize > 1e4:
+            warntxt = ("Sample size equals {} which may take very long. "
+                       "This is likely to be unintended, hence a bug.".format(samplesize))
+            warnings.warn(warntxt)
+        if not isinstance(samplesize, int):
+            warntxt = ("samplesize={} was of type {}. This must be considered a bug."
+                       "\n run_numbers={} \n lcm={}"
+                       "\n genericsettings.simulated_runlength_bootstrap_sample_size={}".format(
+                           samplesize,
+                           type(samplesize),
+                           run_numbers,
+                           lcm if 'lcm' in locals() else '"not computed"',
+                           genericsettings.simulated_runlength_bootstrap_sample_size))
+            warnings.warn(warntxt)
+            samplesize = int(samplesize)
         for f, dictAlgperFunc in sorted(dictFunc.items()):
             # print(target_values((f, dim)))
             for j, t in enumerate(target_values((f, dim))):

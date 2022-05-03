@@ -56,9 +56,10 @@ def get_reference_algorithm_text(best_algorithm_mandatory=True):
     text = ''
     testbed = testbedsettings.current_testbed
     if testbed.reference_algorithm_filename:
-        if (testbed.name == testbedsettings.suite_name_single or
-                testbed.name == testbedsettings.default_testbed_single_noisy
-                or testbed.name == testbedsettings.suite_name_bi):
+        if (testbed.name in [testbedsettings.suite_name_single,
+                             testbedsettings.default_testbed_single_noisy,
+                             testbedsettings.suite_name_bi,
+                             'bbob-largescale']):
             if testbed.reference_algorithm_displayname:
                 if "best 2009" in testbed.reference_algorithm_displayname:
                     text = "the best algorithm from BBOB 2009"
@@ -72,6 +73,8 @@ def get_reference_algorithm_text(best_algorithm_mandatory=True):
                     text = "the best algorithm from BBOB 2016"
                 elif "best 2009-16" in testbed.reference_algorithm_displayname:
                     text = "the best algorithm from BBOB 2009--16"
+                elif "best 2019" in testbed.reference_algorithm_displayname:
+                    text = "the best algorithm from BBOB 2019"
                 else:
                     text = "the reference algorithm"
         else:

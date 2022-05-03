@@ -1,8 +1,11 @@
 How to release the Coco software?
 =================================
 
-In principle, users shall download the latest release from the master branch of the repository. In order to do a new
-release, the following steps must be followed. 
+In principle, users shall download the latest release from the master branch of the repository.
+**Merging to the `master` branch is only possible via a pull request from the `release` branch.**
+The merge is only possible after all tests have passed.
+Additionally, for a new release, the following steps should be followed (onto the `release` branch,
+not the `master` branch).
 
 Simple Version (without documentation)
 --------------------------------------

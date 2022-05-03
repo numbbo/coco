@@ -45,8 +45,13 @@ target_runlength = 10  # used in ppfigs.main
 single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)] # used in pprldistr
 
 xlimit_pprldmany = 1e7
-"""maximal run length multiplier used in `pprldmany`, noisy: rather 1e8
-   maybe better: ``10 * genericsettings.evaluation_setting[1]``?"""
+"""maximal run length multiplier used in `pprldmany`.
+
+   This sets ``cocopp.compall.pprldmany.x_limit`` via
+   calling `cocopp.config.config()``.
+
+   Noisy setting should be rather 1e8?
+   ?maybe better: ``10 * genericsettings.evaluation_setting[1]``?"""
 xlimit_expensive = 1e3
 """maximal run length multiplier in expensive setting, used in config for
    `pprldmany` and `ppfigdim`"""
@@ -64,8 +69,11 @@ len_of_names_in_pprldmany_legend = None
 dim_related_markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 dim_related_colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
 
-simulated_runlength_bootstrap_sample_size = 10 + 990 // (1 + 10 * max((0, in_a_hurry)))  # for tables and plots
-"""10000 would be better for a final camera-ready paper version"""
+simulated_runlength_bootstrap_sample_size = 30 + int(970 / (1 + 10 * max((0, in_a_hurry))))
+"""bootstrap samples, 30 is a multiple of 10 and 15.
+   Used for tables and plots. `int(1e4)` would be preferable
+   for a final camera-ready paper version.
+   """
 
 
 # single_target_pprldistr_values = (10., 1e-1, 1e-4, 1e-8)  # used as default in pprldistr.plot method, on graph for each

@@ -74,7 +74,9 @@ static void c_sum_variables_evaluate(coco_problem_t *self,
   
   y[0] = 0.0;
   for (i = 0; i < self->number_of_variables; ++i)
-    y[0] += x[i];
+    /* prevent that the optimal solution is infeasible due to loss of precision when shifted */
+    if (x[i] > 1e-11 || x[i] < 0)
+      y[0] += x[i];
 }	
 
 /**
