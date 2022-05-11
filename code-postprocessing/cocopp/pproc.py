@@ -913,7 +913,7 @@ class DataSet(object):
                          for i in self.dataFiles)
                              
         if not any(os.path.isfile(dataFile) for dataFile in dataFiles):
-            warnings.warn("Missing tdat files in '{0}'. Please consider to rerun the experiments." % filepath)
+            warnings.warn("Missing tdat files in '%s'. Please consider to rerun the experiments." % filepath)
 
         datasets, algorithms, reference_values, success_ratio = split(dataFiles, idx_to_load=idx_of_instances_to_load)
         data = VMultiReader(datasets)
