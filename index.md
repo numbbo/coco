@@ -15,7 +15,7 @@ conference in 2009, 2010, 2012, 2013, 2015-2019, and in 2021. It was also used a
 (CEC'2015) in Sendai, Japan.
 
 The COCO experiment source code has been rewritten in the years 2014-2015 and the current production code is available on our
-[COCO github page](https://github.com/numbbo/coco). The old code is still available [here](oldcode/bboball15.03.tar.gz)
+[COCO Github page](https://github.com/numbbo/coco). The old code is still available [here](oldcode/bboball15.03.tar.gz)
  and shall be used for experiments on the noisy test suite until this test suite will be available in the new code as well. 
 
 
@@ -28,23 +28,23 @@ Related links
 -------------
 
 <ul>
-<li>Get news about COCO by <a href="http://numbbo.github.io/register">registering here</a>.
-</li>
 <li><a href="https://github.com/numbbo/coco">Code web page</a>
 </li>
 <li><a href="https://numbbo.github.io/data-archive">
-    data archive of all officially supported benchmark experiments (also accessible via the postprocessing module</a>
+    Data archive</a> of all officially registered benchmark experiments (also accessible via
+ the <a href="https://pypi.org/project/cocopp">postprocessing module</a>)
 </li>
 <li><a href="https://numbbo.github.io/ppdata-archive">
-    postprocessed data of these archives for browsing</a>
+    Postprocessed data</a> of these archives for browsing
 </li>
 <li><a href="https://github.com/numbbo/coco/blob/master/howtos/publish-a-dataset-howto.md">
-  how to submit a data set</a>
+  How to submit a data set</a>
 </li><li>
   <a href="https://github.com/numbbo/coco/blob/master/code-postprocessing/cocopp/archiving.py">
-  how to create and use COCO data archives with the <tt>cocopp.archiving</tt> Python module</a>
+  How to create and use COCO data archives</a> with the <tt>cocopp.archiving</tt> Python module
+ </li><li>Get news about COCO by <a href="http://numbbo.github.io/register">registering here</a>
 </li><li>
-  If you want to go back in time and visit the old COCO webpage, please go the <a href="https://web.archive.org/web/20210504150230/https://coco.gforge.inria.fr/">Internet Archive</a>.
+  To visit the old COCO webpage, see the <a href="https://web.archive.org/web/20210504150230/https://coco.gforge.inria.fr/">Internet Archive</a>
 </li></ul>
 
 
