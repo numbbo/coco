@@ -28,7 +28,7 @@ Related links
 -------------
 
 <ul>
-<li><a href="https://github.com/numbbo/coco">Code web page</a>
+<li><a href="https://github.com/numbbo/coco">Code web page</a>, how to do experiments
 </li>
 <li><a href="https://numbbo.github.io/data-archive">
     Data archive</a> of all officially registered benchmark experiments (also accessible via
