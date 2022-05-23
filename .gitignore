@@ -1,0 +1,6 @@
+VERSION
+REVISION
+
+# build files
+__pycache__
+*.o
