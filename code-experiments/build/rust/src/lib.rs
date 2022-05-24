@@ -140,6 +140,38 @@ impl Suite {
         })
     }
 
+    /// Returns the problem for the given function, dimension and instance.
+    ///
+    /// While a suite can contain multiple problems with equal function, dimension and instance, this
+    /// function always returns the first problem in the suite with the given function, dimension and instance
+    /// values. If the given values don't correspond to a problem, the function returns `None`.
+    pub fn problem_by_function_dimension_instance(
+        &mut self,
+        function: usize,
+        dimension: usize,
+        instance: usize,
+    ) -> Option<Problem> {
+        let problem = unsafe {
+            coco_sys::coco_suite_get_problem_by_function_dimension_instance(
+                self.inner,
+                function as u64,
+                dimension as u64,
+                instance as u64,
+            )
+        };
+
+        if problem.is_null() {
+            return None;
+        }
+
+        Some(Problem {
+            inner: problem,
+            function,
+            dimension,
+            instance,
+        })
+    }
+
     /// Returns the total number of problems in the suite.
     pub fn number_of_problems(&self) -> usize {
         unsafe {
