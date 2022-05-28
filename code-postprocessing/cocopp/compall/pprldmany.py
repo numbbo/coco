@@ -75,10 +75,6 @@ def text_infigure_if_constraints():
         _text = ""
     return _text
 
-
-refcolor = 'wheat'
-"""color of reference (best) algorithm"""
-
 save_figure = True
 close_figure = True
 
@@ -769,11 +765,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     # Display data
     lines = []
     if displaybest:
-        args = {'linestyle': '-', 'linewidth': 4, 'marker': 'D', 'markersize': 11.,
-                'markeredgewidth': 1.5, 'markerfacecolor': refcolor,
-                'markeredgecolor': refcolor, 'color': refcolor,
-                'label': testbedsettings.current_testbed.reference_algorithm_displayname,
+        args = {'label': testbedsettings.current_testbed.reference_algorithm_displayname,
                 'zorder': -1}
+        args.update(genericsettings.reference_algorithm_styles)
         lines.append(plotdata(np.array(xbest), x_limit, maxevalsbest,
                               CrE=0., **args))
 
