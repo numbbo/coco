@@ -53,10 +53,11 @@ annotation_space_end_relative = 1.21  # figure space end relative to x_limit, sp
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # number of bootstrap samples drawn for each fct+target in the performance profile
 nbperdecade = 1
-median_max_evals_marker_format = ['x', 24, 1]
-label_fontsize = 17
+median_max_evals_marker_format = ['x', 14, 1]
+label_fontsize = 15  # was 17
+xticks_fontsize = 16
+yticks_fontsize = 14
 title_fontsize = 20
-styles = [d.copy() for d in genericsettings.line_styles]  # deep copy
 
 def text_infigure_if_constraints():
     """to be displayed in the figure corner
@@ -188,8 +189,9 @@ def beautify():
         plt.xlabel('log10(%s)' % testbedsettings.current_testbed.string_evals_legend, fontsize=label_fontsize)
     plt.ylabel('Fraction of function,target pairs', fontsize=label_fontsize)
     ppfig.logxticks()
-    plt.xticks(fontsize=label_fontsize)  # the "original" size is for some reason too large
+    plt.xticks(fontsize=xticks_fontsize)  # the "original" size is for some reason too large
     pprldistr.beautifyECDF()
+    plt.yticks(fontsize=yticks_fontsize)
     plt.ylim(-0.0, 1.0)
 
 
@@ -238,7 +240,7 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
 
         try:  # plot the very last point outside of the "normal" plotting area
             c = kwargs['color']
-            plt_plot([x_last] * 2, [y_last] * 2, '.', color=c, markeredgecolor=c)
+            plt_plot(x_last, y_last, '.', color=c, markeredgecolor=c, markersize=4)
         except:
             pass
         x2 = np.hstack([np.repeat(x, 2), maxval])  # repeat x-values for each step in the cdf
@@ -778,6 +780,10 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         return str(algname)
 
     plotting_style_list = ppfig.get_plotting_styles(order)
+    styles = [s.copy() for s in genericsettings.line_styles]  # list of line/marker style dicts
+    for s in styles:
+        try: s['markersize'] /= 3.3  # apparently the appearance of sizes changed
+        except: pass
     for plotting_style in plotting_style_list:
         for i, alg in enumerate(plotting_style.algorithm_list):
             try:
@@ -786,15 +792,21 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             except KeyError:
                 continue
 
-            args = styles[i % len(styles)]
-            args = args.copy()
-            args['linewidth'] = 1.5
-            args['markersize'] = 12.
-            args['markeredgewidth'] = 1.5
+            args = {}  # kw-args passed to plot
+            # set some default values first
+            # set linewidth thinner the more lines we plot
+            args['linewidth'] = 1.5 * (1 - 0.47 * min((1, (len(dictData) - 1) / 30)))
+            args['markersize'] = 12. * 0.75  # will be overwritten below
+            args['markeredgewidth'] = 1.0  # was: 1.5
             args['markerfacecolor'] = 'None'
-            args['markeredgecolor'] = args['color']
+            # set or update values based on genericsettings
+            args['markeredgecolor'] = styles[i % len(styles)]['color']
+            args.update(styles[i % len(styles)])  # genericsettings.lines_styles have priority
+            # linewidth multiplier has never been tried/used yet
+            args['linewidth'] *= args.pop('linewidth-multiplier', 1)
+
             args['label'] = algname_to_label(alg)
-            if plotType == PlotType.DIM:
+            if plotType == PlotType.DIM:  # different lines are different dimensions
                 args['marker'] = genericsettings.dim_related_markers[i]
                 args['markeredgecolor'] = genericsettings.dim_related_colors[i]
                 args['color'] = genericsettings.dim_related_colors[i]
@@ -811,6 +823,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             lines.append(plotdata(np.array(data), x_limit, maxevals,
                                   CrE=CrEperAlg[alg], **args))
 
+    if 11 < 3:
+        import time
+        plt.text(1e5, 0, ' {}'.format(time.asctime()), fontsize=5)
     labels, handles = plotLegend(lines, x_limit)
     if True:  # isLateXLeg:
         if info:
