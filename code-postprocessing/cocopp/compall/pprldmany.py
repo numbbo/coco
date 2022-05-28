@@ -619,7 +619,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     CrEperAlg = {}
     for alg in algorithms_with_data:
         CrE = 0.
-        if 1 < 3 and dictAlg[alg][0].algId == 'GLOBAL':
+        if 1 < 3 and str(dictAlg[alg][0].algId).startswith('GLOBAL') and (
+                not dictAlg[alg][0].indexFiles or '_pal' in dictAlg[alg][0].indexFiles[0]):
             tmp = dictAlg[alg].dictByNoise()
             assert len(tmp.keys()) == 1
             if list(tmp.keys())[0] == 'noiselessall':
