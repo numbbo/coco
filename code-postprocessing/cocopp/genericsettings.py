@@ -124,7 +124,7 @@ reference_algorithm_styles = {'linestyle': '-', 'linewidth': 5,  # used in compa
                              }
 
 line_styles = [  # used by ppfigs and pprlmany  
-    {'marker': 'o', 'markersize': 31, 'linestyle': '-', 'color': '#000080'},  # 'NavyBlue'
+    {'marker': 'o', 'markersize': 31, 'linestyle': '-', 'color': '#000080'},  #, 'linewidth-multiplier': 1},  # 'NavyBlue'
     {'marker': 'd', 'markersize': 26, 'linestyle': '-', 'color': '#ff00ff'},  # 'Magenta'
     {'marker': '*', 'markersize': 33, 'linestyle': '-', 'color': '#ff7500'},  # 'Orange' (was too yellow)
     {'marker': 'v', 'markersize': 28, 'linestyle': '-', 'color': '#6495ed'},  # 'CornflowerBlue'
@@ -138,7 +138,7 @@ line_styles = [  # used by ppfigs and pprlmany
     #{'marker': 'H', 'markersize': 23, 'linestyle': '-', 'color': '#bebebe'},  # 'Gray'
     # {'marker': 'o', 'markersize': 23, 'linestyle': '-', 'color': '#ffff00'}, # 'Yellow'
     # {'marker': '3', 'markersize': 23, 'linestyle': '-', 'color': '#adff2f'},  # 'GreenYellow'
-    {'marker': '1', 'markersize': 23, 'linestyle': '-', 'color': '#228b22'},  # 'ForestGreen'
+    {'marker': 'X', 'markersize': 23, 'linestyle': '-', 'color': '#228b22'},  # 'ForestGreen'
     {'marker': 'D', 'markersize': 23, 'linestyle': '-', 'color': '#ffc0cb'},  # 'Lavender'
     {'marker': '<', 'markersize': 23, 'linestyle': '-', 'color': '#87ceeb'},  # 'SkyBlue' close to CornflowerBlue
     {'marker': 'v', 'markersize': 23, 'linestyle': '--', 'color': '#000080'},  # 'NavyBlue'
@@ -151,8 +151,8 @@ line_styles = [  # used by ppfigs and pprlmany
     # {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'm'}, # square, magenta
     {'marker': 'p', 'markersize': 23, 'linestyle': '-', 'color': '#bebebe'},  # 'Gray'
     {'marker': 'H', 'markersize': 23, 'linestyle': '--', 'color': '#87ceeb'},  # 'SkyBlue'
-    {'marker': '1', 'markersize': 23, 'linestyle': '-', 'color': '#ffc0cb'},  # 'Lavender'
-    {'marker': '2', 'markersize': 23, 'linestyle': '--', 'color': '#228b22'},  # 'ForestGreen'
+    {'marker': 'P', 'markersize': 23, 'linestyle': '-', 'color': '#ffc0cb'},  # 'Lavender'
+    {'marker': '>', 'markersize': 23, 'linestyle': '--', 'color': '#228b22'},  # 'ForestGreen'
     {'marker': '4', 'markersize': 23, 'linestyle': '-', 'color': '#32cd32'},  # 'LimeGreen'
     {'marker': '3', 'markersize': 23, 'linestyle': '--', 'color': '#9acd32'},  # 'YellowGreen'
     {'marker': 'D', 'markersize': 23, 'linestyle': '-', 'color': '#adff2f'},  # 'GreenYellow'
@@ -163,7 +163,7 @@ line_styles = [  # used by ppfigs and pprlmany
     {'marker': '^', 'markersize': 30, 'linestyle': '-', 'color': 'r'},  # 'Red'
     {'marker': 'p', 'markersize': 25, 'linestyle': '-', 'color': '#9acd32'},  # 'YellowGreen'
     {'marker': 'H', 'markersize': 24, 'linestyle': '-', 'color': 'c'},
-    {'marker': '3', 'markersize': 23, 'linestyle': '-', 'color': '#bebebe'},  # 'Gray'
+    {'marker': '2', 'markersize': 23, 'linestyle': '-', 'color': '#bebebe'},  # 'Gray'
 ]
 line_styles_2022_05 = [  # used by ppfigs and pprlmany  
     {'marker': 'o', 'markersize': 31, 'linestyle': '-', 'color': '#000080'},  # 'NavyBlue'
