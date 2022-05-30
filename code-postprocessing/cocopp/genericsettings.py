@@ -117,12 +117,10 @@ instancesOfInterest = [instancesOfInterest2009,
                        instancesOfInterestBiobj2017,
                        instancesOfInterestBiobj2018]
 
-reference_algorithm_color = 'antiquewhite'  # 'wheat' is heavier, 'linen' is lighter
 reference_algorithm_styles = {'linestyle': '-', 'linewidth': 5,  # used in compall.pprldmany
                               'marker': 'D', 'markersize': 1*0.8*11., 'markeredgewidth': 1*1.5/1.5,
-                              'markerfacecolor': reference_algorithm_color,
-                              'markeredgecolor': reference_algorithm_color,
-                              'color': reference_algorithm_color,
+                              'color': 'antiquewhite',  # 'wheat' is heavier, 'linen' is lighter
+                              # we could set 'markerfacecolor' and/or 'markeredgecolor' different
                              }
 
 line_styles = [  # used by ppfigs and pprlmany  

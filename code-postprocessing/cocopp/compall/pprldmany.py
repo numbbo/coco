@@ -799,10 +799,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             args['markersize'] = 12. * 0.75  # will be overwritten below
             args['markeredgewidth'] = 1.0  # was: 1.5
             args['markerfacecolor'] = 'None'
-            # set or update values based on genericsettings
+            # set marker color default and then update all values based on genericsettings
             args['markeredgecolor'] = styles[i % len(styles)]['color']
-            args.update(styles[i % len(styles)])  # genericsettings.lines_styles have priority
-            # linewidth multiplier has never been tried/used yet
+            args.update(styles[i % len(styles)])  # genericsettings.lines_styles has priority
             args['linewidth'] *= args.pop('linewidth-multiplier', 1)
 
             args['label'] = algname_to_label(alg)
