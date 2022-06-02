@@ -15,7 +15,7 @@ has_toc: false
 <table>
 	<tr>
 		<td style="width=50%">
-			The blackbox optimization benchmarking (bbob) test suite is COCO's standard and most established test suite with 24 noiseless, scalable test functions. Each function is provided in various dimensions (2, 3, 5, 10, 20, 40) and available in an arbitrary number of instances. Direct links to their definition as well as to visualizations of their properties can be found below. A list of all so-far benchmarked algorithms on the bbob suite together with their links to papers describing the experiment can be found in our <a href="https://numbbo.github.io/data-archive/bbob/">bbob data archive</a>. Postprocessed data can be found <a href="https://numbbo.github.io/ppdata-archive">here</a>. For detailed explanations of how to use the functions in a COCO benchmarking experiment, please go to the <a href="https://github.com/numbbo/coco">COCO code page</a> on Github.
+			The blackbox optimization benchmarking (bbob) test suite is COCO's standard and most established test suite with 24 noiseless, scalable test functions. Each function is provided in various dimensions (2, 3, 5, 10, 20, 40) and available in an arbitrary dimensions and number of instances. Links to their definition as well as to visualizations of their properties can be found in the table.
 		</td>
 		<td>
 			<a href="ecdf-bbob.html"><img src="examplefigure_all.png" alt="ECDF of runtimes for 31 algorithms on the bbob suite" width="100%"/></a>
@@ -103,6 +103,6 @@ Only f1 and f5 are purely quadratic or linear respectively.
 
 See also N. Hansen et al (2010): Comparing Results of 31 Algorithms from the Black-Box Optimization Benchmarking BBOB-2009. Workshop Proceedings of the GECCO Genetic and Evolutionary Computation Conference 2010, ACM. 1) 
 
-
+A list of all so-far benchmarked algorithms on the bbob suite together with their links to papers describing the experiment can be found in our <a href="https://numbbo.github.io/data-archive/bbob/">bbob data archive</a>. Postprocessed data can be found <a href="https://numbbo.github.io/ppdata-archive">here</a>. For detailed explanations of how to use the functions in a COCO benchmarking experiment, please go to the <a href="https://github.com/numbbo/coco">COCO code page</a> on Github.
 
 <link rel="stylesheet" href="{{ '/assets/css/custom.css' | relative_url }}"/>
