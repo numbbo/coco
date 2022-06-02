@@ -8,9 +8,7 @@ has_toc: false
 ---
 
 
-# The bbob Test Suite
-
----
+# The <font face="Courier">bbob</font> Test Suite
 
 <table>
 	<tr>
@@ -22,10 +20,6 @@ has_toc: false
 		</td>
 	</tr>
 </table>
-
-
-The bbob functions
-------------------
 
 <table align="center" style="width:50%">
 <tr>
