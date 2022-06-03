@@ -777,7 +777,7 @@ class DataSet(object):
         else:
             #raise Exception()
             warnings.warn('Comment line: %s is skipped,' % (comment) +
-                          'it does not start with \%.')
+                          'it does not start with %%.')
             self.comment = ''
 
         filepath = os.path.split(indexfile)[0]
@@ -1988,7 +1988,7 @@ class DataSet(object):
         for funvals in self.funvals.T[1:]:  # loop over the rows of the transposed array
             idx = np.isfinite(funvals > 1e-19)
             plt.loglog(self.funvals[idx, 0], funvals[idx], **kwargs)
-            plt.ylabel('target $\Delta f$ value')
+            plt.ylabel(r'target $\Delta f$ value')
             plt.xlabel('number of function evaluations')
             plt.xlim(1, max(self.maxevals))
         return plt.gca()
@@ -2007,13 +2007,13 @@ class DataSet(object):
             # plt.semilogx(self.evals[idx, 0], evals[idx])
             if 1 < 3:
                 plt.loglog(evals[idx], self.evals[idx, 0], **kwargs)
-                plt.ylabel('target $\Delta f$ value')
+                plt.ylabel(r'target $\Delta f$ value')
                 plt.xlabel('number of function evaluations')
                 plt.xlim(1, max(self.maxevals))
             else:  # old version
                 plt.loglog(self.evals[idx, 0], evals[idx])
                 plt.gca().invert_xaxis()
-                plt.xlabel('target $\Delta f$ value')
+                plt.xlabel(r'target $\Delta f$ value')
                 plt.ylabel('number of function evaluations')
         return plt.gca()
 
@@ -2088,6 +2088,42 @@ class DataSet(object):
         plt.title("F %d in dimension %d" % (self.funcId, self.dim))
         plt.grid(True)
         return plt.gca()  # not sure which makes most sense
+
+def get_DataSetList(*args, **kwargs):
+    """try to load pickle file or fall back to `DataSetList` constructor.
+
+    Also write pickle file if reading failed. Global side effect:
+    `testbedsettings.load_current_testbed` is called as it is in
+    `DataSet.__init__`.
+    """
+    extension = '.pickle'
+    def fallback():
+        return DataSetList(*args, **kwargs)
+    if (not len(args) or
+        not isinstance(args[0], string_types) or
+        not findfiles.is_recognized_repository_filetype(args[0])):
+        return fallback()
+    try: import pickle
+    except: return fallback()
+    name = args[0] + extension
+    if os.path.exists(name) and os.path.getmtime(name) > os.path.getmtime(args[0]):
+        try:
+            with open(name, "rb") as f:
+                dsl = pickle.load(f)
+        except: pass
+        else:
+            if isinstance(dsl, DataSetList):  # found valid pickle file
+                # to be compatible with DataSet.__init__:
+                if not testbedsettings.current_testbed:
+                    testbedsettings.load_current_testbed(dsl[0].suite_name, TargetValues)
+                return dsl
+    dsl = fallback()
+    try:
+        with open(name, "wb") as f:
+            pickle.dump(dsl, f)
+    except Exception as e:
+        warnings.warn("could not write pickle file {}: {}".format(name, e))
+    return dsl
 
 class DataSetList(list):
     """List of instances of :py:class:`DataSet`.
@@ -3105,7 +3141,7 @@ def parseinfo(s):
     Keys should not use comma or quote characters.
 
     """
-    p = re.compile('\ *([^,=]+?)\ *=\ *(".+?"|\'.+?\'|[^,]+)\ *(?=,|$)')
+    p = re.compile(r'\ *([^,=]+?)\ *=\ *(".+?"|\'.+?\'|[^,]+)\ *(?=,|$)')
     res = []
     for elem0, elem1 in p.findall(s):
         if elem1.startswith('\'') and elem1.endswith('\''): # HACK
@@ -3207,7 +3243,7 @@ def process_arguments(args, current_hash, dictAlg, dsList, sortedAlgs):
                 # Do here any sorting or filtering necessary.
                 # filelist = list(i for i in filelist if i.count('ppdata_f005'))
             else:
-                tmpDsList = DataSetList(alg)
+                tmpDsList = get_DataSetList(alg)
             for ds in tmpDsList:
                 ds._data_folder = alg
                 # to restore name information:
