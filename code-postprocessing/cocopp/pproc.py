@@ -777,7 +777,7 @@ class DataSet(object):
         else:
             #raise Exception()
             warnings.warn('Comment line: %s is skipped,' % (comment) +
-                          'it does not start with \%.')
+                          'it does not start with %.')
             self.comment = ''
 
         filepath = os.path.split(indexfile)[0]
@@ -1988,7 +1988,7 @@ class DataSet(object):
         for funvals in self.funvals.T[1:]:  # loop over the rows of the transposed array
             idx = np.isfinite(funvals > 1e-19)
             plt.loglog(self.funvals[idx, 0], funvals[idx], **kwargs)
-            plt.ylabel('target $\Delta f$ value')
+            plt.ylabel(r'target $\Delta f$ value')
             plt.xlabel('number of function evaluations')
             plt.xlim(1, max(self.maxevals))
         return plt.gca()
@@ -2007,13 +2007,13 @@ class DataSet(object):
             # plt.semilogx(self.evals[idx, 0], evals[idx])
             if 1 < 3:
                 plt.loglog(evals[idx], self.evals[idx, 0], **kwargs)
-                plt.ylabel('target $\Delta f$ value')
+                plt.ylabel(r'target $\Delta f$ value')
                 plt.xlabel('number of function evaluations')
                 plt.xlim(1, max(self.maxevals))
             else:  # old version
                 plt.loglog(self.evals[idx, 0], evals[idx])
                 plt.gca().invert_xaxis()
-                plt.xlabel('target $\Delta f$ value')
+                plt.xlabel(r'target $\Delta f$ value')
                 plt.ylabel('number of function evaluations')
         return plt.gca()
 
