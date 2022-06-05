@@ -3247,7 +3247,7 @@ def process_arguments(args, current_hash, dictAlg, dsList, sortedAlgs):
                 # Do here any sorting or filtering necessary.
                 # filelist = list(i for i in filelist if i.count('ppdata_f005'))
             else:
-                tmpDsList = DataSetList(alg)
+                tmpDsList = get_DataSetList(alg)
             for ds in tmpDsList:
                 ds._data_folder = alg
                 # to restore name information:
