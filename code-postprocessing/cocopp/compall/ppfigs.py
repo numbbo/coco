@@ -44,7 +44,8 @@ def fix_styles(plotting_styles, line_styles):
         else:
             line_styles[i].update({'linewidth': 4 - min([2, i / 3.0]),  # thinner lines over thicker lines
                                    'markeredgewidth': 3 - min([2, i / 2.0]),
-                                   'markersize': int(line_styles[i]['markersize'] / 2),
+                                   # 'markersize': int(line_styles[i]['markersize'] / 2),
+                                   'markersize': line_styles[i]['markersize'] * 2,
                                    'markerfacecolor': 'None'})
 
 def prepare_scaling_figure_caption():
