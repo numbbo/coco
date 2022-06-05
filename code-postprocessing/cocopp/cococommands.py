@@ -60,7 +60,7 @@ Examples:
 
 from __future__ import absolute_import
 
-from .pproc import DataSetList as _DataSetList
+from .pproc import get_DataSetList as _DataSetList
 from .toolsdivers import StringList as _StringList
 from .archiving import official_archives
 
