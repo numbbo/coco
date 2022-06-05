@@ -1039,14 +1039,8 @@ class DataSet(object):
             expectedNumberOfInstances = len(testbedsettings.current_testbed.instancesOfInterest)
         if len(set(self.instancenumbers)) < len(self.instancenumbers):
             # check exception of 2009 data sets with 3 times instances 1:5
-            for i in set(self.instancenumbers):
-                if i not in (1, 2, 3, 4, 5):
-                    is_consistent = False
-                    break
-                if self.instancenumbers.count(i) != 3:
-                    is_consistent = False
-                    break
-            if not is_consistent:
+            counts = [self.instancenumbers.count(i) for i in set(self.instancenumbers)]
+            if not len(set(counts)) == 1:  # require same number of repetition per instance
                 warnings.warn('  double instances in ' + 
                                 str(self.instancenumbers) + 
                                 ' (f' + str(self.funcId) + ', ' + str(self.dim)
