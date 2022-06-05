@@ -25,6 +25,8 @@ latex_marker_map = {'o': r'$\circ$',
               'H': r'$\hexagon$', # need \usepackage{wasysymb}
               '<': r'$\triangleleft$',
               'D': r'$\Diamond$',
+              'X': r'x',
+              'P': r'+',
               '>': r'$\triangleright$',
               '1': r'$\downY$', # need \usepackage{MnSymbol}
               '2': r'$\upY$', # need \usepackage{MnSymbol}
@@ -43,6 +45,8 @@ html_marker_map = {
               'H': r'&#11043;',
               '<': r'&#9665;',
               'D': r'&#9671;',
+              'X': r'x',
+              'P': r'+',
               '>': r'&#9655;',
               '1': r'downY',
               '2': r'upY',
@@ -57,6 +61,12 @@ latex_color_map_old = {
              'k': 'black',
              'b': 'blue'}
 latex_color_map = {
+    '#1874b4': 'CornflowerBlue',
+    '#ff7d0b': 'Orange',
+    '#22a022': 'Green',
+    '#d61e1f': 'red',
+    '#8a52bd': 'magenta',
+    '#8c493c': 'brown',
              'c': 'cyan',
              'm': 'magenta',
              'y': 'yellow',
