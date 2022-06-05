@@ -48,6 +48,7 @@ def config(suite_name=None):
     """called from a high level, e.g. rungeneric, to configure the lower level
     modules via modifying parameter settings.
     """
+    config_target_values_setting(settings.isExpensive, settings.runlength_based_targets)
     if suite_name:
         tbs.load_current_testbed(suite_name, pproc.TargetValues)
 

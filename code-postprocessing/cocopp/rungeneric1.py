@@ -24,7 +24,7 @@ import matplotlib
 
 import warnings, getopt, numpy as np
 
-from . import genericsettings, testbedsettings, ppfig, pptable, pprldistr, ppfigdim, ppfigcons1, pplogloss, findfiles
+from . import genericsettings, testbedsettings, config, ppfig, pptable, pprldistr, ppfigdim, ppfigcons1, pplogloss, findfiles
 from .pproc import DataSetList, store_reference_values, dictAlgByDim
 from .ppfig import Usage
 from .toolsdivers import print_done, prepend_to_file, strip_pathname1, str_to_latex, get_version_label, replace_in_file
@@ -92,9 +92,6 @@ def main(alg, outputdir, argv=None):
     for ds in dsList:
         dict_max_fun_evals[ds.dim] = np.max((dict_max_fun_evals.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
 
-    from . import config
-    config.config_target_values_setting(genericsettings.isExpensive,
-                                        genericsettings.runlength_based_targets)
     config.config(dsList[0].suite_name)
     if genericsettings.verbose:
         for i in dsList:

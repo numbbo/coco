@@ -14,7 +14,7 @@ import sys
 import getopt
 import warnings
 
-from . import genericsettings, ppfig, testbedsettings, findfiles
+from . import genericsettings, config, ppfig, testbedsettings, findfiles
 from . import pproc, pptex, pprldistr
 from .pproc import DataSetList, processInputArgs
 from .ppfig import Usage
@@ -116,7 +116,7 @@ def main(args, outputdir):
     # filter data set lists to be compliant with all suites
     dsList = DataSetList(testbedsettings.current_testbed.filter(dsList))
     dictAlg = dsList.dictByAlgName()
-    from . import config
+
     config.config() # make sure that the filtered settings are taken into account
 
     if not dsList:
@@ -140,10 +140,6 @@ def main(args, outputdir):
         if genericsettings.isNoiseFree and not genericsettings.isNoisy:
             dictAlg[i] = dictAlg[i].dictByNoise().get('noiselessall', DataSetList())
 
-    # set target values
-    from . import config
-    config.config_target_values_setting(genericsettings.isExpensive,
-                                        genericsettings.runlength_based_targets)
     config.config(dsList[0].suite_name)
 
     for i in dsList:
