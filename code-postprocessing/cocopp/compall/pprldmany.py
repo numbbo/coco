@@ -53,7 +53,7 @@ annotation_space_end_relative = 1.21  # figure space end relative to x_limit, sp
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # number of bootstrap samples drawn for each fct+target in the performance profile
 nbperdecade = 1
-median_max_evals_marker_format = ['x', 14, 1]
+median_max_evals_marker_format = ['x', 12, 1]
 label_fontsize = 15  # was 17
 xticks_fontsize = 16
 yticks_fontsize = 14
@@ -781,9 +781,10 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
     plotting_style_list = ppfig.get_plotting_styles(order)
     styles = [s.copy() for s in genericsettings.line_styles]  # list of line/marker style dicts
-    for s in styles:
-        try: s['markersize'] /= 3.3  # apparently the appearance of sizes changed
-        except: pass
+    if styles[0]['color'] == '#000080':  # fix old styles marker size
+        for s in styles:
+            try: s['markersize'] /= 3.3  # apparently the appearance of sizes changed
+            except: pass
     for plotting_style in plotting_style_list:
         for i, alg in enumerate(plotting_style.algorithm_list):
             try:
@@ -802,7 +803,10 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             # set marker color default and then update all values based on genericsettings
             args['markeredgecolor'] = styles[i % len(styles)]['color']
             args.update(styles[i % len(styles)])  # genericsettings.lines_styles has priority
-            args['linewidth'] *= args.pop('linewidth-multiplier', 1)
+            try: args['markersize'] *= args['linewidth']
+            except: pass
+            if 'zorder' in args:  # default is zorder == 2
+                args['linewidth'] *= 1 + max((-0.5, min((1.5, 2 - args['zorder']))))
 
             args['label'] = algname_to_label(alg)
             if plotType == PlotType.DIM:  # different lines are different dimensions
