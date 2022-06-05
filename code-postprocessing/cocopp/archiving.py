@@ -667,6 +667,10 @@ class COCODataArchive(_td.StrList):
                 if names[0] in self._redownload_if_changed:
                     self._download(names[0])
                     self.check_hash(full_name)
+                elif 11 < 3 and not input("\n\n  ** wrong hash, download {} again? [n=no, return=yes] **".format(names[0])).lower().startswith('n'):
+                    # seems to break tests?
+                    self._download(names[0])
+                    self.check_hash(full_name)
                 else:
                     raise
             try: self._redownload_if_changed.remove(names[0])
@@ -832,7 +836,8 @@ class COCODataArchive(_td.StrList):
                 '   %s\n'
                 'as it may be a partial or unsuccessful download.\n'
                 'A missing file will be downloaded again by `get`.\n'
-                'Alternatively, call `update` to update definitions\n'
+                'Alternatively, call `cocopp.archives.this-archive.update()`\n'
+                'of the respective data archive to update definitions\n'
                 'and checksums and allow for automatic re-downloads.\n'
                 'If this is not a remote archive consider to re-`create` it.'
                 '' % (name, self.local_data_path, str(self.remote_data_path),
