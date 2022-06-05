@@ -113,15 +113,13 @@ class WrongInputSizeError(Error):
 
 #TOP LEVEL METHODS
 def color_to_latex(color):
+    if color in latex_color_map:
+        return r'\color{%s}' % latex_color_map[color]
     try:
-        res = '\color{%s}' % latex_color_map[color]
-    except KeyError as err:
-        try:
-            float(color)
-            res = '\color[gray]{%s}' % color
-        except ValueError:
-            raise err
-    return res
+        float(color)
+        return r'\color[gray]{%s}' % color
+    except ValueError:
+        return '{}'
 
 def marker_to_latex(marker):
     return latex_marker_map[marker]
