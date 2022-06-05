@@ -2083,6 +2083,52 @@ class DataSet(object):
         plt.grid(True)
         return plt.gca()  # not sure which makes most sense
 
+def get_DataSetList(*args, **kwargs):
+    """try to load pickle file or fall back to `DataSetList` constructor.
+
+    Also write pickle file if reading failed. Global side effect:
+    `testbedsettings.load_current_testbed` is called as it is in
+    `DataSet.__init__`.
+
+    `args[0]` is expected to be either a `list` with one element which is a
+    repository filetype name or the name itself. Otherwise, the fallback is
+    executed.
+    """
+    extension = '.pickle'
+    def fallback():
+        return DataSetList(*args, **kwargs)
+    if len(args) != 1 or len(kwargs) or sys.version_info[0] < 3:
+        return fallback()
+    arg1 = args[0]
+    if isinstance(arg1, string_types):
+        arg1 = [arg1]
+    if (len(args) != 1 or
+        not isinstance(arg1[0], string_types) or
+        not findfiles.is_recognized_repository_filetype(arg1[0])):
+        return fallback()
+    try: import pickle
+    except: return fallback()
+    name = arg1[0] + extension
+    if os.path.exists(name) and os.path.getmtime(name) > os.path.getmtime(arg1[0]):
+        try:
+            with open(name, "rb") as f:
+                dsl = pickle.load(f)
+        except: pass
+        else:
+            if isinstance(dsl, DataSetList):  # found valid pickle file
+                # to be compatible with DataSet.__init__:
+                if not testbedsettings.current_testbed:
+                    testbedsettings.load_current_testbed(dsl[0].suite_name, TargetValues)
+                print("  loaded pickled DataSetList", end=' ')  # remove when all went well for a while?
+                return dsl
+    dsl = fallback()
+    try:
+        with open(name, "wb") as f:
+            pickle.dump(dsl, f)
+    except Exception as e:
+        warnings.warn("could not write pickle file {}: {}".format(name, e))
+    return dsl
+
 class DataSetList(list):
     """List of instances of :py:class:`DataSet`.
 
