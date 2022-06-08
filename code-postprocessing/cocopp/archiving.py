@@ -298,6 +298,8 @@ def get(url_or_folder=None):
     >>> assert arch.remote_data_path.split('//', 1)[1] == url.split('//', 1)[1], (arch.remote_data_path, url)
  
     See `cocopp.archives` for "officially" available archives.
+
+    See also: `get_all`, `get_extended`.
     """
     if url_or_folder in (None, 'help'):
         raise ValueError(
@@ -576,12 +578,12 @@ class COCODataArchive(_td.StrList):
         by repeatedly calling `get`. Elements of the `indices` list can
         be an index or a substring that matches one and only one name
         in the archive. If ``indices is None``, the results from the
-        last call to `find` are used. Download the data if necessary.
+        last call to `find` are used. Data are downloaded if necessary.
 
         See `find` or `cocopp.archiving.OfficialArchives` for how matching
         is determined.
 
-        See also `get`.
+        See also `get`, `get_extended`.
         """
         if indices is not None:  # TODO: just "if indices" should do?
             names = self.find(indices)
