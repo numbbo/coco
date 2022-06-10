@@ -53,11 +53,12 @@ annotation_space_end_relative = 1.21  # figure space end relative to x_limit, sp
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # number of bootstrap samples drawn for each fct+target in the performance profile
 nbperdecade = 1
-median_max_evals_marker_format = ['x', 13, 1]
+median_max_evals_marker_format = ['x', 18, 1]  # [symbol, size, edgewidth]
 label_fontsize = 15  # was 17
 xticks_fontsize = 16
 yticks_fontsize = 14
 title_fontsize = 20
+size_correction_from_n_foreground = 1  # is (re-)set in main and used in plotdata
 
 def text_infigure_if_constraints():
     """to be displayed in the figure corner
@@ -266,7 +267,7 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
                     y3 = y2[0]
             h = plt.plot((x3,), (y3,),
                          marker=median_max_evals_marker_format[0],
-                         markersize=median_max_evals_marker_format[1],
+                         markersize=median_max_evals_marker_format[1] * size_correction_from_n_foreground,
                          markeredgewidth=median_max_evals_marker_format[2],
                          # marker='x', markersize=24, markeredgewidth=3, 
                          markeredgecolor=plt.getp(res[0], 'color'),
@@ -594,6 +595,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
     """
     global divide_by_dimension  # not fully implemented/tested yet
+    global size_correction_from_n_foreground
+    size_correction_from_n_foreground = 1  # reset for reference alg here, later set depending on n
 
     tmp = pp.dictAlgByDim(dictAlg)
     algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
@@ -780,6 +783,14 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         return str(algname)
 
     plotting_style_list = ppfig.get_plotting_styles(order)
+    try:  # set n_foreground to tweak line sizes later
+        bg_algs = []
+        for v in genericsettings.background.values():
+            bg_algs.extend(v)
+        n_foreground = len([a for a in dictData if a not in bg_algs])
+    except: n_foreground = len(dictData)
+    size_correction_from_n_foreground = 1.8 - 1 * min((1, (n_foreground - 1) / 30))
+
     styles = [s.copy() for s in genericsettings.line_styles]  # list of line/marker style dicts
     if styles[0]['color'] == '#000080':  # fix old styles marker size
         for s in styles:
@@ -796,17 +807,20 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             args = {}  # kw-args passed to plot
             # set some default values first
             # set linewidth thinner the more lines we plot
-            args['linewidth'] = 1.5 * (1 - 0.47 * min((1, (len(dictData) - 1) / 30)))
+            # args['linewidth'] = 1.5 * (1 - 0.47 * min((1, (n_foreground - 1) / 30)))
+            args['linewidth'] = size_correction_from_n_foreground
             args['markersize'] = 12. * 0.75  # will be overwritten below
             args['markeredgewidth'] = 1.0  # was: 1.5
             args['markerfacecolor'] = 'None'
             # set marker color default and then update all values based on genericsettings
             args['markeredgecolor'] = styles[i % len(styles)]['color']
+
             args.update(styles[i % len(styles)])  # genericsettings.lines_styles has priority
-            try: args['markersize'] *= args['linewidth']
-            except: pass
             if 'zorder' in args:  # default is zorder == 2
                 args['linewidth'] *= 1 + max((-0.5, min((1.5, 2 - args['zorder']))))
+
+            try: args['markersize'] *= size_correction_from_n_foreground
+            except KeyError: pass  # args hasn't a markersize
 
             args['label'] = algname_to_label(alg)
             if plotType == PlotType.DIM:  # different lines are different dimensions
@@ -821,7 +835,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 # args['zorder'] = -1
             # plotdata calls pprldistr.plotECDF which calls ppfig.plotUnifLog... which does the work
 
-            args.update(plotting_style.pprldmany_styles)
+            args.update(plotting_style.pprldmany_styles)  # no idea what this does, maybe update for background algorithms?
 
             lines.append(plotdata(np.array(data), x_limit, maxevals,
                                   CrE=CrEperAlg[alg], **args))
