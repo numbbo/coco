@@ -53,7 +53,7 @@ annotation_space_end_relative = 1.21  # figure space end relative to x_limit, sp
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # number of bootstrap samples drawn for each fct+target in the performance profile
 nbperdecade = 1
-median_max_evals_marker_format = ['x', 18, 1]  # [symbol, size, edgewidth]
+median_max_evals_marker_format = ['x', 16, 1]  # [symbol, size, edgewidth]
 label_fontsize = 15  # was 17
 xticks_fontsize = 16
 yticks_fontsize = 14
@@ -267,7 +267,7 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
                     y3 = y2[0]
             h = plt.plot((x3,), (y3,),
                          marker=median_max_evals_marker_format[0],
-                         markersize=median_max_evals_marker_format[1] * size_correction_from_n_foreground,
+                         markersize=median_max_evals_marker_format[1] * size_correction_from_n_foreground**0.5,
                          markeredgewidth=median_max_evals_marker_format[2],
                          # marker='x', markersize=24, markeredgewidth=3, 
                          markeredgecolor=plt.getp(res[0], 'color'),
