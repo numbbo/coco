@@ -324,6 +324,8 @@ def plotLegend(handles, maxval):
         return min(numberOfCharacters + 2, maxLength)
 
     handles_with_legend = [h for h in handles if not plt.getp(h[-1], 'label').startswith('_line')]
+    handles_with_legend = [h for h in handles_with_legend  # fix for matplotlib since v 3.5.0
+                           if not plt.getp(h[-1], 'label').startswith('_child')]
     label_list = [toolsdivers.strip_pathname1(plt.getp(h[-1], 'label')) for h in handles_with_legend]
     numberOfCharacters = label_length(label_list)
     for h in handles_with_legend:
