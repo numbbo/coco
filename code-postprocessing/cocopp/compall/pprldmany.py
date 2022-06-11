@@ -806,25 +806,18 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             except KeyError:
                 continue
 
-            args = {}  # kw-args passed to plot
-            # set some default values first
-            # set linewidth thinner the more lines we plot
-            # args['linewidth'] = 1.5 * (1 - 0.47 * min((1, (n_foreground - 1) / 30)))
-            args['linewidth'] = size_correction_from_n_foreground
-            args['markersize'] = 12. * 0.75  # will be overwritten below
-            args['markeredgewidth'] = 1.0  # was: 1.5
-            args['markerfacecolor'] = 'None'
-            # set marker color default and then update all values based on genericsettings
-            args['markeredgecolor'] = styles[i % len(styles)]['color']
-
-            args.update(styles[i % len(styles)])  # genericsettings.lines_styles has priority
-            if 'zorder' in args:  # default is zorder == 2
-                args['linewidth'] *= 1 + max((-0.5, min((1.5, 2 - args['zorder']))))
-
-            try: args['markersize'] *= size_correction_from_n_foreground
-            except KeyError: pass  # args hasn't a markersize
-
+            args = dict(styles[i % len(styles)])  # kw-args passed to plot
+            args.setdefault('markeredgewidth', 1.0)  # was: 1.5
+            args.setdefault('markerfacecolor', 'None')  # transparent
+            args.setdefault('markeredgecolor', styles[i % len(styles)]['color'])
+            args.setdefault('markersize', 9)  # was: 12
+            args.setdefault('linewidth', 1)
+            args['markersize'] *= size_correction_from_n_foreground
+            args['linewidth'] *= size_correction_from_n_foreground
+            args['linewidth'] *= 1 + max((-0.5, min((1.5,  # larger zorder creates thicker lines below others
+                                     2 - args.get('zorder', 2)))))
             args['label'] = algname_to_label(alg)
+
             if plotType == PlotType.DIM:  # different lines are different dimensions
                 args['marker'] = genericsettings.dim_related_markers[i]
                 args['markeredgecolor'] = genericsettings.dim_related_colors[i]
