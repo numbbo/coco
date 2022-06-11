@@ -2119,7 +2119,7 @@ def get_DataSetList(*args, **kwargs):
                 # to be compatible with DataSet.__init__:
                 if not testbedsettings.current_testbed:
                     testbedsettings.load_current_testbed(dsl[0].suite_name, TargetValues)
-                print("  loaded pickled DataSetList", end=' ')  # remove when all went well for a while?
+                print("  using pickled DataSetList", end=' ')  # remove when all went well for a while?
                 return dsl
     dsl = fallback()
     try:
