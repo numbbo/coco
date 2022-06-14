@@ -8,8 +8,9 @@ title: What is COCO?
 # A Short Introduction to COCO  #
 ---
 
-
-<a HREF="http://numbbo.github.io/coco/shortintro/coco.png"><img src="./shortintro/coco.png" width="70%"></a>
+<center>
+<a HREF="http://numbbo.github.io/coco/shortintro/coco.png"><img src="./shortintro/coco.png" width="90%" c></a>
+</center>
 
 For a general introduction to the COCO software and its underlying concepts of performance assessment, please see this article 
 
