@@ -21,7 +21,9 @@ has_toc: false
 	</tr>
 </table>
 
-<table align="center" style="width:50%">
+<table align="center" style="width:50%" th, td {
+  padding-top: 100px;
+  padding-bottom: 0px}
 <tr>
    <th colspan=2 style="text-align:left">1 Separable Functions</th>
 </tr>
