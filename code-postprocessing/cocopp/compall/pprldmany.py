@@ -812,6 +812,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             args.setdefault('markeredgecolor', styles[i % len(styles)]['color'])
             args.setdefault('markersize', 9)  # was: 12
             args.setdefault('linewidth', 1)
+            args['markersize'] *= genericsettings.marker_size_multiplier
             args['markersize'] *= size_correction_from_n_foreground
             args['linewidth'] *= size_correction_from_n_foreground
             args['linewidth'] *= 1 + max((-0.5, min((1.5,  # larger zorder creates thicker lines below others
