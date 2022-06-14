@@ -6,7 +6,6 @@ title: What is COCO?
 ---
 
 # A Short Introduction to COCO  #
----
 
 COCO (COmparing Continuous Optimizers) is a platform for systematic and sound comparisons of real-parameter global optimizers. 
 COCO provides benchmark function testbeds, experimentation templates which are easy to parallelize, and tools for processing and 
