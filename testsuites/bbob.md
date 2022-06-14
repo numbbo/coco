@@ -15,7 +15,7 @@ has_toc: false
 		<td style="width=50%">
 			The blackbox optimization benchmarking (bbob) test suite is COCO's standard and most established test suite with 24 noiseless, scalable test functions. Each function is provided in various dimensions (2, 3, 5, 10, 20, 40) and available in an arbitrary dimensions and number of instances. Links to their definition as well as to visualizations of their properties can be found in the table.
 		</td>
-		<td>
+		<td style="padding-top:0px; padding-bottom:0px;">
 			<a href="ecdf-bbob.html"><img src="examplefigure_all.png" alt="ECDF of runtimes for 31 algorithms on the bbob suite" width="100%"/></a>
 		</td>
 	</tr>
@@ -30,65 +30,65 @@ has_toc: false
 </tr><tr>
 	<td style="padding-top:0px; padding-bottom:0px;">f2</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=10">Separable Ellipsoidal Function</a></td>
 </tr><tr>
-	<td>f3</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=15">Rastrigin Function</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f3</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=15">Rastrigin Function</a></td>
 </tr><tr>
-	<td>f4</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=20">Büche-Rastrigin Function</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f4</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=20">Büche-Rastrigin Function</a></td>
 </tr><tr>
-	<td>f5</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=25">Linear Slope</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f5</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=25">Linear Slope</a></td>
 </tr>
 <tr>
    <th colspan=2 style="text-align:left">2 Functions with low or moderate conditioning</th>
 </tr>
 <tr>
-	<td>f6</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=30">Attractive Sector Function</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f6</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=30">Attractive Sector Function</a></td>
 </tr><tr>
-	<td>f7</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=35">Step Ellipsoidal Function</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f7</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=35">Step Ellipsoidal Function</a></td>
 </tr><tr>
-	<td>f8</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=40">Rosenbrock Function, original</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f8</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=40">Rosenbrock Function, original</a></td>
 </tr><tr>
-	<td>f9</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=45">Rosenbrock Function, rotated</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f9</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=45">Rosenbrock Function, rotated</a></td>
 </tr>
 <tr>
    <th colspan=2 style="text-align:left">3 Functions with high conditioning and unimodal</th>
 </tr>
 <tr>
-	<td>f10</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=50">Ellipsoidal Function</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f10</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=50">Ellipsoidal Function</a></td>
 </tr><tr>
-	<td>f11</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=55">Discus Function</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f11</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=55">Discus Function</a></td>
 </tr><tr>
-	<td>f12</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=60">Bent Cigar Function</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f12</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=60">Bent Cigar Function</a></td>
 </tr><tr>
-	<td>f13</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=65">Sharp Ridge Function</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f13</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=65">Sharp Ridge Function</a></td>
 </tr><tr>
-	<td>f14</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=70">Different Powers Function</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f14</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=70">Different Powers Function</a></td>
 </tr>
 <tr>
    <th colspan=2 style="text-align:left">4 Multi-modal functions with adequate global structure</th>
 </tr>
 <tr>
-	<td>f15</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=75">Rastrigin Function</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f15</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=75">Rastrigin Function</a></td>
 </tr><tr>
-	<td>f16</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=80">Weierstrass Function</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f16</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=80">Weierstrass Function</a></td>
 </tr><tr>
-	<td>f17</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=85">Schaffer's F7 Function</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f17</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=85">Schaffer's F7 Function</a></td>
 </tr><tr>
-	<td>f18</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=90">Schaffer's F7 Function, moderately ill-conditioned</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f18</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=90">Schaffer's F7 Function, moderately ill-conditioned</a></td>
 </tr><tr>
-	<td>f19</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=95">Composite Griewank-Rosenbrock Function F8F2</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f19</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=95">Composite Griewank-Rosenbrock Function F8F2</a></td>
 </tr>
 <tr>
    <th colspan=2 style="text-align:left">5 Multi-modal functions with weak global structure</th>
 </tr>
 <tr>
-	<td>f20</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=100">Schwefel Function</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f20</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=100">Schwefel Function</a></td>
 </tr><tr>
-	<td>f21</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=105">Gallagher's Gaussian 101-me Peaks Function</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f21</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=105">Gallagher's Gaussian 101-me Peaks Function</a></td>
 </tr><tr>
-	<td>f22</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=110">Gallagher's Gaussian 21-hi Peaks Function</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f22</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=110">Gallagher's Gaussian 21-hi Peaks Function</a></td>
 </tr><tr>
-	<td>f23</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=115">Katsuura Function</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f23</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=115">Katsuura Function</a></td>
 </tr><tr>
-	<td>f24</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=120">Lunacek bi-Rastrigin Function</a></td>
+	<td style="padding-top:0px; padding-bottom:0px;">f24</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=120">Lunacek bi-Rastrigin Function</a></td>
 </tr>
 </table>
 
