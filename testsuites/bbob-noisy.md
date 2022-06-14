@@ -1,7 +1,7 @@
 ---
 layout: default
 permalink: /testsuites/bbob-noisy
-parent: test suites
+parent: Test Suites
 nav_order: 2
 title: bbob-noisy
 has_toc: false

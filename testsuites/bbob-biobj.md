@@ -1,7 +1,7 @@
 ---
 layout: default
 permalink: /testsuites/bbob-biobj
-parent: test suites
+parent: Test Suites
 nav_order: 3
 title: bbob-biobj
 has_toc: false
