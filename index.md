@@ -5,6 +5,7 @@ nav_exclude: true
 title: Home
 ---
 # COCO: COmparing Continuous Optimizers  #
+---
 
 <center>
 <a HREF="http://numbbo.github.io/coco/shortintro/coco.png"><img src="./shortintro/coco.png" width="90%" c></a>
