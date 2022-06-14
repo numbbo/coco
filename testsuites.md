@@ -4,7 +4,7 @@ permalink: /testsuites
 nav_order: 2
 has_children: true
 title: Test Suites
-has_toc: false
+has_toc: true
 ---
 
 
