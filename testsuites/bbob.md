@@ -23,7 +23,7 @@ has_toc: false
 
 <table align="center" style="width:50%">
 <tr>
-   <th colspan=2 style="text-align:left">1 Separable Functions</th>
+   <th colspan=2 style="text-align:left; padding-bottom: 0px;">1 Separable Functions</th>
 </tr>
 <tr>
 	<td style="width:5%; padding-top:0px; padding-bottom: 0px;">f1</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=5">Sphere Function</a></td>
@@ -37,7 +37,7 @@ has_toc: false
 	<td style="padding-top:0px; padding-bottom:0px;">f5</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=25">Linear Slope</a></td>
 </tr>
 <tr>
-   <th colspan=2 style="text-align:left">2 Functions with low or moderate conditioning</th>
+   <th colspan=2 style="text-align:left; padding-bottom: 0px;">2 Functions with low or moderate conditioning</th>
 </tr>
 <tr>
 	<td style="padding-top:0px; padding-bottom:0px;">f6</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=30">Attractive Sector Function</a></td>
@@ -49,7 +49,7 @@ has_toc: false
 	<td style="padding-top:0px; padding-bottom:0px;">f9</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=45">Rosenbrock Function, rotated</a></td>
 </tr>
 <tr>
-   <th colspan=2 style="text-align:left">3 Functions with high conditioning and unimodal</th>
+   <th colspan=2 style="text-align:left; padding-bottom: 0px;">3 Functions with high conditioning and unimodal</th>
 </tr>
 <tr>
 	<td style="padding-top:0px; padding-bottom:0px;">f10</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=50">Ellipsoidal Function</a></td>
@@ -63,7 +63,7 @@ has_toc: false
 	<td style="padding-top:0px; padding-bottom:0px;">f14</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=70">Different Powers Function</a></td>
 </tr>
 <tr>
-   <th colspan=2 style="text-align:left">4 Multi-modal functions with adequate global structure</th>
+   <th colspan=2 style="text-align:left; padding-bottom: 0px;">4 Multi-modal functions with adequate global structure</th>
 </tr>
 <tr>
 	<td style="padding-top:0px; padding-bottom:0px;">f15</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=75">Rastrigin Function</a></td>
@@ -77,7 +77,7 @@ has_toc: false
 	<td style="padding-top:0px; padding-bottom:0px;">f19</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=95">Composite Griewank-Rosenbrock Function F8F2</a></td>
 </tr>
 <tr>
-   <th colspan=2 style="text-align:left">5 Multi-modal functions with weak global structure</th>
+   <th colspan=2 style="text-align:left; padding-bottom: 0px;">5 Multi-modal functions with weak global structure</th>
 </tr>
 <tr>
 	<td style="padding-top:0px; padding-bottom:0px;">f20</td><td style="padding-top:0px; padding-bottom:0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=100">Schwefel Function</a></td>
