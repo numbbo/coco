@@ -122,6 +122,8 @@ reference_algorithm_styles = {'linestyle': '-', 'linewidth': 5,  # used in compa
                               'color': 'linen',  # from heavy to light: 'antiquewhite', 'wheat', 'linen'
                               # we could set 'markerfacecolor' and/or 'markeredgecolor' differently
                              }
+marker_size_multiplier = 1.1
+'''multiply all marker sizes in below line_styles, used in compall.pprldmany.main'''
 line_styles = [  # used by ppfigs and pprlmany, linewidth=1 can also be set here but is also modified later using style and zorder
     {'color': '#1874b4', 'linestyle': '-', 'marker': 'o', 'markersize': 7, 'zorder': 2},
     {'color': '#ff7d0b', 'linestyle': '-', 'marker': 'd', 'markersize': 7, 'zorder': 2},
@@ -134,8 +136,8 @@ line_styles = [  # used by ppfigs and pprlmany, linewidth=1 can also be set here
     {'color': '#7f7f7f', 'linestyle': '-', 'marker': 'D', 'markersize': 6, 'zorder': 2},
     {'color': '#bcbd1a', 'linestyle': '-', 'marker': '<', 'markersize': 8, 'zorder': 2},
     {'color': '#440154', 'linestyle': '--', 'marker': '>', 'markersize': 8, 'zorder': 2.001},
-    {'color': '#00ff5c', 'linestyle': '-', 'marker': 'h', 'markersize': 8, 'zorder': 1.999},
-    {'color': '#2500ff', 'linestyle': '--', 'marker': 'o', 'markersize': 7, 'zorder': 2.001},
+#    {'color': '#00ff5c', 'linestyle': '-', 'marker': 'h', 'markersize': 8, 'zorder': 1.999},  # shiny green
+    {'color': '#2500bb', 'linestyle': '--', 'marker': 'o', 'markersize': 7, 'zorder': 2.001},  # blue, ff->bb
     {'color': '#f800fd', 'linestyle': '--', 'marker': 'd', 'markersize': 7, 'zorder': 2.001},
     {'color': '#91b6e8', 'linestyle': '-', 'marker': '*', 'markersize': 8.5, 'zorder': 1.4},
     {'color': '#ffae5f', 'linestyle': '-', 'marker': 'P', 'markersize': 8, 'zorder': 1.4},
@@ -157,7 +159,7 @@ line_styles = [  # used by ppfigs and pprlmany, linewidth=1 can also be set here
     {'color': '#bcbd1a', 'linestyle': '--', 'marker': '^', 'markersize': 8, 'zorder': 2.001},
     {'color': '#440154', 'linestyle': '-', 'marker': 'D', 'markersize': 6, 'zorder': 2},
     {'color': '#00ff5c', 'linestyle': '--', 'marker': '<', 'markersize': 8, 'zorder': 2.001},
-    {'color': '#2500ff', 'linestyle': '-', 'marker': '>', 'markersize': 8, 'zorder': 1.999},
+    {'color': '#2500bb', 'linestyle': '-', 'marker': '>', 'markersize': 8, 'zorder': 1.999},  # blue, ff->bb
     {'color': '#f800fd', 'linestyle': '-', 'marker': 'h', 'markersize': 8, 'zorder': 1.999},
     {'color': '#91b6e8', 'linestyle': '--', 'marker': 'o', 'markersize': 7, 'zorder': 1.4},
     {'color': '#ffae5f', 'linestyle': '--', 'marker': 'd', 'markersize': 7, 'zorder': 1.4},
@@ -175,6 +177,8 @@ line_styles = [  # used by ppfigs and pprlmany, linewidth=1 can also be set here
     {'color': '#8c493c', 'linestyle': '-', 'marker': 'd', 'markersize': 7, 'zorder': 2}]
 
 # see old_line_styles for older line styles
+
+figsize = [6.4, 4.8]  # == rcParamsDefault['figure.figsize'], used in compall.pprldmany
 
 minmax_algorithm_fontsize = [9, 14]  # used in pprldmany, depending on the number of algorithms
 
