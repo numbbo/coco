@@ -26,7 +26,7 @@ has_toc: false
    <th colspan=2 style="text-align:left">1 Separable Functions</th>
 </tr>
 <tr>
-	<td style="width:5%">f1</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=5">Sphere Function</a></td>
+	<td style="width:5%; padding-top:100px; padding-bottom: 0px;">f1</td><td style="padding-top:100px; padding-bottom: 0px;"><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=5">Sphere Function</a></td>
 </tr><tr>
 	<td>f2</td><td><a href="https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf#page=10">Separable Ellipsoidal Function</a></td>
 </tr><tr>
