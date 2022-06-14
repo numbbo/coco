@@ -3,7 +3,7 @@ layout: default
 permalink: /testsuites
 nav_order: 2
 has_children: true
-title: test suites
+title: Test Suites
 has_toc: false
 ---
 
