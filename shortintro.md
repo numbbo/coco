@@ -11,7 +11,11 @@ title: What is COCO?
 
 <a HREF="http://numbbo.github.io/coco/shortintro/coco.png"><img src="./shortintro/coco.png" width="70%"></a>
 
-For a general introduction to the COCO software and its underlying concepts of performance assessment, please see this [Optimization Methods and Software journal article](https://www.tandfonline.com/doi/abs/10.1080/10556788.2020.1808977) or its publicly available version [on HAL](https://hal.inria.fr/hal-01294124v4/document)
+For a general introduction to the COCO software and its underlying concepts of performance assessment, please see this article 
+
+> [Nikolaus Hansen, Anne Auger, Raymond Ros, Olaf Mersmann, Tea Tušar & Dimo Brockhoff (2021) COCO: a platform for comparing continuous optimizers in a black-box setting, Optimization Methods and Software, 36:1, 114-144](https://www.tandfonline.com/doi/abs/10.1080/10556788.2020.1808977) 
+
+or its publicly available version [on HAL](https://hal.inria.fr/hal-01294124v4/document).
 
 
 
