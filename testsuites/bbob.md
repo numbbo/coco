@@ -95,7 +95,7 @@ has_toc: false
 
 Only f1 and f5 are purely quadratic or linear respectively.
 
-See also N. Hansen et al (2010): Comparing Results of 31 Algorithms from the Black-Box Optimization Benchmarking BBOB-2009. Workshop Proceedings of the GECCO Genetic and Evolutionary Computation Conference 2010, ACM. 1) 
+See also [N. Hansen et al (2010)](https://dl.acm.org/doi/pdf/10.1145/1830761.1830790). [Comparing Results of 31 Algorithms from the Black-Box Optimization Benchmarking BBOB-2009.](https://dl.acm.org/doi/pdf/10.1145/1830761.1830790) [Workshop Proceedings of the GECCO Genetic and Evolutionary Computation Conference 2010, ACM.](https://dl.acm.org/doi/pdf/10.1145/1830761.1830790) 
 
 A list of all so-far benchmarked algorithms on the bbob suite together with their links to papers describing the experiment can be found in our <a href="https://numbbo.github.io/data-archive/bbob/">bbob data archive</a>. Postprocessed data can be found <a href="https://numbbo.github.io/ppdata-archive">here</a>. For detailed explanations of how to use the functions in a COCO benchmarking experiment, please go to the <a href="https://github.com/numbbo/coco">COCO code page</a> on Github.
 
