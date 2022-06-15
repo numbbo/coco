@@ -16,7 +16,7 @@ has_toc: false
 			The blackbox optimization benchmarking (bbob) test suite is COCO's standard test suite with 24 noiseless, single-objective and scalable test functions. Each function is provided in dimensions (2, 3, 5, 10, 20, 40) and in 15 instances, however also available for arbitrary dimensions and number of instances. Links to their definition with visualizations are provided in the table.
 		</td>
 		<td style="padding-top:0px; padding-bottom:0px;">
-			<a href="ecdf-bbob.html"><img src="examplefigure_all.png" alt="ECDF of runtimes for 31 algorithms on the bbob suite" width="100%"/></a>
+			<a href="ecdf-bbob.html"><img src="pprldmany_default.svg" alt="ECDF of runtimes for 31 algorithms on the bbob suite" width="100%"/></a>
 		</td>
 	</tr>
 </table>

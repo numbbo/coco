@@ -10,7 +10,7 @@ has_toc: false
 -----------------------------------------------------------
 
 <p style="text-align:center">
-   <a href="examplefigure_all.png"><img src="examplefigure_all.png" alt="ECDF of runtimes for 31 algorithms on the bbob suite" width="50%"/></a>
+   <a href="pprldmany_default.svg"><img src="pprldmany_default.svg" alt="ECDF of runtimes for 31 algorithms on the bbob suite" width="50%"/></a>
 </p>
 
 Empirical runtime distributions (runtime in number of function evaluations divided by dimension) on all functions with target values in {100, … , 1e-8} in dimension 10. The cross indicates the maximum number of function evaluations. A decline in steepness right after the cross (e.g. for IPOP-SEP-CMA-ES) indicates that the maximum number of function evaluations should have been chosen larger. A steep increase right after the cross (e.g. for simple GA) indicates that a restart should have been invoked earlier. 
