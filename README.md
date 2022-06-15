@@ -33,12 +33,12 @@ from using the platform:
 ![General COCO Structure](coco.png)
 
 For more general information:
-- [GitHub.io documentation pages](https://numbbo.github.io/coco/)
-- The article on benchmarking guidelines and an introduction to [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting (pdf)](https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977) or at [arXiv](https://arxiv.org/abs/1603.08785).
+- The [GitHub.io documentation pages](https://numbbo.github.io/coco/) for COCO
+- The article on benchmarking guidelines and an introduction to [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting (pdf)](https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977) or at [arXiv](https://arxiv.org/abs/1603.08785)
 - The [COCO experimental setup](http://numbbo.github.io/coco-doc/experimental-setup) description
-- [BBOB workshops series](http://numbbo.github.io/workshops)
-- for COCO/BBOB news [register here](http://numbbo.github.io/register)
-- [links below](#Links) to learn even more about the ideas behind COCO.
+- The [BBOB workshops series](http://numbbo.github.io/workshops)
+- For COCO/BBOB news [register here](http://numbbo.github.io/register)
+- See [links below](#Links) to learn even more about the ideas behind COCO
 
 
 Requirements  <a name="Requirements"></a>
