@@ -129,7 +129,7 @@ workflows:
   test-matrix:
     jobs:
       - test_ubuntu_rolling_python3
-      branches:
-        ignore:
-          - gh-pages
+    branches:
+      ignore:
+        - gh-pages
 
