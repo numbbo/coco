@@ -5,7 +5,7 @@ on:
     branches-ignore:
       - 'gh-pages'
     paths-ignore:
-    - 'README.md'
+      - 'README.md'
 
 jobs:
 
