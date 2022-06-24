@@ -5,6 +5,7 @@ parent: Test Suites
 nav_order: 1
 title: bbob
 has_toc: false
+nav_no_fold: true
 ---
 
 
