@@ -8,6 +8,8 @@ on:
 jobs:
 
   test_ubuntu_rolling_python3:
+    docker:
+      - image: ubuntu:rolling
     steps:
       - run: echo "nothing to do for the gh-pages branch"
 
