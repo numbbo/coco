@@ -4,3 +4,21 @@ on:
   push:
     branches-ignore:
       - 'gh-pages'
+
+jobs:
+
+  test_ubuntu_rolling_python3:
+    docker:
+      - image: ubuntu:rolling
+        environment:
+          CC: gcc
+    working_directory: ~/coco
+    steps:
+      - checkout
+
+workflows:
+
+  version: 2
+  test-matrix:
+    jobs:
+      - test_ubuntu_rolling_python3
