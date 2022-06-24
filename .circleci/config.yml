@@ -8,13 +8,8 @@ on:
 jobs:
 
   test_ubuntu_rolling_python3:
-    docker:
-      - image: ubuntu:rolling
-        environment:
-          CC: gcc
-    working_directory: ~/coco
     steps:
-      - checkout
+      - run: echo "nothing to do for the gh-pages branch"
 
 workflows:
 
