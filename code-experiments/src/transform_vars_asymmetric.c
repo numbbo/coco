@@ -101,8 +101,7 @@ static void transform_vars_asymmetric_free(void *thing) {
 static coco_problem_t *transform_vars_asymmetric(coco_problem_t *inner_problem, const double beta) {
   
   size_t i;
-  int is_feasible;
-  double alpha, *cons_values;
+  double exponent, *cons_values;
   transform_vars_asymmetric_data_t *data;
   coco_problem_t *problem;
   
@@ -115,27 +114,8 @@ static coco_problem_t *transform_vars_asymmetric(coco_problem_t *inner_problem, 
   if (inner_problem->number_of_objectives > 0)
     problem->evaluate_function = transform_vars_asymmetric_evaluate_function;
     
-  if (inner_problem->number_of_constraints > 0) {
-	  
+  if (inner_problem->number_of_constraints > 0)
     problem->evaluate_constraint = transform_vars_asymmetric_evaluate_constraint;
-    
-    /* Check if the initial solution remains feasible after
-     * the transformation. If not, do a backtracking
-     * towards the origin until it becomes feasible.
-     */
-    if (inner_problem->initial_solution) {
-      cons_values = coco_allocate_vector(problem->number_of_constraints);
-      is_feasible = coco_is_feasible(problem, inner_problem->initial_solution, cons_values);
-      alpha = 0.9;
-      i = 0;
-      while (!is_feasible) {
-        problem->initial_solution[i] *= alpha;
-        is_feasible = coco_is_feasible(problem, problem->initial_solution, cons_values);
-        i = (i + 1) % inner_problem->number_of_variables;
-      }
-      coco_free_memory(cons_values);
-    }
-  }
   
   if (inner_problem->number_of_objectives > 0 && coco_problem_best_parameter_not_zero(inner_problem)) {
     coco_warning("transform_vars_asymmetric(): 'best_parameter' not updated, set to NAN");

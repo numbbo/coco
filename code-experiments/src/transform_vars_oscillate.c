@@ -111,7 +111,7 @@ static coco_problem_t *transform_vars_oscillate(coco_problem_t *inner_problem) {
 	
   size_t i;
   int is_feasible;
-  double alpha, *cons_values;
+  double *cons_values;
   transform_vars_oscillate_data_t *data;
   coco_problem_t *problem;
   data = (transform_vars_oscillate_data_t *) coco_allocate_memory(sizeof(*data));
@@ -123,25 +123,8 @@ static coco_problem_t *transform_vars_oscillate(coco_problem_t *inner_problem) {
   if (inner_problem->number_of_objectives > 0)
     problem->evaluate_function = transform_vars_oscillate_evaluate_function;
     
-  if (inner_problem->number_of_constraints > 0) {
+  if (inner_problem->number_of_constraints > 0)
     problem->evaluate_constraint = transform_vars_oscillate_evaluate_constraint;
-    
-    /* Check if the initial solution remains feasible after
-     * the transformation. If not, do a backtracking
-     * towards the origin until it becomes feasible.
-     */
-    if (inner_problem->initial_solution) {
-      cons_values = coco_allocate_vector(problem->number_of_constraints);
-      is_feasible = coco_is_feasible(problem, inner_problem->initial_solution, cons_values);
-      alpha = 0.9;
-      i = 0;
-      while (!is_feasible) {
-        problem->initial_solution[i] *= alpha;
-        is_feasible = coco_is_feasible(problem, problem->initial_solution, cons_values);
-        i = (i + 1) % inner_problem->number_of_variables;
-      }
-      coco_free_memory(cons_values);
-    }
-  }
+
   return problem;
 }
