@@ -80,7 +80,6 @@ static void transform_vars_asymmetric_evaluate_function(coco_problem_t *problem,
 static void transform_vars_asymmetric_evaluate_constraint(coco_problem_t *problem, 
                                                           const double *x, 
                                                           double *y) {
-  double exponent;
   transform_vars_asymmetric_data_t *data;
   coco_problem_t *inner_problem;
   
@@ -106,9 +105,6 @@ static void transform_vars_asymmetric_free(void *thing) {
  * @brief Creates the transformation.
  */
 static coco_problem_t *transform_vars_asymmetric(coco_problem_t *inner_problem, const double beta) {
-  
-  size_t i;
-  double exponent, *cons_values;
   transform_vars_asymmetric_data_t *data;
   coco_problem_t *problem;
   
