@@ -17,14 +17,37 @@ typedef struct {
   double beta;
 } transform_vars_asymmetric_data_t;
 
+
+/**
+ * @brief Multivariate, coordinate-wise, asymmetric non-linear transformation.
+ */
+static transform_vars_asymmetric_data_t *tasy(transform_vars_asymmetric_data_t *data,
+                                              const double *x,
+                                              int number_of_variables) {
+  size_t i;
+  double exponent;
+
+  for (i = 0; i < number_of_variables; ++i) {
+    if (x[i] > 0.0) {
+      exponent = 1.0
+          + ((data->beta * (double) (long) i) / ((double) (long) number_of_variables - 1.0)) * sqrt(x[i]);
+      data->x[i] = pow(x[i], exponent);
+    } else {
+      data->x[i] = x[i];
+    }
+  }
+  return data;
+}
+
+
 /**
  * @brief Evaluates the transformed function.
  */
 static void transform_vars_asymmetric_evaluate_function(coco_problem_t *problem, 
                                                         const double *x, 
                                                         double *y) {
-  size_t i;
-  double exponent, *cons_values;
+
+  double *cons_values;
   int is_feasible;
   transform_vars_asymmetric_data_t *data;
   coco_problem_t *inner_problem;
@@ -37,15 +60,7 @@ static void transform_vars_asymmetric_evaluate_function(coco_problem_t *problem,
   data = (transform_vars_asymmetric_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
-  for (i = 0; i < problem->number_of_variables; ++i) {
-    if (x[i] > 0.0) {
-      exponent = 1.0
-          + ((data->beta * (double) (long) i) / ((double) (long) problem->number_of_variables - 1.0)) * sqrt(x[i]);
-      data->x[i] = pow(x[i], exponent);
-    } else {
-      data->x[i] = x[i];
-    }
-  }
+  data = tasy(data, x, problem->number_of_variables);
   
   coco_evaluate_function(inner_problem, data->x, y);
   
@@ -65,7 +80,6 @@ static void transform_vars_asymmetric_evaluate_function(coco_problem_t *problem,
 static void transform_vars_asymmetric_evaluate_constraint(coco_problem_t *problem, 
                                                           const double *x, 
                                                           double *y) {
-  size_t i;
   double exponent;
   transform_vars_asymmetric_data_t *data;
   coco_problem_t *inner_problem;
@@ -78,15 +92,8 @@ static void transform_vars_asymmetric_evaluate_constraint(coco_problem_t *proble
   data = (transform_vars_asymmetric_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
-  for (i = 0; i < problem->number_of_variables; ++i) {
-    if (x[i] > 0.0) {
-      exponent = 1.0
-          + ((data->beta * (double) (long) i) / ((double) (long) problem->number_of_variables - 1.0)) * sqrt(x[i]);
-      data->x[i] = pow(x[i], exponent);
-    } else {
-      data->x[i] = x[i];
-    }
-  }
+  data = tasy(data, x, problem->number_of_variables);
+
   coco_evaluate_constraint(inner_problem, data->x, y);
 }
 
