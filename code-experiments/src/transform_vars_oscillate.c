@@ -17,6 +17,24 @@ typedef struct {
 } transform_vars_oscillate_data_t;
 
 
+static double tosz_uv(double xi, double alpha) {
+  double yi;
+  double tmp, base;
+  if (xi > 0.0) {
+      tmp = log(xi) / alpha;
+      base = exp(tmp + 0.49 * (sin(tmp) + sin(0.79 * tmp)));
+      yi = pow(base, alpha);
+    } else if (xi < 0.0) {
+      tmp = log(-xi) / alpha;
+      base = exp(tmp + 0.49 * (sin(0.55 * tmp) + sin(0.31 * tmp)));
+      yi = -pow(base, alpha);
+    } else {
+      yi = 0.0;
+    }
+  return yi
+}
+
+
 /**
  * @brief Multivariate, coordinate-wise, oscillating non-linear transformation.
  */
@@ -25,21 +43,9 @@ static transform_vars_oscillate_data_t *tosz(transform_vars_oscillate_data_t *da
                                               int number_of_variables) {
   size_t i;
   static const double alpha = 0.1;
-  double tmp, base, *oscillated_x;
 
-  oscillated_x = data->oscillated_x; /* short cut to make code more readable */
   for (i = 0; i < number_of_variables; ++i) {
-    if (x[i] > 0.0) {
-      tmp = log(x[i]) / alpha;
-      base = exp(tmp + 0.49 * (sin(tmp) + sin(0.79 * tmp)));
-      oscillated_x[i] = pow(base, alpha);
-    } else if (x[i] < 0.0) {
-      tmp = log(-x[i]) / alpha;
-      base = exp(tmp + 0.49 * (sin(0.55 * tmp) + sin(0.31 * tmp)));
-      oscillated_x[i] = -pow(base, alpha);
-    } else {
-      oscillated_x[i] = 0.0;
-    }
+    data->oscillated_x[i] = tosz_uv(x[i], alpha)
   }
   return data;
 }

@@ -18,6 +18,19 @@ typedef struct {
 } transform_vars_asymmetric_data_t;
 
 
+static double tasy_uv(double xi, double beta, size_t i, int number_of_variables) {
+  double yi;
+  double exponent;
+  if (xi > 0.0) {
+        exponent = 1.0
+            + ((beta * (double) (long) i) / ((double) (long) number_of_variables - 1.0)) * sqrt(xi);
+        yi = pow(xi, exponent);
+      } else {
+        yi = xi;
+  return yi
+}
+
+
 /**
  * @brief Multivariate, coordinate-wise, asymmetric non-linear transformation.
  */
@@ -25,16 +38,9 @@ static transform_vars_asymmetric_data_t *tasy(transform_vars_asymmetric_data_t *
                                               const double *x,
                                               int number_of_variables) {
   size_t i;
-  double exponent;
 
   for (i = 0; i < number_of_variables; ++i) {
-    if (x[i] > 0.0) {
-      exponent = 1.0
-          + ((data->beta * (double) (long) i) / ((double) (long) number_of_variables - 1.0)) * sqrt(x[i]);
-      data->x[i] = pow(x[i], exponent);
-    } else {
-      data->x[i] = x[i];
-    }
+      data->x[i] = tasy_uv(x[i], data->beta, i, number_of_variables);
   }
   return data;
 }
