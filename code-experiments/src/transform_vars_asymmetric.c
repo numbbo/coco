@@ -18,7 +18,7 @@ typedef struct {
 } transform_vars_asymmetric_data_t;
 
 
-static double tasy_uv(double xi, double beta, size_t i, int number_of_variables) {
+static double tasy_uv(double xi, double beta, size_t i, size_t number_of_variables) {
   double yi;
   double exponent;
   if (xi > 0.0) {
@@ -27,7 +27,8 @@ static double tasy_uv(double xi, double beta, size_t i, int number_of_variables)
         yi = pow(xi, exponent);
       } else {
         yi = xi;
-  return yi
+      }
+  return yi;
 }
 
 
@@ -36,7 +37,7 @@ static double tasy_uv(double xi, double beta, size_t i, int number_of_variables)
  */
 static transform_vars_asymmetric_data_t *tasy(transform_vars_asymmetric_data_t *data,
                                               const double *x,
-                                              int number_of_variables) {
+                                              size_t number_of_variables) {
   size_t i;
 
   for (i = 0; i < number_of_variables; ++i) {

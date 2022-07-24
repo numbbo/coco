@@ -1,6 +1,9 @@
 /**
  * @file transform_vars_oscillate.c
  * @brief Implementation of oscillating the decision values.
+ * @author ??
+ * @author Paul Dufossé
+ * @note Edited to fulfill needs from the constrained test bed.
  */
 
 #include <math.h>
@@ -31,7 +34,7 @@ static double tosz_uv(double xi, double alpha) {
     } else {
       yi = 0.0;
     }
-  return yi
+  return yi;
 }
 
 
@@ -40,12 +43,12 @@ static double tosz_uv(double xi, double alpha) {
  */
 static transform_vars_oscillate_data_t *tosz(transform_vars_oscillate_data_t *data,
                                               const double *x,
-                                              int number_of_variables) {
+                                              size_t number_of_variables) {
   size_t i;
   static const double alpha = 0.1;
 
   for (i = 0; i < number_of_variables; ++i) {
-    data->oscillated_x[i] = tosz_uv(x[i], alpha)
+    data->oscillated_x[i] = tosz_uv(x[i], alpha);
   }
   return data;
 }
