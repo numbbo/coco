@@ -15,6 +15,9 @@ has_toc: false
 The bbob-noisy test suite contains 30 noisy, scalable test functions with three different noise types and levels. Each function is provided in various dimension (2, 3, 5, 10, 20, 40) and available in an arbitrary number of instances.
 
 
+! Note that, for now, experiments on this test suite must be done with the [previous code base](oldcode/bboball15.03.tar.gz).
+
+
 The bbob-noisy functions
 ------------------------
 
