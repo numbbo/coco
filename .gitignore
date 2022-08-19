@@ -1,0 +1,9 @@
+VERSION
+REVISION
+
+# build files
+__pycache__
+*.o
+
+# tests
+code-experiments/test/example-test
