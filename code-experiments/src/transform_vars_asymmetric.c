@@ -8,6 +8,7 @@
 
 #include "coco.h"
 #include "coco_problem.c"
+#include "brentq.c"
 
 /**
  * @brief Data type for transform_vars_asymmetric.
@@ -17,13 +18,18 @@ typedef struct {
   double beta;
 } transform_vars_asymmetric_data_t;
 
+/**
+ * @brief Data type for univariate function tasy_uv.
+ */
 typedef struct {
   double beta;
   size_t i;
   size_t n;
 } tasy_data;
 
-
+/**
+ * @brief Univariate oscillating non-linear transformation.
+ */
 static double tasy_uv(double xi, tasy_data *d) {
   double yi;
   double exponent;
@@ -35,6 +41,15 @@ static double tasy_uv(double xi, tasy_data *d) {
         yi = xi;
       }
   return yi;
+}
+
+/**
+ * @brief Inverse of oscillating non-linear transformation with brentq.
+ */
+static double tasy_uv_inv(double yi, tasy_data *d) {
+  double xi;
+  xi = brentinv(tasy_uv, yi, d);
+  return xi;
 }
 
 

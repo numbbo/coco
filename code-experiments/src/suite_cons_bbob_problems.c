@@ -297,6 +297,7 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
   problem->evaluations_constraints = 0;
 
   problem = transform_vars_oscillate(problem);
+  transform_inv_feas_dir_oscillate(problem, feasible_direction);
      
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin.

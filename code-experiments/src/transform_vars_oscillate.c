@@ -11,30 +11,51 @@
 
 #include "coco.h"
 #include "coco_problem.c"
+#include "brentq.c"
 
 /**
  * @brief Data type for transform_vars_oscillate.
  */
 typedef struct {
+  double alpha;
   double *oscillated_x;
 } transform_vars_oscillate_data_t;
 
+/**
+ * @brief Data type for univariate function tosz_uv
+ */
+typedef struct {
+  double alpha;
+} tosz_data;
 
-static double tosz_uv(double xi, double alpha) {
+
+/**
+ * @brief Univariate oscillating non-linear transformation.
+ */
+static double tosz_uv(double xi, tosz_data *d) {
   double yi;
   double tmp, base;
   if (xi > 0.0) {
-      tmp = log(xi) / alpha;
+      tmp = log(xi) / d->alpha;
       base = exp(tmp + 0.49 * (sin(tmp) + sin(0.79 * tmp)));
-      yi = pow(base, alpha);
+      yi = pow(base, d->alpha);
     } else if (xi < 0.0) {
-      tmp = log(-xi) / alpha;
+      tmp = log(-xi) / d->alpha;
       base = exp(tmp + 0.49 * (sin(0.55 * tmp) + sin(0.31 * tmp)));
-      yi = -pow(base, alpha);
+      yi = -pow(base, d->alpha);
     } else {
       yi = 0.0;
     }
   return yi;
+}
+
+/**
+ * @brief Inverse of oscillating non-linear transformation with brentq.
+ */
+static double tosz_uv_inv(double yi, tosz_data *d) {
+  double xi;
+  xi = brentinv(tosz_uv, yi, d);
+  return xi;
 }
 
 
@@ -45,10 +66,12 @@ static transform_vars_oscillate_data_t *tosz(transform_vars_oscillate_data_t *da
                                               const double *x,
                                               size_t number_of_variables) {
   size_t i;
-  static const double alpha = 0.1;
+  tosz_data *d;
+
+  d->alpha = data->alpha;
 
   for (i = 0; i < number_of_variables; ++i) {
-    data->oscillated_x[i] = tosz_uv(x[i], alpha);
+    data->oscillated_x[i] = tosz_uv(x[i], d);
   }
   return data;
 }
@@ -121,6 +144,7 @@ static coco_problem_t *transform_vars_oscillate(coco_problem_t *inner_problem) {
   transform_vars_oscillate_data_t *data;
   coco_problem_t *problem;
   data = (transform_vars_oscillate_data_t *) coco_allocate_memory(sizeof(*data));
+  data->alpha = 0.1;
   data->oscillated_x = coco_allocate_vector(inner_problem->number_of_variables);
 
   problem = coco_problem_transformed_allocate(inner_problem, data, 
@@ -134,3 +158,17 @@ static coco_problem_t *transform_vars_oscillate(coco_problem_t *inner_problem) {
 
   return problem;
 }
+
+static double *transform_inv_feas_dir_oscillate(coco_problem_t *problem, double *feasible_direction) {
+  size_t i;
+  tasy_data *d;
+
+  data = (transform_vars_oscillate_data_t *) coco_problem_transformed_get_data(problem);
+  d->alpha = data->alpha;
+
+  for (i = 0; i < number_of_variables; ++i) {
+      feasible_direction[i] = tosz_uv_inv(feasible_direction[i], d);
+  }
+  return data;
+}
+
