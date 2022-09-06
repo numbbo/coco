@@ -53,6 +53,10 @@ transform_inv_feas_dir_asymmetric(problem, feasible_direction)  # or this (why p
 
 TODO
 
+### other TODOs:
+
+- License
+- 
 ### Status
 
 06/09/22:

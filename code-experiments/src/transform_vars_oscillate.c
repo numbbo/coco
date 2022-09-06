@@ -57,7 +57,6 @@ static double tosz_uv_inv(double yi, tosz_data *d) {
   return xi;
 }
 
-
 /**
  * @brief Multivariate, coordinate-wise, oscillating non-linear transformation.
  */
@@ -159,7 +158,7 @@ static coco_problem_t *transform_vars_oscillate(coco_problem_t *inner_problem) {
   return problem;
 }
 
-static void transform_inv_feas_dir_oscillate(coco_problem_t *problem, double *feasible_direction) {
+static void transform_inv_feas_dir_oscillate(coco_problem_t *problem) {
   size_t i;
   transform_vars_oscillate_data_t *data;
   tosz_data *d;
@@ -170,7 +169,7 @@ static void transform_inv_feas_dir_oscillate(coco_problem_t *problem, double *fe
   d->alpha = data->alpha;
 
   for (i = 0; i < problem->number_of_variables; ++i) {
-      feasible_direction[i] = tosz_uv_inv(feasible_direction[i], d);
+      problem->initial_solution[i] = tosz_uv_inv(problem->initial_solution[i], d);
   }
   coco_free_memory(d);
 }

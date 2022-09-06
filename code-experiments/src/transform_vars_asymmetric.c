@@ -26,6 +26,7 @@ typedef struct {
  */
 typedef struct {
   double beta;
+  double y;
   size_t i;
   size_t n;
 } tasy_data;
@@ -47,10 +48,11 @@ static double tasy_uv(double xi, tasy_data *d) {
 }
 
 /**
- * @brief Inverse of oscillating non-linear transformation tasy_uv_inv obtainedwith brentq.
+ * @brief Inverse of oscillating non-linear transformation tasy_uv_inv obtained with brentq.
  */
 static double tasy_uv_inv(double yi, tasy_data *d) {
   double xi;
+  d->y = yi;
   xi = brentinv((callback_type) &tasy_uv, yi, d);
   return xi;
 }
@@ -73,6 +75,7 @@ static void tasy(transform_vars_asymmetric_data_t *data,
       d->i = i;
       data->x[i] = tasy_uv(x[i], d);
   }
+  coco_free_memory(d);
 }
 
 
@@ -163,7 +166,7 @@ static coco_problem_t *transform_vars_asymmetric(coco_problem_t *inner_problem, 
   return problem;
 }
 
-static void transform_inv_feas_dir_asymmetric(coco_problem_t *problem, double *feasible_direction) {
+static void transform_inv_feas_dir_asymmetric(coco_problem_t *problem) {
   size_t i;
   transform_vars_asymmetric_data_t *data;
   tasy_data *d;
@@ -176,7 +179,7 @@ static void transform_inv_feas_dir_asymmetric(coco_problem_t *problem, double *f
 
   for (i = 0; i < problem->number_of_variables; ++i) {
       d->i = i;
-      feasible_direction[i] = tasy_uv_inv(feasible_direction[i], d);
+      problem->initial_solution[i] = tasy_uv_inv(problem->initial_solution[i], d);
   }
   coco_free_memory(d);
 }

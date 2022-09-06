@@ -15,7 +15,7 @@
 
 typedef double (*callback_type)(double, void*);
 
-static double brentq(callback_type f, double xa, double xb, double xtol,
+static double brentq(callback_type f, double y, double xa, double xb, double xtol,
                      double rtol, int iter, void *func_data);
 
 static double brentinv(callback_type f, double y, void *func_data);
@@ -55,7 +55,7 @@ static double brentinv(callback_type f, double y, void *func_data);
 
 */
 
-double brentq(callback_type f, double xa, double xb, double xtol, double rtol,
+double brentq(callback_type f, double y, double xa, double xb, double xtol, double rtol,
        int iter, void *func_data)  {
 
     double xpre = xa, xcur = xb;
@@ -65,8 +65,8 @@ double brentq(callback_type f, double xa, double xb, double xtol, double rtol,
     double stry, dpre, dblk;
     int i;
 
-    fpre = (*f)(xpre, func_data);
-    fcur = (*f)(xcur, func_data);
+    fpre = (*f)(xpre, func_data) - y;
+    fcur = (*f)(xcur, func_data) -y;
     if (fpre*fcur > 0) {
         /* TODO: sign error*/
         return 0.;
@@ -140,7 +140,7 @@ double brentq(callback_type f, double xa, double xb, double xtol, double rtol,
             xcur += (sbis > 0 ? delta : -delta);
         }
 
-        fcur = (*f)(xcur, func_data);
+        fcur = (*f)(xcur, func_data) - y;
     }
     /* TODO: not converged*/
     return xcur;
@@ -195,10 +195,7 @@ double brentinv(callback_type f, double y, void *func_data) {
     /*
       TODO: proper use of lambda function ?
     */
-    double fzero(double x, void *func_data) {
-        return (*f)(x, func_data) - y;
-    }
 
-    xres = brentq(fzero, xmin, xmax, 1E-14, 1E-10, 200, func_data);
+    xres = brentq(f, y, xmin, xmax, 1E-14, 1E-10, 200, func_data);
     return xres;
 }
