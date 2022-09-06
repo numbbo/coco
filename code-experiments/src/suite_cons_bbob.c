@@ -36,7 +36,10 @@ static coco_suite_t *suite_cons_bbob_initialize(const char *suite_name) {
  */
 static const char *suite_cons_bbob_get_instances_by_year(const int year) {
 
-  if ((year == 2022) || (year == 0)) {
+  if ((year >= 2022) || (year == 0)) {
+    return "1-15";
+  }
+  else if ((year >= 2009)) {
     return "1-15";
   }
   else {
