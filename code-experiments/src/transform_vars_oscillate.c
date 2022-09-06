@@ -163,11 +163,10 @@ static void transform_inv_feas_dir_oscillate(coco_problem_t *problem, double *fe
   size_t i;
   transform_vars_oscillate_data_t *data;
   tosz_data *d;
+  
+  data = (transform_vars_oscillate_data_t *) coco_problem_transformed_get_data(problem);
 
   d = coco_allocate_memory(sizeof(*d));
-
-
-  data = (transform_vars_oscillate_data_t *) coco_problem_transformed_get_data(problem);
   d->alpha = data->alpha;
 
   for (i = 0; i < problem->number_of_variables; ++i) {

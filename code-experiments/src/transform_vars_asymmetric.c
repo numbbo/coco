@@ -47,7 +47,7 @@ static double tasy_uv(double xi, tasy_data *d) {
 }
 
 /**
- * @brief Inverse of oscillating non-linear transformation with brentq.
+ * @brief Inverse of oscillating non-linear transformation tasy_uv_inv obtainedwith brentq.
  */
 static double tasy_uv_inv(double yi, tasy_data *d) {
   double xi;
@@ -170,6 +170,7 @@ static void transform_inv_feas_dir_asymmetric(coco_problem_t *problem, double *f
   d = coco_allocate_memory(sizeof(*d));
 
   data = (transform_vars_asymmetric_data_t *) coco_problem_transformed_get_data(problem);
+
   d->beta = data->beta;
   d->n = problem->number_of_variables;
 

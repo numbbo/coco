@@ -45,8 +45,8 @@ For example, in  `static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_
 
 ```c
 problem = transform_vars_oscillate(problem);
-feasible_direction = transform_inv_feas_dir_asymmetric(feasible_direction)  # this is new
-transform_inv_feas_dir_asymmetric(feasible_direction)  # or this (why problem is not changed inplace ?)
+feasible_direction = transform_inv_feas_dir_asymmetric(problem, feasible_direction)  # this is new
+transform_inv_feas_dir_asymmetric(problem, feasible_direction)  # or this (why problem is not changed inplace ?)
 ```
 
 ### to the testing code
