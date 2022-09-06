@@ -159,16 +159,16 @@ static coco_problem_t *transform_vars_oscillate(coco_problem_t *inner_problem) {
   return problem;
 }
 
-static double *transform_inv_feas_dir_oscillate(coco_problem_t *problem, double *feasible_direction) {
+static void transform_inv_feas_dir_oscillate(coco_problem_t *problem, double *feasible_direction) {
   size_t i;
-  tasy_data *d;
+  transform_vars_oscillate_data_t *data;
+  tosz_data *d;
 
   data = (transform_vars_oscillate_data_t *) coco_problem_transformed_get_data(problem);
   d->alpha = data->alpha;
 
-  for (i = 0; i < number_of_variables; ++i) {
+  for (i = 0; i < problem->number_of_variables; ++i) {
       feasible_direction[i] = tosz_uv_inv(feasible_direction[i], d);
   }
-  return data;
 }
 

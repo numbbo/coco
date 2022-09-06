@@ -1,6 +1,9 @@
 /**
  * @file transform_vars_asymmetric.c
  * @brief Implementation of performing an asymmetric transformation on decision values.
+ * @author ??
+ * @author Paul Dufossé
+ * @note Edited to fulfill needs from the constrained test bed.
  */
 
 #include <math.h>
@@ -158,4 +161,19 @@ static coco_problem_t *transform_vars_asymmetric(coco_problem_t *inner_problem, 
     coco_vector_set_to_nan(inner_problem->best_parameter, inner_problem->number_of_variables);
   }
   return problem;
+}
+
+static void transform_inv_feas_dir_asymmetric(coco_problem_t *problem, double *feasible_direction) {
+  size_t i;
+  transform_vars_asymmetric_data_t *data;
+  tasy_data *d;
+
+  data = (transform_vars_asymmetric_data_t *) coco_problem_transformed_get_data(problem);
+  d->beta = data->beta;
+  d->n = problem->number_of_variables;
+
+  for (i = 0; i < problem->number_of_variables; ++i) {
+      d->i = i;
+      feasible_direction[i] = tasy_uv_inv(feasible_direction[i], d);
+  }
 }
