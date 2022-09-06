@@ -43,7 +43,7 @@ A proposition is then to have a new function calling the `brentinv` method coord
 
 For example, in  `static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate`, just after
 
-```
+```c
 problem = transform_vars_oscillate(problem);
 feasible_direction = transform_inv_feas_dir_asymmetric(feasible_direction)  # this is new
 transform_inv_feas_dir_asymmetric(feasible_direction)  # or this (why problem is not changed inplace ?)
@@ -52,3 +52,34 @@ transform_inv_feas_dir_asymmetric(feasible_direction)  # or this (why problem is
 ### to the testing code
 
 TODO
+
+### Status
+
+06/09/22:
+- code compiles but instantiation of the bbob-constrained suite in python crashes
+- if `transform_inv_feas_dir_*` is not used, the code fails at runtime calling a function where a nonlin transform is applied
+Understand [function points](https://www.geeksforgeeks.org/function-pointer-in-c/)
+
+Which one ?
+
+```c
+typedef double (*callback_type)(double, void*);
+```
+
+```c
+static double tosz_uv_inv(double yi, tosz_data *d) {
+  double xi;
+  callback_type fun_ptr = &tosz_uv;
+  xi = brentinv(fun_ptr, yi, d);
+  return xi;
+}
+```
+
+```c
+static double tosz_uv_inv(double yi, tosz_data *d) {
+  double xi;
+  double (*fun_ptr)(double, void*) = &tosz_uv;
+  xi = brentinv(fun_ptr, yi, d);
+  return xi;
+}
+```

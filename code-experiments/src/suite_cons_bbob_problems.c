@@ -294,10 +294,10 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
    * and g-evaluations counters to zero.
    */
   problem->evaluations = 0;
+
   problem->evaluations_constraints = 0;
 
   problem = transform_vars_oscillate(problem);
-  transform_inv_feas_dir_oscillate(problem, feasible_direction);
      
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin.
@@ -621,7 +621,8 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
   problem->evaluations_constraints = 0;
      
   problem = transform_vars_asymmetric(problem, 0.2);
-     
+  /*transform_inv_feas_dir_asymmetric(problem, feasible_direction)
+     */
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin. 
    */

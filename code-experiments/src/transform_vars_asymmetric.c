@@ -51,7 +51,7 @@ static double tasy_uv(double xi, tasy_data *d) {
  */
 static double tasy_uv_inv(double yi, tasy_data *d) {
   double xi;
-  xi = brentinv(tasy_uv, yi, d);
+  xi = brentinv((callback_type) &tasy_uv, yi, d);
   return xi;
 }
 
@@ -59,11 +59,12 @@ static double tasy_uv_inv(double yi, tasy_data *d) {
 /**
  * @brief Multivariate, coordinate-wise, asymmetric non-linear transformation.
  */
-static transform_vars_asymmetric_data_t *tasy(transform_vars_asymmetric_data_t *data,
+static void tasy(transform_vars_asymmetric_data_t *data,
                                               const double *x,
                                               size_t number_of_variables) {
   size_t i;
   tasy_data *d;
+  d = coco_allocate_memory(sizeof(*d));
 
   d->beta = data->beta;
   d->n = number_of_variables;
@@ -72,7 +73,6 @@ static transform_vars_asymmetric_data_t *tasy(transform_vars_asymmetric_data_t *
       d->i = i;
       data->x[i] = tasy_uv(x[i], d);
   }
-  return data;
 }
 
 
@@ -96,7 +96,7 @@ static void transform_vars_asymmetric_evaluate_function(coco_problem_t *problem,
   data = (transform_vars_asymmetric_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
-  data = tasy(data, x, problem->number_of_variables);
+  tasy(data, x, problem->number_of_variables);
   
   coco_evaluate_function(inner_problem, data->x, y);
   
@@ -127,7 +127,7 @@ static void transform_vars_asymmetric_evaluate_constraint(coco_problem_t *proble
   data = (transform_vars_asymmetric_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
-  data = tasy(data, x, problem->number_of_variables);
+  tasy(data, x, problem->number_of_variables);
 
   coco_evaluate_constraint(inner_problem, data->x, y);
 }
@@ -167,6 +167,7 @@ static void transform_inv_feas_dir_asymmetric(coco_problem_t *problem, double *f
   size_t i;
   transform_vars_asymmetric_data_t *data;
   tasy_data *d;
+  d = coco_allocate_memory(sizeof(*d));
 
   data = (transform_vars_asymmetric_data_t *) coco_problem_transformed_get_data(problem);
   d->beta = data->beta;
@@ -176,4 +177,5 @@ static void transform_inv_feas_dir_asymmetric(coco_problem_t *problem, double *f
       d->i = i;
       feasible_direction[i] = tasy_uv_inv(feasible_direction[i], d);
   }
+  coco_free_memory(d);
 }

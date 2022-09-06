@@ -28,7 +28,6 @@ typedef struct {
   double alpha;
 } tosz_data;
 
-
 /**
  * @brief Univariate oscillating non-linear transformation.
  */
@@ -54,7 +53,7 @@ static double tosz_uv(double xi, tosz_data *d) {
  */
 static double tosz_uv_inv(double yi, tosz_data *d) {
   double xi;
-  xi = brentinv(tosz_uv, yi, d);
+  xi = brentinv((callback_type) &tosz_uv, yi, d);
   return xi;
 }
 
@@ -62,18 +61,19 @@ static double tosz_uv_inv(double yi, tosz_data *d) {
 /**
  * @brief Multivariate, coordinate-wise, oscillating non-linear transformation.
  */
-static transform_vars_oscillate_data_t *tosz(transform_vars_oscillate_data_t *data,
+static void tosz(transform_vars_oscillate_data_t *data,
                                               const double *x,
                                               size_t number_of_variables) {
   size_t i;
   tosz_data *d;
+  d = coco_allocate_memory(sizeof(*d));
 
   d->alpha = data->alpha;
 
   for (i = 0; i < number_of_variables; ++i) {
     data->oscillated_x[i] = tosz_uv(x[i], d);
   }
-  return data;
+  coco_free_memory(d);
 }
 
 
@@ -95,7 +95,7 @@ static void transform_vars_oscillate_evaluate_function(coco_problem_t *problem, 
 
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
-  data = tosz(data, x, problem->number_of_variables);
+  tosz(data, x, problem->number_of_variables);
 
   coco_evaluate_function(inner_problem, data->oscillated_x, y);
   
@@ -124,7 +124,7 @@ static void transform_vars_oscillate_evaluate_constraint(coco_problem_t *problem
   data = (transform_vars_oscillate_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
-  data = tosz(data, x, problem->number_of_variables);
+  tosz(data, x, problem->number_of_variables);
 
   coco_evaluate_constraint(inner_problem, data->oscillated_x, y);
 }
@@ -164,11 +164,15 @@ static void transform_inv_feas_dir_oscillate(coco_problem_t *problem, double *fe
   transform_vars_oscillate_data_t *data;
   tosz_data *d;
 
+  d = coco_allocate_memory(sizeof(*d));
+
+
   data = (transform_vars_oscillate_data_t *) coco_problem_transformed_get_data(problem);
   d->alpha = data->alpha;
 
   for (i = 0; i < problem->number_of_variables; ++i) {
       feasible_direction[i] = tosz_uv_inv(feasible_direction[i], d);
   }
+  coco_free_memory(d);
 }
 
