@@ -49,7 +49,7 @@ static double tosz_uv(double xi, tosz_data *d) {
 }
 
 /**
- * @brief Inverse of oscillating non-linear transformation with brentq.
+ * @brief Inverse of oscillating non-linear transformation tosz_uv_inv obtained with brentq.
  */
 static double tosz_uv_inv(double yi, tosz_data *d) {
   double xi;

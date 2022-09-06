@@ -43,7 +43,7 @@ static double brentinv(callback_type f, double y, void *func_data);
   *  |fa| < |fp| < |fb|
 
   is satisfied. That is, the function value is decreasing as we go along.
-  Note the 4 above implies that the right inequlity already holds.
+  Note the 4 above implies that the right inequality already holds.
 
   The first check is that xa is still to the left of the root. If not, xb is
   replaced by xp and the interval reverses, with xb < xa. In this situation
