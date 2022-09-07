@@ -158,19 +158,51 @@ static coco_problem_t *transform_vars_oscillate(coco_problem_t *inner_problem) {
   return problem;
 }
 
-static void transform_inv_feas_dir_oscillate(coco_problem_t *problem) {
+static void transform_inv_feas_dir_oscillate(coco_problem_t *problem, const double *xopt) {
   size_t i;
+  size_t j;
+  int is_in_bounds;
+  double di;
+  double xi;
+  double *sol = NULL;
+  double halving_factor = .5;
+
   transform_vars_oscillate_data_t *data;
   tosz_data *d;
-  
-  data = (transform_vars_oscillate_data_t *) coco_problem_transformed_get_data(problem);
 
+  sol = coco_allocate_vector(problem->number_of_variables);
   d = coco_allocate_memory(sizeof(*d));
+
+  data = (transform_vars_oscillate_data_t *) coco_problem_transformed_get_data(problem);
   d->alpha = data->alpha;
 
+  j = 0;
+  while (1) {
+
+    for (i = 0; i < problem->number_of_variables; ++i) {
+      di = tosz_uv_inv(problem->initial_solution[i] * pow(halving_factor, (double) (long) j), d);
+      xi = di + xopt[i];
+      is_in_bounds = (int) (-5.0 < xi  && xi < 5.0);
+      /* Line search for the inverse-transformed feasible initial solution
+         to remain within the bounds
+        */
+      if (!is_in_bounds) {
+        j = j + 1;
+        break;
+      }
+      sol[i] = di;
+    }
+    if (!is_in_bounds){
+      continue;
+    }
+    else {
+      break;
+    }   
+  }
   for (i = 0; i < problem->number_of_variables; ++i) {
-      problem->initial_solution[i] = tosz_uv_inv(problem->initial_solution[i], d);
+    problem->initial_solution[i] = sol[i];
   }
   coco_free_memory(d);
+  coco_free_memory(sol);
 }
 
