@@ -92,6 +92,8 @@
 #include "f_rastrigin.c"
 #include "f_sphere.c"
 
+#include "transform_vars_composed.c"
+
 /**
  * @brief Calculates the objective function type based on the value
  *        of "function"
@@ -626,7 +628,7 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
   problem->evaluations_constraints = 0;
      
   problem = transform_vars_asymmetric(problem, 0.2);
-  transform_inv_feas_dir_asymmetric(problem);
+  transform_inv_feas_dir_asymmetric(problem, xopt);
 
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin. 
@@ -787,10 +789,8 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   problem->evaluations_constraints = 0;
   
   problem = transform_vars_asymmetric(problem, 0.2);
-  transform_inv_feas_dir_asymmetric(problem);
-
   problem = transform_vars_oscillate(problem);
-  transform_inv_feas_dir_oscillate(problem, xopt);
+  transform_inv_feas_dir_composed(problem, xopt);
 
   
   /* Apply a translation to the whole problem so that the constrained 
@@ -873,10 +873,9 @@ static coco_problem_t *f_rastrigin_rotated_c_linear_cons_bbob_problem_allocate(c
   problem->evaluations_constraints = 0;
   
   problem = transform_vars_asymmetric(problem, 0.2);
-  transform_inv_feas_dir_asymmetric(problem);
-
   problem = transform_vars_oscillate(problem);
-  transform_inv_feas_dir_oscillate(problem, xopt);
+  transform_inv_feas_dir_composed(problem, xopt);
+
   
   /* Apply a translation to the whole problem so that the constrained
    * minimum is no longer at the origin. 

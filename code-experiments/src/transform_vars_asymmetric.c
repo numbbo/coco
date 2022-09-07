@@ -26,13 +26,12 @@ typedef struct {
  */
 typedef struct {
   double beta;
-  double y;
   size_t i;
   size_t n;
 } tasy_data;
 
 /**
- * @brief Univariate oscillating non-linear transformation.
+ * @brief Univariate asymmetric non-linear transformation.
  */
 static double tasy_uv(double xi, tasy_data *d) {
   double yi;
@@ -48,11 +47,10 @@ static double tasy_uv(double xi, tasy_data *d) {
 }
 
 /**
- * @brief Inverse of oscillating non-linear transformation tasy_uv_inv obtained with brentq.
+ * @brief Inverse of asymmetric non-linear transformation tasy_uv obtained with brentq.
  */
 static double tasy_uv_inv(double yi, tasy_data *d) {
   double xi;
-  d->y = yi;
   xi = brentinv((callback_type) &tasy_uv, yi, d);
   return xi;
 }
@@ -166,10 +164,19 @@ static coco_problem_t *transform_vars_asymmetric(coco_problem_t *inner_problem, 
   return problem;
 }
 
-static void transform_inv_feas_dir_asymmetric(coco_problem_t *problem) {
+static void transform_inv_feas_dir_asymmetric(coco_problem_t *problem, const double *xopt) {
   size_t i;
+  size_t j;
+  int is_in_bounds;
+  double di;
+  double xi;
+  double *sol = NULL;
+  double halving_factor = .5;
+
   transform_vars_asymmetric_data_t *data;
   tasy_data *d;
+
+  sol = coco_allocate_vector(problem->number_of_variables);
   d = coco_allocate_memory(sizeof(*d));
 
   data = (transform_vars_asymmetric_data_t *) coco_problem_transformed_get_data(problem);
@@ -177,9 +184,33 @@ static void transform_inv_feas_dir_asymmetric(coco_problem_t *problem) {
   d->beta = data->beta;
   d->n = problem->number_of_variables;
 
-  for (i = 0; i < problem->number_of_variables; ++i) {
+  j = 0;
+  while (1) {
+
+    for (i = 0; i < problem->number_of_variables; ++i) {
       d->i = i;
-      problem->initial_solution[i] = tasy_uv_inv(problem->initial_solution[i], d);
+      di = tasy_uv_inv(problem->initial_solution[i] * pow(halving_factor, (double) (long) j), d);
+      xi = di + xopt[i];
+      is_in_bounds = (int) (-5.0 < xi  && xi < 5.0);
+      /* Line search for the inverse-transformed feasible initial solution
+         to remain within the bounds
+        */
+      if (!is_in_bounds) {
+        j = j + 1;
+        break;
+      }
+      sol[i] = di;
+    }
+    if (!is_in_bounds){
+      continue;
+    }
+    else {
+      break;
+    }   
+  }
+  for (i = 0; i < problem->number_of_variables; ++i) {
+    problem->initial_solution[i] = sol[i];
   }
   coco_free_memory(d);
+  coco_free_memory(sol);
 }
