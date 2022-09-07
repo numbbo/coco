@@ -52,4 +52,5 @@ We acknowledge in particular:
   ``code-experiments/test/unit-test/minunit_c89.h``, distributed under
   the terms of the MIT Licence.
 * the Rust code by Leopold Luley in `code-experiments/build/rust/`, distributed unter the terms of both the MIT License and the Apache 2.0 License.
+* the code for Brent's method in ``code-experiments/src/brentq.c`` is a modified copy of ``scipy.optimize.brentq`` originally written by Charles Harris and distributed under the BSD 3-Clause "New" or "Revised" License.
 
