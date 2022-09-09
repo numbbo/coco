@@ -155,8 +155,6 @@ double brentq(callback_type f, double y, double xa, double xb, double xtol, doub
     - either a > 0 or b < 0
     - either a=y or b=y
   proceeding with halving/doubling.
-
-  TODO: the initialization code is very verbose
 */
 
 double brentinv(callback_type f, double y, void *func_data) {
@@ -191,10 +189,6 @@ double brentinv(callback_type f, double y, void *func_data) {
             }
         }
     }
-
-    /*
-      TODO: proper use of lambda function ?
-    */
 
     xres = brentq(f, y, xmin, xmax, 1E-14, 1E-10, 200, func_data);
     return xres;
