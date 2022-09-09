@@ -1,3 +1,9 @@
+/**
+ * @file transform_vars_composed.c
+ * @brief Implementation of inverse transformation composed by tasy and tosz.
+ * @author Paul Dufosse
+ */
+
 #include "transform_vars_asymmetric.c"
 #include "transform_vars_oscillate.c"
 

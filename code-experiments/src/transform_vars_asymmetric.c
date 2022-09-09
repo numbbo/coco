@@ -2,7 +2,7 @@
  * @file transform_vars_asymmetric.c
  * @brief Implementation of performing an asymmetric transformation on decision values.
  * @author ??
- * @author Paul Dufossé
+ * @author Paul Dufosse
  * @note Edited to fulfill needs from the constrained test bed.
  */
 

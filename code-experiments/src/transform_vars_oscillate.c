@@ -2,7 +2,7 @@
  * @file transform_vars_oscillate.c
  * @brief Implementation of oscillating the decision values.
  * @author ??
- * @author Paul Dufossé
+ * @author Paul Dufosse
  * @note Edited to fulfill needs from the constrained test bed.
  */
 

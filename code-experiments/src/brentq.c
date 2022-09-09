@@ -2,7 +2,7 @@
     Written by Charles Harris charles.harris@sdl.usu.edu
     Copyright SciPy
 
-    Edited by Paul Dufossé paul.dufosse@inria.fr
+    Edited by Paul Dufosse paul.dufosse@inria.fr
     - make it standalone
       - removing SciPy-dependent stuff
       - merging with zeros.h declaration file
