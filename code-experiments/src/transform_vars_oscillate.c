@@ -192,15 +192,17 @@ static void transform_inv_feas_dir_oscillate(coco_problem_t *problem, const doub
       }
       sol[i] = di;
     }
-    if (!is_in_bounds){
+    if (!is_in_bounds && !coco_is_nan(di)){
       continue;
     }
     else {
       break;
     }   
   }
-  for (i = 0; i < problem->number_of_variables; ++i) {
-    problem->initial_solution[i] = sol[i];
+  if (!coco_vector_contains_nan(sol, problem->number_of_variables)) {
+    for (i = 0; i < problem->number_of_variables; ++i) {
+      problem->initial_solution[i] = sol[i];
+    }
   }
   coco_free_memory(d);
   coco_free_memory(sol);

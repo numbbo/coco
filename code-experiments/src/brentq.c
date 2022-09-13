@@ -66,17 +66,17 @@ double brentq(callback_type f, double y, double xa, double xb, double xtol, doub
     int i;
 
     fpre = (*f)(xpre, func_data) - y;
-    fcur = (*f)(xcur, func_data) -y;
+    fcur = (*f)(xcur, func_data) - y;
     if (fpre*fcur > 0) {
-        /* TODO: sign error*/
-        return 0.;
+        /* Sign error */
+        return NAN;
     }
     if (fpre == 0) {
-        /* TODO: converged*/
+        /* Converged */
         return xpre;
     }
     if (fcur == 0) {
-        /* TODO: converged*/
+        /* Converged*/
         return xcur;
     }
 
@@ -142,7 +142,7 @@ double brentq(callback_type f, double y, double xa, double xb, double xtol, doub
 
         fcur = (*f)(xcur, func_data) - y;
     }
-    /* TODO: not converged*/
+    /* Iterations exceeded*/
     return xcur;
 }
 

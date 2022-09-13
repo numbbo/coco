@@ -3,6 +3,7 @@
 #include "minunit_c89.h"
 #include "unit_test_utilities.c"
 #include "test_biobj_utilities.c"
+#include "test_brentq.c"
 #include "test_coco_archive.c"
 #include "test_coco_observer.c"
 #include "test_coco_problem.c"
@@ -15,6 +16,7 @@
 
 int main(void) {
 
+  MU_RUN_SUITE(test_all_brent);
   MU_RUN_SUITE(test_all_coco_archive);
   MU_RUN_SUITE(test_all_coco_observer);
   MU_RUN_SUITE(test_all_coco_problem);
