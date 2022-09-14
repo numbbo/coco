@@ -17,7 +17,10 @@ static double tcomp_uv_inv(double yi, tasy_data *dasy, tosz_data *dosz) {
   return xi;
 }
 
-static void transform_inv_feas_dir_composed(coco_problem_t *problem, const double *xopt) {
+/**
+ * @brief Applies the inverse of the composed transformation tasy to the initial solution.
+ */
+static void transform_inv_initial_composed(coco_problem_t *problem, const double *xopt) {
   size_t i;
   size_t j;
   int is_in_bounds;

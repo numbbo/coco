@@ -131,7 +131,7 @@ double brentq(callback_type f, double y, double xa, double xb, double xtol, doub
         delta = (xtol + rtol*fabs(xcur))/2;
         sbis = (xblk - xcur)/2;
         if (fcur == 0 || fabs(sbis) < delta) {
-            /* TODO: converged*/
+            /* Converged*/
             return xcur;
         }
 

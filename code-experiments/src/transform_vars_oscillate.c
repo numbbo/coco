@@ -158,7 +158,10 @@ static coco_problem_t *transform_vars_oscillate(coco_problem_t *inner_problem) {
   return problem;
 }
 
-static void transform_inv_feas_dir_oscillate(coco_problem_t *problem, const double *xopt) {
+/**
+ * @brief Applies the inverse of the oscillating transformation tasy(tosz(.)) to the initial solution.
+ */
+static void transform_inv_initial_oscillate(coco_problem_t *problem, const double *xopt) {
   size_t i;
   size_t j;
   int is_in_bounds;

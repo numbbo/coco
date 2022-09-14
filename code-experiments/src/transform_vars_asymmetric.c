@@ -164,7 +164,10 @@ static coco_problem_t *transform_vars_asymmetric(coco_problem_t *inner_problem, 
   return problem;
 }
 
-static void transform_inv_feas_dir_asymmetric(coco_problem_t *problem, const double *xopt) {
+/**
+ * @brief Applies the inverse of the asymmetric transformation tasy to the initial solution.
+ */
+static void transform_inv_initial_asymmetric(coco_problem_t *problem, const double *xopt) {
   size_t i;
   size_t j;
   int is_in_bounds;
