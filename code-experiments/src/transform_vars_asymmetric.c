@@ -166,6 +166,11 @@ static coco_problem_t *transform_vars_asymmetric(coco_problem_t *inner_problem, 
 
 /**
  * @brief Applies the inverse of the asymmetric transformation tasy to the initial solution.
+ * 
+ *        Takes xopt as input to check the solution remains in the bounds
+ *        If not, a curve search is performed
+ *        xopt is needed because transform_vars_shift is not yet called
+ *        in f_{function}_rotated_c_linear_cons_bbob_problem_allocate
  */
 static void transform_inv_initial_asymmetric(coco_problem_t *problem, const double *xopt) {
   size_t i;
