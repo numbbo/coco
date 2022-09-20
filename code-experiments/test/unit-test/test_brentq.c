@@ -11,6 +11,7 @@ MU_TEST(test_brentq) {
 
     y = brentq((callback_type) &sqrt, 4, 1, 4, 1E-14, 1E-10, 200, NULL);
     mu_check(y - 2 < 1E-14);
+    mu_check(2 - y < 1E-14);
 }
 
 MU_TEST(test_brentinv) {
@@ -18,6 +19,7 @@ MU_TEST(test_brentinv) {
 
     y = brentinv((callback_type) &sqrt, 4, NULL);
     mu_check(y - 2 < 1E-14);
+    mu_check(2 - y < 1E-14);
 }
 
 /**
