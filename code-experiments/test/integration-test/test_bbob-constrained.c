@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <assert.h>
 
 #include "coco.h"
 
@@ -31,6 +32,22 @@ void my_optimizer(coco_problem_t *problem) {
   double *cons_values = coco_allocate_vector(number_of_constraints);
   double range;
   size_t i, j;
+
+  /**
+   * Test the initial solution is in the bounded domain
+   */
+  coco_problem_get_initial_solution(problem, x);
+  for (j = 0; j < dimension; ++j) {
+    assert(x[j] > -5.0 && x[j] < 5.0);
+  }
+
+  /**
+   * Test the initial solution is feasible
+   */
+  coco_evaluate_constraint(problem, x, cons_values);
+  for (j = 0; j < number_of_constraints; ++j) {
+    assert(cons_values[j] < 0);
+  }
 
   for (i = 0; i < budget; ++i) {
 
