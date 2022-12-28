@@ -638,7 +638,7 @@ Comprehensive List of Documentations <a name="Documentations"></a>
   - `bbob`: https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf
   - `bbob-biobj`: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
   - `bbob-biobj-ext`: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
-  - `bbob-noisy` (only in old code basis): http://coco.lri.fr/downloads/download15.03/bbobdocnoisyfunctions.pdf
+  - `bbob-noisy` (only in old code basis): https://hal.inria.fr/inria-00369466/document/
   - `bbob-largescale`: https://arxiv.org/pdf/1903.06396.pdf
   - `bbob-mixint`: https://hal.inria.fr/hal-02067932/document
   - `bbob-biobj-mixint`: https://numbbo.github.io/gforge/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
