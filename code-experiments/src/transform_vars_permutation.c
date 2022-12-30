@@ -45,12 +45,12 @@ static coco_problem_t *transform_vars_permutation(coco_problem_t *inner_problem,
                                                     const size_t number_of_variables) {
   coco_problem_t *problem;
   transform_vars_permutation_t *data;
-
-  assert(number_of_variables > 0);/*tmp*/
+  
+  assert(number_of_variables == inner_problem->number_of_variables);/*tmp*/
 
   data = (transform_vars_permutation_t *) coco_allocate_memory(sizeof(*data));
-  data->x = coco_allocate_vector(inner_problem->number_of_variables);
-  data->P = coco_duplicate_size_t_vector(P, inner_problem->number_of_variables);
+  data->x = coco_allocate_vector(number_of_variables);
+  data->P = coco_duplicate_size_t_vector(P, number_of_variables);
 
   problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_permutation_free, "transform_vars_permutation");
   problem->evaluate_function = transform_vars_permutation_evaluate;
@@ -80,11 +80,11 @@ static coco_problem_t *transform_vars_inverse_permutation(coco_problem_t *inner_
     coco_problem_t *problem;
     transform_vars_permutation_t *data;
     
-    assert(number_of_variables > 0);/*tmp*/
+    assert(number_of_variables == inner_problem->number_of_variables);
     
     data = (transform_vars_permutation_t *) coco_allocate_memory(sizeof(*data));
-    data->x = coco_allocate_vector(inner_problem->number_of_variables);
-    data->P = coco_duplicate_size_t_vector(P, inner_problem->number_of_variables);
+    data->x = coco_allocate_vector(number_of_variables);
+    data->P = coco_duplicate_size_t_vector(P, number_of_variables);
     
     problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_permutation_free, "transform_vars_inverse_permutation");
     problem->evaluate_function = transform_vars_inverse_permutation_evaluate;
