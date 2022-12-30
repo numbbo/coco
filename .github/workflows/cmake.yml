@@ -22,7 +22,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Build C amalgamation
-      run: python ${{github.workspace}}/do.py build-c
+      run: python ${{github.workspace}}/do.py amalgamate-c
       
     - name: Configure CMake
       run: cmake -S ${{github.workspace}}/code-experiments/build/c/ -B ${{github.workspace}}/code-experiments/build/c/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
