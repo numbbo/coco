@@ -1,8 +1,13 @@
-name: CMake
+name: ci_cmake
 
 on:
   workflow_dispatch:
   push:
+    paths:
+      - ".github/workflows/cmake.yml"
+      - "code-experiments/build/c/CMakeLists.txt"
+      - "code-experiments/src/**.c"
+      - "code-experiments/src/**.h"
   pull_request:
     branches: [ master, development ]
 
