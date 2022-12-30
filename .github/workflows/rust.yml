@@ -1,0 +1,25 @@
+name: ci_rust
+
+on:
+  push:
+    paths:
+      - ".github/workflows/rust.yml"
+      - "code-experiments/build/rust/**"
+      - "code-experiments/src/**.c"
+      - "code-experiments/src/**.h"
+  pull_request:
+    paths:
+      - ".github/workflows/rust.yml"
+      - "code-experiments/build/rust/**"
+      - "code-experiments/src/**.c"
+      - "code-experiments/src/**.h"
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    - run: python ${{github.workspace}}/do.py build-rust
