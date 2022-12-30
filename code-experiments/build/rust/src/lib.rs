@@ -156,9 +156,9 @@ impl Suite {
         let problem = unsafe {
             coco_sys::coco_suite_get_problem_by_function_dimension_instance(
                 self.inner,
-                function as u64,
-                dimension as u64,
-                instance as u64,
+                function as usize,
+                dimension as usize,
+                instance as usize,
             )
         };
 
