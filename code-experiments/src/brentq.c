@@ -56,7 +56,9 @@ static double brentinv(callback_type f, double y, void *func_data);
 /*
   Note: signbit is in the C99 math library and we compile with C89 standard.
 */
+#ifndef signbit
 #define signbit(x)((x) < 0 ? 1 : 0)
+#endif
 
 /*
   At the top of the loop the situation is the following:
