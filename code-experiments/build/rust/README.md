@@ -13,7 +13,7 @@ See https://github.com/numbbo/coco and https://numbbo.github.io/coco/.
 
 - `git`
 - `gcc` (or any other C compiler)
-- `bindgen` (`cargo install bindgen`)
+- `bindgen` (`cargo install bindgen-cli`)
     - and `libclang` (install `libclang-dev` on Ubuntu)
 - `bash` (for `generate.sh`)
 
