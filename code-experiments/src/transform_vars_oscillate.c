@@ -170,7 +170,7 @@ static void transform_inv_initial_oscillate(coco_problem_t *problem, const doubl
   size_t i;
   size_t j;
   int is_in_bounds;
-  double di;
+  double di = 0.0;
   double xi;
   double *sol = NULL;
   double halving_factor = .5;
