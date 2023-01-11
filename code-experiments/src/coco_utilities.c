@@ -976,6 +976,16 @@ static int coco_is_inf(const double x) {
 }
 
 /**
+ * @brief Sets all dim values of y to Inf.
+ */
+static void coco_vector_set_to_inf(double *y, const size_t dim) {
+	size_t i;
+	for (i = 0; i < dim; i++) {
+		y[i] = INFINITY;
+	}
+}
+
+/**
  * @brief Returns 1 if the input vector of dimension dim contains no NaN of inf values, and 0 otherwise.
  */
 static int coco_vector_isfinite(const double *x, const size_t dim) {
