@@ -3,32 +3,34 @@
  * @brief Implementation of the Schwefel function and problem.
  */
 
-#include <stdio.h>
-#include <assert.h>
-#include <math.h>
-
-#include "coco.h"
 #include "coco_problem.c"
 #include "suite_bbob_legacy_code.c"
-#include "transform_vars_conditioning.c"
 #include "transform_obj_shift.c"
-#include "transform_vars_scale.c"
 #include "transform_vars_affine.c"
+#include "transform_vars_conditioning.c"
+#include "transform_vars_scale.c"
 #include "transform_vars_shift.c"
-#include "transform_vars_z_hat.c"
 #include "transform_vars_x_hat.c"
+#include "transform_vars_z_hat.c"
+#include <assert.h>
+#include <math.h>
+#include <stdio.h>
+
+#include "coco.h"
 
 /**
- * @brief Implements the Schwefel function without connections to any COCO structures.
+ * @brief Implements the Schwefel function without connections to any COCO
+ * structures.
  */
-static double f_schwefel_raw(const double *x, const size_t number_of_variables) {
+static double f_schwefel_raw(const double *x,
+                             const size_t number_of_variables) {
 
   size_t i = 0;
   double result;
   double penalty, sum;
 
   if (coco_vector_contains_nan(x, number_of_variables))
-  	return NAN;
+    return NAN;
 
   /* Boundary handling*/
   penalty = 0.0;
@@ -43,7 +45,8 @@ static double f_schwefel_raw(const double *x, const size_t number_of_variables) 
   for (i = 0; i < number_of_variables; ++i) {
     sum += x[i] * sin(sqrt(fabs(x[i])));
   }
-  result = 0.01 * (penalty + 418.9828872724339 - sum / (double) number_of_variables);
+  result =
+      0.01 * (penalty + 418.9828872724339 - sum / (double)number_of_variables);
 
   return result;
 }
@@ -51,7 +54,8 @@ static double f_schwefel_raw(const double *x, const size_t number_of_variables) 
 /**
  * @brief Uses the raw function to evaluate the COCO problem.
  */
-static void f_schwefel_evaluate(coco_problem_t *problem, const double *x, double *y) {
+static void f_schwefel_evaluate(coco_problem_t *problem, const double *x,
+                                double *y) {
   assert(problem->number_of_objectives == 1);
   y[0] = f_schwefel_raw(x, problem->number_of_variables);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
@@ -62,8 +66,9 @@ static void f_schwefel_evaluate(coco_problem_t *problem, const double *x, double
  */
 static coco_problem_t *f_schwefel_allocate(const size_t number_of_variables) {
 
-  coco_problem_t *problem = coco_problem_allocate_from_scalars("Schwefel function",
-      f_schwefel_evaluate, NULL, number_of_variables, -5.0, 5.0, 420.96874633);
+  coco_problem_t *problem = coco_problem_allocate_from_scalars(
+      "Schwefel function", f_schwefel_evaluate, NULL, number_of_variables, -5.0,
+      5.0, 420.96874633);
   coco_problem_set_id(problem, "%s_d%02lu", "schwefel", number_of_variables);
 
   /* Compute best solution: best_parameter[i] = 200 * fabs(xopt[i]) */
@@ -74,12 +79,11 @@ static coco_problem_t *f_schwefel_allocate(const size_t number_of_variables) {
 /**
  * @brief Creates the BBOB Schwefel problem.
  */
-static coco_problem_t *f_schwefel_bbob_problem_allocate(const size_t function,
-                                                        const size_t dimension,
-                                                        const size_t instance,
-                                                        const long rseed,
-                                                        const char *problem_id_template,
-                                                        const char *problem_name_template) {
+static coco_problem_t *
+f_schwefel_bbob_problem_allocate(const size_t function, const size_t dimension,
+                                 const size_t instance, const long rseed,
+                                 const char *problem_id_template,
+                                 const char *problem_name_template) {
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
   size_t i;
@@ -107,14 +111,17 @@ static coco_problem_t *f_schwefel_bbob_problem_allocate(const size_t function,
   /* problem = transform_vars_affine(problem, M, b, dimension); */
   problem = transform_vars_conditioning(problem, condition);
   problem = transform_vars_shift(problem, tmp2, 0);
-  problem = transform_vars_z_hat(problem, xopt); /* only for the correct xopt the best_parameter is not changed */
+  problem = transform_vars_z_hat(
+      problem,
+      xopt); /* only for the correct xopt the best_parameter is not changed */
   problem = transform_vars_scale(problem, 2);
   problem = transform_vars_x_hat(problem, rseed);
   problem = transform_obj_shift(problem, fopt);
 
-
-  coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
-  coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+  coco_problem_set_id(problem, problem_id_template, function, instance,
+                      dimension);
+  coco_problem_set_name(problem, problem_name_template, function, instance,
+                        dimension);
   coco_problem_set_type(problem, "5-weakly-structured");
 
   coco_free_memory(tmp1);

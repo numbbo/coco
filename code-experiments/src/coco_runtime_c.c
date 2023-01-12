@@ -2,16 +2,16 @@
  * @file coco_runtime_c.c
  * @brief Generic COCO runtime implementation for the C language.
  *
- * Other language interfaces might want to replace this so that memory allocation and error handling go
- * through the respective language runtime.
+ * Other language interfaces might want to replace this so that memory
+ * allocation and error handling go through the respective language runtime.
  */
 
+#include "coco_utilities.c"
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
 
 #include "coco.h"
-#include "coco_utilities.c"
 
 void coco_error(const char *message, ...) {
   va_list args;
@@ -50,8 +50,8 @@ void coco_info(const char *message, ...) {
 }
 
 /**
- * A function similar to coco_info that prints only the given message without any prefix and without
- * adding a new line.
+ * A function similar to coco_info that prints only the given message without
+ * any prefix and without adding a new line.
  */
 void coco_info_partial(const char *message, ...) {
   va_list args;
@@ -89,6 +89,4 @@ void *coco_allocate_memory(const size_t size) {
   return data;
 }
 
-void coco_free_memory(void *data) {
-  free(data);
-}
+void coco_free_memory(void *data) { free(data); }

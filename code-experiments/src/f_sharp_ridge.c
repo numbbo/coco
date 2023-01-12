@@ -3,23 +3,26 @@
  * @brief Implementation of the sharp ridge function and problem.
  */
 
-#include <assert.h>
-#include <math.h>
-
-#include "coco.h"
 #include "coco_problem.c"
 #include "suite_bbob_legacy_code.c"
 #include "transform_obj_shift.c"
 #include "transform_vars_affine.c"
 #include "transform_vars_shift.c"
+#include <assert.h>
+#include <math.h>
+
+#include "coco.h"
 
 /**
- * @brief Implements the sharp ridge function without connections to any COCO structures.
+ * @brief Implements the sharp ridge function without connections to any COCO
+ * structures.
  */
-static double f_sharp_ridge_raw(const double *x, const size_t number_of_variables) {
+static double f_sharp_ridge_raw(const double *x,
+                                const size_t number_of_variables) {
 
   static const double alpha = 100.0;
-  const double d_vars_40 = 1.0; /* generalized: number_of_variables <= 40 ? 1 : number_of_variables / 40.0; */
+  const double d_vars_40 = 1.0; /* generalized: number_of_variables <= 40 ? 1 :
+                                   number_of_variables / 40.0; */
   const size_t vars_40 = coco_double_to_size_t(ceil(d_vars_40));
   size_t i = 0;
   double result;
@@ -27,7 +30,7 @@ static double f_sharp_ridge_raw(const double *x, const size_t number_of_variable
   assert(number_of_variables > 1);
 
   if (coco_vector_contains_nan(x, number_of_variables))
-  	return NAN;
+    return NAN;
 
   result = 0.0;
   for (i = vars_40; i < number_of_variables; ++i) {
@@ -43,7 +46,8 @@ static double f_sharp_ridge_raw(const double *x, const size_t number_of_variable
 /**
  * @brief Uses the raw function to evaluate the COCO problem.
  */
-static void f_sharp_ridge_evaluate(coco_problem_t *problem, const double *x, double *y) {
+static void f_sharp_ridge_evaluate(coco_problem_t *problem, const double *x,
+                                   double *y) {
   assert(problem->number_of_objectives == 1);
   y[0] = f_sharp_ridge_raw(x, problem->number_of_variables);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
@@ -52,10 +56,12 @@ static void f_sharp_ridge_evaluate(coco_problem_t *problem, const double *x, dou
 /**
  * @brief Allocates the basic sharp ridge problem.
  */
-static coco_problem_t *f_sharp_ridge_allocate(const size_t number_of_variables) {
+static coco_problem_t *
+f_sharp_ridge_allocate(const size_t number_of_variables) {
 
-  coco_problem_t *problem = coco_problem_allocate_from_scalars("sharp ridge function",
-      f_sharp_ridge_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0);
+  coco_problem_t *problem = coco_problem_allocate_from_scalars(
+      "sharp ridge function", f_sharp_ridge_evaluate, NULL, number_of_variables,
+      -5.0, 5.0, 0.0);
   coco_problem_set_id(problem, "%s_d%02lu", "sharp_ridge", number_of_variables);
 
   /* Compute best solution */
@@ -66,12 +72,10 @@ static coco_problem_t *f_sharp_ridge_allocate(const size_t number_of_variables) 
 /**
  * @brief Creates the BBOB sharp ridge problem.
  */
-static coco_problem_t *f_sharp_ridge_bbob_problem_allocate(const size_t function,
-                                                           const size_t dimension,
-                                                           const size_t instance,
-                                                           const long rseed,
-                                                           const char *problem_id_template,
-                                                           const char *problem_name_template) {
+static coco_problem_t *f_sharp_ridge_bbob_problem_allocate(
+    const size_t function, const size_t dimension, const size_t instance,
+    const long rseed, const char *problem_id_template,
+    const char *problem_name_template) {
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
   size_t i, j, k;
@@ -93,7 +97,7 @@ static coco_problem_t *f_sharp_ridge_bbob_problem_allocate(const size_t function
     for (j = 0; j < dimension; ++j) {
       current_row[j] = 0.0;
       for (k = 0; k < dimension; ++k) {
-        double exponent = 1.0 * (int) k / ((double) (long) dimension - 1.0);
+        double exponent = 1.0 * (int)k / ((double)(long)dimension - 1.0);
         current_row[j] += rot1[i][k] * pow(sqrt(10), exponent) * rot2[k][j];
       }
     }
@@ -105,8 +109,10 @@ static coco_problem_t *f_sharp_ridge_bbob_problem_allocate(const size_t function
   problem = transform_vars_affine(problem, M, b, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
 
-  coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
-  coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+  coco_problem_set_id(problem, problem_id_template, function, instance,
+                      dimension);
+  coco_problem_set_name(problem, problem_name_template, function, instance,
+                        dimension);
   coco_problem_set_type(problem, "3-ill-conditioned");
 
   coco_free_memory(M);

@@ -2,52 +2,54 @@
  * @file coco_platform.h
  * @brief Automatic platform-dependent configuration of the COCO framework.
  *
- * Some platforms and standard conforming compilers require extra defines or includes to provide some
- * functionality.
+ * Some platforms and standard conforming compilers require extra defines or
+ * includes to provide some functionality.
  *
- * Because most feature defines need to be set before the first system header is included and we do not
- * know when a system header is included for the first time in the amalgamation, all internal files
- * that need these definitions should include this file before any system headers.
+ * Because most feature defines need to be set before the first system header is
+ * included and we do not know when a system header is included for the first
+ * time in the amalgamation, all internal files that need these definitions
+ * should include this file before any system headers.
  */
 
-#ifndef __COCO_PLATFORM__ 
+#ifndef __COCO_PLATFORM__
 #define __COCO_PLATFORM__
 
 #include <stddef.h>
 
-/* Definitions of COCO_PATH_MAX, coco_path_separator, HAVE_GFA and HAVE_STAT heavily used by functions in
- * coco_utilities.c */
-#if defined(_WIN32) || defined(_WIN64) || defined(__MINGW64__) || defined(__CYGWIN__)
+/* Definitions of COCO_PATH_MAX, coco_path_separator, HAVE_GFA and HAVE_STAT
+ * heavily used by functions in coco_utilities.c */
+#if defined(_WIN32) || defined(_WIN64) || defined(__MINGW64__) ||              \
+    defined(__CYGWIN__)
 #include <windows.h>
 static const char *coco_path_separator = "\\";
 #define COCO_PATH_MAX MAX_PATH
 #define HAVE_GFA 1
 #elif defined(__gnu_linux__)
+#include <linux/limits.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <linux/limits.h>
 static const char *coco_path_separator = "/";
 #define HAVE_STAT 1
 #define COCO_PATH_MAX PATH_MAX
 #elif defined(__APPLE__)
 #include <sys/stat.h>
-#include <sys/types.h>
 #include <sys/syslimits.h>
+#include <sys/types.h>
 static const char *coco_path_separator = "/";
 #define HAVE_STAT 1
 #define COCO_PATH_MAX PATH_MAX
 #elif defined(__FreeBSD__)
+#include <limits.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <limits.h>
 static const char *coco_path_separator = "/";
 #define HAVE_STAT 1
 #define COCO_PATH_MAX PATH_MAX
 #elif (defined(__sun) || defined(sun)) && (defined(__SVR4) || defined(__svr4__))
 /* Solaris */
+#include <limits.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <limits.h>
 static const char *coco_path_separator = "/";
 #define HAVE_STAT 1
 #define COCO_PATH_MAX PATH_MAX
@@ -59,7 +61,8 @@ static const char *coco_path_separator = "/";
 #endif
 
 /* Definitions needed for creating and removing directories */
-/* Separately handle the special case of Microsoft Visual Studio 2008 with x86_64-w64-mingw32-gcc */
+/* Separately handle the special case of Microsoft Visual Studio 2008 with
+ * x86_64-w64-mingw32-gcc */
 #if _MSC_VER
 #include <direct.h>
 #elif defined(__MINGW32__) || defined(__MINGW64__)
@@ -84,9 +87,10 @@ int mkdir(const char *pathname, mode_t mode);
 #define S_IRWXU 0700
 #endif
 
-/* To silence the Visual Studio compiler (C4996 warnings in the python build). */
+/* To silence the Visual Studio compiler (C4996 warnings in the python build).
+ */
 #ifdef _MSC_VER
-#pragma warning(disable:4996)
+#pragma warning(disable : 4996)
 #endif
 
 #ifdef __cplusplus

@@ -1,3 +1,15 @@
+---
+SortIncludes: 'true'
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '<.*.h>'
+    Priority: 1
+  - Regex: '".*\.h"'
+    Priority: 2
+
+BinPackArguments: 'true'
+BinPackParameters: 'true'
+PointerAlignment: Right
 BasedOnStyle: llvm
 IndentWidth: 2
 ColumnLimit: 80

@@ -3,10 +3,10 @@
  * @brief Implementation of scaling the objective value by the given factor.
  */
 
+#include "coco_problem.c"
 #include <assert.h>
 
 #include "coco.h"
-#include "coco_problem.c"
 
 /**
  * @brief Data type for transform_obj_scale.
@@ -18,7 +18,8 @@ typedef struct {
 /**
  * @brief Evaluates the transformed function.
  */
-static void transform_obj_scale_evaluate_function(coco_problem_t *problem, const double *x, double *y) {
+static void transform_obj_scale_evaluate_function(coco_problem_t *problem,
+                                                  const double *x, double *y) {
   transform_obj_scale_data_t *data;
   double *cons_values;
   int is_feasible;
@@ -29,8 +30,10 @@ static void transform_obj_scale_evaluate_function(coco_problem_t *problem, const
     return;
   }
 
-  data = (transform_obj_scale_data_t *) coco_problem_transformed_get_data(problem);
-  coco_evaluate_function(coco_problem_transformed_get_inner_problem(problem), x, y);
+  data =
+      (transform_obj_scale_data_t *)coco_problem_transformed_get_data(problem);
+  coco_evaluate_function(coco_problem_transformed_get_inner_problem(problem), x,
+                         y);
 
   for (i = 0; i < problem->number_of_objectives; i++)
     y[i] *= data->factor;
@@ -41,14 +44,15 @@ static void transform_obj_scale_evaluate_function(coco_problem_t *problem, const
     coco_free_memory(cons_values);
     if (is_feasible)
       assert(y[0] + 1e-13 >= problem->best_value[0]);
-  }
-  else assert(y[0] + 1e-13 >= problem->best_value[0]);
+  } else
+    assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
 /**
  * @brief Evaluates the gradient of the transformed function at x
  */
-static void transform_obj_scale_evaluate_gradient(coco_problem_t *problem, const double *x, double *y) {
+static void transform_obj_scale_evaluate_gradient(coco_problem_t *problem,
+                                                  const double *x, double *y) {
   size_t i;
   transform_obj_scale_data_t *data;
 
@@ -57,9 +61,11 @@ static void transform_obj_scale_evaluate_gradient(coco_problem_t *problem, const
     return;
   }
 
-  bbob_evaluate_gradient(coco_problem_transformed_get_inner_problem(problem), x, y);
+  bbob_evaluate_gradient(coco_problem_transformed_get_inner_problem(problem), x,
+                         y);
 
-  data = (transform_obj_scale_data_t *) coco_problem_transformed_get_data(problem);
+  data =
+      (transform_obj_scale_data_t *)coco_problem_transformed_get_data(problem);
   for (i = 0; i < problem->number_of_variables; ++i) {
     y[i] *= data->factor;
   }
@@ -68,15 +74,16 @@ static void transform_obj_scale_evaluate_gradient(coco_problem_t *problem, const
 /**
  * @brief Creates the transformation.
  */
-static coco_problem_t *transform_obj_scale(coco_problem_t *inner_problem, const double factor) {
+static coco_problem_t *transform_obj_scale(coco_problem_t *inner_problem,
+                                           const double factor) {
   coco_problem_t *problem;
   transform_obj_scale_data_t *data;
   size_t i;
-  data = (transform_obj_scale_data_t *) coco_allocate_memory(sizeof(*data));
+  data = (transform_obj_scale_data_t *)coco_allocate_memory(sizeof(*data));
   data->factor = factor;
 
-  problem = coco_problem_transformed_allocate(inner_problem, data,
-    NULL, "transform_obj_scale");
+  problem = coco_problem_transformed_allocate(inner_problem, data, NULL,
+                                              "transform_obj_scale");
 
   if (inner_problem->number_of_objectives > 0)
     problem->evaluate_function = transform_obj_scale_evaluate_function;

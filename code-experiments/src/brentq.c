@@ -44,10 +44,10 @@
 
 #include <math.h>
 
-typedef double (*callback_type)(double, void*);
+typedef double (*callback_type)(double, void *);
 
-static double brentq(callback_type f, double y, double xa, double xb, double xtol,
-                     double rtol, int iter, void *func_data);
+static double brentq(callback_type f, double y, double xa, double xb,
+                     double xtol, double rtol, int iter, void *func_data);
 
 static double brentinv(callback_type f, double y, void *func_data);
 
@@ -57,7 +57,7 @@ static double brentinv(callback_type f, double y, void *func_data);
   Note: signbit is in the C99 math library and we compile with C89 standard.
 */
 #ifndef signbit
-#define signbit(x)((x) < 0 ? 1 : 0)
+#define signbit(x) ((x) < 0 ? 1 : 0)
 #endif
 
 /*
@@ -88,141 +88,138 @@ static double brentinv(callback_type f, double y, void *func_data);
 
 */
 
-double brentq(callback_type f, double y, double xa, double xb, double xtol, double rtol,
-       int iter, void *func_data)  {
+double brentq(callback_type f, double y, double xa, double xb, double xtol,
+              double rtol, int iter, void *func_data) {
 
-    double xpre = xa, xcur = xb;
-    double xblk = 0., fpre, fcur, fblk = 0., spre = 0., scur = 0., sbis;
-    /* the tolerance is 2*delta */
-    double delta;
-    double stry, dpre, dblk;
-    int i;
+  double xpre = xa, xcur = xb;
+  double xblk = 0., fpre, fcur, fblk = 0., spre = 0., scur = 0., sbis;
+  /* the tolerance is 2*delta */
+  double delta;
+  double stry, dpre, dblk;
+  int i;
 
-    fpre = (*f)(xpre, func_data) - y;
-    fcur = (*f)(xcur, func_data) - y;
-    if (fpre*fcur > 0) {
-        /* Sign error */
-        return NAN;
-    }
-    if (fpre == 0) {
-        /* Converged */
-        return xpre;
-    }
-    if (fcur == 0) {
-        /* Converged*/
-        return xcur;
-    }
-
-    for (i = 0; i < iter; i++) {
-        if (fpre != 0 && fcur != 0 &&
-	    (signbit(fpre) != signbit(fcur))) {
-            xblk = xpre;
-            fblk = fpre;
-            spre = scur = xcur - xpre;
-        }
-        if (fabs(fblk) < fabs(fcur)) {
-            xpre = xcur;
-            xcur = xblk;
-            xblk = xpre;
-
-            fpre = fcur;
-            fcur = fblk;
-            fblk = fpre;
-        }
-
-        delta = (xtol + rtol*fabs(xcur))/2;
-        sbis = (xblk - xcur)/2;
-        if (fcur == 0 || fabs(sbis) < delta) {
-            /* Converged*/
-            return xcur;
-        }
-
-        if (fabs(spre) > delta && fabs(fcur) < fabs(fpre)) {
-            if (xpre == xblk) {
-                /* interpolate */
-                stry = -fcur*(xcur - xpre)/(fcur - fpre);
-            }
-            else {
-                /* extrapolate */
-                dpre = (fpre - fcur)/(xpre - xcur);
-                dblk = (fblk - fcur)/(xblk - xcur);
-                stry = -fcur*(fblk*dblk - fpre*dpre)
-                    /(dblk*dpre*(fblk - fpre));
-            }
-            if (2*fabs(stry) < MIN(fabs(spre), 3*fabs(sbis) - delta)) {
-                /* good short step */
-                spre = scur;
-                scur = stry;
-            } else {
-                /* bisect */
-                spre = sbis;
-                scur = sbis;
-            }
-        }
-        else {
-            /* bisect */
-            spre = sbis;
-            scur = sbis;
-        }
-
-        xpre = xcur; fpre = fcur;
-        if (fabs(scur) > delta) {
-            xcur += scur;
-        }
-        else {
-            xcur += (sbis > 0 ? delta : -delta);
-        }
-
-        fcur = (*f)(xcur, func_data) - y;
-    }
-    /* Iterations exceeded*/
+  fpre = (*f)(xpre, func_data) - y;
+  fcur = (*f)(xcur, func_data) - y;
+  if (fpre * fcur > 0) {
+    /* Sign error */
+    return NAN;
+  }
+  if (fpre == 0) {
+    /* Converged */
+    return xpre;
+  }
+  if (fcur == 0) {
+    /* Converged*/
     return xcur;
+  }
+
+  for (i = 0; i < iter; i++) {
+    if (fpre != 0 && fcur != 0 && (signbit(fpre) != signbit(fcur))) {
+      xblk = xpre;
+      fblk = fpre;
+      spre = scur = xcur - xpre;
+    }
+    if (fabs(fblk) < fabs(fcur)) {
+      xpre = xcur;
+      xcur = xblk;
+      xblk = xpre;
+
+      fpre = fcur;
+      fcur = fblk;
+      fblk = fpre;
+    }
+
+    delta = (xtol + rtol * fabs(xcur)) / 2;
+    sbis = (xblk - xcur) / 2;
+    if (fcur == 0 || fabs(sbis) < delta) {
+      /* Converged*/
+      return xcur;
+    }
+
+    if (fabs(spre) > delta && fabs(fcur) < fabs(fpre)) {
+      if (xpre == xblk) {
+        /* interpolate */
+        stry = -fcur * (xcur - xpre) / (fcur - fpre);
+      } else {
+        /* extrapolate */
+        dpre = (fpre - fcur) / (xpre - xcur);
+        dblk = (fblk - fcur) / (xblk - xcur);
+        stry =
+            -fcur * (fblk * dblk - fpre * dpre) / (dblk * dpre * (fblk - fpre));
+      }
+      if (2 * fabs(stry) < MIN(fabs(spre), 3 * fabs(sbis) - delta)) {
+        /* good short step */
+        spre = scur;
+        scur = stry;
+      } else {
+        /* bisect */
+        spre = sbis;
+        scur = sbis;
+      }
+    } else {
+      /* bisect */
+      spre = sbis;
+      scur = sbis;
+    }
+
+    xpre = xcur;
+    fpre = fcur;
+    if (fabs(scur) > delta) {
+      xcur += scur;
+    } else {
+      xcur += (sbis > 0 ? delta : -delta);
+    }
+
+    fcur = (*f)(xcur, func_data) - y;
+  }
+  /* Iterations exceeded*/
+  return xcur;
 }
 
 /*
   Inverse of one-dimensional function x such that y = T(x).
 
   The transformation T is assumed to have fixed point at 0.
-  The method uses Brent's method (brentq) and the initial interval [a, b], a < b,
-  is computed such that:
+  The method uses Brent's method (brentq) and the initial interval [a, b], a <
+  b, is computed such that:
     - either a > 0 or b < 0
     - either a=y or b=y
   proceeding with halving/doubling.
 */
 
 double brentinv(callback_type f, double y, void *func_data) {
-    double xres, xmin, xmax, fval;
+  double xres, xmin, xmax, fval;
 
-    fval = (*f)(y, func_data);
-    xmax = y;
-    xmin = y;
+  fval = (*f)(y, func_data);
+  xmax = y;
+  xmin = y;
 
-    if (y > 0) {
-        if (fval > y) {
-            while (fval > y) {
-                xmin = xmin / 2;
-                fval = (*f)(xmin, func_data);
-            }
-        } else {
-            while (fval < y) {
-                xmax = xmax * 2;
-                fval = (*f)(xmax, func_data);
-            }
-        }
+  if (y > 0) {
+    if (fval > y) {
+      while (fval > y) {
+        xmin = xmin / 2;
+        fval = (*f)(xmin, func_data);
+      }
     } else {
-        if (fval > y) {
-            while (fval > y) {
-                xmin = xmin * 2;
-                fval = (*f)(xmin, func_data);
-            }
-        } else {
-            while (fval < y) {
-                xmax = xmax / 2;
-                fval = (*f)(xmax, func_data);
-            }
-        }
+      while (fval < y) {
+        xmax = xmax * 2;
+        fval = (*f)(xmax, func_data);
+      }
     }
+  } else {
+    if (fval > y) {
+      while (fval > y) {
+        xmin = xmin * 2;
+        fval = (*f)(xmin, func_data);
+      }
+    } else {
+      while (fval < y) {
+        xmax = xmax / 2;
+        fval = (*f)(xmax, func_data);
+      }
+    }
+  }
 
-    xres = brentq(f, y, xmin, xmax, 1E-14, 1E-10, 200, func_data);
-    return xres;
+  xres = brentq(f, y, xmin, xmax, 1E-14, 1E-10, 200, func_data);
+  return xres;
 }

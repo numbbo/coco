@@ -3,22 +3,21 @@
  * @brief Implementation of the Gallagher function and problem.
  */
 
+#include "coco_problem.c"
+#include "coco_utilities.c"
+#include "f_sphere.c"
+#include "suite_bbob_legacy_code.c"
+#include "transform_obj_norm_by_dim.c"
+#include "transform_obj_shift.c"
+#include "transform_vars_blockrotation.c"
+#include "transform_vars_gallagher_blockrotation.c"
+#include "transform_vars_permutation.c"
+#include "transform_vars_permutation_helpers.c"
+#include "transform_vars_scale.c"
 #include <assert.h>
 #include <math.h>
 
 #include "coco.h"
-#include "coco_problem.c"
-#include "coco_utilities.c"
-#include "suite_bbob_legacy_code.c"
-#include "transform_obj_shift.c"
-#include "transform_vars_permutation.c"
-#include "transform_vars_blockrotation.c"
-#include "transform_vars_permutation_helpers.c"
-#include "transform_vars_scale.c"
-#include "transform_obj_norm_by_dim.c"
-
-#include "f_sphere.c"
-#include "transform_vars_gallagher_blockrotation.c"
 /**
  * @brief A random permutation type for the Gallagher problem.
  *
@@ -45,7 +44,8 @@ typedef struct {
  * Comparison function used for sorting.
  */
 static int f_gallagher_compare_doubles(const void *a, const void *b) {
-  double temp = (*(f_gallagher_permutation_t *) a).value - (*(f_gallagher_permutation_t *) b).value;
+  double temp = (*(f_gallagher_permutation_t *)a).value -
+                (*(f_gallagher_permutation_t *)b).value;
   if (temp > 0)
     return 1;
   else if (temp < 0)
@@ -55,9 +55,11 @@ static int f_gallagher_compare_doubles(const void *a, const void *b) {
 }
 
 /**
- * @brief Implements the Gallagher function without connections to any COCO structures.
+ * @brief Implements the Gallagher function without connections to any COCO
+ * structures.
  */
-static double f_gallagher_raw(const double *x, const size_t number_of_variables, f_gallagher_data_t *data) {
+static double f_gallagher_raw(const double *x, const size_t number_of_variables,
+                              f_gallagher_data_t *data) {
   size_t i, j; /* Loop over dim */
   double *tmx;
   double a = 0.1;
@@ -66,9 +68,9 @@ static double f_gallagher_raw(const double *x, const size_t number_of_variables,
   double result;
 
   if (coco_vector_contains_nan(x, number_of_variables))
-  	return NAN;
+    return NAN;
 
-  fac = -0.5 / (double) number_of_variables;
+  fac = -0.5 / (double)number_of_variables;
 
   /* Boundary handling */
   for (i = 0; i < number_of_variables; ++i) {
@@ -104,7 +106,8 @@ static double f_gallagher_raw(const double *x, const size_t number_of_variables,
     f_true = pow(exp(f_true + 0.49 * (sin(f_true) + sin(0.79 * f_true))), a);
   } else if (f < 0) {
     f_true = log(-f) / a;
-    f_true = -pow(exp(f_true + 0.49 * (sin(0.55 * f_true) + sin(0.31 * f_true))), a);
+    f_true =
+        -pow(exp(f_true + 0.49 * (sin(0.55 * f_true) + sin(0.31 * f_true))), a);
   } else
     f_true = f;
 
@@ -118,9 +121,11 @@ static double f_gallagher_raw(const double *x, const size_t number_of_variables,
 /**
  * @brief Uses the raw function to evaluate the COCO problem.
  */
-static void f_gallagher_evaluate(coco_problem_t *problem, const double *x, double *y) {
+static void f_gallagher_evaluate(coco_problem_t *problem, const double *x,
+                                 double *y) {
   assert(problem->number_of_objectives == 1);
-  y[0] = f_gallagher_raw(x, problem->number_of_variables, (f_gallagher_data_t *) problem->data);
+  y[0] = f_gallagher_raw(x, problem->number_of_variables,
+                         (f_gallagher_data_t *)problem->data);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
@@ -129,7 +134,7 @@ static void f_gallagher_evaluate(coco_problem_t *problem, const double *x, doubl
  */
 static void f_gallagher_free(coco_problem_t *problem) {
   f_gallagher_data_t *data;
-  data = (f_gallagher_data_t *) problem->data;
+  data = (f_gallagher_data_t *)problem->data;
   coco_free_memory(data->xopt);
   coco_free_memory(data->peak_values);
   bbob2009_free_matrix(data->rotation, problem->number_of_variables);
@@ -144,18 +149,16 @@ static void f_gallagher_free(coco_problem_t *problem) {
  *
  * @note There is no separate basic allocate function.
  */
-static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
-                                                         const size_t dimension,
-                                                         const size_t instance,
-                                                         const long rseed,
-                                                         const size_t number_of_peaks,
-                                                         const char *problem_id_template,
-                                                         const char *problem_name_template) {
+static coco_problem_t *f_gallagher_bbob_problem_allocate(
+    const size_t function, const size_t dimension, const size_t instance,
+    const long rseed, const size_t number_of_peaks,
+    const char *problem_id_template, const char *problem_name_template) {
 
   f_gallagher_data_t *data;
   /* problem_name and best_parameter will be overwritten below */
-  coco_problem_t *problem = coco_problem_allocate_from_scalars("Gallagher function",
-      f_gallagher_evaluate, f_gallagher_free, dimension, -5.0, 5.0, 0.0);
+  coco_problem_t *problem = coco_problem_allocate_from_scalars(
+      "Gallagher function", f_gallagher_evaluate, f_gallagher_free, dimension,
+      -5.0, 5.0, 0.0);
 
   const size_t peaks_21 = 21;
   const size_t peaks_101 = 101;
@@ -163,18 +166,19 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
   double fopt;
   size_t i, j, k;
   double maxcondition = 1000.;
-  /* maxcondition1 satisfies the old code and the doc but seems wrong in that it is, with very high
-   * probability, not the largest condition level!!! */
+  /* maxcondition1 satisfies the old code and the doc but seems wrong in that it
+   * is, with very high probability, not the largest condition level!!! */
   double maxcondition1 = 1000.;
   double *arrCondition;
-  double fitvalues[2] = { 1.1, 9.1 };
-  /* Parameters for generating local optima. In the old code, they are different in f21 and f22 */
+  double fitvalues[2] = {1.1, 9.1};
+  /* Parameters for generating local optima. In the old code, they are different
+   * in f21 and f22 */
   double b = 0, c = 0;
   /* Random permutation */
   f_gallagher_permutation_t *rperm;
   double *random_numbers;
 
-  data = (f_gallagher_data_t *) coco_allocate_memory(sizeof(*data));
+  data = (f_gallagher_data_t *)coco_allocate_memory(sizeof(*data));
   /* Allocate temporary storage and space for the rotation matrices */
   data->number_of_peaks = number_of_peaks;
   data->xopt = coco_allocate_vector(dimension);
@@ -190,21 +194,26 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
     b = 9.8;
     c = 4.9;
   } else {
-    coco_error("f_gallagher_bbob_problem_allocate(): '%lu' is a non-supported number of peaks",
-    		(unsigned long) number_of_peaks);
+    coco_error("f_gallagher_bbob_problem_allocate(): '%lu' is a non-supported "
+               "number of peaks",
+               (unsigned long)number_of_peaks);
   }
   data->rseed = rseed;
   bbob2009_compute_rotation(data->rotation, rseed, dimension);
 
   /* Initialize all the data of the inner problem */
-  random_numbers = coco_allocate_vector(number_of_peaks * dimension); /* This is large enough for all cases below */
+  random_numbers = coco_allocate_vector(
+      number_of_peaks *
+      dimension); /* This is large enough for all cases below */
   bbob2009_unif(random_numbers, number_of_peaks - 1, data->rseed);
-  rperm = (f_gallagher_permutation_t *) coco_allocate_memory(sizeof(*rperm) * (number_of_peaks - 1));
+  rperm = (f_gallagher_permutation_t *)coco_allocate_memory(
+      sizeof(*rperm) * (number_of_peaks - 1));
   for (i = 0; i < number_of_peaks - 1; ++i) {
     rperm[i].value = random_numbers[i];
     rperm[i].index = i;
   }
-  qsort(rperm, number_of_peaks - 1, sizeof(*rperm), f_gallagher_compare_doubles);
+  qsort(rperm, number_of_peaks - 1, sizeof(*rperm),
+        f_gallagher_compare_doubles);
 
   /* Random permutation */
   arrCondition = coco_allocate_vector(number_of_peaks);
@@ -212,23 +221,27 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
   data->peak_values = coco_allocate_vector(number_of_peaks);
   data->peak_values[0] = 10;
   for (i = 1; i < number_of_peaks; ++i) {
-    arrCondition[i] = pow(maxcondition, (double) (rperm[i - 1].index) / ((double) (number_of_peaks - 2)));
-    data->peak_values[i] = (double) (i - 1) / (double) (number_of_peaks - 2) * (fitvalues[1] - fitvalues[0])
-        + fitvalues[0];
+    arrCondition[i] = pow(maxcondition, (double)(rperm[i - 1].index) /
+                                            ((double)(number_of_peaks - 2)));
+    data->peak_values[i] = (double)(i - 1) / (double)(number_of_peaks - 2) *
+                               (fitvalues[1] - fitvalues[0]) +
+                           fitvalues[0];
   }
   coco_free_memory(rperm);
 
-  rperm = (f_gallagher_permutation_t *) coco_allocate_memory(sizeof(*rperm) * dimension);
+  rperm = (f_gallagher_permutation_t *)coco_allocate_memory(sizeof(*rperm) *
+                                                            dimension);
   for (i = 0; i < number_of_peaks; ++i) {
-    bbob2009_unif(random_numbers, dimension, data->rseed + (long) (1000 * i));
+    bbob2009_unif(random_numbers, dimension, data->rseed + (long)(1000 * i));
     for (j = 0; j < dimension; ++j) {
       rperm[j].value = random_numbers[j];
       rperm[j].index = j;
     }
     qsort(rperm, dimension, sizeof(*rperm), f_gallagher_compare_doubles);
     for (j = 0; j < dimension; ++j) {
-      data->arr_scales[i][j] = pow(arrCondition[i],                             /* Lambda^alpha_i from the doc */
-          ((double) rperm[j].index) / ((double) (dimension - 1)) - 0.5);
+      data->arr_scales[i][j] =
+          pow(arrCondition[i], /* Lambda^alpha_i from the doc */
+              ((double)rperm[j].index) / ((double)(dimension - 1)) - 0.5);
     }
   }
   coco_free_memory(rperm);
@@ -240,7 +253,8 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
     for (j = 0; j < number_of_peaks; ++j) {
       data->x_local[i][j] = 0.;
       for (k = 0; k < dimension; ++k) {
-        data->x_local[i][j] += data->rotation[i][k] * (b * random_numbers[j * dimension + k] - c);
+        data->x_local[i][j] +=
+            data->rotation[i][k] * (b * random_numbers[j * dimension + k] - c);
       }
       if (j == 0) {
         data->x_local[i][j] *= 0.8;
@@ -258,24 +272,24 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
   fopt = bbob2009_compute_fopt(function, instance);
   problem = transform_obj_shift(problem, fopt);
 
-  coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
-  coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+  coco_problem_set_id(problem, problem_id_template, function, instance,
+                      dimension);
+  coco_problem_set_name(problem, problem_name_template, function, instance,
+                        dimension);
   coco_problem_set_type(problem, "5-weakly-structured");
 
   return problem;
 }
 
-
-
-
-/* TODO: Functions used in/related to the large scale suite are below. Eventually either merge with above after the standard version is updated with the new approach or put what's below in a separate file */
-
-
+/* TODO: Functions used in/related to the large scale suite are below.
+ * Eventually either merge with above after the standard version is updated with
+ * the new approach or put what's below in a separate file */
 
 /**
  * @brief Uses the core function to evaluate the sub problem.
  */
-static void f_gallagher_sub_evaluate_core(coco_problem_t *problem_i, const double *x, double *y) {
+static void f_gallagher_sub_evaluate_core(coco_problem_t *problem_i,
+                                          const double *x, double *y) {
 
   assert(problem_i->number_of_objectives == 1);
   y[0] = f_sphere_raw(x, problem_i->number_of_variables);
@@ -285,13 +299,18 @@ static void f_gallagher_sub_evaluate_core(coco_problem_t *problem_i, const doubl
 /**
  * @brief Allocates the basic gallagher sub problem.
  */
-static coco_problem_t *f_gallagher_sub_problem_allocate(const size_t number_of_variables) {
+static coco_problem_t *
+f_gallagher_sub_problem_allocate(const size_t number_of_variables) {
 
-  coco_problem_t *problem_i = coco_problem_allocate_from_scalars("gallagher_sub function",
-                                                               f_gallagher_sub_evaluate_core, f_gallagher_versatile_data_free, number_of_variables, -5.0, 5.0, 0.0);
+  coco_problem_t *problem_i = coco_problem_allocate_from_scalars(
+      "gallagher_sub function", f_gallagher_sub_evaluate_core,
+      f_gallagher_versatile_data_free, number_of_variables, -5.0, 5.0, 0.0);
   f_gallagher_versatile_data_t *versatile_data_tmp;
-  problem_i->versatile_data = (f_gallagher_versatile_data_t *) coco_allocate_memory(sizeof(f_gallagher_versatile_data_t));
-  versatile_data_tmp = ((f_gallagher_versatile_data_t *) problem_i->versatile_data);
+  problem_i->versatile_data =
+      (f_gallagher_versatile_data_t *)coco_allocate_memory(
+          sizeof(f_gallagher_versatile_data_t));
+  versatile_data_tmp =
+      ((f_gallagher_versatile_data_t *)problem_i->versatile_data);
   /* the following are not needed in the sub-problems */
   versatile_data_tmp->number_of_peaks = 0;
   versatile_data_tmp->sub_problems = NULL;
@@ -301,43 +320,46 @@ static coco_problem_t *f_gallagher_sub_problem_allocate(const size_t number_of_v
   versatile_data_tmp->block_sizes = NULL;
   versatile_data_tmp->B = NULL;
 
-  coco_problem_set_id(problem_i, "%s_d%04lu", "gallagher_sub", number_of_variables);
+  coco_problem_set_id(problem_i, "%s_d%04lu", "gallagher_sub",
+                      number_of_variables);
 
   /* Compute best solution */
-  /*f_gallagher_sub_evaluate_core(problem, problem->best_parameter, problem->best_value);*/
+  /*f_gallagher_sub_evaluate_core(problem, problem->best_parameter,
+   * problem->best_value);*/
   return problem_i;
 }
 
-
-
 /**
- * @brief Implements the gallagher function without connections to any COCO structures.
- * Wassim: core to not conflict with raw for now
+ * @brief Implements the gallagher function without connections to any COCO
+ * structures. Wassim: core to not conflict with raw for now
  */
-static double f_gallagher_core(const double *x, size_t number_of_variables, f_gallagher_versatile_data_t *versatile_data) {
+static double f_gallagher_core(const double *x, size_t number_of_variables,
+                               f_gallagher_versatile_data_t *versatile_data) {
 
   coco_problem_t *problem_i;
   double result = 0;
   double y, w_i;
-  size_t i,j;
+  size_t i, j;
   double maxf = DBL_MAX;
   double *x_local;
   x_local = coco_allocate_vector(number_of_variables);
 
-
   for (i = 0; i < versatile_data->number_of_peaks; i++) {
     for (j = 0; j < number_of_variables; j++) {
-      x_local[j] = x[j];/*versatile_data->rotated_x[j];*/
+      x_local[j] = x[j]; /*versatile_data->rotated_x[j];*/
     }
     problem_i = versatile_data->sub_problems[i];
     problem_i->evaluate_function(problem_i, x_local, &y);
     if (i == 0) {
       w_i = 10;
     } else {
-      w_i = 1.1 + 8.0 * (((double) i + 1) - 2.0) / (((double)versatile_data->number_of_peaks) - 2.0);
+      w_i = 1.1 + 8.0 * (((double)i + 1) - 2.0) /
+                      (((double)versatile_data->number_of_peaks) - 2.0);
     }
-    y = w_i * exp(- 1.0 / (2.0 * ((double)number_of_variables)) * y);/* Wassim: problem_i->evaluate_function is the sphere on a transformed coordiante system with conditioning */
-    if ( i == 0 || maxf < y ) {
+    y = w_i * exp(-1.0 / (2.0 * ((double)number_of_variables)) *
+                  y); /* Wassim: problem_i->evaluate_function is the sphere on a
+                         transformed coordiante system with conditioning */
+    if (i == 0 || maxf < y) {
       maxf = y;
     }
   }
@@ -349,12 +371,16 @@ static double f_gallagher_core(const double *x, size_t number_of_variables, f_ga
 /**
  * @brief Uses the core function to evaluate the COCO problem.
  */
-static void f_gallagher_evaluate_core(coco_problem_t *problem, const double *x, double *y) {
+static void f_gallagher_evaluate_core(coco_problem_t *problem, const double *x,
+                                      double *y) {
 
   assert(problem->number_of_objectives == 1);
-  y[0] = f_gallagher_core(x, problem->number_of_variables, ((f_gallagher_versatile_data_t *) problem->versatile_data));
-  if (! (y[0] + 1e-13 >= problem->best_value[0])) {
-    coco_warning("x[0]= %f: %f < %f", x[0], y[0] + 1e-13, problem->best_value[0]);
+  y[0] = f_gallagher_core(
+      x, problem->number_of_variables,
+      ((f_gallagher_versatile_data_t *)problem->versatile_data));
+  if (!(y[0] + 1e-13 >= problem->best_value[0])) {
+    coco_warning("x[0]= %f: %f < %f", x[0], y[0] + 1e-13,
+                 problem->best_value[0]);
   }
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
@@ -362,39 +388,48 @@ static void f_gallagher_evaluate_core(coco_problem_t *problem, const double *x, 
 /**
  * @brief Allocates the basic gallagher problem.
  */
-static coco_problem_t *f_gallagher_problem_allocate(const size_t number_of_variables, size_t number_of_peaks) {
+static coco_problem_t *
+f_gallagher_problem_allocate(const size_t number_of_variables,
+                             size_t number_of_peaks) {
 
   size_t peak_index;
   f_gallagher_versatile_data_t *versatile_data;
-  coco_problem_t *problem = coco_problem_allocate_from_scalars("gallagher function",
-                                                               f_gallagher_evaluate_core, f_gallagher_versatile_data_free, number_of_variables, -5.0, 5.0, 0.0);
-  problem->versatile_data = (f_gallagher_versatile_data_t *) coco_allocate_memory(sizeof(f_gallagher_versatile_data_t));
-  versatile_data = (f_gallagher_versatile_data_t *)problem->versatile_data;/* shortcut */
+  coco_problem_t *problem = coco_problem_allocate_from_scalars(
+      "gallagher function", f_gallagher_evaluate_core,
+      f_gallagher_versatile_data_free, number_of_variables, -5.0, 5.0, 0.0);
+  problem->versatile_data =
+      (f_gallagher_versatile_data_t *)coco_allocate_memory(
+          sizeof(f_gallagher_versatile_data_t));
+  versatile_data =
+      (f_gallagher_versatile_data_t *)problem->versatile_data; /* shortcut */
   versatile_data->number_of_peaks = number_of_peaks;
-  versatile_data->sub_problems = (coco_problem_t **) coco_allocate_memory(number_of_peaks * sizeof(coco_problem_t *));
+  versatile_data->sub_problems = (coco_problem_t **)coco_allocate_memory(
+      number_of_peaks * sizeof(coco_problem_t *));
   for (peak_index = 0; peak_index < number_of_peaks; peak_index++) {
-    versatile_data->sub_problems[peak_index] = f_gallagher_sub_problem_allocate(number_of_variables);
+    versatile_data->sub_problems[peak_index] =
+        f_gallagher_sub_problem_allocate(number_of_variables);
   }
   versatile_data->rotated_x = coco_allocate_vector(number_of_variables);
-  versatile_data->block_size_map = coco_allocate_vector_size_t(number_of_variables);
-  versatile_data->first_non_zero_map = coco_allocate_vector_size_t(number_of_variables);
-  versatile_data->block_sizes = coco_allocate_vector_size_t(number_of_variables);
+  versatile_data->block_size_map =
+      coco_allocate_vector_size_t(number_of_variables);
+  versatile_data->first_non_zero_map =
+      coco_allocate_vector_size_t(number_of_variables);
+  versatile_data->block_sizes =
+      coco_allocate_vector_size_t(number_of_variables);
 
   coco_problem_set_id(problem, "%s_d%04lu", "gallagher", number_of_variables);
   problem->best_value[0] = 0;
 
   /* Compute best solution */
-  /*f_gallagher_evaluate_core(problem, problem->best_parameter, problem->best_value);*/
+  /*f_gallagher_evaluate_core(problem, problem->best_parameter,
+   * problem->best_value);*/
   return problem;
 }
 
-static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const size_t function,
-                                                                       const size_t dimension,
-                                                                       const size_t instance,
-                                                                       const long rseed,
-                                                                       size_t number_of_peaks,
-                                                                       const char *problem_id_template,
-                                                                       const char *problem_name_template) {
+static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(
+    const size_t function, const size_t dimension, const size_t instance,
+    const long rseed, size_t number_of_peaks, const char *problem_id_template,
+    const char *problem_name_template) {
 
   size_t i;
   size_t peak_index;
@@ -407,18 +442,20 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
   /*size_t *P1, *P2;*/
   size_t *block_sizes;
   size_t nb_blocks;
-  size_t idx_blocksize, current_blocksize, next_bs_change; /* needed for the rotated y_i*/
+  size_t idx_blocksize, current_blocksize,
+      next_bs_change; /* needed for the rotated y_i*/
   /*size_t swap_range;
   size_t nb_swaps;*/
-  double *tmp_uniform, *tmp_uniform2, *best_param_before_rotation, *best_param_after_rotation;
+  double *tmp_uniform, *tmp_uniform2, *best_param_before_rotation,
+      *best_param_after_rotation;
   const size_t peaks_21 = 21;
   const size_t peaks_101 = 101;
   double a = 0.8, b = 0, c = 0;
   double first_condition = 0;
   double alpha_i, *alpha_i_vals;
   size_t *P_alpha_i, *P_Lambda;
-  /* first_condition satisfies the old code and the doc but seems wrong in that it is, with very high
-   * probability, not the largest condition level!!! */
+  /* first_condition satisfies the old code and the doc but seems wrong in that
+   * it is, with very high probability, not the largest condition level!!! */
 
   fopt = bbob2009_compute_fopt(function, instance);
   if (number_of_peaks == peaks_101) {
@@ -430,7 +467,8 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
     b = 9.8;
     c = 4.9;
   } else {
-    coco_error("f_gallagher_permblockdiag_bbob_problem_allocate(): '%lu' is a non-supported number of peaks",
+    coco_error("f_gallagher_permblockdiag_bbob_problem_allocate(): '%lu' is a "
+               "non-supported number of peaks",
                number_of_peaks);
   }
 
@@ -441,16 +479,21 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
 
   B = coco_allocate_blockmatrix(dimension, block_sizes, nb_blocks);
   coco_compute_blockrotation(B, rseed, dimension, block_sizes, nb_blocks);
-  B_const = (const double *const *)B;   /* Required because of the type */
+  B_const = (const double *const *)B; /* Required because of the type */
   /*P1 = coco_allocate_vector_size_t(dimension);
   P2 = coco_allocate_vector_size_t(dimension);
-  coco_compute_truncated_uniform_swap_permutation(P1, rseed + 2000000, dimension, nb_swaps, swap_range);
-  coco_compute_truncated_uniform_swap_permutation(P2, rseed + 3000000, dimension, nb_swaps, swap_range);*/
+  coco_compute_truncated_uniform_swap_permutation(P1, rseed + 2000000,
+  dimension, nb_swaps, swap_range);
+  coco_compute_truncated_uniform_swap_permutation(P2, rseed + 3000000,
+  dimension, nb_swaps, swap_range);*/
 
   problem = f_gallagher_problem_allocate(dimension, number_of_peaks);
-  versatile_data = (f_gallagher_versatile_data_t *) problem->versatile_data;/* shortcut */
-  /* set versatile_data fields needed later in transform_vars_gallagher_blockrotation.c */
-  /* TODO: block-rotation related fields should be set in a separate function, not the definition of the problem*/
+  versatile_data =
+      (f_gallagher_versatile_data_t *)problem->versatile_data; /* shortcut */
+  /* set versatile_data fields needed later in
+   * transform_vars_gallagher_blockrotation.c */
+  /* TODO: block-rotation related fields should be set in a separate function,
+   * not the definition of the problem*/
   idx_blocksize = 0;
   next_bs_change = block_sizes[idx_blocksize];
   for (i = 0; i < dimension; i++) {
@@ -458,23 +501,30 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
       idx_blocksize++;
       next_bs_change += block_sizes[idx_blocksize];
     }
-    current_blocksize=block_sizes[idx_blocksize];
+    current_blocksize = block_sizes[idx_blocksize];
     versatile_data->block_size_map[i] = current_blocksize;
     versatile_data->first_non_zero_map[i] = next_bs_change - current_blocksize;
   }
-  versatile_data->B = coco_copy_block_matrix(B_const, dimension, block_sizes, nb_blocks);
+  versatile_data->B =
+      coco_copy_block_matrix(B_const, dimension, block_sizes, nb_blocks);
 
-  rotation_problem = coco_problem_allocate_from_scalars("dummy rotation", NULL, NULL, dimension, -5.0, 5.0, 0.0);
-  rotation_problem = transform_vars_blockrotation(rotation_problem, B_const, dimension, block_sizes, nb_blocks);
+  rotation_problem = coco_problem_allocate_from_scalars(
+      "dummy rotation", NULL, NULL, dimension, -5.0, 5.0, 0.0);
+  rotation_problem = transform_vars_blockrotation(
+      rotation_problem, B_const, dimension, block_sizes, nb_blocks);
 
   alpha_i_vals = coco_allocate_vector(number_of_peaks - 1);
   for (i = 0; i < number_of_peaks - 1; i++) {
-    alpha_i_vals[i] = pow(1000, 2 * (double) (i) / ((double) (number_of_peaks - 2)));
+    alpha_i_vals[i] =
+        pow(1000, 2 * (double)(i) / ((double)(number_of_peaks - 2)));
   }
   tmp_uniform = coco_allocate_vector(dimension * number_of_peaks);
   bbob2009_unif(tmp_uniform, number_of_peaks - 1, rseed);
-  P_alpha_i = coco_allocate_vector_size_t(number_of_peaks - 1);/* random permutation of the alpha_i's to allow sampling without replacement*/
-  coco_compute_permutation_from_sequence(P_alpha_i, tmp_uniform, number_of_peaks - 1);
+  P_alpha_i = coco_allocate_vector_size_t(
+      number_of_peaks - 1); /* random permutation of the alpha_i's to allow
+                               sampling without replacement*/
+  coco_compute_permutation_from_sequence(P_alpha_i, tmp_uniform,
+                                         number_of_peaks - 1);
   bbob2009_unif(tmp_uniform, dimension * number_of_peaks, rseed);
   best_param_before_rotation = coco_allocate_vector(dimension);
   best_param_after_rotation = coco_allocate_vector(dimension);
@@ -503,21 +553,27 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
     if (peak_index == 0) {
       alpha_i = first_condition;
     } else {
-      alpha_i = alpha_i_vals[P_alpha_i[peak_index - 1]];/*already square-rooted */
+      alpha_i =
+          alpha_i_vals[P_alpha_i[peak_index - 1]]; /*already square-rooted */
     }
 
-    (*problem_i)->best_value[0] = 0;/* to prevent raising the assert */
+    (*problem_i)->best_value[0] = 0; /* to prevent raising the assert */
     /* P_Lambda the permutation */
-    P_Lambda = coco_allocate_vector_size_t(dimension);/* random permutation of the values in C_i */
-    bbob2009_unif(tmp_uniform2, dimension, rseed + (long) (1000 * peak_index));
+    P_Lambda = coco_allocate_vector_size_t(
+        dimension); /* random permutation of the values in C_i */
+    bbob2009_unif(tmp_uniform2, dimension, rseed + (long)(1000 * peak_index));
     coco_compute_permutation_from_sequence(P_Lambda, tmp_uniform2, dimension);
-    /*coco_compute_random_permutation(P_Lambda, rseed + (long) (1000 * peak_index), dimension);*/
+    /*coco_compute_random_permutation(P_Lambda, rseed + (long) (1000 *
+     * peak_index), dimension);*/
 
     /* apply var transformations to sub problem*/
-    *problem_i = transform_vars_scale(*problem_i, 1. / sqrt(sqrt(sqrt(alpha_i))));/* sqrt( alpha^1/4) */
+    *problem_i = transform_vars_scale(
+        *problem_i, 1. / sqrt(sqrt(sqrt(alpha_i)))); /* sqrt( alpha^1/4) */
     *problem_i = transform_vars_conditioning(*problem_i, sqrt(alpha_i));
-    /**problem_i = transform_vars_blockrotation(*problem_i, B_const, dimension, block_sizes, nb_blocks);*/
-    *problem_i = transform_vars_inverse_permutation(*problem_i, P_Lambda, dimension);
+    /**problem_i = transform_vars_blockrotation(*problem_i, B_const, dimension,
+     * block_sizes, nb_blocks);*/
+    *problem_i =
+        transform_vars_inverse_permutation(*problem_i, P_Lambda, dimension);
     *problem_i = transform_vars_shift(*problem_i, y_i, 0);
 
     coco_free_memory(P_Lambda);
@@ -525,8 +581,10 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
     y_i = NULL;
   }
 
-  f_gallagher_evaluate_core(problem, best_param_after_rotation, problem->best_value);
-  problem = transform_vars_blockrotation(problem, B_const, dimension, block_sizes, nb_blocks);
+  f_gallagher_evaluate_core(problem, best_param_after_rotation,
+                            problem->best_value);
+  problem = transform_vars_blockrotation(problem, B_const, dimension,
+                                         block_sizes, nb_blocks);
   for (i = 0; i < dimension; i++) {
     problem->best_parameter[i] = best_param_before_rotation[i];
   }
@@ -536,10 +594,14 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
   problem = transform_obj_power(problem, 2.0);
   problem = transform_obj_penalize(problem, penalty_factor);
   problem = transform_obj_shift(problem, fopt);
-  /*problem = transform_vars_gallagher_blockrotation(problem);*//* block-matrix in versatile_data*/
+  /*problem = transform_vars_gallagher_blockrotation(problem);*/ /* block-matrix
+                                                                    in
+                                                                    versatile_data*/
 
-  coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
-  coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+  coco_problem_set_id(problem, problem_id_template, function, instance,
+                      dimension);
+  coco_problem_set_name(problem, problem_name_template, function, instance,
+                        dimension);
   coco_problem_set_type(problem, "5-weakly-structured");
 
   coco_free_block_matrix(B, dimension);

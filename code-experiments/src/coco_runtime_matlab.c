@@ -5,16 +5,13 @@
  *
  */
 
+#include "coco_utilities.c"
+#include <mex.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
-
-#include <mex.h>
 
 #include "coco.h"
-#include "coco_utilities.c"
-
-
 
 void coco_error(const char *message, ...) {
   va_list args;
@@ -24,9 +21,9 @@ void coco_error(const char *message, ...) {
 
   mexPrintf("COCO FATAL ERROR: ");
   va_start(args, message);
-    n = vsprintf(buffer, message, args);
-    va_end(args);  
-    mexPrintf(buffer);
+  n = vsprintf(buffer, message, args);
+  va_end(args);
+  mexPrintf(buffer);
 
   mexPrintf("\n");
   exit(EXIT_FAILURE);
@@ -42,7 +39,7 @@ void coco_warning(const char *message, ...) {
     mexPrintf("COCO WARNING: ");
     va_start(args, message);
     n = vsprintf(buffer, message, args);
-    va_end(args);  
+    va_end(args);
     mexPrintf(buffer);
 
     mexPrintf("\n");
@@ -51,38 +48,37 @@ void coco_warning(const char *message, ...) {
 
 void coco_info(const char *message, ...) {
   va_list args;
- 
+
   char buffer[500];
   int n;
-  
+
   if (coco_log_level >= COCO_INFO) {
     mexPrintf("COCO INFO: ");
     va_start(args, message);
     n = vsprintf(buffer, message, args);
-    va_end(args);  
+    va_end(args);
     mexPrintf(buffer);
     mexPrintf("\n");
   }
 }
- 
+
 /**
- * A function similar to coco_info that prints only the given message without any prefix and without
- * adding a new line.
+ * A function similar to coco_info that prints only the given message without
+ * any prefix and without adding a new line.
  */
 void coco_info_partial(const char *message, ...) {
   va_list args;
- 
+
   char buffer[500];
   int n;
-  
+
   if (coco_log_level >= COCO_INFO) {
     va_start(args, message);
     n = vsprintf(buffer, message, args);
-    va_end(args);  
+    va_end(args);
     mexPrintf(buffer);
   }
 }
-
 
 void coco_debug(const char *message, ...) {
   va_list args;
@@ -94,7 +90,7 @@ void coco_debug(const char *message, ...) {
     mexPrintf("COCO DEBUG: ");
     va_start(args, message);
     n = vsprintf(buffer, message, args);
-    va_end(args);      
+    va_end(args);
     mexPrintf(buffer);
     mexPrintf("\n");
   }
@@ -112,6 +108,4 @@ void *coco_allocate_memory(const size_t size) {
   return data;
 }
 
-void coco_free_memory(void *data) {
-  free(data);
-}
+void coco_free_memory(void *data) { free(data); }

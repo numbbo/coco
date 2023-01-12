@@ -1,11 +1,13 @@
 /**
  * @file coco.h
- * @brief All public COCO functions, constants and variables are defined in this file.
+ * @brief All public COCO functions, constants and variables are defined in this
+ * file.
  *
- * It is the authoritative reference, if any function deviates from the documented behavior it is considered
- * a bug. See the function definitions for their detailed descriptions.
+ * It is the authoritative reference, if any function deviates from the
+ * documented behavior it is considered a bug. See the function definitions for
+ * their detailed descriptions.
  */
- 
+
 #ifndef __COCO_H__
 #define __COCO_H__
 
@@ -14,7 +16,7 @@
 /* Macro to tag function declarations:
  *
  * COCO_NORETURN:
- *   Function never returns. Mainly useful for linters and static analysis 
+ *   Function never returns. Mainly useful for linters and static analysis
  *   tools.
  *
  * COCO_UNUSED:
@@ -24,7 +26,7 @@
  * lead to much bette code generation and ultimately faster runtimes.
  *
  * COCO_LIKELY(e):
- *   Mark expression `e` as likely true. Usually used in if() or while() 
+ *   Mark expression `e` as likely true. Usually used in if() or while()
  *   statements to give the compiler a hint.
  *
  * COCO_UNLIKELY(e):
@@ -34,26 +36,27 @@
 #ifdef __GNUC__
 #define COCO_NORETURN __attribute__((noreturn))
 #define COCO_UNUSED __attribute__((unused))
-#define COCO_LIKELY(x) __builtin_expect((x),1)
-#define COCO_UNLIKELY(x) __builtin_expect((x),0)
+#define COCO_LIKELY(x) __builtin_expect((x), 1)
+#define COCO_UNLIKELY(x) __builtin_expect((x), 0)
 #elif __clang__
 #define COCO_NORETURN __attribute__((noreturn))
 #define COCO_UNUSED __attribute__((unused))
-#define COCO_LIKELY(x) __builtin_expect((x),1)
-#define COCO_UNLIKELY(x) __builtin_expect((x),0)
+#define COCO_LIKELY(x) __builtin_expect((x), 1)
+#define COCO_UNLIKELY(x) __builtin_expect((x), 0)
 #elif _MSC_VER
 #define COCO_NORETURN __declspec(noreturn)
 #define COCO_UNUSED
 #define COCO_LIKELY(x) (x)
 #define COCO_UNLIKELY(x) (x)
 #else
-#define COCO_NORETURN 
+#define COCO_NORETURN
 #define COCO_UNUSED
 #define COCO_LIKELY(x) (x)
 #define COCO_UNLIKELY(x) (x)
 #endif
 
-/* Definitions of some 32 and 64-bit types (used by the random number generator) */
+/* Definitions of some 32 and 64-bit types (used by the random number generator)
+ */
 #ifdef _MSC_VER
 typedef __int32 int32_t;
 typedef unsigned __int32 uint32_t;
@@ -64,23 +67,27 @@ typedef unsigned __int64 uint64_t;
 #endif
 
 /* Include definition for NAN among other things */
-#include <math.h>
 #include <float.h>
+#include <math.h>
 #ifndef NAN
-/** @brief Definition of NAN to be used only if undefined by the included headers */
+/** @brief Definition of NAN to be used only if undefined by the included
+ * headers */
 #define NAN 8.8888e88
 #endif
 #ifndef isnan
-/** @brief Definition of isnan to be used only if undefined by the included headers */
+/** @brief Definition of isnan to be used only if undefined by the included
+ * headers */
 #define isnan(x) (0)
 #endif
 #ifndef INFINITY
-/** @brief Definition of INFINITY to be used only if undefined by the included headers */
+/** @brief Definition of INFINITY to be used only if undefined by the included
+ * headers */
 #define INFINITY 1e22
 /* why not using 1e99? */
 #endif
 #ifndef isinf
-/** @brief Definition of isinf to be used only if undefined by the included headers */
+/** @brief Definition of isinf to be used only if undefined by the included
+ * headers */
 #define isinf(x) (0)
 #endif
 
@@ -99,7 +106,8 @@ static const char coco_version[32] = "$COCO_VERSION";
 
 /***********************************************************************************************************/
 /**
- * @brief COCO's own pi constant. Simplifies the case, when the value of pi changes.
+ * @brief COCO's own pi constant. Simplifies the case, when the value of pi
+ * changes.
  */
 /**@{*/
 static const double coco_pi = 3.14159265358979323846;
@@ -110,10 +118,10 @@ static const double coco_two_pi = 2.0 * 3.14159265358979323846;
 
 /** @brief Logging level type. */
 typedef enum {
-  COCO_ERROR,     /**< @brief only error messages are output */
-  COCO_WARNING,   /**< @brief error and warning messages are output */
-  COCO_INFO,      /**< @brief error, warning and info messages are output */
-  COCO_DEBUG      /**< @brief error, warning, info and debug messages are output */
+  COCO_ERROR,   /**< @brief only error messages are output */
+  COCO_WARNING, /**< @brief error and warning messages are output */
+  COCO_INFO,    /**< @brief error, warning and info messages are output */
+  COCO_DEBUG /**< @brief error, warning, info and debug messages are output */
 } coco_log_level_type_e;
 
 /***********************************************************************************************************/
@@ -173,7 +181,8 @@ typedef struct coco_random_state_s coco_random_state_t;
 /**
  * @brief Constructs a COCO suite.
  */
-coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, const char *suite_options);
+coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance,
+                         const char *suite_options);
 
 /**
  * @brief Frees the given suite.
@@ -181,22 +190,25 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
 void coco_suite_free(coco_suite_t *suite);
 
 /**
- * @brief Returns the next (observed) problem of the suite or NULL if there is no next problem left.
+ * @brief Returns the next (observed) problem of the suite or NULL if there is
+ * no next problem left.
  */
-coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t *observer);
+coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite,
+                                            coco_observer_t *observer);
 
 /**
  * @brief Returns the problem of the suite defined by problem_index.
  */
-coco_problem_t *coco_suite_get_problem(coco_suite_t *suite, const size_t problem_index);
+coco_problem_t *coco_suite_get_problem(coco_suite_t *suite,
+                                       const size_t problem_index);
 
 /**
- * @brief Returns the first problem of the suite defined by function, dimension and instance numbers.
+ * @brief Returns the first problem of the suite defined by function, dimension
+ * and instance numbers.
  */
-coco_problem_t *coco_suite_get_problem_by_function_dimension_instance(coco_suite_t *suite,
-                                                                      const size_t function,
-                                                                      const size_t dimension,
-                                                                      const size_t instance);
+coco_problem_t *coco_suite_get_problem_by_function_dimension_instance(
+    coco_suite_t *suite, const size_t function, const size_t dimension,
+    const size_t instance);
 
 /**
  * @brief Returns the number of problems in the given suite.
@@ -204,30 +216,41 @@ coco_problem_t *coco_suite_get_problem_by_function_dimension_instance(coco_suite
 size_t coco_suite_get_number_of_problems(const coco_suite_t *suite);
 
 /**
- * @brief Returns the function number in the suite in position function_idx (counting from 0).
+ * @brief Returns the function number in the suite in position function_idx
+ * (counting from 0).
  */
-size_t coco_suite_get_function_from_function_index(const coco_suite_t *suite, const size_t function_idx);
+size_t coco_suite_get_function_from_function_index(const coco_suite_t *suite,
+                                                   const size_t function_idx);
 
 /**
- * @brief Returns the dimension number in the suite in position dimension_idx (counting from 0).
+ * @brief Returns the dimension number in the suite in position dimension_idx
+ * (counting from 0).
  */
-size_t coco_suite_get_dimension_from_dimension_index(const coco_suite_t *suite, const size_t dimension_idx);
+size_t
+coco_suite_get_dimension_from_dimension_index(const coco_suite_t *suite,
+                                              const size_t dimension_idx);
 
 /**
- * @brief Returns the instance number in the suite in position instance_idx (counting from 0).
+ * @brief Returns the instance number in the suite in position instance_idx
+ * (counting from 0).
  */
-size_t coco_suite_get_instance_from_instance_index(const coco_suite_t *suite, const size_t instance_idx);
+size_t coco_suite_get_instance_from_instance_index(const coco_suite_t *suite,
+                                                   const size_t instance_idx);
 /**@}*/
 
 /**
  * @name Encoding/decoding problem index
  *
- * General schema for encoding/decoding a problem index. Note that the index depends on the number of
- * instances a suite is defined with (it should be called a suite-instance-depending index...).
- * Also, while functions, instances and dimensions start from 1, function_idx, instance_idx and dimension_idx
+ * General schema for encoding/decoding a problem index. Note that the index
+ depends on the number of
+ * instances a suite is defined with (it should be called a
+ suite-instance-depending index...).
+ * Also, while functions, instances and dimensions start from 1, function_idx,
+ instance_idx and dimension_idx
  * as well as suite_dep_index start from 0!
  *
- * Showing an example with 2 dimensions (2, 3), 5 instances (6, 7, 8, 9, 10) and 2 functions (1, 2):
+ * Showing an example with 2 dimensions (2, 3), 5 instances (6, 7, 8, 9, 10) and
+ 2 functions (1, 2):
  *
    \verbatim
    index | instance | function | dimension
@@ -279,8 +302,8 @@ size_t coco_suite_get_instance_from_instance_index(const coco_suite_t *suite, co
  */
 /**@{*/
 /**
- * @brief Computes the index of the problem in the suite that corresponds to the given function, dimension
- * and instance indices.
+ * @brief Computes the index of the problem in the suite that corresponds to the
+ * given function, dimension and instance indices.
  */
 size_t coco_suite_encode_problem_index(const coco_suite_t *suite,
                                        const size_t function_idx,
@@ -288,8 +311,8 @@ size_t coco_suite_encode_problem_index(const coco_suite_t *suite,
                                        const size_t instance_idx);
 
 /**
- * @brief Computes the function, dimension and instance indexes of the problem with problem_index in the
- * given suite.
+ * @brief Computes the function, dimension and instance indexes of the problem
+ * with problem_index in the given suite.
  */
 void coco_suite_decode_problem_index(const coco_suite_t *suite,
                                      const size_t problem_index,
@@ -317,15 +340,17 @@ void coco_observer_free(coco_observer_t *observer);
 /**
  * @brief Adds an observer to the given problem.
  */
-coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, coco_observer_t *observer);
+coco_problem_t *coco_problem_add_observer(coco_problem_t *problem,
+                                          coco_observer_t *observer);
 
 /**
  * @brief Removes an observer from the given problem.
  */
-coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_observer_t *observer);
+coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem,
+                                             coco_observer_t *observer);
 
 /**
- * @brief Returns result folder name, where logger output is written. 
+ * @brief Returns result folder name, where logger output is written.
  */
 const char *coco_observer_get_result_folder(const coco_observer_t *observer);
 
@@ -340,15 +365,18 @@ const char *coco_observer_get_result_folder(const coco_observer_t *observer);
 /**
  * @brief Evaluates the problem function in point x and save the result in y.
  */
-void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y);
+void coco_evaluate_function(coco_problem_t *problem, const double *x,
+                            double *y);
 
 /**
  * @brief Evaluates the problem constraints in point x and save the result in y.
  */
-void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y);
+void coco_evaluate_constraint(coco_problem_t *problem, const double *x,
+                              double *y);
 
 /**
- * @brief Recommends a solution as the current best guesses to the problem. Not implemented yet.
+ * @brief Recommends a solution as the current best guesses to the problem. Not
+ * implemented yet.
  */
 void coco_recommend_solution(coco_problem_t *problem, const double *x);
 
@@ -388,12 +416,14 @@ size_t coco_problem_get_number_of_objectives(const coco_problem_t *problem);
 size_t coco_problem_get_number_of_constraints(const coco_problem_t *problem);
 
 /**
- * @brief Returns the number of objective function evaluations done on the problem.
+ * @brief Returns the number of objective function evaluations done on the
+ * problem.
  */
 size_t coco_problem_get_evaluations(const coco_problem_t *problem);
 
 /**
- * @brief Returns the number of constraint function evaluations done on the problem.
+ * @brief Returns the number of constraint function evaluations done on the
+ * problem.
  */
 size_t coco_problem_get_evaluations_constraints(const coco_problem_t *problem);
 
@@ -410,31 +440,37 @@ double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem);
 /**
  * @brief Returns the target value for the first objective.
  */
-double depreciated_coco_problem_get_final_target_fvalue1(const coco_problem_t *problem);
+double depreciated_coco_problem_get_final_target_fvalue1(
+    const coco_problem_t *problem);
 
 /**
- * @brief Returns a vector of size 'dimension' with lower bounds of the region of interest in
- * the decision space.
+ * @brief Returns a vector of size 'dimension' with lower bounds of the region
+ * of interest in the decision space.
  */
-const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t *problem);
+const double *
+coco_problem_get_smallest_values_of_interest(const coco_problem_t *problem);
 
 /**
- * @brief Returns a vector of size 'dimension' with upper bounds of the region of interest in
- * the decision space.
+ * @brief Returns a vector of size 'dimension' with upper bounds of the region
+ * of interest in the decision space.
  */
-const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *problem);
+const double *
+coco_problem_get_largest_values_of_interest(const coco_problem_t *problem);
 
 /**
- * @brief Returns the number of integer variables. If > 0, all integer variables come before any
- * continuous ones.
+ * @brief Returns the number of integer variables. If > 0, all integer variables
+ * come before any continuous ones.
  */
-size_t coco_problem_get_number_of_integer_variables(const coco_problem_t *problem);
+size_t
+coco_problem_get_number_of_integer_variables(const coco_problem_t *problem);
 
 /**
- * @brief For multi-objective problems, returns a vector of largest values of interest in each objective.
- * Currently, this equals the nadir point. For single-objective problems it raises an error.
+ * @brief For multi-objective problems, returns a vector of largest values of
+ * interest in each objective. Currently, this equals the nadir point. For
+ * single-objective problems it raises an error.
  */
-const double *coco_problem_get_largest_fvalues_of_interest(const coco_problem_t *problem);
+const double *
+coco_problem_get_largest_fvalues_of_interest(const coco_problem_t *problem);
 
 /**
  * @brief Returns the problem_index of the problem in its current suite.
@@ -442,9 +478,11 @@ const double *coco_problem_get_largest_fvalues_of_interest(const coco_problem_t 
 size_t coco_problem_get_suite_dep_index(const coco_problem_t *problem);
 
 /**
- * @brief Returns an initial solution, i.e. a feasible variable setting, to the problem.
+ * @brief Returns an initial solution, i.e. a feasible variable setting, to the
+ * problem.
  */
-void coco_problem_get_initial_solution(const coco_problem_t *problem, double *initial_solution);
+void coco_problem_get_initial_solution(const coco_problem_t *problem,
+                                       double *initial_solution);
 /**@}*/
 
 /***********************************************************************************************************/
@@ -465,8 +503,8 @@ coco_random_state_t *coco_random_new(uint32_t seed);
 void coco_random_free(coco_random_state_t *state);
 
 /**
- * @brief Returns one uniform [0, 1) random value from the random number generator associated with the given
- * state.
+ * @brief Returns one uniform [0, 1) random value from the random number
+ * generator associated with the given state.
  */
 double coco_random_uniform(coco_random_state_t *state);
 
@@ -488,7 +526,8 @@ double coco_random_normal(coco_random_state_t *state);
 void *coco_allocate_memory(const size_t size);
 
 /**
- * @brief Safe memory allocation for a vector of doubles that either succeeds or triggers a coco_error.
+ * @brief Safe memory allocation for a vector of doubles that either succeeds or
+ * triggers a coco_error.
  */
 double *coco_allocate_vector(const size_t size);
 
@@ -535,7 +574,8 @@ void coco_info_partial(const char *message, ...);
 void coco_debug(const char *message, ...);
 
 /**
- * @brief Sets the COCO log level to the given value and returns the previous value of the log level.
+ * @brief Sets the COCO log level to the given value and returns the previous
+ * value of the log level.
  */
 const char *coco_set_log_level(const char *level);
 /**@}*/
@@ -543,26 +583,27 @@ const char *coco_set_log_level(const char *level);
 /***********************************************************************************************************/
 
 /**
- * @name Methods regarding COCO archives and log files (used when pre-processing MO data)
+ * @name Methods regarding COCO archives and log files (used when pre-processing
+ * MO data)
  */
 /**@{*/
 
 /**
  * @brief Constructs a COCO archive.
  */
-coco_archive_t *coco_archive(const char *suite_name,
-                             const size_t function,
-                             const size_t dimension,
-                             const size_t instance);
+coco_archive_t *coco_archive(const char *suite_name, const size_t function,
+                             const size_t dimension, const size_t instance);
 /**
- * @brief Adds a solution with objectives (y1, y2) to the archive if none of the existing solutions in the
- * archive dominates it. In this case, returns 1, otherwise the archive is not updated and the method
- * returns 0.
+ * @brief Adds a solution with objectives (y1, y2) to the archive if none of the
+ * existing solutions in the archive dominates it. In this case, returns 1,
+ * otherwise the archive is not updated and the method returns 0.
  */
-int coco_archive_add_solution(coco_archive_t *archive, const double y1, const double y2, const char *text);
+int coco_archive_add_solution(coco_archive_t *archive, const double y1,
+                              const double y2, const char *text);
 
 /**
- * @brief Returns the number of (non-dominated) solutions in the archive (computed first, if needed).
+ * @brief Returns the number of (non-dominated) solutions in the archive
+ * (computed first, if needed).
  */
 size_t coco_archive_get_number_of_solutions(coco_archive_t *archive);
 
@@ -572,8 +613,9 @@ size_t coco_archive_get_number_of_solutions(coco_archive_t *archive);
 double coco_archive_get_hypervolume(coco_archive_t *archive);
 
 /**
- * @brief Returns the text of the next (non-dominated) solution in the archive and "" when there are no
- * solutions left. The first two solutions are always the extreme ones.
+ * @brief Returns the text of the next (non-dominated) solution in the archive
+ * and "" when there are no solutions left. The first two solutions are always
+ * the extreme ones.
  */
 const char *coco_archive_get_next_solution_text(coco_archive_t *archive);
 
@@ -583,9 +625,11 @@ const char *coco_archive_get_next_solution_text(coco_archive_t *archive);
 void coco_archive_free(coco_archive_t *archive);
 
 /**
- * @brief Feeds the solution to the bi-objective logger for logger output reconstruction purposes.
+ * @brief Feeds the solution to the bi-objective logger for logger output
+ * reconstruction purposes.
  */
-int coco_logger_biobj_feed_solution(coco_problem_t *problem, const size_t evaluation, const double *y);
+int coco_logger_biobj_feed_solution(coco_problem_t *problem,
+                                    const size_t evaluation, const double *y);
 /**@}*/
 
 /***********************************************************************************************************/

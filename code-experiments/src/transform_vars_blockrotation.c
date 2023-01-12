@@ -8,12 +8,12 @@
  * stored
  */
 
-#include <assert.h>
-
-#include "coco.h"
 #include "coco_problem.c"
 #include "transform_vars_blockrotation_helpers.c"
 #include "transform_vars_permutation_helpers.c" /* for coco_duplicate_size_t_vector */
+#include <assert.h>
+
+#include "coco.h"
 
 /**
  * @brief Data type for transform_vars_blockrotation.
