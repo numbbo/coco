@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm", "cython ~= 0.29.33", "numpy"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cocoex"
+version = "$COCO_VERSION"
+authors = [
+  {name = "Dimo Brockhoff", email = "dimo.brockhoff@inria.fr" },
+  {name = "Nikolaus Hansen", email = "nikolaus.hansen@inria.fr" },
+  {name = "Olaf Mersmann", email = "olafm@p-value.net"},
+  {name = "Tea Tušar", email = "tea.tusar@ijs.si" },
+]
+description = 'Benchmarking framework for all types of black-box optimization algorithms.'
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "BSD-3-Clause"}
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: BSD License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+]
+# dependencies = [ ]
+#dynamic = ["version"]

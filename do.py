@@ -297,10 +297,10 @@ def test_suites(args):
 def _prep_python():
     global RELEASE
     amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_c.c'],
-               'code-experiments/build/python/cython/coco.c',
+               'code-experiments/build/python/src/cocoex/coco.c',
                RELEASE, {"COCO_VERSION": git_version(pep440=True)})
     expand_file('code-experiments/src/coco.h',
-                'code-experiments/build/python/cython/coco.h',
+                'code-experiments/build/python/src/cocoex/coco.h',
                 {'COCO_VERSION': git_version(pep440=True)})
     copy_file('code-experiments/src/bbob2009_testcases.txt',
               'code-experiments/build/python/bbob2009_testcases.txt')
@@ -308,23 +308,17 @@ def _prep_python():
               'code-experiments/build/python/bbob2009_testcases2.txt')
     copy_file('code-experiments/build/python/README.md',
               'code-experiments/build/python/README.txt')
-    expand_file('code-experiments/build/python/setup.py.in',
-                'code-experiments/build/python/setup.py',
-                {'COCO_VERSION': git_version(pep440=True)})  # hg_version()})
-    # if 'darwin' in sys.platform:  # a hack to force cythoning
-    #     run('code-experiments/build/python/cython', ['cython', 'interface.pyx'])
+    expand_file('code-experiments/build/python/pyproject.toml.in',
+                'code-experiments/build/python/pyproject.toml',
+                {'COCO_VERSION': git_version(pep440=True)}) 
+    print(f"VERSION: {git_version(pep440=True)}")
 
 
 def build_python(package_install_option=[]):
     _prep_python()
-    ## Force distutils to use Cython
-    # os.environ['USE_CYTHON'] = 'true'
-    # python('code-experiments/build/python', ['setup.py', 'sdist'])
-    # python(join('code-experiments', 'build', 'python'),
-    #        ['setup.py', 'install', '--user'])
-    python(join('code-experiments', 'build', 'python'), ['setup.py', 'install']
-           + package_install_option, custom_exception_handler=install_error)
-    # os.environ.pop('USE_CYTHON')
+    python(join('code-experiments', 'build', 'python'), 
+           ['-m', 'pip', 'install', *package_install_option, '.'],
+           custom_exception_handler=install_error)
 
 
 def run_python(test=False, package_install_option = []):
