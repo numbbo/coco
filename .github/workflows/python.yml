@@ -1,0 +1,30 @@
+name: ci_python
+
+on:
+  push:
+    paths:
+      - ".github/workflows/python.yml"
+      - "code-experiments/build/python/*"
+      - "code-experiments/src/**.c"
+      - "code-experiments/src/**.h"
+  pull_request:
+    paths:
+      - ".github/workflows/python.yml"
+      - "code-experiments/build/python/*"
+      - "code-experiments/src/**.c"
+      - "code-experiments/src/**.h"
+
+jobs:
+  run:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+    runs-on: ${{matrix.os}}
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{matrix.version}}
+    - run: pip install numpy scipy cython
+    - run: python ${{github.workspace}}/do.py verbose run-python --user and-test          
