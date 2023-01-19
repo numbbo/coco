@@ -76,7 +76,6 @@ def git(args):
         output = output.rstrip()
     except CalledProcessError as e:
         # print('Failed to execute "%s"' % str(full_command))
-        print(e.output)
         raise
     return output
 
@@ -93,7 +92,6 @@ def git_version(pep440=False):
     try:
         res = git(['describe', '--tags'])
     except Exception as ex:
-        print(ex)
         res = os.path.split(os.getcwd())[-1]
     if pep440:
         while len(res) and res[0] not in '0123456789':
