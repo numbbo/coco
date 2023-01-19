@@ -45,16 +45,23 @@ Requirements  <a name="Requirements"></a>
 ------------
 1. For a machine running experiments 
   - A `C` compiler, such as gcc
-  - Python >=2.6 with `setuptools` installed
+  - Python >=3.6 with `setuptools` installed
   - optional: `git`
 2. For a machine displaying data by running the post-processing
   - Python 3 with `numpy`, `scipy`, `matplotlib`, and `six` installed.
-    We recommend to install the [Anaconda Python library](https://www.continuum.io/downloads)
+    We recommend installing the [Anaconda Python library](https://www.continuum.io/downloads)
 
 For Ubuntu 16.04+, all the requirements can be installed using the following command:
+
 ```
 apt-get install build-essential python-dev python-numpy python-matplotlib \
                 python-scipy python-six python-setuptools
+```
+
+For macOS, the `C` compiler comes with installing the Xcode command line tools like
+
+```
+xcode-select install
 ```
 
 ### Windows Specifics
@@ -518,6 +525,25 @@ should do the trick.
 We have observed a case where the update of the `cocoex` Python module seemed to have no 
 effect. In this case it has been successful to remove all previously installed versions, 
 see [here](https://github.com/numbbo/coco/issues/586) for a few more details. 
+
+#### Migrating macOS to the ARM chipset (M1 or M2)
+Reinstall the Xcode command line tools
+```
+xcode-select install
+```
+and uninstall previous versions of `cocoex`
+```
+pip uninstall cocoex
+```
+until the message
+```
+WARNING: Skipping cocoex as it is not installed.
+```
+appears. Then
+```
+python do.py run-python
+```
+in the coco home folder should succeed.
 
 
 ### Post-Processing
