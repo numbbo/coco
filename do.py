@@ -306,9 +306,6 @@ def _prep_python():
               'code-experiments/build/python/bbob2009_testcases.txt')
     copy_file('code-experiments/src/bbob2009_testcases2.txt',
               'code-experiments/build/python/bbob2009_testcases2.txt')
-    copy_file('code-experiments/build/python/README.md',
-              'code-experiments/build/python/README.txt')
-    print(f"VERSION: {git_version(pep440=True)}")
 
 
 def build_python(package_install_option=[]):
