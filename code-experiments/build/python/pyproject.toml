@@ -31,6 +31,11 @@ classifiers = [
 # dependencies = [ ]
 dynamic = ["version"]
 
+[project.urls]
+Homepage = "https://github.com/numbbo/coco"
+Documentation = "https://numbbo.github.io/coco-doc/apidocs/cocoex/"
+"Bug Tracker" = "https://github.com/numbbo/coco/issues"
+
 [tool.setuptools_scm]
 root = "../../../"
 write_to = "code-experiments/build/python/src/cocoex/_version.py"
