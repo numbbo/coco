@@ -17,6 +17,7 @@ init:
   - cmd: "set PATH=%MINICONDA%;%MINICONDA%\\Scripts;%PATH%"
   - cmd: "set PATH=%PATH%;%CYGWIN%;%CYGWIN%\\bin"
   - cmd: "set PATH=C:\\Program Files\\MiKTeX 2.9\\miktex\\bin\\x64;%PATH%"
+  - cmd: python --version
   
 
 install:
