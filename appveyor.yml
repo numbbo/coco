@@ -2,9 +2,6 @@ build: false
 
 environment:
   matrix:
-    - PYTHON_VERSION: 3.6
-      MINICONDA: C:\Miniconda36
-      CYGWIN: C:\cygwin
     - PYTHON_VERSION: 3.7
       MINICONDA: C:\Miniconda37
       CYGWIN: C:\cygwin

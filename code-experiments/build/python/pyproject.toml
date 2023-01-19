@@ -1,6 +1,6 @@
 [build-system]
 requires = [
-  "setuptools",
+  "setuptools>=61.0",
   "setuptools-scm[toml]",
   "cython ~= 0.29.33",
   "numpy"
