@@ -526,8 +526,9 @@ We have observed a case where the update of the `cocoex` Python module seemed to
 effect. In this case it has been successful to remove all previously installed versions, 
 see [here](https://github.com/numbbo/coco/issues/586) for a few more details. 
 
-#### Migrating macOS to the ARM chipset (M1 or M2)
-Reinstall the Xcode command line tools
+
+#### Installing `cocoex` after migrating macOS to the ARM chipset (M1 or M2)
+Reinstall the Xcode command line tools with
 ```
 xcode-select install
 ```
@@ -543,7 +544,7 @@ appears. Then
 ```
 python do.py run-python
 ```
-in the coco home folder should succeed.
+in the coco home folder should do the job.
 
 
 ### Post-Processing
