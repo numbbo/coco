@@ -308,9 +308,6 @@ def _prep_python():
               'code-experiments/build/python/bbob2009_testcases2.txt')
     copy_file('code-experiments/build/python/README.md',
               'code-experiments/build/python/README.txt')
-    expand_file('code-experiments/build/python/pyproject.toml.in',
-                'code-experiments/build/python/pyproject.toml',
-                {'COCO_VERSION': git_version(pep440=True)}) 
     print(f"VERSION: {git_version(pep440=True)}")
 
 

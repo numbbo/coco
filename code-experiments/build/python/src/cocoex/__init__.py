@@ -28,12 +28,7 @@ except Exception as _e:
     from .interface import known_suite_names, log_level
 del absolute_import, division, print_function, unicode_literals
 
-# from .utilities import about_equal
-# from .exceptions import NoSuchProblemException, InvalidProblemException
-
-import pkg_resources
-__version__ = pkg_resources.require('cocoex')[0].version
-del pkg_resources
+from ._version import __version__
 
 __all__ = ['Observer', 'Suite', 'known_suite_names', 'default_observers']
 

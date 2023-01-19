@@ -1,14 +1,21 @@
 [build-system]
-requires = ["setuptools", "setuptools-scm", "cython ~= 0.29.33", "numpy"]
+requires = [
+  "setuptools",
+  "setuptools-scm[toml]",
+  "cython ~= 0.29.33",
+  "numpy"
+]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "cocoex"
-version = "$COCO_VERSION"
 authors = [
+  {name = "Asma Ataman"},
+  {name = "Dejan Tušar"},
   {name = "Dimo Brockhoff", email = "dimo.brockhoff@inria.fr" },
   {name = "Nikolaus Hansen", email = "nikolaus.hansen@inria.fr" },
   {name = "Olaf Mersmann", email = "olafm@p-value.net"},
+  {name = "Ouassim Ait ElHara"},
   {name = "Tea Tušar", email = "tea.tusar@ijs.si" },
 ]
 description = 'Benchmarking framework for all types of black-box optimization algorithms.'
@@ -22,4 +29,8 @@ classifiers = [
   "Programming Language :: Python :: 3",
 ]
 # dependencies = [ ]
-#dynamic = ["version"]
+dynamic = ["version"]
+
+[tool.setuptools_scm]
+root = "../../../"
+write_to = "code-experiments/build/python/src/cocoex/_version.py"

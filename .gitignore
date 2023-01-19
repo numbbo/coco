@@ -5,7 +5,9 @@
 REVISION
 VERSION
 __pycache__
-code-experiments/build/*/coco.[ch]
+code-experiments/build/**/coco.[ch]
+code-experiments/build/python/build
+code-experiments/build/python/dist
 code-experiments/build/c/Makefile
 code-experiments/build/c/example_experiment
 code-experiments/examples/*/coco.[ch]
