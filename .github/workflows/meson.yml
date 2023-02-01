@@ -3,16 +3,13 @@ name: ci_meson
 on:
   push:
     paths:
+      - "do.py"
       - ".github/workflows/meson.yml"
       - "code-experiments/build/c/meson.build"
       - "code-experiments/src/**.c"
       - "code-experiments/src/**.h"
   pull_request:
-    paths:
-      - ".github/workflows/meson.yml"
-      - "code-experiments/build/c/meson.build"
-      - "code-experiments/src/**.c"
-      - "code-experiments/src/**.h"
+    branches: [ master, development ]
 
 jobs:
   linux:

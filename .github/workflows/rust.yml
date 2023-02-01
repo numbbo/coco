@@ -3,16 +3,13 @@ name: ci_rust
 on:
   push:
     paths:
+      - "do.py"
       - ".github/workflows/rust.yml"
       - "code-experiments/build/rust/**"
       - "code-experiments/src/**.c"
       - "code-experiments/src/**.h"
   pull_request:
-    paths:
-      - ".github/workflows/rust.yml"
-      - "code-experiments/build/rust/**"
-      - "code-experiments/src/**.c"
-      - "code-experiments/src/**.h"
+    branches: [ master, development ]
 
 jobs:
   linux:

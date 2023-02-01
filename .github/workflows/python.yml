@@ -3,16 +3,13 @@ name: ci_python
 on:
   push:
     paths:
+      - "do.py"
       - ".github/workflows/python.yml"
       - "code-experiments/build/python/*"
       - "code-experiments/src/**.c"
       - "code-experiments/src/**.h"
   pull_request:
-    paths:
-      - ".github/workflows/python.yml"
-      - "code-experiments/build/python/*"
-      - "code-experiments/src/**.c"
-      - "code-experiments/src/**.h"
+    branches: [ master, development ]
 
 jobs:
   run:

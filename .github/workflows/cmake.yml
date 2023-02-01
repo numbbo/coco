@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
+      - "do.py"
       - ".github/workflows/cmake.yml"
       - "code-experiments/build/c/CMakeLists.txt"
       - "code-experiments/src/**.c"
