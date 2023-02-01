@@ -289,7 +289,7 @@ def test_suites(args):
         [['code-experiments/test/regression-test',
           ['test_suites.py', arg]] for arg in args
         ] + [
-            ['code-experiments/build/python',
+            ['code-experiments/build/python/tests',
              ['coco_test.py', 'bbob2009_testcases.txt', 'bbob2009_testcases2.txt']
             ]
         ])
@@ -360,7 +360,7 @@ def run_sandbox_python(directory, script_filename=
         shutil.rmtree(python_temp_home)
 
 
-def test_python(args=(['code-experiments/build/python', ['coco_test.py', 'None']],)):
+def test_python(args=(['code-experiments/build/python/tests/', ['coco_test.py', 'None']],)):
     _prep_python()
     python('code-experiments/build/python',
            ['setup.py', 'check', '--metadata', '--strict'],
@@ -982,7 +982,7 @@ Available commands for users:
   run-python              - Build and install COCO module and then run the
                             example experiment in Python. The optional
                             parameter "and-test" also runs the tests of
-                            `coco_test.py` (see NOTE below)
+                            `tests/coco_test.py` (see NOTE below)
 
 Available commands for developers:
 
