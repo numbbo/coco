@@ -5,6 +5,8 @@
 REVISION
 VERSION
 __pycache__
+*.egg-info/
+
 code-experiments/build/*/coco.[ch]
 code-experiments/build/c/Makefile
 code-experiments/build/c/example_experiment
@@ -20,3 +22,6 @@ code-experiments/test/integration-test/test_biobj
 code-experiments/test/integration-test/test_coco
 code-experiments/test/integration-test/test_instance_extraction
 code-experiments/test/example-test/
+
+code-postprocessing/build/
+code-postprocessing/dist/
