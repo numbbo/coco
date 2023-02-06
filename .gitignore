@@ -25,3 +25,4 @@ code-experiments/test/example-test/
 
 code-postprocessing/build/
 code-postprocessing/dist/
+code-postprocessing/cocopp/_version.py
