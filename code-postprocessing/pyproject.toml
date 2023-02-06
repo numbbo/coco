@@ -57,6 +57,9 @@ packages = ["cocopp", "cocopp.comp2", "cocopp.compall"]
 #                          '../latex-templates/*.bst',
 #                          ]},
 
+[project.scripts]
+cocopp = "cocopp.rungeneric:main"
+
 [tool.setuptools.dynamic]
 version = {attr = "cocopp._version.__version__"}
 

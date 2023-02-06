@@ -57,7 +57,7 @@ def _split_short_opt_list(short_opt_list):
     tmp = short_opt_list[:]
     # split into logical elements: one-letter that could be followed by colon
     while tmp:
-        if len(tmp) > 1 and tmp[1] is ':':
+        if len(tmp) > 1 and tmp[1] == ':':
             res.add(tmp[0:2])
             tmp = tmp[2:]
         else:
@@ -76,11 +76,11 @@ def main(argv=None):
 
     Synopsis::
 
-        python -m cocopp [data_folder [more_data_folders]]
+        cocopp [data_folder [more_data_folders]]
 
     or::
 
-        python -c "import cocopp; cocopp.main('data_folder [more_data_folders]')"
+        python -m cocopp [data_folder [more_data_folders]]
 
     For this call to work, the path to this package must be in python
     search path, that is,
@@ -234,7 +234,7 @@ def main(argv=None):
     # global longoptlist
 
     if argv is None:
-        argv = sys.argv[1:]
+        argv = sys.argv[1:] if len(sys.argv) else []
     if not isinstance(argv, list) and str(argv) == argv:  # get rid of .split in python shell
         argv = argv.split()
     try:
