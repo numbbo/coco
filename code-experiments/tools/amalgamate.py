@@ -58,6 +58,8 @@ class Amalgator:
 def amalgamate(source_files, destination_file, release=False, replace_dict=None):
     print("AML\t%s -> %s" % (str(source_files), destination_file))
     amalgator = Amalgator(destination_file, release)
+    if isinstance(source_files, str):
+        source_files = [source_files]
     for filename in source_files:
         amalgator.process_file(filename)
     amalgator.finish()

@@ -1,6 +1,6 @@
 # -*- mode: cython -*-
-#cython: c_string_type=str, c_string_encoding=ascii
-from __future__ import absolute_import, division, print_function, unicode_literals
+#cython: language_level=3, boundscheck=False, c_string_type=str, c_string_encoding=ascii
+
 import sys
 import numpy as np
 cimport numpy as np

@@ -7,13 +7,21 @@ VERSION
 __pycache__
 *.egg-info/
 
-
-code-experiments/build/*/coco.[ch]
+code-experiments/build/**/coco.[ch]
+code-experiments/build/**/exdata/
 code-experiments/build/c/Makefile
 code-experiments/build/c/example_experiment
+code-experiments/build/java/*.class
+code-experiments/build/java/CocoJNI.h
+code-experiments/build/java/libCocoJNI.so
+code-experiments/build/matlab/*.mex
 code-experiments/build/python/build/
 code-experiments/build/python/dist/
+code-experiments/build/python/src/cocoex/_version.py
+code-experiments/build/python/src/cocoex/interface.c
+code-experiments/build/python/cocoex/_version.py
 code-experiments/examples/*/coco.[ch]
+code-experiments/src/coco_version.h
 code-experiments/test/*/coco.[ch]
 code-experiments/test/example-test/
 code-experiments/test/integration-test/Makefile
@@ -27,4 +35,5 @@ code-experiments/test/integration-test/test_coco
 code-experiments/test/integration-test/test_instance_extraction
 
 code-postprocessing/build/
+code-postprocessing/cocopp/_version.py
 code-postprocessing/dist/

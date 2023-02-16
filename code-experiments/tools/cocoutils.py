@@ -70,29 +70,18 @@ def git(args):
     """
     full_command = ['git']
     full_command.extend(args)
-    try:
-        output = check_output(full_command, env=os.environ,
-                              stderr=STDOUT, universal_newlines=True)
-        output = output.rstrip()
-    except CalledProcessError as e:
-        # print('Failed to execute "%s"' % str(full_command))
-        raise
+    output = check_output(full_command, env=os.environ,
+                          stderr=STDOUT, universal_newlines=True)
+    output = output.rstrip()
     return output
 
-def is_dirty():
-    """Return True if the current working copy has uncommited changes."""
-    raise NotImplementedError()
-    return hg(['hg', 'id', '-i'])[-1] == '+'
 
 def git_version(pep440=False):
     """Return somewhat readible version number from git, like
     '0.1-6015-ga0a3769' if not pep440 else '0.1.6015'
 
     """
-    try:
-        res = git(['describe', '--tags'])
-    except:
-        res = os.path.split(os.getcwd())[-1]
+    res = git(['describe', '--tags'])
     if pep440:
         while len(res) and res[0] not in '0123456789':
             res = res[1:]

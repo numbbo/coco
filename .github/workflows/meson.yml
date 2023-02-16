@@ -20,10 +20,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
     - uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
-    - run: pip install meson ninja
+        python-version: '3.10'
+    - run: pip install click meson ninja
     - run: python ${{github.workspace}}/do.py amalgamate-c
     - run: meson setup builddir/ ${{github.workspace}}/code-experiments/build/c/
       env:
@@ -39,11 +41,13 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
     - uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
+        python-version: '3.10'
     - run: brew install gcc
-    - run: pip install meson ninja
+    - run: pip install click meson ninja
     - run: python ${{github.workspace}}/do.py amalgamate-c
     - run: meson setup builddir/ ${{github.workspace}}/code-experiments/build/c/
       env:
@@ -59,10 +63,12 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
     - uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
-    - run: pip install meson ninja
+        python-version: '3.10'
+    - run: pip install click meson ninja
     - run: python ${{github.workspace}}/do.py amalgamate-c
     - run: meson setup builddir/ ${{github.workspace}}/code-experiments/build/c/
       env:
