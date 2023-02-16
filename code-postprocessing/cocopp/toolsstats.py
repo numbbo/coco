@@ -808,6 +808,9 @@ def significancetest(entry0, entry1, targets):
             if idx.any():
                 tmp[idx] = -fvalues[j][idx]  # larger data is better
             curdata.append(tmp)
+            if np.isnan(tmp).any():
+                warnings.warn("{} contains nan values in significance test line {} for target[{}] = {}"
+                              .format(entry.info_str(targets), tmp, i, targets[i]))
 
         z_and_p = ranksumtest(curdata[0], curdata[1])
         if isRefAlg:
