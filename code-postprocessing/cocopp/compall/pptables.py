@@ -358,6 +358,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                     tmpdisp.append((tmp[-1] - tmp[0]) / 2.)
                 else:
                     tmpdisp.append(numpy.nan)
+                    # TODO: ert is inf, so we need additional information to identify the best algorithm for significance testing
                 tmpert.append(ert)
             algerts.append(tmpert)
             algevals.append(evals)

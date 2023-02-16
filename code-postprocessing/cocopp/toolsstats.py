@@ -694,7 +694,8 @@ def significancetest(entry0, entry1, targets):
 
     :returns: list of (z, p) for each target function values in
               input argument targets. z and p are values returned by the
-              ranksumtest method.
+              ranksumtest method. The z value is for `entry0` where a
+              larger value is better, because the test data are [-Df, 1/evals].
 
     TODO: we would want to correct for imbalanced instances if the more
     frequent instances are more different than the less frequent instances.
@@ -799,6 +800,10 @@ def significancetest(entry0, entry1, targets):
         # 2. 3. 4. Collect data for the significance test:
         curdata = []  # current data 
         
+        try: fvalues
+        except NameError: pass
+        else:
+            f_offset = 1.01 * min((0, min(fvalues[0]), min(fvalues[1])))  # fix for negative fvalues (which are Df-values)
         for j, entry in enumerate((entry0, entry1)):
             tmp = evals[j][i].copy()
             idx = np.isnan(tmp)
@@ -806,8 +811,15 @@ def significancetest(entry0, entry1, targets):
             # was not a bool before: idx = np.isnan(tmp) + (tmp > FE_umin)
             tmp[idx == False] = np.power(tmp[idx == False], -1.)
             if idx.any():
-                tmp[idx] = -fvalues[j][idx]  # larger data is better
+                tmp[idx] = -fvalues[j][idx] + f_offset  # larger data is better
+                assert all(tmp[idx] <= 0), (
+                    "negative Df value(s) found ({}, offset={}) in DataSet {} in significance test line {}"
+                    " for target[{}] = {}. This is a bug and may lead to a wrong significance result."
+                    .format(-tmp[idx], f_offset, entry.info_str(targets), tmp, i, targets[i]))
             curdata.append(tmp)
+            if np.isnan(tmp).any():
+                warnings.warn("{} contains nan values in significance test line {} for target[{}] = {}"
+                              .format(entry.info_str(targets), tmp, i, targets[i]))
 
         z_and_p = ranksumtest(curdata[0], curdata[1])
         if isRefAlg:
@@ -819,6 +831,11 @@ def significancetest(entry0, entry1, targets):
             if not (erts[ibetter][i] <= erts[iworse][i] and  # inf are equal
                 (erts[ibetter][i] is np.inf or  # comparable data: only f-values are compared for significance (they are compared for the same #evals)
                  averageevals[ibetter][i] < averageevals[iworse][i])):  # better algorithm must not have larger effort, should this take into account FE_umin?
+            # remove significance if
+            #     either ert[better] > ert[worse] or
+            #     ert[better] is finite and average_evals[better] >= average_evals[worse] (e.g. the worse has no ert but only few evals)
+            # TODO (nitpicking): shouldn't the > in the first condition be a >= (same ert is not enough to be better unless both are inf)
+            #       and the >= in the second condition be a > (same average but more successes is enough)?
                 z_and_p = (z_and_p[0], 1.0)                  
 
         res.append(z_and_p)
@@ -839,6 +856,7 @@ def significance_all_best_vs_other(datasets, targets, best_alg_idx=None):
         erts = []
         for ds in datasets:
             erts.append(ds.detERT(targets))
+        # TODO: this is (somewhat) wrong when erts are not finite
         best_alg_idx = np.array(erts).argsort(0)[0, :]  # indexed by target index
         assert len(best_alg_idx) == len(targets)
     elif 1 < 3:  # only for debugging
@@ -861,7 +879,7 @@ def significance_all_best_vs_other(datasets, targets, best_alg_idx=None):
                 if jalg == best_alg_idx[itarget]:
                     continue
                 z_and_p2 = significancetest(datasets[jalg], datasets[best_alg_idx[itarget]], [target])[0]
-                if z_and_p2[1] > z_and_p[1]:  # look for strongest opponent, ie weakest p
+                if z_and_p2[1] > z_and_p[1]:  # look for strongest opponent, ie weakest p (closest to 1)
                     z_and_p = z_and_p2 
             significance_versus_others.append(z_and_p)
     return significance_versus_others, best_alg_idx
