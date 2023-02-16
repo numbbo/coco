@@ -597,6 +597,7 @@ class DataSet(object):
         funvals
         ...
         info
+        info_str
         instance_multipliers
         instancenumbers
         isBiobjective
@@ -1212,8 +1213,8 @@ class DataSet(object):
         res += ')'
         return res
 
-    def info(self, targets=None):
-        """print text info to stdout"""
+    def info_str(self, targets=None):
+        """return print info as string"""
         if targets is None:
             targets = [1e3, 10, 0.1, 1e-3, 1e-5, 1e-8]
             if self.target[-1] < targets[-1]:
@@ -1246,8 +1247,11 @@ class DataSet(object):
             sinfo += '\n' + line
             if target < self.target[-1]:
                 break
-        print(sinfo)
-        # return sinfo 
+        return sinfo
+        
+    def info(self, targets=None):
+        """print text info to stdout"""
+        print(self.info_str(targets))
 
     @property
     def number_of_constraints(self):
