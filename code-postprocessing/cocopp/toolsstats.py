@@ -827,6 +827,10 @@ def significancetest(entry0, entry1, targets):
         res.append(z_and_p)
 
     genericsettings.balance_instances = balance_instances_saved
+    if min(zs := sorted([z for (z, p) in res])) < -2 and max(zs) > 2:
+        warnings.warn("{} contains small and large z values for data sets {} and {} and targets = {}"
+                    .format(z_and_p, entry0.info_str(targets),
+                            entry1.info_str(targets), targets[i]))
     return res
 
 def significance_all_best_vs_other(datasets, targets, best_alg_idx=None):
