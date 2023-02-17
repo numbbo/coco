@@ -881,6 +881,9 @@ def significance_all_best_vs_other(datasets, targets, best_alg_idx=None):
                 z_and_p2 = significancetest(datasets[jalg], datasets[best_alg_idx[itarget]], [target])[0]
                 if z_and_p2[1] > z_and_p[1]:  # look for strongest opponent, ie weakest p (closest to 1)
                     z_and_p = z_and_p2 
+                if z_and_p2[0] > 0:
+                    # "other" algorithm is better than best_alg_idx
+                    z_and_p = (max((z_and_p[0], z_and_p2[0])), 1)
             significance_versus_others.append(z_and_p)
     return significance_versus_others, best_alg_idx
 
