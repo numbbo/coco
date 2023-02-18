@@ -11,7 +11,7 @@ import numpy
 
 from .. import genericsettings, bestalg, toolsstats, pproc, ppfigparam, testbedsettings, captions, ppfig
 from ..pptex import writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
-from ..toolsstats import significancetest, significance_all_best_vs_other
+from ..toolsstats import significancetest, significance_all_best_vs_other, best_alg_indices
 from ..toolsdivers import str_to_latex, strip_pathname1, replace_in_file, get_version_label, prepend_to_file
 
 
@@ -358,7 +358,6 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                     tmpdisp.append((tmp[-1] - tmp[0]) / 2.)
                 else:
                     tmpdisp.append(numpy.nan)
-                    # TODO: ert is inf, so we need additional information to identify the best algorithm for significance testing
                 tmpert.append(ert)
             algerts.append(tmpert)
             algevals.append(evals)
@@ -394,8 +393,8 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
             algfinaldata.append((algmedfinalfunvals[i], algmedmaxevals[i]))
 
         # significance test of best given algorithm against all others
-        best_alg_idx = numpy.array(algerts).argsort(0)[0, :]  # indexed by target index
-        significance_versus_others = significance_all_best_vs_other(algentries, targets, best_alg_idx)[0]
+        significance_versus_others, best_alg_idx = significance_all_best_vs_other(
+            algentries, targets, best_alg_indices(algerts, algmedfinalfunvals))
         # Create the table
         table = []
         tableHtml = []

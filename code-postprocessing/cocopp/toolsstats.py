@@ -786,7 +786,7 @@ def significancetest(entry0, entry1, targets):
                         FE.append(tmpfe)
                     FE_umin = min(FE)
 
-                    # Determine the function values for FE_umin
+                    # 2) determine the function values for FE_umin
                     fvalues = []
                     for j, entry in enumerate((entry0, entry1)):
                         prevline = np.array([np.inf] * entry.nbRuns())
@@ -843,47 +843,70 @@ def significancetest(entry0, entry1, targets):
     genericsettings.balance_instances = balance_instances_saved
     return res
 
+def best_alg_indices(ert_ars=None, median_finalfunvals=None,
+                     datasets=None, targets=None):
+    """return the index of the most promising algorithm for each target.
+
+    `ert_ars` are the first criterion and computed from `datasets` and
+    `targets` if necessary. `median_finalfunvals` are needed when all
+    `ert_ars` are infinite for some target and computed from `datasets`
+    when necessary.
+
+    Lines in `ert_ars` contain ERTs for different targets, columns contain
+    ERTs for a single target from different algorithms.
+
+    Rationale: our primary (only) performance indicator is evals, hence we
+    use expected evals to determine the candidate for best algorithm. When
+    no evals are available, we have not run the experiment long enough (we
+    have no real measurement), then the best candidate is the one with the
+    best final f-values. The statistical test is later aligned to the
+    largest evals where all runs have a recorded value.
+    """
+    ert_ars = np.asarray([ds.detERT(targets) for ds in datasets] if ert_ars is None
+                         else ert_ars)
+    best_alg_idx = ert_ars.argsort(0)[0, :]  # index of best for each target value
+    for itarget, vals in enumerate(ert_ars.T):
+        if not np.any(np.isfinite(vals)):  # no single run reached the target
+            if median_finalfunvals is None:
+                median_finalfunvals = [np.median(ds.finalfunvals) for ds in datasets]
+            best_alg_idx[itarget] = np.argsort(median_finalfunvals)[0]
+    return best_alg_idx
+
 def significance_all_best_vs_other(datasets, targets, best_alg_idx=None):
     """:param datasets: is a list of DataSet from different algorithms, otherwise on the same function and dimension (which is not necessarily checked)
     :param targets: is a list of target values, 
     :param best_alg_idx:  for each target the best algorithm to be tested against the others 
     
-    returns a list of ``(z, p)`` tuples, each is the result for the ranksumtest 
-    for the respective target value in targets and the index list of best algorithm. 
-    
+    returns a list of ``(z, p)`` tuples, each results from the ranksum
+    tests for the respective target value for each algorithm against the
+    best algorithm defined from the index list. Each ``(z, p)`` is either
+    the first ``z`` when ``z >= 0`` (best algorithm is worse) in which case
+    ``p`` is set to 1, or, when ``z < 0``, it is the pair with the
+    largest observed ``p``.
     """ 
     if best_alg_idx is None:
-        erts = []
-        for ds in datasets:
-            erts.append(ds.detERT(targets))
-        # TODO: this is (somewhat) wrong when erts are not finite
-        best_alg_idx = np.array(erts).argsort(0)[0, :]  # indexed by target index
+        best_alg_idx = best_alg_indices(datasets=datasets, targets=targets)
         assert len(best_alg_idx) == len(targets)
-    elif 1 < 3:  # only for debugging
-        erts = []
-        for ds in datasets:
-            erts.append(ds.detERT(targets))
-          
-        best_alg_idx2 = np.array(erts).argsort(0)[0, :]  # indexed by target index
-        # assert all(best_alg_idx2 == best_alg_idx)
-        if not all(best_alg_idx2 == best_alg_idx):
-            warnings.warn("best_alg_idx2 is different " + str((best_alg_idx2, best_alg_idx, datasets)))
         
     # significance test of best given algorithm against all others
     significance_versus_others = []  # indexed by target index
     assert len(best_alg_idx) == len(targets)
     if len(datasets) > 1:
         for itarget, target in enumerate(targets):
-            z_and_p = (0, 0)
-            for jalg in range(len(datasets)):
-                if jalg == best_alg_idx[itarget]:
+            z_and_p = None
+            for ialg in range(len(datasets)):
+                if ialg == best_alg_idx[itarget]:
                     continue
-                z_and_p2 = significancetest(datasets[jalg], datasets[best_alg_idx[itarget]], [target])[0]
-                if z_and_p2[1] > z_and_p[1]:  # look for strongest opponent, ie weakest p (closest to 1)
+                z_and_p2 = significancetest(datasets[ialg],
+                                            datasets[best_alg_idx[itarget]], [target])[0]
+                if z_and_p2[0] >= 0:
+                    # found an algorithm that is better than best_alg_idx
+                    z_and_p = (z_and_p2[0], 1)
+                    break  # no need to check other algorithms
+                if z_and_p is None or z_and_p2[1] > z_and_p[1]:
+                    # when z was always < 0, ie all algorithms so far were indeed worse
+                    # then look for strongest opponent, ie weakest p (closest to 1)
                     z_and_p = z_and_p2 
-                if z_and_p2[0] > 0:
-                    # "other" algorithm is better than best_alg_idx
-                    z_and_p = (max((z_and_p[0], z_and_p2[0])), 1)
             significance_versus_others.append(z_and_p)
     return significance_versus_others, best_alg_idx
 
