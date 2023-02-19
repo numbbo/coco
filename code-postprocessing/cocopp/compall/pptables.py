@@ -12,7 +12,10 @@ import numpy
 from .. import genericsettings, bestalg, toolsstats, pproc, ppfigparam, testbedsettings, captions, ppfig
 from ..pptex import writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
 from ..toolsstats import significancetest, significance_all_best_vs_other, best_alg_indices
-from ..toolsdivers import str_to_latex, strip_pathname1, replace_in_file, get_version_label, prepend_to_file
+from ..toolsdivers import str_to_latex, strip_pathname1, strip_pathname3, replace_in_file, get_version_label, prepend_to_file
+
+table_width = '940px'  # just about enough to prevent linebreaks in long cells
+first_column_width = '250px'  # align the first number column in the table
 
 
 def get_table_caption():
@@ -536,7 +539,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                 additional_commands.append('\\providecommand{%s}{\\StrLeft{%s}{\\ntables}}' %
                                            (command_name, str_to_latex(strip_pathname1(alg))))
             curline = [command_name + r'\hspace*{\fill}']  # each list element becomes a &-separated table entry?
-            curlineHtml = ['<th>%s</th>\n' % str_to_latex(strip_pathname1(alg))]
+            curlineHtml = ['<th style="width:%s">%s</th>\n' % (first_column_width, str_to_latex(strip_pathname3(alg)))]
 
             zipToEnumerate = zip(algerts[i], algdisp[i], isBoldArray[i], algtestres[i]) if refalgentries else zip(
                 algerts[i], algdisp[i], isBoldArray[i])
@@ -692,7 +695,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
             f.write(res)
 
             res = "".join(str(item) for item in tableHtml)
-            res = '\n<table class=\"sortable\" style=\"width:800px \">\n%s</table>\n<p/>\n' % res
+            res = '\n<table class=\"sortable\" style=\"width:%s \">\n%s</table>\n<p/>\n' % (table_width, res)
 
             if True:
                 filename = os.path.join(output_dir, genericsettings.pptables_file_name + '.html')

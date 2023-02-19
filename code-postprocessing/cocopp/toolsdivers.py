@@ -346,11 +346,12 @@ def strip_pathname1(name):
     return (name.replace('..' + os.sep, '').replace('.' + os.sep, '').strip().strip(os.sep).split(os.sep)[-1]).replace('data', '').replace('Data', '').replace('DATA', '').replace('.tar.gz', '').replace('.tgz', '').replace('.tar', '').replace(genericsettings.extraction_folder_prefix, '').strip(os.sep).replace(os.sep, '/')
 
 def strip_pathname2(name):
-    """remove ../ and ./ and leading/trailing blanks and path separators
-    from input string ``name``, replace any remaining path separator
-    with '/', and keep only the last two parts of the path, or only the
-    last"""
+    """as `strip_pathname1` but keep the last two parts of the path"""
     return os.sep.join(name.replace('..' + os.sep, '').replace('.' + os.sep, '').strip().strip(os.sep).split(os.sep)[-2:]).replace('data', '').replace('Data', '').replace('DATA', '').replace('.tar.gz', '').replace('.tgz', '').replace('.tar', '').strip(os.sep).replace(os.sep, '/')
+
+def strip_pathname3(name):
+    """as `strip_pathname1` and also remove `'noiseless'` from the name"""
+    return strip_pathname1(name).replace('noiseless', '')
 
 def str_to_latex(string):
     """do replacements in ``string`` such that it most likely compiles with latex """
