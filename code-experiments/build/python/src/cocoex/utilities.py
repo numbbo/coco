@@ -1,4 +1,3 @@
-from __future__ import absolute_import, division, print_function
 import sys as _sys  # avoid name space polluting
 import ast as _ast
 import time as _time
@@ -75,7 +74,7 @@ def args_to_dict(args, known_names, specials=None, split='=',
         if specials and name in specials:
             if name == 'batch':
                 print('batch:')
-                for k, v in zip(specials['batch'].split('/'), value.split('/')):
+                for k, v in zip(specials['batch'].split('/'), value.split('/'), strict=True):
                     res[k] = int(v)  # batch accepts only int
                     print(' ', k, '=', res[k])
                 continue  # name is processed
@@ -85,7 +84,7 @@ def args_to_dict(args, known_names, specials=None, split='=',
             # check that name is an abbreviation of known_name and unique in known_names
             if known_name.startswith(name) and (
                         sum([other.startswith(name)
-                             for other in known_names or [names]]) == 1):
+                             for other in known_names or [name]]) == 1):
                 res[known_name] = eval_value(value)
                 print(known_name, '=', res[known_name])
                 break  # name == arg.split()[0] is processed
@@ -135,7 +134,7 @@ class ObserverOptions(dict):
         return s
 
 
-class ProblemNonAnytime(object):
+class ProblemNonAnytime:
     """The non-anytime problem class.
 
     Serves to benchmark a "budgeted" algorithm whose behavior decisively
@@ -225,8 +224,8 @@ class ProblemNonAnytime(object):
 
     def print_progress(self):
         if not self.index % (len(self.suite) / len(self.suite.dimensions)):
-            print("\nd={0}: ".format(self.dimension))
-        print("{0}{1} ".format(
+            print(f"\nd={self.dimension}: ")
+        print("{}{} ".format(
             self.id[self.id.index("_f") + 1:self.id.index("_i")],
             self.id[self.id.index("_i"):self.id.index("_d")]), end="",
               flush=True)
@@ -311,7 +310,7 @@ class SameFunction:
         return self.count - 1  # return old count
 
 
-class MiniPrint(object):
+class MiniPrint:
     """print dimension when changed and a single symbol for each call.
 
     Details: print '|' if ``problem.final_target_hit``, ':' if restarted
@@ -348,7 +347,7 @@ class MiniPrint(object):
         _sys.stdout.flush()
 
 
-class ShortInfo(object):
+class ShortInfo:
     """print minimal info during benchmarking.
 
     After initialization, to be called right before the solver is called with
@@ -441,5 +440,3 @@ def print_flush(*args):
     """print without newline but with flush"""
     print(*args, end="")
     _sys.stdout.flush()
-
-del absolute_import, division, print_function

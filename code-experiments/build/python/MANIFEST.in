@@ -1,5 +1,3 @@
-include AUTHORS
-include LICENSE
-include demo.py
-include coco_test.py
-include bbob2009_testcases.txt
+exclude src/cocoex/interface.c
+include src/cocoex/coco.h
+include test/bbob2009*.txt
