@@ -8,6 +8,8 @@ REVISION
 VERSION
 __pycache__
 
+code-experiments/build/**/bbob2009_testcases.txt
+code-experiments/build/**/bbob2009_testcases2.txt
 code-experiments/build/**/coco.[ch]
 code-experiments/build/**/exdata/
 code-experiments/build/c/build/

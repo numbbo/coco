@@ -37,29 +37,12 @@ help and the available suite names.
 
 DEPRECATED: use rather `example_experiment2.py`
 """
-from __future__ import absolute_import, division, print_function
-try: range = xrange
-except NameError: pass
 import os, sys
 import time
 import numpy as np  # "pip install numpy" installs numpy
 import cocoex
-from scipy import optimize # for tests with fmin_cobyla
-from cocoex import Suite, Observer, log_level
-del absolute_import, division, print_function
 
-verbose = 1
-
-try: import cma  # cma.fmin is a solver option, "pip install cma" installs cma
-except: pass
-try: from scipy.optimize import fmin_slsqp  # "pip install scipy" installs scipy
-except: pass
-try: range = xrange  # let range always be an iterator
-except NameError: pass
-try: time.process_time = time.clock
-except: pass
-
-from cocoex import default_observers  # see cocoex.__init__.py
+from cocoex import Suite, Observer, log_level, default_observers
 from cocoex.utilities import ObserverOptions, ShortInfo, ascetime, print_flush
 from cocoex.solvers import random_search
 
@@ -112,11 +95,7 @@ def batch_loop(solver, suite, observer, budget,
         if (problem_index + current_batch - 1) % number_of_batches:
             continue
         observer.observe(problem)
-        short_info.print(problem) if verbose else None
-        runs = coco_optimize(solver, problem, budget * problem.dimension, observer,
-                             max_runs)
-        if verbose:
-            print_flush("!" if runs > 2 else ":" if runs > 1 else ".")
+        runs = coco_optimize(solver, problem, budget * problem.dimension, observer, max_runs)
         short_info.add_evals(problem.evaluations + problem.evaluations_constraints, runs)
         problem.free()  # not necessary as `enumerate` tears the problem down
         addressed_problems += [problem.id]

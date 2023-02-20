@@ -1,11 +1,13 @@
 # -*- mode: cython -*-
-#cython: c_string_type=str, c_string_encoding=ascii
-from __future__ import absolute_import, division, print_function, unicode_literals
+#cython: language_level=3, boundscheck=False, c_string_type=str, c_string_encoding=ascii
+
 import sys
 import numpy as np
 cimport numpy as np
 
-from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException
+from .exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException
+
+np.import_array()
 
 known_suite_names = ["bbob",
                      "bbob-biobj", "bbob-biobj-ext",
@@ -18,11 +20,8 @@ _known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext",
                       "bbob-constrained-active-only", "bbob-constrained-no-disguise",
                       "bbob-largescale", "bbob-mixint", "bbob-biobj-mixint"]
 
-# _test_assignment = "seems to prevent an 'export' error (i.e. induce export) to make this module known under Linux and Windows (possibly because of the leading underscore of _interface)"
-# __all__ = ['Observer', 'Problem', 'Suite']
+__all__ = ['Observer', 'Problem', 'Suite', 'known_suite_names']
 
-# Must initialize numpy or risk segfaults
-np.import_array()
 
 cdef extern from "coco.h":
     ctypedef struct coco_problem_t:
@@ -76,6 +75,7 @@ cdef extern from "coco.h":
     void bbob_problem_best_parameter_print(const coco_problem_t *problem)
     void bbob_biobj_problem_best_parameter_print(const coco_problem_t *problem)
 
+
 cdef bytes _bstring(s):
     if type(s) is bytes:
         return <bytes>s
@@ -84,7 +84,9 @@ cdef bytes _bstring(s):
     else:
         raise TypeError("expect a string, got %s" % str(type(s)))
 
+
 cdef coco_observer_t* _current_observer
+
 
 cdef class Suite:
     """see __init__.py"""
@@ -113,6 +115,7 @@ cdef class Suite:
         self.initialized = False
         self._initialize()
         assert self.initialized
+        
     cdef _initialize(self):
         """sweeps through `suite` to collect indices and id's to operate by
         direct access in the remainder"""
@@ -128,26 +131,15 @@ cdef class Suite:
         self._names = []
         self._dimensions = []
         self._number_of_objectives = []
-        if self._name not in [_bstring(name) for name in known_suite_names]:
-            raise NoSuchSuiteException("""
-Unkown benchmark suite name %s.
-Known suite names are %s.
-If %s was not a typo, you can add the desired name to `known_suite_names`::
-
-        >> import cocoex as ex
-        >> ex.known_suite_names.append(b"my_name")  # must be a byte string
-        >> suite = ex.Suite("my_name", "", "")
-        COCO FATAL ERROR: coco_suite(): unknow problem suite
-
-This will crash Python, if the suite "my_name" does in fact not exist. You might
-also report back a missing name to https://github.com/numbbo/coco/issues
-""" % (self._name, str(known_suite_names), self._name))
+        
         try:
             suite = coco_suite(self._name, self._instance, self._options)
         except:
-            raise NoSuchSuiteException("No suite with name '%s' found" % self._name)
+            raise NoSuchSuiteException(self._name)
+
         if suite == NULL:
-            raise NoSuchSuiteException("No suite with name '%s' found" % self._name)
+            raise NoSuchSuiteException(self._name)
+
         while True:
             old_level = log_level('warning')
             p = coco_suite_get_next_problem(suite, NULL)

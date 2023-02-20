@@ -15,25 +15,15 @@ Help on class Suite...
 A more complete example use case can be found in the `example_experiment.py`
 file.
 """
-from __future__ import absolute_import, division, print_function, unicode_literals
-from . import solvers, utilities
-try:
-    from . import _interface
-    from ._interface import Suite as _Suite, Observer as _Observer
-    from ._interface import known_suite_names, log_level
-except Exception as _e:
-    from . import interface as _interface
-    # print("numbbo/code-experiments/build/python/python/__init__.py: could not import '_interface', trying 'interface'", _e)
-    from .interface import Suite as _Suite, Observer as _Observer
-    from .interface import known_suite_names, log_level
-del absolute_import, division, print_function, unicode_literals
+from . import interface as _interface
+from . import solvers
+from . import utilities
+from . import exceptions
+from .interface import Suite as _Suite 
+from .interface import Observer as _Observer
+from .interface import known_suite_names
+from ._version import __version__ # noqa: F401
 
-# from .utilities import about_equal
-# from .exceptions import NoSuchProblemException, InvalidProblemException
-
-import pkg_resources
-__version__ = pkg_resources.require('cocoex')[0].version
-del pkg_resources
 
 __all__ = ['Observer', 'Suite', 'known_suite_names', 'default_observers']
 
@@ -171,7 +161,7 @@ class Suite(_Suite):
     def reset(self):
         """reset to original state, affecting `next_problem()`,
         `current_problem`, `current_index`"""
-        super(Suite, self).reset()
+        super().reset()
     def next_problem(self, observer=None):
         """return the "next" problem in this `Suite`.
 
@@ -180,7 +170,7 @@ class Suite(_Suite):
 
         `next_problem` serves to sweep through the `Suite` smoothly.
         """
-        return super(Suite, self).next_problem(observer)
+        return super().next_problem(observer)
     def get_problem(self, id, observer=None):
         """return a `Problem` instance, by default unobserved, using ``id: str``
         or index (where ``id: int``) to identify the desired problem.
@@ -211,7 +201,7 @@ class Suite(_Suite):
 
         See also `ids`.
         """
-        return super(Suite, self).get_problem(id, observer)
+        return super().get_problem(id, observer)
 
     def get_problem_by_function_dimension_instance(self, function, dimension, instance, observer=None):
         """return a `Problem` instance, by default unobserved, using function,
@@ -237,7 +227,7 @@ class Suite(_Suite):
               `get_problem_by_function_dimension_instance`. Otherwise Python might
               just silently die, which is e.g. a known issue of the "bbob" observer.
         """
-        return super(Suite, self).get_problem_by_function_dimension_instance(
+        return super().get_problem_by_function_dimension_instance(
                 function, dimension, instance, observer)
 
     def __getitem__(self, key):
@@ -247,7 +237,7 @@ class Suite(_Suite):
 
     def free(self):
         """free underlying C structures"""
-        super(Suite, self).free()
+        super().free()
 
     def find_problem_ids(self, *args, **kwargs):
         """has been renamed to `ids`"""
@@ -292,12 +282,12 @@ class Suite(_Suite):
         bbob_f009_i01_d20
 
         """
-        return super(Suite, self).ids(*id_snippets, **kwargs)
+        return super().ids(*id_snippets, **kwargs)
 
     @property
     def current_problem(self):
         """current "open/active" problem to be benchmarked"""
-        return super(Suite, self).current_problem
+        return super().current_problem
     @property
     def current_index(self):
         """index in the enumerator of all problems in this suite.
@@ -315,19 +305,19 @@ class Suite(_Suite):
         (0, 0)
 
         """
-        return super(Suite, self).current_index
+        return super().current_index
     @property
     def problem_names(self):
         """list of problem names in this `Suite`, see also `ids`"""
-        return super(Suite, self).problem_names
+        return super().problem_names
     @property
     def dimensions(self):
         """list of problem dimensions occuring at least once in this `Suite`"""
-        return super(Suite, self).dimensions
+        return super().dimensions
     @property
     def number_of_objectives(self):
         """list of number of objectives occuring in this `Suite`"""
-        return super(Suite, self).number_of_objectives
+        return super().number_of_objectives
     @property
     def indices(self):
         """list of all problem indices, deprecated.
@@ -335,21 +325,21 @@ class Suite(_Suite):
         These values are (only) used to call the underlying C structures.
         Indices used in the Python interface run between 0 and `len(self)`.
         """
-        return super(Suite, self).indices
+        return super().indices
     @property
     def name(self):
         """name of this suite as used to instantiate the suite via `Suite(name, ...)`"""
-        return super(Suite, self).name
+        return super().name
     @property
     def instance(self):
         """instance of this suite as used to instantiate the suite via
         `Suite(name, instance, ...)`"""
-        return super(Suite, self).instance
+        return super().instance
     @property
     def options(self):
         """options for this suite as used to instantiate the suite via
         `Suite(name, instance, options)`"""
-        return super(Suite, self).options
+        return super().options
     @property
     def info(self):
         return str(self)
@@ -407,20 +397,20 @@ class Observer(_Observer):
         """name of the observer as used with `Observer(name, ...)` to instantiate
         `self` before
         """
-        return super(Observer, self).name
+        return super().name
     @property
     def options(self):
-        return super(Observer, self).options
+        return super().options
     @property
     def state(self):
-        return super(Observer, self).state
+        return super().state
     @property
     def result_folder(self):
         """name of the output folder.
 
         This name may not be the same as input option `result_folder`.
         """
-        return super(Observer, self).result_folder
+        return super().result_folder
 
 # this definition is copy-edited from interface, solely to pass docstrings to pydoctor
 class Problem(_interface.Problem):
@@ -434,13 +424,13 @@ class Problem(_interface.Problem):
 
     """
     def __init__(self):
-        super(Problem, self).__init__()
+        super().__init__()
     def constraint(self, x):
         """return constraint values for `x`. 
 
         By convention, constraints with values <= 0 are satisfied.
         """
-        return super(Problem, self).constraint(x)
+        return super().constraint(x)
 
     def logger_biobj_feed_solution(self, evaluation, y):
         """Feed the given solution to logger_biobj in order to reconstruct its
@@ -451,7 +441,7 @@ class Problem(_interface.Problem):
         Used by preprocessing when updating the .info, .dat and .tdat files
         with new indicator reference values.
         """
-        return super(Problem, self).logger_biobj_feed_solution(evaluation, y)
+        return super().logger_biobj_feed_solution(evaluation, y)
 
 
     def add_observer(self, observer):
@@ -473,7 +463,7 @@ class Problem(_interface.Problem):
 
         See also: class `Observer`
         """
-        return super(Problem, self).observe_with(observer)
+        return super().observe_with(observer)
 
     def _f0(self, x):
         """"inofficial" interface to `self` with target f-value of zero. """
@@ -505,28 +495,28 @@ class Problem(_interface.Problem):
         0.2 * (1 - x / 5) for x in [0, 5] and zero otherwise.
 
         """
-        return super(Problem, self).initial_solution_proposal(restart_number)
+        return super().initial_solution_proposal(restart_number)
     @property
     def initial_solution(self):
         """return feasible initial solution"""
-        return super(Problem, self).initial_solution()
+        return super().initial_solution()
     @property
     def observers(self):
         """list of observers wrapped around this problem"""
-        return super(Problem, self).list_of_observers
+        return super().list_of_observers
     @property
     def is_observed(self):
         """problem ``p`` is observed ``p.is_observed`` times.
 
         See also: the list of observers in property `observers`.
         """
-        return super(Problem, self).is_observed
+        return super().is_observed
 
     @property
     def number_of_variables(self):  # this is cython syntax, not known in Python
         # this is a class definition which is instantiated automatically!?
         """Number of variables this problem instance expects as input."""
-        return super(Problem, self).number_of_variables
+        return super().number_of_variables
     @property
     def dimension(self):
         """alias for `number_of_variables` of the input space"""
@@ -534,36 +524,36 @@ class Problem(_interface.Problem):
     @property
     def number_of_objectives(self):
         "number of objectives, if equal to 1, call returns a scalar"
-        return super(Problem, self).number_of_objectives
+        return super().number_of_objectives
     @property
     def number_of_constraints(self):
         "number of constraints"
-        return super(Problem, self).number_of_constraints
+        return super().number_of_constraints
     @property
     def lower_bounds(self):
         """depending on the test bed, these are not necessarily strict bounds
         """
-        return super(Problem, self).lower_bounds
+        return super().lower_bounds
     @property
     def upper_bounds(self):
         """depending on the test bed, these are not necessarily strict bounds
         """
-        return super(Problem, self).upper_bounds
+        return super().upper_bounds
     @property
     def evaluations(self):
         """number of times this `Problem` instance was evaluated"""
-        return super(Problem, self).evaluations()
+        return super().evaluations()
     @property
     def final_target_hit(self):
         """return 1 if the final target is known and has been hit, 0 otherwise
         """
-        return super(Problem, self).final_target_hit(self.problem)
+        return super().final_target_hit(self.problem)
     @property
     def final_target_fvalue1(self):
-        return super(Problem, self).final_target_fvalue1(self.problem)
+        return super().final_target_fvalue1(self.problem)
     @property
     def best_observed_fvalue1(self):
-        return super(Problem, self).best_observed_fvalue1()
+        return super().best_observed_fvalue1()
 
     def free(self, force=False):
         """Free the given test problem.
@@ -574,37 +564,37 @@ class Problem(_interface.Problem):
         problem, all other operations are invalid and will raise an
         exception.
         """
-        super(Problem, self).free(force)
+        super().free(force)
 
     @property
     def id(self):
         "ID as string without spaces or weird characters"
-        return super(Problem, self).id
+        return super().id
 
     @property
     def id_function(self):
         "function number inferred from `id`"
-        return super(Problem, self).id_function
+        return super().id_function
 
     @property
     def id_instance(self):
         "instance number inferred from `id`"
-        return super(Problem, self).id_instance
+        return super().id_instance
 
     @property
     def name(self):
         """human readible short description with spaces"""
-        return super(Problem, self).name
+        return super().name
 
     @property
     def index(self):
         """problem index in the benchmark `Suite` of origin"""
-        return super(Problem, self).index
+        return super().index
 
     @property
     def suite(self):
         """benchmark suite this problem is from"""
-        return super(Problem, self).suite
+        return super().suite
 
     @property
     def info(self):
