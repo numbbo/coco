@@ -1,8 +1,0 @@
-/target
-Cargo.lock
-
-/coco-sys/vendor
-
-/exdata
-/REVISION
-/VERSION
