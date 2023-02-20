@@ -11,31 +11,14 @@ See https://github.com/numbbo/coco and https://numbbo.github.io/coco/.
 
 ### Requirements
 
-- `git`
-- `gcc` (or any other C compiler)
-- `bindgen` (`cargo install bindgen-cli`)
-    - and `libclang` (install `libclang-dev` on Ubuntu)
-- `bash` (for `generate.sh`)
-
-### coco-sys
-
 ```sh
-$ python do.py build-rust
-$ cd code-experiments/build/rust/coco-sys
-$ cargo build
-$ # and when publishing
-$ cargo package --allow-dirty
-$ cargo publish --allow-dirty
+$ cargo build -p coco-sys
 ```
 
 ### coco-rs
 
 ```sh
-$ cd code-experiments/build/rust
 $ cargo build
-$ # and when publishing
-$ cargo package
-$ cargo publish
 ```
 
 ## Licensing

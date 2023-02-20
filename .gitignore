@@ -28,6 +28,11 @@ code-experiments/build/python/cocoex/_version.py
 code-experiments/build/python/dist/
 code-experiments/build/python/src/cocoex/_version.py
 code-experiments/build/python/src/cocoex/interface.c
+code-experiments/build/rust/Cargo.lock
+code-experiments/build/rust/Cargo.toml
+code-experiments/build/rust/coco-sys/Cargo.toml
+code-experiments/build/rust/coco-sys/vendor/
+code-experiments/build/rust/target/
 code-experiments/examples/*/coco.[ch]
 code-experiments/src/coco_version.h
 code-experiments/test/*/coco.[ch]
