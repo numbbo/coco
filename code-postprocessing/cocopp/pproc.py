@@ -1669,7 +1669,41 @@ class DataSet(object):
                                 len(evalsrows[t]), len(evalsrows[t]))]
                     for t in targets]
         return [evalsrows[t] for t in targets]  # order w.r.t. input targets
-        
+
+    def _number_of_better_runs(self, target, ref_eval):
+        """return the number of ``self.evals(target)`` that are smaller
+
+        (i.e. better) than ``ref_eval``, where equality counts 1/2.
+
+        `target` may be a scalar or an iterable of targets.
+        """
+        if not np.isscalar(target):
+            return [self._number_of_better_runs(t, ref_eval) for t in target]
+        if not np.isfinite(ref_eval):
+            if np.isnan(ref_eval):
+                warnings.warn("ref_eval was nan when calling {}".format(self))
+            ref_eval = np.inf  # replace nan with inf
+        evals = self.detEvals([target])[0]
+        evals = evals[np.isfinite(evals)]
+        return sum(evals < ref_eval) + sum(evals == ref_eval) / 2
+
+    def _WIP_number_of_better_runs(self, refalg_dataset, target):
+        """return the number of ``self.evals([target])`` that are better
+
+        than the ``min(refalg_dataset.evals([target]))``, where equality
+        counts 1/2.
+
+        TODO: handle the case when evals is nan using of f-values
+        """
+        ref_evals = refalg_dataset.detEvals([target])[0][0]  # first return value is the evals
+        evals = self.detEvals([target])[0]
+        if len(ref_evals) > 1:
+            warnings.warn('found {} evals data in reference algorithm {}, detEvals([{}])={}'
+                        .format(len(ref_evals), refalg_dataset.algId, target, ref_evals))
+        ref_evals[~np.isfinite(ref_evals)] = np.inf  # replace nan with inf
+        m, a = np.min(ref_evals), np.asarray(evals[np.isfinite(evals)])
+        return sum(a < m) + sum(a == m) / 2
+
     def _detEvals2(self, targets):
         """Determine the number of evaluations to reach target values.
 
