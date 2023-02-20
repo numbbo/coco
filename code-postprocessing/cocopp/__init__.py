@@ -107,25 +107,15 @@ from . import genericsettings
 
 from .rungeneric import main
 
-import pkg_resources
+from ._version import __version__
 
-__all__ = [# 'main',  # import nothing with "from cocopp import *"
-           ]
+__all__ = []
 
-__version__ = pkg_resources.require('cocopp')[0].version
-
-if 11 < 3:  # old version, to be removed
-    archives = archiving.KnownArchives()
-    data_archive = archives.all  # only for historical reasons
-    bbob = archives.bbob
-    bbob_noisy = archives.bbob_noisy
-    bbob_biobj = archives.bbob_biobj
-else:
-    archives = archiving.official_archives  # just an alias
-    if archives is not None:
-        data_archive = archives.all  # another alias, only for historical reasons
-        archives.link_as_attributes_in(_sys.modules['cocopp'],  # more individual aliases
-                                       except_for=['all', 'test'])
+archives = archiving.official_archives  # just an alias
+if archives is not None:
+    data_archive = archives.all  # another alias, only for historical reasons
+    archives.link_as_attributes_in(_sys.modules['cocopp'],  # more individual aliases
+                                   except_for=['all', 'test'])
 
 # data_archive = 'use `archives.all` instead'
 # bbob = 'use `archives.bbob` instead'
@@ -159,7 +149,7 @@ class Interface:
     main = main
 
 # clean up namespace
-del absolute_import, pkg_resources
+del absolute_import
 # del bestalg, captions, comp2, compall, htmldesc, pickle, ppconverrorbars
 # del ppfig, ppfigdim, ppfigparam, pplogloss, pprldistr, pproc, pptable
 # del pptex, readalign, rungeneric1, rungenericmany, toolsdivers, toolsstats
