@@ -14,9 +14,6 @@ from ..pptex import writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
 from ..toolsstats import significancetest, significance_all_best_vs_other, best_alg_indices
 from ..toolsdivers import str_to_latex, strip_pathname1, strip_pathname3, replace_in_file, get_version_label, prepend_to_file
 
-table_width = '940px'  # just about enough to prevent linebreaks in long cells
-first_column_width = '250px'  # align the first number column in the table
-
 
 def get_table_caption():
     """Sets table caption.
@@ -93,6 +90,8 @@ def get_table_caption():
 
     return captions.replace(table_caption)
 
+table_column_width = 100  # used with <td style="min-width:%dpx"> % ...
+table_first_column_width = 250  # in 'px', aligns the second column in the table
 
 with_table_heading = False  # in case the page is long enough
 
@@ -450,7 +449,8 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
             curlineHtml = ['<thead>\n<tr>\n<th>#FEs/D<br>REPLACEH</th>\n']
             counter = 1
             for i in targets_of_interest.labels():
-                curlineHtml.append('<td>%s<br>REPLACE%d</td>\n' % (i, counter))
+                curlineHtml.append('<td style="min-width:%dpx">%s<br>REPLACE%d</td>\n' % (
+                    table_column_width, i, counter))
                 counter += 1
         else:
             if (testbed.name in [testbedsettings.suite_name_bi,
@@ -462,7 +462,8 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
             counter = 1
             for t in targets:
                 curlineHtml.append(
-                    '<td>%s<br>REPLACE%d</td>\n' % (writeFEvals2(t, precision=1, isscientific=True), counter))
+                    '<td style="min-width:%dpx">%s<br>REPLACE%d</td>\n' % (
+                        table_column_width, writeFEvals2(t, precision=1, isscientific=True), counter))
                 counter += 1
         curlineHtml.append('<td>#succ<br>REPLACEF</td>\n</tr>\n</thead>\n')
  
@@ -539,7 +540,8 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                 additional_commands.append('\\providecommand{%s}{\\StrLeft{%s}{\\ntables}}' %
                                            (command_name, str_to_latex(strip_pathname1(alg))))
             curline = [command_name + r'\hspace*{\fill}']  # each list element becomes a &-separated table entry?
-            curlineHtml = ['<th style="width:%s">%s</th>\n' % (first_column_width, str_to_latex(strip_pathname3(alg)))]
+            curlineHtml = ['<th style="width:%dpx">%s</th>\n' % (
+                table_first_column_width, str_to_latex(strip_pathname3(alg)))]
 
             zipToEnumerate = zip(algerts[i], algdisp[i], isBoldArray[i], algtestres[i]) if refalgentries else zip(
                 algerts[i], algdisp[i], isBoldArray[i])
@@ -695,7 +697,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
             f.write(res)
 
             res = "".join(str(item) for item in tableHtml)
-            res = '\n<table class=\"sortable\" style=\"width:%s \">\n%s</table>\n<p/>\n' % (table_width, res)
+            res = '\n<table class=\"sortable\" >\n%s</table>\n<p/>\n' % res
 
             if True:
                 filename = os.path.join(output_dir, genericsettings.pptables_file_name + '.html')
