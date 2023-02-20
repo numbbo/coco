@@ -1,8 +1,8 @@
 [package]
 name = "coco-sys"
-version = "0.4.0"
+version = "0.5.0"
 license = "MIT OR Apache-2.0"
-authors = ["Leopold Luley"]
+authors = ["Leopold Luley", "Olaf Mersmann"]
 description = "Generated Rust bindings for COCO benchmarking framework"
 repository = "https://github.com/numbbo/coco"
 keywords = ["coco", "benchmark", "blackbox", "bindings"]
@@ -13,3 +13,4 @@ include = ["build.rs", "src/", "vendor/", "wrapper.c", "wrapper.h"]
 
 [build-dependencies]
 cc = "1.0"
+bindgen = "0.64"
