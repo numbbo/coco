@@ -62,7 +62,7 @@ def get_table_caption():
         the rank-sum test) when compared to all other algorithms of the table, with
         $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
         than 1, with Bonferroni correction by the number of functions (!!TOTAL-NUM-OF-FUNCTIONS!!). """ +
-                          (r"""A $\downarrow$ indicates the same tested against !!THE-REF-ALG!!. """
+                          (r"""A ${}$ indicates the same tested against !!THE-REF-ALG!!. """.format(significance_vs_ref_symbol)
                            if not (testbedsettings.current_testbed.name in (testbedsettings.suite_name_bi_ext,
                                                                             testbedsettings.suite_name_ls,
                                                                             testbedsettings.suite_name_mixint,
