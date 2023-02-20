@@ -357,6 +357,7 @@ void coco_observer_free(coco_observer_t *observer) {
 #include "logger_biobj.c"
 #include "logger_toy.c"
 #include "logger_rw.c"
+#include "logger_sbox_cost.c"
 
 /**
  * Currently, three observers are supported:
@@ -518,6 +519,8 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     observer_toy(observer, observer_options, &additional_option_keys);
   } else if (0 == strcmp(observer_name, "bbob")) {
     observer_bbob(observer, observer_options, &additional_option_keys);
+  } else if (0 == strcmp(observer_name, "sbox-cost")) {
+    observer_sbox_cost(observer, observer_options, &additional_option_keys);
   } else if (0 == strcmp(observer_name, "bbob-biobj")) {
     observer_biobj(observer, observer_options, &additional_option_keys);
   } else if (0 == strcmp(observer_name, "bbob-biobj-ext")) {

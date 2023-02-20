@@ -3,24 +3,25 @@
  * @brief Implementation of the sphere function and problem.
  */
 
-#include <stdio.h>
 #include <assert.h>
+#include <stdio.h>
 
 #include "coco.h"
 #include "coco_problem.c"
 #include "suite_bbob_legacy_code.c"
+#include "transform_obj_norm_by_dim.c"
 #include "transform_obj_shift.c"
 #include "transform_vars_shift.c"
-#include "transform_obj_norm_by_dim.c"
 
 /**
- * @brief Implements the sphere function without connections to any COCO structures.
+ * @brief Implements the sphere function without connections to any COCO
+ * structures.
  */
 static double f_sphere_raw(const double *x, const size_t number_of_variables) {
 
   size_t i = 0;
   double result;
-    
+
   if (coco_vector_contains_nan(x, number_of_variables))
     return NAN;
 
@@ -35,7 +36,8 @@ static double f_sphere_raw(const double *x, const size_t number_of_variables) {
 /**
  * @brief Uses the raw function to evaluate the COCO problem.
  */
-static void f_sphere_evaluate(coco_problem_t *problem, const double *x, double *y) {
+static void f_sphere_evaluate(coco_problem_t *problem, const double *x,
+                              double *y) {
   assert(problem->number_of_objectives == 1);
   y[0] = f_sphere_raw(x, problem->number_of_variables);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
@@ -44,7 +46,8 @@ static void f_sphere_evaluate(coco_problem_t *problem, const double *x, double *
 /**
  * @brief Evaluates the gradient of the sphere function.
  */
-static void f_sphere_evaluate_gradient(coco_problem_t *problem, const double *x, double *y) {
+static void f_sphere_evaluate_gradient(coco_problem_t *problem, const double *x,
+                                       double *y) {
 
   size_t i;
 
@@ -57,9 +60,10 @@ static void f_sphere_evaluate_gradient(coco_problem_t *problem, const double *x,
  * @brief Allocates the basic sphere problem.
  */
 static coco_problem_t *f_sphere_allocate(const size_t number_of_variables) {
-	
-  coco_problem_t *problem = coco_problem_allocate_from_scalars("sphere function",
-     f_sphere_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0);
+
+  coco_problem_t *problem = coco_problem_allocate_from_scalars(
+      "sphere function", f_sphere_evaluate, NULL, number_of_variables, -5.0,
+      5.0, 0.0);
   problem->evaluate_gradient = f_sphere_evaluate_gradient;
   coco_problem_set_id(problem, "%s_d%02lu", "sphere", number_of_variables);
 
@@ -71,34 +75,42 @@ static coco_problem_t *f_sphere_allocate(const size_t number_of_variables) {
 /**
  * @brief Creates the BBOB sphere problem.
  */
-static coco_problem_t *f_sphere_bbob_problem_allocate(const size_t function,
-                                                      const size_t dimension,
-                                                      const size_t instance,
-                                                      const long rseed,
-                                                      const char *problem_id_template,
-                                                      const char *problem_name_template) {
+static coco_problem_t *
+f_sphere_bbob_problem_allocate(const size_t function, const size_t dimension,
+                               const size_t instance, const long rseed,
+                               const char *problem_id_template,
+                               const char *problem_name_template) {
 
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
 
   xopt = coco_allocate_vector(dimension);
-  bbob2009_compute_xopt(xopt, rseed, dimension);
+  if (coco_strfind(problem_name_template, "SBOX-COST suite problem") >= 0) {
+    sbox_cost_compute_xopt(xopt, rseed, dimension);
+  } else {
+    if (coco_strfind(problem_name_template, "SBOX-COST suite problem") >= 0) {
+      sbox_cost_compute_xopt(xopt, rseed, dimension);
+    } else {
+      bbob2009_compute_xopt(xopt, rseed, dimension);
+    }
+  }
   fopt = bbob2009_compute_fopt(function, instance);
 
   problem = f_sphere_allocate(dimension);
   problem = transform_vars_shift(problem, xopt, 0);
 
   /*if large scale test-bed, normalize by dim*/
-  if (coco_strfind(problem_name_template, "BBOB large-scale suite") >= 0){
+  if (coco_strfind(problem_name_template, "BBOB large-scale suite") >= 0) {
     problem = transform_obj_norm_by_dim(problem);
   }
   problem = transform_obj_shift(problem, fopt);
 
-  coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
-  coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+  coco_problem_set_id(problem, problem_id_template, function, instance,
+                      dimension);
+  coco_problem_set_name(problem, problem_name_template, function, instance,
+                        dimension);
   coco_problem_set_type(problem, "1-separable");
 
   coco_free_memory(xopt);
   return problem;
 }
-

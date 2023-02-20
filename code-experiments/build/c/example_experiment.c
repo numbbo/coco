@@ -119,6 +119,7 @@ int main(void) {
    * Start the actual experiments on a test suite and use a matching logger, for
    * example one of the following:
    *   bbob                 24 unconstrained noiseless single-objective functions
+   *   sbox-cost            24 unconstrained noiseless single-objective functions with hard box constraints
    *   bbob-biobj           55 unconstrained noiseless bi-objective functions
    *   [bbob-biobj-ext       92 unconstrained noiseless bi-objective functions]
    *   [bbob-constrained*   48 constrained noiseless single-objective functions]
@@ -138,7 +139,8 @@ int main(void) {
    * http://numbbo.github.io/coco-doc/C/#suite-parameters and
    * http://numbbo.github.io/coco-doc/C/#observer-parameters. */
 
-  example_experiment("bbob", "", "bbob", "result_folder: RS_on_bbob", random_generator);
+  /* example_experiment("bbob", "", "bbob", "result_folder: RS_on_bbob", random_generator); */
+  example_experiment("sbox-cost", "", "sbox-cost", "result_folder: RS_on_sbox-cost", random_generator);
 
   printf("Done!\n");
   fflush(stdout);

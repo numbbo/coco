@@ -186,6 +186,20 @@ static void bbob2009_compute_xopt(double *xopt, const long seed, const size_t DI
 }
 
 /**
+ * @brief Randomly computes the location of the global optimum in the larger space 
+ * of [-5, 5]^DIM compared to `bbob2009_compute_xopt`.
+ */
+static void sbox_cost_compute_xopt(double *xopt, const long seed, const size_t DIM) {
+  size_t i;
+  bbob2009_unif(xopt, DIM, seed);
+  for (i = 0; i < DIM; i++) {
+    xopt[i] = 10 * floor(1e4 * xopt[i]) / 1e4 - 5;
+    if (xopt[i] == 0.0)
+      xopt[i] = -1e-5;
+  }
+}
+
+/**
  * @brief Randomly chooses the objective offset for the given function and instance.
  */
 static double bbob2009_compute_fopt(const size_t function, const size_t instance) {
