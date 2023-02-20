@@ -62,11 +62,13 @@ def get_table_caption():
         the rank-sum test) when compared to all other algorithms of the table, with
         $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
         than 1, with Bonferroni correction by the number of functions (!!TOTAL-NUM-OF-FUNCTIONS!!). """ +
-                          (r"""A ${}$ indicates the same tested against !!THE-REF-ALG!!. """.format(significance_vs_ref_symbol)
-                           if not (testbedsettings.current_testbed.name in (testbedsettings.suite_name_bi_ext,
-                                                                            testbedsettings.suite_name_ls,
-                                                                            testbedsettings.suite_name_mixint,
-                                                                            testbedsettings.suite_name_bi_mixint))
+                (r"""A ${}$ signifies the number of trials that were worse than the ERT of !!THE-REF-ALG!! """
+                 r"""shown only when less than 10 percent were worse and the ERT was better."""
+                 .format(significance_vs_ref_symbol)
+                    if not (testbedsettings.current_testbed.name in (testbedsettings.suite_name_bi_ext,
+                                                                     testbedsettings.suite_name_ls,
+                                                                     testbedsettings.suite_name_mixint,
+                                                                     testbedsettings.suite_name_bi_mixint))
                            else "") + r"""Best results are printed in bold.
         """)
 
@@ -90,6 +92,8 @@ def get_table_caption():
 
     return captions.replace(table_caption)
 
+show_number_of_better_runs_threshold = 0.9  # compared to reference/best algorithm
+
 table_column_width = 100  # used with <td style="min-width:%dpx"> % ...
 table_first_column_width = 250  # in 'px', aligns the second column in the table
 
@@ -100,8 +104,8 @@ allmedtarget = {}
 
 significance_vs_others_symbol = r"\star"
 significance_vs_others_symbol_html = r"&#9733;"
-significance_vs_ref_symbol = r"\downarrow"
-significance_vs_ref_symbol_html = r"&darr;"
+significance_vs_ref_symbol = r"\uparrow"
+significance_vs_ref_symbol_html = r"&uarr;"
 maxfloatrepr = 10000.
 samplesize = genericsettings.simulated_runlength_bootstrap_sample_size
 precfloat = 2
@@ -371,7 +375,20 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
             # algmedfinalfunvals.append(numpy.median(entry.finalfunvals))
 
             if refalgentries:
-                algtestres.append(significancetest(refalgentry, entry, targets))
+                nbs = []  # number of worse runs to show for each target
+                for target in targets:
+                    nbs.append(None)  # overwrite when "significance" is found
+                    ert = entry.detERT([target])[0]
+                    if not numpy.isfinite(ert):
+                        continue
+                    ref_ert = refalgentry.detERT([target])[0]
+                    if ert >= ref_ert:
+                        continue
+                    nbetter = entry._number_of_better_runs(target, ref_ert)
+                    if nbetter > show_number_of_better_runs_threshold * entry.nbRuns():
+                        nbs[-1] = entry.nbRuns() - nbetter  # number of worse runs
+                        assert nbs[-1] >= 0
+                algtestres.append(nbs)
 
             # determine success probability for Df = 1e-8
             e = entry.detEvals((targetf,))[0]
@@ -570,28 +587,12 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                     significance_vs_others_symbol_html, str(int(logp)) if logp > 1 else '')
 
                 if refalgentries:
-                    # moved out of the above else: this was a bug!?
-                    z, p = testres
-                    if (nbtests * p) < 0.05 and data < 1. and z < 0.:
-                        if not numpy.isinf(refalgert[j]):
-                            tmpevals = algevals[i][j].copy()
-                            tmpevals[numpy.isnan(tmpevals)] = algentries[i].maxevals[numpy.isnan(tmpevals)]
-                            bestevals = refalgentry.detEvals(targets)
-                            bestevals, refalgalg = (bestevals[0][0], bestevals[1][0])
-                            bestevals[numpy.isnan(bestevals)] = refalgentry.maxevals[refalgalg][numpy.isnan(bestevals)]
-                            tmpevals = numpy.array(sorted(tmpevals))[0:min(len(tmpevals), len(bestevals))]
-                            bestevals = numpy.array(sorted(bestevals))[0:min(len(tmpevals), len(bestevals))]
+                    if testres is not None:  # single digit percentage
+                        # tmp2[-1] += r'$^{%s}$' % superscript
+                        nb = str(int(testres + 1/2))  # number of runs that were worse
+                        str_significance_subsup += r'_{%s%s}' % (significance_vs_ref_symbol, nb)
+                        str_significance_subsup_html += '<sub>%s%s</sub>' % (significance_vs_ref_symbol_html, nb)
 
-                        # The conditions are now that ERT < ERT_best and
-                        # all(sorted(FEvals_best) > sorted(FEvals_current)).
-                        if numpy.isinf(refalgert[j]) or all(tmpevals < bestevals):
-                            nbstars = -numpy.ceil(numpy.log10(nbtests * p))
-                            # tmp2[-1] += r'$^{%s}$' % superscript
-                            str_significance_subsup += r'_{%s%s}' % (significance_vs_ref_symbol,
-                                                                     str(int(nbstars)) if nbstars > 1 else '')
-                            str_significance_subsup_html += '<sub>%s%s</sub>' % (significance_vs_ref_symbol_html,
-                                                                                str(int(
-                                                                                    nbstars)) if nbstars > 1 else '')
                 if str_significance_subsup:
                     str_significance_subsup = '$%s$' % str_significance_subsup
 
