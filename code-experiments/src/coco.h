@@ -92,14 +92,7 @@ typedef unsigned __int64 uint64_t;
 extern "C" {
 #endif
 
-/**
- * @brief COCO's version.
- *
- * Automatically updated by do.py.
- */
-/**@{*/
-static const char coco_version[32] = "$COCO_VERSION";
-/**@}*/
+#include "coco_version.h"
 
 /***********************************************************************************************************/
 /**
