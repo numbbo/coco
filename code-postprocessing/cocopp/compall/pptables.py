@@ -589,7 +589,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                             # tmp2[-1] += r'$^{%s}$' % superscript
                             str_significance_subsup += r'_{%s%s}' % (significance_vs_ref_symbol,
                                                                      str(int(nbstars)) if nbstars > 1 else '')
-                            str_significance_subsup_html = '<sub>%s%s</sub>' % (significance_vs_ref_symbol_html,
+                            str_significance_subsup_html += '<sub>%s%s</sub>' % (significance_vs_ref_symbol_html,
                                                                                 str(int(
                                                                                     nbstars)) if nbstars > 1 else '')
                 if str_significance_subsup:
