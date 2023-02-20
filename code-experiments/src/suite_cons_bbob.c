@@ -159,10 +159,10 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
     problem = transform_obj_scale(problem, 10.);  /* move initial feasible point to a delta-f between 100 and 10000 */
       
   } else {
-    coco_error("get_cons_bbob_problem(): cannot retrieve problem f%lu instance %lu in %luD", 
-        function, instance, dimension);
     coco_free_memory(xopt);
     coco_free_memory(feasible_direction);
+    coco_error("get_cons_bbob_problem(): cannot retrieve problem f%lu instance %lu in %luD", 
+        function, instance, dimension);
     return NULL; /* Never reached */
   }
 
