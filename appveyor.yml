@@ -2,12 +2,6 @@ build: false
 
 environment:
   matrix:
-    - PYTHON_VERSION: 2.7
-      MINICONDA: C:\Miniconda
-      CYGWIN: C:\cygwin
-    - PYTHON_VERSION: 3.6
-      MINICONDA: C:\Miniconda36
-      CYGWIN: C:\cygwin
     - PYTHON_VERSION: 3.7
       MINICONDA: C:\Miniconda37
       CYGWIN: C:\cygwin
@@ -17,14 +11,15 @@ init:
   - cmd: "set PATH=%MINICONDA%;%MINICONDA%\\Scripts;%PATH%"
   - cmd: "set PATH=%PATH%;%CYGWIN%;%CYGWIN%\\bin"
   - cmd: "set PATH=C:\\Program Files\\MiKTeX 2.9\\miktex\\bin\\x64;%PATH%"
+  - cmd: python --version
   
 
 install:
   # - cmd: conda install -y matplotlib numpy scipy setuptools six pytest cython
   # Upgrade pip before we start installing packages
-  - cmd: python -m pip install --upgrade pip
+  - cmd: python -m pip install --upgrade pip "setuptools>=61.0"
   - cmd: pip install matplotlib --ignore-installed # use pip because conda install numpy fails with Python != 3.6
-  - cmd: pip install numpy scipy setuptools six pytest cython 
+  - cmd: pip install numpy scipy six pytest cython
   - cmd: python do.py run-python install-user
   - cmd: python do.py install-postprocessing
 
