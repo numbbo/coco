@@ -1,0 +1,248 @@
+name: build
+
+on:
+  push:
+  pull_request:
+    branches: [ master, development ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-source:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+        cache: "pip"
+    - name: Setup Python
+      run: python -m pip install --upgrade -r scripts/requirements.txt
+    - name: Fabricate COCO
+      run: python scripts/fabricate
+    - name: Configure unit test
+      working-directory: ${{github.workspace}}/code-experiments/test/unit-test/
+      run: cmake -B build .
+    - name: Build unit test
+      working-directory: ${{github.workspace}}/code-experiments/test/unit-test/
+      run: cmake --build build
+    - name: Run unit test
+      working-directory: ${{github.workspace}}/code-experiments/test/unit-test/
+      run: ctest --test-dir build
+    - name: Build cocoex Python package
+      run: python -m build -s -o dist code-experiments/build/python
+    - name: Build cocopp Python package
+      run: python -m build -o dist code-postprocessing/
+    - name: Archive C source package
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist-c
+        path: dist/cocoex-c-*.zip
+    - name: Archive Java source package
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist-java
+        path: dist/cocoex-java-*.zip
+    - name: Archive Matlab source package
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist-matlab
+        path: dist/cocoex-matlab-*.zip
+    - name: Archive Octave source package
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist-octave
+        path: dist/cocoex-octave-*.zip
+    - name: Archive Rust source package
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist-rust
+        path: dist/cocoex-rust-*.zip
+    - name: Archive cocoex Python source package
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist-python-sdist
+        path: |
+          dist/cocoex*.tar.gz
+          dist/cocopp*.tar.gz
+
+  build-python-wheels:
+    needs: build-source
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        version: ["3.8", "3.9", "3.10", "3.11"]
+    runs-on: ${{matrix.os}}
+    defaults:
+      run:
+        working-directory: ${{github.workspace}}
+    steps:
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{matrix.version}}
+    - name: Download Python source package
+      uses: actions/download-artifact@v3
+      with:
+        name: dist-python-sdist
+    - name: Setup Python
+      run: python -m pip install --upgrade pip wheel
+    - name: Build cocoex wheel
+      shell: bash
+      run: python -m pip wheel -w dist/ cocoex-*.tar.gz
+    - name: Build cocopp wheel
+      shell: bash
+      run: python -m pip wheel -w dist/ cocopp-*.tar.gz
+    - name: Archive Python package
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist-python-wheels
+        path: dist/*.whl
+  
+  test-python-wheels:
+    needs: build-python-wheels
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        version: ["3.8", "3.9", "3.10", "3.11"]
+    runs-on: ${{matrix.os}}
+    defaults:
+      run:
+        working-directory: ${{github.workspace}}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/download-artifact@v3
+      with:
+        name: dist-python-wheels
+        path: wheels
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{matrix.version}}
+    - name: Setup Python
+      run: python -m pip install --upgrade pip wheel
+    - name: Install cocoex and cocopp
+      run: pip install --find-links wheels cocoex cocopp
+    - name: Install scipy for example experiment
+      run: pip install scipy
+    - name: Run example experiment
+      run: python code-experiments/build/python/example/example_experiment2.py
+  
+  test-c:
+    needs: build-source
+    strategy:
+      matrix:
+        # FIXME: Currently fails on windows because of path issues.
+        # 
+        # Debug and add `windows-latest` back to list at some point.
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{matrix.os}}
+    defaults:
+      run:
+        working-directory: ${{github.workspace}}
+    steps:
+    - name: Download C source package
+      uses: actions/download-artifact@v3
+      with:
+        name: dist-c
+    - name: Unpack
+      run: unzip cocoex-c-*.zip
+    - name: Build 
+      working-directory: ${{github.workspace}}/cocoex-c/
+      run: cmake -B build && cmake --build build
+    - name: Test
+      working-directory: ${{github.workspace}}/cocoex-c/
+      run: ctest --test-dir build 
+    - name: Store reports
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-c-${{matrix.os}}
+        path: |
+            **/build/
+  
+  test-java:
+    needs: build-source
+    # FIXME: Should also test on windows and macos
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{github.workspace}}
+    steps:
+    - name: Download Java source package
+      uses: actions/download-artifact@v3
+      with:
+        name: dist-java
+    - name: Unpack
+      run: unzip cocoex-java-*.zip
+    - name: Build 
+      working-directory: ${{github.workspace}}/cocoex-java/
+      run: cmake -B build && cmake --build build
+    - name: Experiment
+      working-directory: ${{github.workspace}}/cocoex-java/
+      run: java -classpath build/coco.jar -Djava.library.path=build/ ExampleExperiment 
+    - name: Archive Java example experiment results
+      uses: actions/upload-artifact@v3
+      with:
+        name: exdata-java
+        path: cocoex-java/exdata/*
+
+  test-octave:
+    needs: build-source
+    # FIXME: Should also test on windows and macos
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{github.workspace}}
+    steps:
+    - name: Install Octave
+      run: sudo apt-get install -y octave liboctave-dev
+    - name: Download Octave source package
+      uses: actions/download-artifact@v3
+      with:
+        name: dist-octave
+    - name: Unpack
+      run: unzip cocoex-octave-*.zip
+    - name: Build 
+      working-directory: ${{github.workspace}}/cocoex-octave/
+      run: mkoctfile --verbose --mex cocoCall.c  
+    - name: Experiment
+      working-directory: ${{github.workspace}}/cocoex-octave/
+      run: octave --no-gui exampleexperiment.m                
+    - name: Archive Octave example experiment results
+      uses: actions/upload-artifact@v3
+      with:
+        name: exdata-octave
+        path: cocoex-octave/exdata/*
+  
+  test-rust:
+    needs: build-source
+    # FIXME: Should also test on windows and macos
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{github.workspace}}
+    steps:
+    - name: Download Rust source package
+      uses: actions/download-artifact@v3
+      with:
+        name: dist-rust
+    - name: Unpack
+      run: unzip cocoex-rust-*.zip
+    - name: Build 
+      working-directory: ${{github.workspace}}/cocoex-rust/
+      run: cargo build -r
+    - name: Test 
+      working-directory: ${{github.workspace}}/cocoex-rust/
+      run: cargo test -r
+    - name: Experiment
+      working-directory: ${{github.workspace}}/cocoex-rust/
+      run: ./target/release/examples/example-experiment 
+    - name: Archive Rust example experiment results
+      uses: actions/upload-artifact@v3
+      with:
+        name: exdata-rust
+        path: cocoex-rust/exdata/*
+

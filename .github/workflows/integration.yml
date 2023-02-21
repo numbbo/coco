@@ -1,0 +1,84 @@
+name: integration
+
+on:
+  push:
+  pull_request:
+    branches: [ master, development ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python_linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v4
+      with:
+        python-version: "3.7"
+        cache: "pip"
+    - name: Setup Python
+      run: python -m pip install --upgrade -r scripts/requirements.txt
+    - name: Fabricate COCO
+      run: python scripts/fabricate --release
+    - name: Install cocoex Python package
+      run: pip install code-experiments/build/python/
+    - name: Install cocopp Python package
+      run: pip install code-postprocessing/
+    - name: Run Python example experiment
+      run: python code-experiments/build/python/example/example_experiment.py bbob 20
+    - name: Post process results
+      run: python3 -m cocopp -o ./postproc ./exdata
+  
+  c_linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v4
+      with:
+        python-version: "3.7"
+        cache: "pip"
+    - name: Setup Python
+      run: python -m pip install --upgrade -r scripts/requirements.txt
+    - name: Fabricate COCO
+      run: python scripts/fabricate --release
+    - name: Install cocopp Python package
+      run: pip install code-postprocessing/
+    - name: CMake C example experiment 
+      run: cmake -B build code-experiments/build/c
+    - name: Build C example experiment
+      run: cmake --build build
+    - name: Run C example experiment
+      run: build/example_experiment
+    - name: Post process results
+      run: python3 -m cocopp -o ./postproc ./exdata
+  
+  c_windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v4
+      with:
+        python-version: "3.7"
+        cache: "pip"
+    - name: Setup Python
+      run: python -m pip install --upgrade -r scripts/requirements.txt
+    - name: Fabricate COCO
+      run: python scripts\fabricate --release
+    - name: Install cocopp Python package
+      run: pip install code-postprocessing\
+    - name: CMake C example experiment 
+      run: cmake -B build code-experiments\build\c
+    - name: Build C example experiment
+      run: cmake --build build
+    - name: Run C example experiment
+      run: .\build\Debug\example_experiment.exe
+    - name: Post process results
+      run: python3 -m cocopp -o postproc exdata

@@ -23,8 +23,9 @@ code-experiments/build/octave/cons.m
 code-experiments/build/octave/exampleexperiment.m
 code-experiments/build/octave/my_fmincon.m
 code-experiments/build/octave/my_optimizer.m
+code-experiments/build/python/bbob2009_testcases.txt
+code-experiments/build/python/bbob2009_testcases2.txt
 code-experiments/build/python/build/
-code-experiments/build/python/cocoex/_version.py
 code-experiments/build/python/dist/
 code-experiments/build/python/src/cocoex/_version.py
 code-experiments/build/python/src/cocoex/interface.c
