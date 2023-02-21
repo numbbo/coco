@@ -35,7 +35,7 @@ import warnings
 from pdb import set_trace
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.ticker import (FixedLocator, FuncFormatter, NullFormatter)
+from matplotlib import ticker
 from .. import toolsstats, bestalg, genericsettings, testbedsettings
 from .. import pproc as pp  # import dictAlgByDim, dictAlgByFun
 from .. import toolsdivers  # strip_pathname, str_to_latex
@@ -884,7 +884,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     else:
         figureName = os.path.join(outputdir, '%s' % genericsettings.pprldmany_file_name)
     # beautify(figureName, funcsolved, x_limit*x_annote_factor, False, fileFormat=figformat)
-    beautify()
+    beautify()  # see also below where the ticks are set
 
     if plotType == PlotType.FUNC:
         dictFG = pp.dictAlgByFuncGroup(dictAlg)
@@ -952,17 +952,23 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                   fontsize=title_fontsize)
     a = plt.gca()
 
+    # beautify even more
     plt.xlim(1e-0, x_limit)
-    xmaxexp = int(np.floor(np.log10(x_limit)))
-    xmajorticks = [10 ** exponent for exponent in range(0, xmaxexp + 1, 2)]
-    xminorticks = [10 ** exponent for exponent in range(0, xmaxexp + 1)]
+    xmaxexp = int(np.log10(x_limit))
     def formatlabel(val, pos):
         labeltext = '{:d}'.format(int(round(np.log10(val))))
         return labeltext
-    a.xaxis.set_major_locator(FixedLocator(xmajorticks))
-    a.xaxis.set_major_formatter(FuncFormatter(formatlabel))
-    a.xaxis.set_minor_locator(FixedLocator(xminorticks))
-    a.xaxis.set_minor_formatter(NullFormatter())
+    a.xaxis.set_major_locator(ticker.FixedLocator(
+        [10**d for d in range(0, xmaxexp + 1)]))
+    a.xaxis.set_major_formatter(ticker.FuncFormatter(formatlabel))
+    a.xaxis.set_minor_locator(ticker.FixedLocator(  # ticks
+        [i * 10**d for d in range(0, xmaxexp)       # these should be default
+                    for i in [2, 3, 4, 5, 6, 7, 8, 9]]))
+    a.xaxis.set_minor_formatter(ticker.NullFormatter())
+    a.yaxis.set_minor_locator(ticker.FixedLocator(np.linspace(0, 1, 21)))
+    a.tick_params(top=True, bottom=True,  which='both',
+                  left=True, right=True, direction='out')
+    plt.grid(genericsettings.minor_grid_in_pprldmany, which='minor')
     for pos in ['right', 'left']:  # top makes sense if figure ends at 1.0
         a.spines[pos].set_visible(False)  # remove visible frame
 

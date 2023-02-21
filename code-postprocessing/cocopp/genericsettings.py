@@ -55,6 +55,8 @@ xlimit_pprldmany = 1e7
 xlimit_expensive = 1e3
 """maximal run length multiplier in expensive setting, used in config for
    `pprldmany` and `ppfigdim`"""
+minor_grid_in_pprldmany = False
+"""used in `pprldmany` for empirical runtime distributions"""
 len_of_names_in_pprldmany_legend = None
 """set the length, for example when we want to remove characters that are
    not fully displayed, 9 == len('best 2009')"""
