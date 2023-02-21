@@ -154,8 +154,6 @@ class Interface:
     load = load
     main = main
 
-# clean up namespace
-del absolute_import, pkg_resources
 # del bestalg, captions, comp2, compall, htmldesc, pickle, ppconverrorbars
 # del ppfig, ppfigdim, ppfigparam, pplogloss, pprldistr, pproc, pptable
 # del pptex, readalign, rungeneric1, rungenericmany, toolsdivers, toolsstats

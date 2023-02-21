@@ -65,7 +65,6 @@ path/filename, a sha256 hash and optionally their approximate size. Datasets
 are (tar-)zipped files containing a full experiment from a single algorithm.
 
 """
-del absolute_import, division, print_function, unicode_literals
 
 __author__ = 'Nikolaus Hansen'
 
