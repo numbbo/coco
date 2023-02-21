@@ -1,8 +1,6 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Routines for the generation of TeX tables."""
-from __future__ import absolute_import, print_function
 
 import os
 import sys
@@ -11,7 +9,7 @@ import numpy
 
 from .. import genericsettings, bestalg, toolsstats, pproc, ppfigparam, testbedsettings, captions, ppfig
 from ..pptex import writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
-from ..toolsstats import significancetest, significance_all_best_vs_other, best_alg_indices
+from ..toolsstats import significance_all_best_vs_other, best_alg_indices
 from ..toolsdivers import str_to_latex, strip_pathname1, strip_pathname3, replace_in_file, get_version_label, prepend_to_file
 
 
@@ -65,10 +63,7 @@ def get_table_caption():
                 (r"""A ${}$ signifies the number of trials that were worse than the ERT of !!THE-REF-ALG!! """
                  r"""shown only when less than 10 percent were worse and the ERT was better."""
                  .format(significance_vs_ref_symbol)
-                    if not (testbedsettings.current_testbed.name in (testbedsettings.suite_name_bi_ext,
-                                                                     testbedsettings.suite_name_ls,
-                                                                     testbedsettings.suite_name_mixint,
-                                                                     testbedsettings.suite_name_bi_mixint))
+                    if testbedsettings.current_testbed.name not in (testbedsettings.suite_name_bi_ext, testbedsettings.suite_name_ls, testbedsettings.suite_name_mixint, testbedsettings.suite_name_bi_mixint)
                            else "") + r"""Best results are printed in bold.
         """)
 
@@ -352,14 +347,14 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
             # tmpdata = []
             tmpdisp = []
             tmpert = []
-            for i, e in enumerate(evals):
-                succ = (numpy.isnan(e) == False)
+            for _i, e in enumerate(evals):
+                succ = (numpy.isnan(e) is False)
                 ec = e.copy()  # note: here was the previous bug (changes made in e also appeared in evals !)
-                ec[succ == False] = entry.maxevals[succ == False]
+                ec[succ is False] = entry.maxevals[succ is False]
                 ert = toolsstats.sp(ec, issuccessful=succ)[0]
                 # tmpdata.append(ert/refalgert[i])
                 if succ.any():
-                    tmp = toolsstats.drawSP(ec[succ], entry.maxevals[succ == False],
+                    tmp = toolsstats.drawSP(ec[succ], entry.maxevals[succ is False],
                                             [10, 50, 90], samplesize=entry.bootstrap_sample_size(samplesize))[0]
                     tmpdisp.append((tmp[-1] - tmp[0]) / 2.)
                 else:
@@ -392,7 +387,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
 
             # determine success probability for Df = 1e-8
             e = entry.detEvals((targetf,))[0]
-            algnbsucc.append(numpy.sum(numpy.isnan(e) == False))
+            algnbsucc.append(numpy.sum(numpy.isnan(e) is False))
             algnbruns.append(len(e))
 
         # Process over all data
@@ -502,7 +497,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                         temp = temp[:-2] + temp[-1]
                     curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%s}:%s \quad}'
                                    % (temp, writeFEvalsMaxPrec(refalgert[i], 2)))
-                    replaceValue = '<i>%s</i>:%s' % (temp, writeFEvalsMaxPrec(refalgert[i], 2))
+                    replaceValue = f'<i>{temp}</i>:{writeFEvalsMaxPrec(refalgert[i], 2)}'
                     curlineHtml = [item.replace('REPLACE%d' % counter, replaceValue) for item in curlineHtml]
                     counter += 1
 
@@ -511,7 +506,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                     temp = temp[:-2] + temp[-1]
                 curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%s}:%s }'
                                % (temp, writeFEvalsMaxPrec(refalgert[-1], 2)))
-                replaceValue = '<i>%s</i>:%s' % (temp, writeFEvalsMaxPrec(refalgert[-1], 2))
+                replaceValue = f'<i>{temp}</i>:{writeFEvalsMaxPrec(refalgert[-1], 2)}'
                 curlineHtml = [item.replace('REPLACE%d' % counter, replaceValue) for item in curlineHtml]
             else:
                 # write #fevals of the reference alg
@@ -581,17 +576,17 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                             i == best_alg_idx[j] and nbtests * significance_versus_others[j][1] < 0.05):
                     logp = -numpy.ceil(numpy.log10(nbtests * significance_versus_others[j][1]))
                     logp = numpy.min((9, logp))  # not messing up the format and handling inf
-                    str_significance_subsup = r"^{%s%s}" % (
+                    str_significance_subsup = r"^{{{}{}}}".format(
                     significance_vs_others_symbol, str(int(logp)) if logp > 1 else '')
-                    str_significance_subsup_html = '<sup>%s%s</sup>' % (
+                    str_significance_subsup_html = '<sup>{}{}</sup>'.format(
                     significance_vs_others_symbol_html, str(int(logp)) if logp > 1 else '')
 
                 if refalgentries:
                     if testres is not None:  # single digit percentage
                         # tmp2[-1] += r'$^{%s}$' % superscript
                         nb = str(int(testres + 1/2))  # number of runs that were worse
-                        str_significance_subsup += r'_{%s%s}' % (significance_vs_ref_symbol, nb)
-                        str_significance_subsup_html += '<sub>%s%s</sub>' % (significance_vs_ref_symbol_html, nb)
+                        str_significance_subsup += fr'_{{{significance_vs_ref_symbol}{nb}}}'
+                        str_significance_subsup_html += f'<sub>{significance_vs_ref_symbol_html}{nb}</sub>'
 
                 if str_significance_subsup:
                     str_significance_subsup = '$%s$' % str_significance_subsup
@@ -643,10 +638,10 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=maxfloatrepr)
                             tmp += r'\mbox{\tiny (%s)}' % tmpdisp
                             tmpHtml += ' (%s)' % tmpdisp
-                        curline.append(r'\multicolumn{2}{%s}{%s%s}' % (alignment, tmp, str_significance_subsup))
+                        curline.append(fr'\multicolumn{{2}}{{{alignment}}}{{{tmp}{str_significance_subsup}}}')
                         if (numpy.isinf(sortKey)):
                             sortKey = sys.maxsize
-                        curlineHtml.append('<td sorttable_customkey=\"%f\">%s%s</td>' % (
+                        curlineHtml.append('<td sorttable_customkey=\"{:f}\">{}{}</td>'.format(
                         sortKey, tmpHtml, str_significance_subsup_html))
                     else:
                         tmp2 = tmp.split('.', 1)
@@ -677,7 +672,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                         tmp2html[-1] += str_significance_subsup_html
                         curline.extend(tmp2)
                         tmp2html = ("").join(str(item) for item in tmp2html)
-                        curlineHtml.append('<td sorttable_customkey=\"%f\">%s</td>' % (data, tmp2html))
+                        curlineHtml.append(f'<td sorttable_customkey=\"{data:f}\">{tmp2html}</td>')
 
             curline.append('%d' % algnbsucc[i])
             curline.append('/%d' % algnbruns[i])

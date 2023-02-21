@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Generate ERT vs param. figures.
 
@@ -12,11 +11,10 @@ overall conducted function evaluations in case the smallest target
 function value (1e-8) was not reached.
 
 """
-from __future__ import absolute_import
 import os
 import matplotlib.pyplot as plt
 import numpy as np
-from . import toolsstats, testbedsettings, genericsettings, toolsdivers
+from . import toolsstats, testbedsettings, toolsdivers
 from .ppfig import save_figure, getFontSize
 
 __all__ = ['beautify', 'plot', 'read_fun_infos', 'main']
@@ -105,7 +103,7 @@ def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
 
     # plot lines for ERT
     xpltdata = params
-    for i, t in enumerate(targets):
+    for i, _t in enumerate(targets):
         ypltdata = []
         for p in params:
             data = rawdata[p][i]
@@ -113,7 +111,7 @@ def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
             assert len(dictparam[p]) == 1
             data[unsucc] = dictparam[p][0].maxevals
             # compute ERT
-            ert, srate, succ = toolsstats.sp(data, issuccessful=(unsucc == False))
+            ert, srate, succ = toolsstats.sp(data, issuccessful=(unsucc is False))
             ypltdata.append(ert)
         res.extend(plt.plot(xpltdata, ypltdata, markersize=20,
                    zorder=len(targets) - i, **styles[i]))
@@ -124,9 +122,9 @@ def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
 
     # plot median of successful runs for hardest target with a success
     for p in params:
-        for i, t in enumerate(reversed(targets)): # targets has to be from hardest to easiest
+        for i, _t in enumerate(reversed(targets)): # targets has to be from hardest to easiest
             data = rawdata[p][i]
-            data = data[np.isnan(data) == False]
+            data = data[np.isnan(data) is False]
             if len(data) > 0:
                 median = toolsstats.prctile(data, 50.)[0]
                 res.extend(plt.plot(p, median, styles[i]['color'], **medmarker))
@@ -138,7 +136,7 @@ def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
     for p in params:
         data = rawdata[p][0] # first target
         xpltdata.append(p)
-        if (np.isnan(data) == False).all():
+        if (np.isnan(data) is False).all():
             tmpdata = data.copy()
             assert len(dictparam[p]) == 1
             tmpdata[np.isnan(data)] = dictparam[p][0].maxevals[np.isnan(data)]
@@ -150,13 +148,13 @@ def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
 
     # display numbers of successes for hardest target where there is still one success
     for p in params:
-        for i, t in enumerate(targets): # targets has to be from hardest to easiest
+        for i, _t in enumerate(targets): # targets has to be from hardest to easiest
             data = rawdata[p][i]
             unsucc = np.isnan(data)
             assert len(dictparam[p]) == 1
             data[unsucc] = dictparam[p][0].maxevals
             # compute ERT
-            ert, srate, succ = toolsstats.sp(data, issuccessful=(unsucc == False))
+            ert, srate, succ = toolsstats.sp(data, issuccessful=(unsucc is False))
             if srate == 1.:
                 break
             elif succ > 0:

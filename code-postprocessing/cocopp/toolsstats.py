@@ -1,13 +1,10 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Bootstrapping and statistics routines."""
 
-from __future__ import absolute_import, print_function
 import warnings
 import numpy as np
 from . import genericsettings
-from pdb import set_trace
 
 def _has_len(thing):
     try: len(thing)
@@ -442,7 +439,7 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     # should NaNs also be boostrapped?
     argsv = args
     if 1 < 3:
-        for i in range(int(samplesize)):
+        for _i in range(int(samplesize)):
             # relying that idx<len(data)
             idx = np.random.randint(N, size=N)
 
@@ -711,7 +708,7 @@ def significancetest(entry0, entry1, targets):
     # one of the entry is an instance of BestAlgDataSet
     for entry in (entry0, entry1):
         tmp = entry.detEvals(targets)
-        if not 'funvals' in entry.__dict__ and not 'indicator' in entry.__dict__:  # this looks like a terrible hack
+        if "funvals" not in entry.__dict__ and "indicator" not in entry.__dict__:  # this looks like a terrible hack
             isRefAlg = True
             # for i, j in enumerate(tmp[0]):
                 # if np.isnan(j).all():
@@ -807,9 +804,9 @@ def significancetest(entry0, entry1, targets):
         for j, entry in enumerate((entry0, entry1)):
             tmp = evals[j][i].copy()
             idx = np.isnan(tmp)
-            idx[idx == False] += tmp[idx == False] > FE_umin
+            idx[idx is False] += tmp[idx is False] > FE_umin
             # was not a bool before: idx = np.isnan(tmp) + (tmp > FE_umin)
-            tmp[idx == False] = np.power(tmp[idx == False], -1.)
+            tmp[idx is False] = np.power(tmp[idx is False], -1.)
             if idx.any():
                 tmp[idx] = -fvalues[j][idx] + f_offset  # larger data is better
                 assert all(tmp[idx] <= 0), (
@@ -990,7 +987,7 @@ def in_approximately(a, list_, abs=1e-11, rel=1e-11):
     return False
 
 
-class Evals(object):
+class Evals:
     def __init__(self, evals, counts):
         self.evals = evals
         self.counts = counts

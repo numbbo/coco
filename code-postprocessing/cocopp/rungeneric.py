@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """
 Process data to be included in a latex template. Called via
@@ -12,9 +11,6 @@ python -m cocopp
 
 """
 
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import unicode_literals
 
 import os
 import sys
@@ -352,7 +348,7 @@ def main(argv=None):
                 if o == '--include-single':
                     is_assigned = True
                 if not is_assigned:
-                    assert False, "unhandled option"
+                    raise AssertionError("unhandled option")
         if not genericsettings.verbose:
             warnings.filterwarnings('module', '.*', UserWarning, '.*')
             # warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear
@@ -403,7 +399,7 @@ def main(argv=None):
 
         if len(args) == 1 or '--include-single' in dict(opts):
             genericsettings.foreground_algorithm_list = []
-            for i, alg in enumerate(args):
+            for _i, alg in enumerate(args):
                 genericsettings.foreground_algorithm_list.append(alg)
                 dsld = rungeneric1.main(alg, outputdir, genopts + ["-o", outputdir, alg])
 
@@ -443,7 +439,7 @@ def main(argv=None):
         mess = ''
         for key, v1, v2 in diff_attr(genericsettings.default_settings,
                                      genericsettings):
-            mess = mess + '    %s: from %s to %s\n' % (
+            mess = mess + '    {}: from {} to {}\n'.format(
                 key, as_str(v1), as_str(v2))
         if mess:
             print('Setting changes in `cocopp.genericsettings` compared to default:')

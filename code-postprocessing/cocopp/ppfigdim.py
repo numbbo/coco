@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Generate performance scaling figures.
 
@@ -51,7 +50,6 @@ target (if in the expensive/runlength-based targets setting).
     cocopp.ppfigdim.plot_previous_algorithms(2, False) # plot BBOB 2009 best algorithm on fun 2
 
 """
-from __future__ import absolute_import
 
 import os
 import warnings
@@ -244,7 +242,7 @@ def generateData(dataSet, targetFuncValue):
             break
 
     data = prev[1:].copy()  # keep only the number of function evaluations.
-    succ = (np.isnan(data) == False)
+    succ = (np.isnan(data) is False)
     if succ.any():
         med = toolsstats.prctile(data[succ], 50)[0]
         # Line above was modified at rev 3050 to make sure that we consider only
@@ -571,7 +569,7 @@ def main(dsList, _valuesOfInterest, outputdir):
         # display number of instances in data and used targets type:
         if all(set(d.instancenumbers) == set(dictFunc[func][0].instancenumbers)
                for d in dictFunc[func]): # all the same?
-            display_text = '%d instances\n' % len(((dictFunc[func][0]).instancenumbers))
+            display_text = '%d instances\n' % len((dictFunc[func][0]).instancenumbers)
         else:
             display_text = 'instances %s' % [d.instancenumbers for d in dictFunc[func]]
         display_text += _valuesOfInterest.short_info

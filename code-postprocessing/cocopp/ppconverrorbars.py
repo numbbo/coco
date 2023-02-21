@@ -1,16 +1,13 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Process data and generates some comparison results."""
 
-from __future__ import absolute_import
 
 import os
-import sys
 import numpy
 
 from . import toolsdivers
-from . import genericsettings, pproc, testbedsettings
+from . import pproc, testbedsettings
 from .ppfig import save_figure, save_single_functions_html, convergence_plots_header
 from .toolsstats import prctile
 
@@ -93,7 +90,7 @@ def main(dictAlg, outputdir='.', parentHtmlFileName=None, algorithm_name=None):
                         print('Warning: floating point error when plotting errorbars, ignored')
                     warned = True
 
-            text = '%s - f%s' % (testbedsettings.current_testbed.name, function_id)
+            text = f'{testbedsettings.current_testbed.name} - f{function_id}'
 
             # add number of instances
             text += '\n%s instances' % (dictFun[function_id][i][0]).nbRuns()

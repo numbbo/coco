@@ -1,12 +1,10 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Prepares the descriptions of images and tables which will be converted to html.
 
 This module creates a tex file with all the descriptions of the images and tables.
 
 """
-from __future__ import absolute_import
 import os
 
 from . import genericsettings

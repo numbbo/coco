@@ -1,11 +1,9 @@
-from __future__ import absolute_import, division, print_function
-import numpy as np
 from . import genericsettings
 
 current_data_format = None  # used in readalign as global var
 
 
-class DataFormat(object):
+class DataFormat:
     """serves to define and manage the interfacing between written logger
     data and the contents of `DataSet`.
 
@@ -92,7 +90,7 @@ class BBOBNewDataFormat(DataFormat):
             # (target) f-value rows are not aligned, so we need to find for
             # each evals the respective data row in evals_constraints
             j, j_max = 0, len(dataset.evals_constraints[:, 0])
-            for i, eval_row in enumerate(dataset._evals):
+            for _i, eval_row in enumerate(dataset._evals):
                 # find j such that target[j] < target[i] (don't rely on floats being equal, though we probably could)
                 while j < j_max and dataset.evals_constraints[j, 0] + 1e-14 > eval_row[0]:
                     j += 1  # next smaller (target) f-value

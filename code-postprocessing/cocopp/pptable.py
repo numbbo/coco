@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Module for generating tables used by rungeneric1.py.
 
@@ -21,7 +20,6 @@ p = 0.05 or p = 1e-k where k > 1 is the number following the
 functions.
 
 """
-from __future__ import absolute_import, print_function
 
 import os
 import warnings
@@ -247,7 +245,7 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                 # if not any(succ):
                 #   set_trace()
                 if any(succ):
-                    tmp2 = toolsstats.drawSP(tmp[succ], tmp[succ==False],
+                    tmp2 = toolsstats.drawSP(tmp[succ], tmp[succ is False],
                                 (10, 50, 90), entry.bootstrap_sample_size())[0]
                     dispersion.append((tmp2[-1] - tmp2[0]) / 2.)
                 else: 
@@ -410,8 +408,8 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
             tmp = entry.evals[entry.evals[:, 0] <= targetf, 1:]
             try:
                 tmp = tmp[0]
-                curline.append('%d' % np.sum(np.isnan(tmp) == False))
-                curlineHtml.append('<td>%d' % np.sum(np.isnan(tmp) == False))
+                curline.append('%d' % np.sum(np.isnan(tmp) is False))
+                curlineHtml.append('<td>%d' % np.sum(np.isnan(tmp) is False))
             except IndexError:
                 curline.append('%d' % 0)
                 curlineHtml.append('<td>%d' % 0)

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Module for checking data sets.
 
@@ -11,9 +10,6 @@ Help:
 
 """
 
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import with_statement # This isn't required in Python 2.6
 
 import os
 import sys
@@ -70,13 +66,13 @@ def checkinfofile(filename, verbose=True):
                 dat = os.path.join(root + '.dat')
                 tdat = os.path.join(root + '.tdat')
                 if not (os.path.exists(dat) and os.path.exists(tdat)):
-                    raise IOError
+                    raise OSError
                 else:
                     if verbose:
-                        print('Found data files %s.dat and %s.tdat' % (root, root))
+                        print(f'Found data files {root}.dat and {root}.tdat')
                 datfiles.extend((dat, tdat))
             else:
-                if not ':' in elem:
+                if ":" not in elem:
                     warnings.warn('Caught an ill-finalized run in %s'
                                   % (filename))
                     trials.append(ast.literal_eval(elem))
@@ -119,7 +115,7 @@ def checkinfofile(filename, verbose=True):
 
             # Checking by groups of 3 lines (1 index entry)
             if tmp == 2:
-                miss_attr = list(i for i in crit_attr if not i in info)
+                miss_attr = list(i for i in crit_attr if i not in info)
                 if miss_attr:
                     msg = ('File %s, entry l%d-%d is missing the following'
                            'keys: %s.' % (filename, i-2, i, ', '.join(miss_attr)))
@@ -168,7 +164,7 @@ def main(argv=None):
 
         #Process options
         verbose = False
-        for o, a in opts:
+        for o, _a in opts:
             if o in ('-v', '--verbose'):
                 verbose = True
 

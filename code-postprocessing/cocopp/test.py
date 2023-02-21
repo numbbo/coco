@@ -3,13 +3,11 @@
 
 """
 
-from __future__ import absolute_import, division, print_function, unicode_literals
 import os
 import sys
 import time
 import inspect
 import fnmatch
-import urllib
 import tempfile
 import shutil
 import subprocess
@@ -133,7 +131,7 @@ def run_latex_template(filename, all_tests):
         DEVNULL = open(os.devnull, 'wb')
         output_file = open("bibtex.log", "w")
         result = subprocess.call(arguments, stdin=DEVNULL, stdout=output_file, stderr=DEVNULL)
-        assert not result, 'Test failed: error while running bibtex on %s resuling in %s' % (os.path.splitext(filename)[0], str(result))
+        assert not result, f'Test failed: error while running bibtex on {os.path.splitext(filename)[0]} resuling in {str(result)}'
 
 
 def retrieve_algorithm(data_path, folder_name, algorithm_name, file_name=None):
@@ -141,7 +139,7 @@ def retrieve_algorithm(data_path, folder_name, algorithm_name, file_name=None):
     replaced by `cocopp.archiving.get` or `cocopp.archiving.official_archives` or `cocopp.archives.all`)"""
     algorithm_file = join_path(data_path, file_name if file_name else algorithm_name)
     if not os.path.exists(algorithm_file):
-        data_url = 'https://numbbo.github.io/data-archive/data-archive/%s/%s' % (folder_name, algorithm_name)
+        data_url = f'https://numbbo.github.io/data-archive/data-archive/{folder_name}/{algorithm_name}'
         urlretrieve(data_url, algorithm_file)
 
 
@@ -456,7 +454,7 @@ def main(arguments):
         current_path = os.getcwd()
         new_path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
         os.chdir(new_path)
-        for root, dirnames, filenames in os.walk(os.path.dirname(os.path.realpath(__file__))):
+        for root, _dirnames, filenames in os.walk(os.path.dirname(os.path.realpath(__file__))):
             for filename in fnmatch.filter(filenames, '*.py'):
                 current_failure_count, current_test_count = doctest.testfile(
                     os.path.join(root, filename), report=True, module_relative=False)

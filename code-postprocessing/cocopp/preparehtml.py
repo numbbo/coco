@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Prepares the figure and table descriptions in html.
 
@@ -42,7 +41,7 @@ def prepare_html(texFile):
     else:
         tthFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tth_C/tth')
 
-    args = "%s %s" % (tthFile, texFile)
+    args = f"{tthFile} {texFile}"
     subprocess.call(args.split(), stdout=FNULL, stderr=FNULL, shell=False)    
 
     print('tth.exe call done')
@@ -64,8 +63,8 @@ def validate_html():
                                   comparing_file_name + '.html')
 
     footer_start = '<small>'
-    original_lines = list(open(original_html, 'r'))
-    generated_lines = list(open(generated_html, 'r'))
+    original_lines = list(open(original_html))
+    generated_lines = list(open(generated_html))
     for i in range(0, len(original_lines)):
         original_line = original_lines[i]
         generated_line = generated_lines[i]

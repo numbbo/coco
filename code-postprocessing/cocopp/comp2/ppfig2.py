@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Creates ERT-ratio comparison figures (ECDF) and convergence figures for the comparison of 2 algorithms.
 
@@ -7,11 +6,9 @@ Scale up figures for two algorithms can be done with compall/ppfigs.py
 
 """
 
-from __future__ import absolute_import
 
 import os
 import matplotlib.pyplot as plt
-from pdb import set_trace
 try:
     from matplotlib.transforms import blended_transform_factory as blend
 except ImportError:
@@ -75,7 +72,7 @@ def _generateData(entry0, entry1, fthresh=None, downsampling=None):
         for i in hdata:
             data = i.copy()
             data = data[1:]
-            succ = (np.isnan(data)==False)
+            succ = (np.isnan(data) is False)
             if any(np.isnan(data)):
                 data[np.isnan(data)] = maxevals[np.isnan(data)]
             tmp = [i[0]]
@@ -171,12 +168,12 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
     line = []
     data0 = entry0.detEvals([minfvalue])[0]
     evals0 = data0.copy()
-    succ = (np.isnan(evals0) == False)
+    succ = (np.isnan(evals0) is False)
     evals0[np.isnan(evals0)] = entry0.maxevals[np.isnan(evals0)]
     line.append(toolsstats.sp(evals0, issuccessful=succ))
     data1 = entry1.detEvals([minfvalue])[0]
     evals1 = data1.copy()
-    succ = (np.isnan(evals1) == False)
+    succ = (np.isnan(evals1) is False)
     evals1[np.isnan(evals1)] = entry1.maxevals[np.isnan(evals1)]
     line.append(toolsstats.sp(evals1, issuccessful=succ))
 
@@ -253,7 +250,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir=''):
     dictFun1 = dsList1.dictByFunc()
 
     dimensions = testbedsettings.current_testbed.dimensions_to_display
-    dimension_index = dict([(dimensions[i], i) for i in xrange(len(dimensions))])
+    dict([(dimensions[i], i) for i in xrange(len(dimensions))])
     
     for func in set.intersection(set(dictFun0), set(dictFun1)):
         dictDim0 = dictFun0[func].dictByDim()

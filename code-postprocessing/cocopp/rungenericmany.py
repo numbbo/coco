@@ -1,28 +1,22 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Process data to be included in a generic template.
 
 Only called from rungeneric.py.
 """
 
-from __future__ import absolute_import
-from __future__ import print_function
 
 import os
 import sys
-import getopt
 import warnings
 
 from . import genericsettings, config, ppfig, testbedsettings, findfiles
 from . import pproc, pptex, pprldistr
 from .pproc import DataSetList, processInputArgs
-from .ppfig import Usage
 from .toolsdivers import prepend_to_file, strip_pathname1, str_to_latex, replace_in_file
 from .compall import pprldmany, pptables, ppfigs, ppfigcons
 from .comp2 import pprldistr2, ppscatter
 
-import matplotlib.pyplot as plt
 from .toolsdivers import print_done, get_version_label
 
 __all__ = ['main']
@@ -49,7 +43,7 @@ def grouped_ecdf_graphs(alg_dict, order, output_dir, function_groups, settings, 
             parentFileName=parent_file_name
         )
 
-        for i, d in enumerate(dims):
+        for _i, d in enumerate(dims):
             entries = dictDim[d]
 
             pprldmany.main(entries,  # pass expensive flag here?
@@ -220,7 +214,7 @@ def main(args, outputdir):
             algorithm_name0 = str_to_latex(strip_pathname1(sortedAlgs[0]))
             algorithm_name1 = str_to_latex(strip_pathname1(sortedAlgs[1]))
 
-            algorithm_name = "%s vs %s" % (algorithm_name1, algorithm_name0)
+            algorithm_name = f"{algorithm_name1} vs {algorithm_name0}"
             ppfig.save_single_functions_html(
                 os.path.join(many_algorithms_output, genericsettings.pprldistr2_file_name),
                 algname=algorithm_name,
@@ -376,7 +370,7 @@ def main(args, outputdir):
                         ['\providecommand{\\bbobpptablesmanylegend}[1]{' +
                          pptables.get_table_caption() + '}'])
         dictNoi = pproc.dictAlgByNoi(dictAlg)
-        for ng, tmpdictng in dictNoi.items():
+        for _ng, tmpdictng in dictNoi.items():
             dictDim = pproc.dictAlgByDim(tmpdictng)
             for d, tmpdictdim in sorted(dictDim.items()):
                 pptables.main(
@@ -396,7 +390,7 @@ def main(args, outputdir):
         ds_list1 = dictAlg[sortedAlgs[1]]
         algorithm_name1 = str_to_latex(strip_pathname1(sortedAlgs[1]))
 
-        algorithm_name = "%s vs %s" % (algorithm_name1, algorithm_name0)
+        algorithm_name = f"{algorithm_name1} vs {algorithm_name0}"
         ppfig.save_single_functions_html(
             os.path.join(many_algorithms_output, genericsettings.ppscatter_file_name),
             algname=algorithm_name,

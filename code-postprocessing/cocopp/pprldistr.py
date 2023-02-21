@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """For generating empirical cumulative distribution function figures.
 
@@ -40,14 +39,11 @@ CAVEAT: the naming conventions in this module mix up ERT (an estimate
 of the expected running length) and run lengths.
 
 """
-from __future__ import absolute_import, print_function
 import os
-import sys
 import warnings # I don't know what I am doing here
 import pickle, gzip
 import matplotlib.pyplot as plt
 import numpy as np
-from pdb import set_trace
 from . import genericsettings, pproc, toolsdivers
 from . import testbedsettings
 from .ppfig import consecutiveNumbers, plotUnifLogXMarkers, save_figure, logxticks
@@ -111,12 +107,10 @@ def load_previous_data(filename=previous_data_filename, force=False):
     try:
         # cocofy(previous_data_filename)
         f = gzip.open(previous_data_filename, 'r')
-        if sys.version_info > (3, 0):
-            return pickle.load(f, encoding='latin1')
+        return pickle.load(f, encoding='latin1')
         return pickle.load(f)
-    except IOError as e:
-        print("I/O error(%s): %s" % (e.errno, e.strerror))
-        previous_algorithm_data_found = False
+    except OSError as e:
+        print(f"I/O error({e.errno}): {e.strerror}")
         print('Could not find file: ', previous_data_filename)
     else:
         f.close()
@@ -127,11 +121,10 @@ def load_previous_RLBdata(filename=previous_RLBdata_filename):
         return previous_RLBdata_dict
     try:
         f = gzip.open(previous_RLBdata_filename, 'r')
-        if sys.version_info > (3, 0):
-            return pickle.load(f, encoding='latin1')
+        return pickle.load(f, encoding='latin1')
         return pickle.load(f)
-    except IOError as e:
-        print("I/O error(%s): %s" % (e.errno, e.strerror))
+    except OSError as e:
+        print(f"I/O error({e.errno}): {e.strerror}")
         print('Could not find file: ', previous_RLBdata_filename)
     else:
         f.close()
@@ -198,9 +191,9 @@ def caption_two():
         + r"""/D)
         """)
 
-    symbAlgorithmA = r'{%s%s}' % (color_to_latex('k'),
+    symbAlgorithmA = r'{{{}{}}}'.format(color_to_latex('k'),
                                   marker_to_latex(styles[0]['marker']))
-    symbAlgorithmB = r'{%s%s}' % (color_to_latex('k'),
+    symbAlgorithmB = r'{{{}{}}}'.format(color_to_latex('k'),
                                   marker_to_latex(styles[1]['marker']))
     caption_two_fixed_targets_part1 = r"""%
         to reach a target value $!!FOPT!!+!!DF!!$ with $!!DF!!=10^{k}$, where
@@ -285,7 +278,7 @@ def beautifyECDF():
     c = plt.gca().get_children()
     for i in c: # TODO: we only want to extend ECDF lines...
         try:
-            if i.get_drawstyle() == 'steps' and not i.get_linestyle() in ('', 'None'):
+            if i.get_drawstyle() == 'steps' and i.get_linestyle() not in ("", "None"):
                 xdata = i.get_xdata()
                 ydata = i.get_ydata()
                 if len(xdata) > 0:
@@ -504,7 +497,7 @@ def plotRLDistr(dsList, target, label='', max_fun_evals=np.inf,
         funcs.add(ds.funcId)
         tmp = ds.detEvals((target((ds.funcId, ds.dim)),))[0] / ds.dim
         nn += len(tmp)
-        tmp = tmp[np.isnan(tmp) == False] # keep only success
+        tmp = tmp[np.isnan(tmp) is False] # keep only success
         if len(tmp) > 0 and sum(tmp <= max_fun_evals):
             fsolved.add(ds.funcId)
         x.extend(tmp)
@@ -751,7 +744,7 @@ def plot_previous_algorithms(dim, funcs):
                 tmp2 = tmp[f][dim][0][1:]
                 # [0], because the maximum #evals is also recorded
                 # [1:] because the target function value is recorded
-                x.append(tmp2[np.isnan(tmp2) == False])
+                x.append(tmp2[np.isnan(tmp2) is False])
                 nn += len(tmp2)
 
             if x:
@@ -783,7 +776,7 @@ def plotRLB_previous_algorithms(dim, funcs):
                 tmp2 = np.array(tmp[f][dim][0][1:][0])
                 # [0], because the maximum #evals is also recorded
                 # [1:] because the target function value is recorded
-                x.append(tmp2[np.isnan(tmp2) == False])
+                x.append(tmp2[np.isnan(tmp2) is False])
                 nn += len(tmp2)
 
             if x:

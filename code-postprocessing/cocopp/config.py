@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """This module is an attempt for a global configuration file for various
 parameters.
@@ -22,7 +21,6 @@ import numpy as np
 from . import ppfigdim
 from . import genericsettings as settings, pproc, pprldistr
 from . import testbedsettings as tbs
-from . import dataformatsettings
 from .comp2 import ppfig2, ppscatter
 from .compall import pprldmany
 from . import __path__  # import path for default genericsettings

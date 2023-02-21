@@ -1,18 +1,14 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Creates run length distribution figures for the comparison of 2 algorithms."""
 
-from __future__ import absolute_import
 
 import os
-import sys
 import warnings
 import numpy
 import matplotlib.pyplot as plt
 from .. import toolsstats, pproc, toolsdivers
 from ..ppfig import save_figure, consecutiveNumbers, plotUnifLogXMarkers
-from pdb import set_trace
 from six import advance_iterator
 
 #__all__ = []
@@ -85,7 +81,7 @@ def beautify(handles):
 
 def computeERT(fevals, maxevals):
     data = fevals.copy()
-    success = (numpy.isnan(data)==False)
+    success = (numpy.isnan(data) is False)
     if any(numpy.isnan(data)):
         data[numpy.isnan(data)] = maxevals[numpy.isnan(data)]
     res = toolsstats.sp(data, issuccessful=success)
@@ -163,7 +159,7 @@ def plotLogAbs(dsList0, dsList1, dim, targetValuesToReach):
             label = '%s: %d/%d' % (targetValuesToReach.loglabel(j), succ1[j], succ0[j])
         if len(x) > 0:  # prevent warning/error
             x = numpy.hstack(x)
-            x = x[numpy.isnan(x)==False] # Is it correct?
+            x = x[numpy.isnan(x) is False] # Is it correct?
         n = len(x)
 
         if n == 0:

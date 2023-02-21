@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Algorithm portfolio data set module.
 
@@ -43,10 +42,8 @@ functions.
 
 # TODO: generalize behaviour for data sets that have different instances...
 
-from __future__ import absolute_import, print_function
 
 import sys
-from pdb import set_trace
 import warnings
 import numpy as np
 
@@ -189,8 +186,8 @@ def build(dictAlg, sortedAlg=None):
     if not sortedAlg:
         sortedAlg = dictAlg.keys()
     tmpres = []
-    for f, i in pp.dictAlgByFun(dictAlg).items():
-        for d, j in pp.dictAlgByDim(i).items():
+    for _f, i in pp.dictAlgByFun(dictAlg).items():
+        for _d, j in pp.dictAlgByDim(i).items():
             tmp = []
             if sortedAlg:
                 tmplist = list(j[k] for k in sortedAlg)

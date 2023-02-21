@@ -19,7 +19,7 @@ for datapath in datapaths:
     for alg in Algs:
         curAlg = Algs[alg].dictByFunc()
         algname = curAlg[list(curAlg.keys())[0]][0].algId
-        if not algname in data:
+        if algname not in data:
             data[algname] = {}
         for func in curAlg:
             data[algname][func] = {}
@@ -31,7 +31,7 @@ for datapath in datapaths:
                 datum = funcdata[dim][0]
                 y = datum.detEvals([curtarget])[0]
                 data[algname][func][dim][0].append(y)
-                x = y[np.isnan(y) == False]
+                x = y[np.isnan(y) is False]
                 cocopp.pprldistr.plotECDF(x[np.isfinite(x)] / float(dim), len(y))
         print(algname, "done")
 with open(savepath, "w") as f:

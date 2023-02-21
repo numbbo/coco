@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """For generating performance profiles. This module is not in use (anymore or not yet?).
 
@@ -35,7 +34,6 @@
    # cocopp.compall.ppperfprof.plotmultiple(dsets, dsref=cocopp.bestalg.bestAlgorithmEntries)
 
 """
-from __future__ import absolute_import
 
 import os
 import numpy as np
@@ -154,7 +152,7 @@ def plot(dsList, dsref, targets=defaulttargets, istoolsstats=False, **kwargs):
                 x = [np.inf] * perfprofsamplesize
                 runlengthunsucc = []
                 evals = entry.detEvals([t])[0]
-                runlengthsucc = evals[np.isnan(evals) == False]
+                runlengthsucc = evals[np.isnan(evals) is False]
                 runlengthunsucc = entry.maxevals[np.isnan(evals)]
                 if len(runlengthsucc) > 0:
                     x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
@@ -169,9 +167,9 @@ def plot(dsList, dsref, targets=defaulttargets, istoolsstats=False, **kwargs):
 
     # Display data
     data = np.array(data)
-    data = data[np.isnan(data)==False] # Take away the nans
+    data = data[np.isnan(data) is False] # Take away the nans
     n = len(data)
-    data = data[np.isinf(data)==False] # Take away the infs
+    data = data[np.isinf(data) is False] # Take away the infs
     # data = data[data <= maxval] # Take away rightmost data
     #data = np.exp(craftingeffort) * data  # correction by crafting effort CrE
     #set_trace()

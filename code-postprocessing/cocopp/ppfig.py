@@ -1,8 +1,6 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Generic routines for figure generation."""
-from __future__ import absolute_import
 # from __future__ import unicode_literals  # enum construction fails
 
 import os
@@ -113,7 +111,7 @@ def save_figure(filename,
                         )
             if genericsettings.verbose:
                 print('Wrote figure in %s.' % (filename + '.' + format))
-        except IOError:
+        except OSError:
             warnings.warn('%s is not writeable.' % (filename + '.' + format))
 
 pprldmany_per_func_dim_header = 'Runtime distributions (ECDFs) per function'
@@ -150,13 +148,13 @@ def add_link(current_dir, folder, file_name, label,
              dimension=None):
     if folder:
         path = os.path.join(os.path.realpath(current_dir), folder, file_name)
-        href = '%s/%s' % (folder, file_name)
+        href = f'{folder}/{file_name}'
     else:
         path = os.path.join(os.path.realpath(current_dir), file_name)
         href = file_name
 
     if ignore_file_exists or os.path.isfile(path):
-        return '<H3>%s<a href="%s%s">%s</a></H3>\n' % (
+        return '<H3>{}<a href="{}{}">{}</a></H3>\n'.format(
             indent, href, "#" + str(dimension) if dimension else "", label)
 
     return ''
@@ -172,7 +170,7 @@ def save_index_html_file(filename):
 
         comparison_links = ''
         many_algorithm_file = '%s.html' % genericsettings.many_algorithm_file_name
-        for root, _dirs, files in os.walk(current_dir):
+        for _root, _dirs, _files in os.walk(current_dir):
             for elem in _dirs:
                 comparison_links += add_link(current_dir, elem, many_algorithm_file, elem, indent)
 
@@ -182,7 +180,7 @@ def save_index_html_file(filename):
 
         f.write('<H2>Single algorithm data</H2>\n')
         single_algorithm_file = '%s.html' % genericsettings.single_algorithm_file_name
-        for root, _dirs, files in os.walk(current_dir):
+        for _root, _dirs, _files in os.walk(current_dir):
             for elem in _dirs:
                 f.write(add_link(current_dir, elem, single_algorithm_file, elem, indent))
 
@@ -339,7 +337,7 @@ def save_single_functions_html(filename,
             f.write("\n<H2> %s </H2>\n" % current_header)
             for function_name in testbedsettings.current_testbed.func_cons_groups.keys():
                 for dimension in dimensions if dimensions is not None else [2, 3, 5, 10, 20, 40]:
-                    f.write(add_image('ppfigcons_%s_d%s%s.%s' % (function_name, dimension, add_to_names, extension), True))
+                    f.write(add_image(f'ppfigcons_{function_name}_d{dimension}{add_to_names}.{extension}', True))
             f.write(caption_string_format % '##bbobppfigconslegend##')
 
         elif htmlPage is HtmlPage.PPFIGCONS1:
@@ -347,7 +345,7 @@ def save_single_functions_html(filename,
             f.write("\n<H2> %s </H2>\n" % current_header)
             for function_name in testbedsettings.current_testbed.func_cons_groups.keys():
                 for dimension in dimensions if dimensions is not None else [2, 3, 5, 10, 20, 40]:
-                    f.write(add_image('ppfigcons1_%s_d%s%s.%s' % (function_name, dimension, add_to_names, extension), True))
+                    f.write(add_image(f'ppfigcons1_{function_name}_d{dimension}{add_to_names}.{extension}', True))
             # caption given by caption in this case
 
         elif htmlPage is HtmlPage.NON_SPECIFIED:
@@ -374,7 +372,7 @@ def save_single_functions_html(filename,
             f.write("\n<H2> %s </H2>\n" % current_header)
             for index, dimension in enumerate(dimensions):
                 f.write(write_dimension_links(dimension, dimensions, index))
-                for typeKey, typeValue in function_groups.items():
+                for typeKey, _typeValue in function_groups.items():
                     f.write(add_image('%s_%02dD_%s.%s' % (name, dimension, typeKey, extension), True))
 
             f.write(caption_string_format % '\n##bbobECDFslegend##')
@@ -441,7 +439,7 @@ def save_single_functions_html(filename,
                 index = dimension_list.rfind(",")
                 dimension_list = dimension_list[:index] + ' and' + dimension_list[index + 1:]
 
-                f.write('<p><b>%s in %s</b></p>' % ('All functions', dimension_list))
+                f.write('<p><b>{} in {}</b></p>'.format('All functions', dimension_list))
                 f.write('<div>')
                 for dimension in dimensions:
                     f.write(add_image('pplogloss_%02dD_%s.%s' % (dimension, function_group, extension), True))
@@ -452,7 +450,7 @@ def save_single_functions_html(filename,
                 f.write(caption_string_format % htmldesc.getValue('##bbobloglosstablecaption' + scenario + '##'))
 
                 for typeKey, typeValue in function_groups.items():
-                    f.write('<p><b>%s in %s</b></p>' % (typeValue, dimension_list))
+                    f.write(f'<p><b>{typeValue} in {dimension_list}</b></p>')
                     f.write('<div>')
                     for dimension in dimensions:
                         f.write(add_image('pplogloss_%02dD_%s.%s' % (dimension, typeKey, extension), True))
@@ -545,7 +543,8 @@ def marker_positions(xdata, ydata, nbperdecade, maxnb,
         ax_limits = plt.axis()
     tfy = y_transformation
     if tfy is None:
-        tfy = lambda x: x  # identity
+        def tfy(x):
+            return x  # identity
 
     xdatarange = np.log10(max([max(xdata), ax_limits[0], ax_limits[1]]) + 0.501) - \
                  np.log10(max([0,  # addresses ax_limits[0] < 0, assumes above max >= 0
@@ -837,7 +836,7 @@ def get_sorted_html_files(current_dir, prefix):
     prefix += '_'
 
     filename_dict = {}
-    for (dir_path, dir_names, file_names) in os.walk(current_dir):
+    for (_dir_path, _dir_names, file_names) in os.walk(current_dir):
         for filename in file_names:
             if filename.startswith(prefix) and filename.endswith(suffix):
                 stripped_filename = filename.replace(prefix, '').replace(suffix, '')
@@ -863,7 +862,7 @@ def get_sorted_html_files(current_dir, prefix):
     return pair_list
 
 
-class PlottingStyle(object):
+class PlottingStyle:
 
     def __init__(self, pprldmany_styles, ppfigs_styles, algorithm_list, in_background):
         self.pprldmany_styles = pprldmany_styles

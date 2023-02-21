@@ -1,15 +1,8 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Routines for writing TeX for tables."""
-from __future__ import absolute_import
-import os
-import sys
-import string
 import numpy
 
-from . import toolsstats
-from pdb import set_trace
 
 #GLOBAL VARIABLES DEFINITION
 alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
@@ -287,7 +280,7 @@ def writeFEvalsMaxSymbols(fevals, maxsymbols, isscientific=False):
     #smallest representation of the decimal part
     #drop + and starting zeros of the exponent part
     repr1 = (('%.' + str(maxsymbols) + 'e') % fevals)
-    size1 = len(repr1)
+    len(repr1)
     tmp = repr1.split('e', 1)
     tmp2 = tmp[-1].lstrip('+-0')
     if float(tmp[-1]) < 0:
@@ -360,7 +353,7 @@ def writeFEvalsMaxPrec(entry, SIG, maxfloatrepr=1e5):
         #smallest representation of the decimal part
         #drop + and starting zeros of the exponent part
         res = (('%.' + str(max([0, SIG - 1])) + 'e') % entry)
-        size1 = len(res)
+        len(res)
         tmp = res.split('e', 1)
         tmp2 = tmp[-1].lstrip('+-0')
         if float(tmp[-1]) < 0:
@@ -469,7 +462,7 @@ def tableLaTeXStar(table, width, spec, extraeol=()):
 
     # TODO: check that spec and extraeol have the right format?
 
-    res = [r'\begin{tabular*}{%s}{%s}' % (width, spec)]
+    res = [fr'\begin{{tabular*}}{{{width}}}{{{spec}}}']
     for i, line in enumerate(table[:-1]):
         curline = ' & '.join(line) + r'\\' + extraeol[i]
         res.append(curline)

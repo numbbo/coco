@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Helper routines to read in data files.
 
@@ -17,7 +16,6 @@ the experimental data.
 
 """
 
-from __future__ import absolute_import, print_function
 
 import os, sys
 import numpy
@@ -25,8 +23,7 @@ import warnings
 
 from . import genericsettings, testbedsettings, dataformatsettings
 
-from pdb import set_trace
-from six import string_types, advance_iterator
+from six import advance_iterator
 
 # CLASS DEFINITIONS
 class MultiReader(list):
@@ -71,7 +68,7 @@ class MultiReader(list):
         self.isHArray = isHArray
         try:  # we act like data is a MultiReader
             #  this is meant to make a reset-copy of MultiReader
-            for i, reader in enumerate(data):
+            for _i, reader in enumerate(data):
                 self.append(self.SingleReader(reader.data, data.isHArray))
         except AttributeError:  # we assume that data is a simple list
             for ar in data:
@@ -154,7 +151,7 @@ class VMultiReader(MultiReader):
     """
 
     def __init__(self, data):
-        super(VMultiReader, self).__init__(data)
+        super().__init__(data)
         # the alignment value is the number of function evaluations.
         self.idx = dataformatsettings.current_data_format.evaluation_idx
         # the data of concern are the function values.
@@ -194,7 +191,7 @@ class HMultiReader(MultiReader):
     """
 
     def __init__(self, data):
-        super(HMultiReader, self).__init__(data)
+        super().__init__(data)
         # the data of concern are the number of function evals.
         self.idxData = dataformatsettings.current_data_format.evaluation_idx
         # the alignment value is the function value.
@@ -428,15 +425,15 @@ def openfile(filePath, **kwargs):
     """`kwargs` are passed to `open`"""
     if not os.path.isfile(filePath):
         if ('win32' in sys.platform) and len(filePath) > 259:
-            raise IOError(2, 'The path is too long for the file "%s".' % filePath)
+            raise OSError(2, 'The path is too long for the file "%s".' % filePath)
         else:
-            raise IOError(2, 'The file "%s" does not exist.' % filePath)
+            raise OSError(2, 'The file "%s" does not exist.' % filePath)
     try:
-        return open(filePath, 'r', **kwargs)
+        return open(filePath, **kwargs)
     except TypeError:  # prevent TypeError: 'errors' is an invalid keyword argument for this function in Jenkins test
         if 'errors' in kwargs:
             kwargs.pop('errors')
-        return open(filePath, 'r', **kwargs)
+        return open(filePath, **kwargs)
 
 
 def split(dataFiles, idx_to_load=None, dim=None):

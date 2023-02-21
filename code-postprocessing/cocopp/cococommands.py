@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Depreciated (`cocopp` itself is to be used from Jupyter or IPython):
 Module for using COCO from the (i)Python interpreter.
@@ -58,7 +57,6 @@ Examples:
 
 """
 
-from __future__ import absolute_import
 
 from .pproc import get_DataSetList as _DataSetList
 from .toolsdivers import StringList as _StringList

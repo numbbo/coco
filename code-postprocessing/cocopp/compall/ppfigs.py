@@ -1,7 +1,5 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 """Creates ERTs and convergence figures for multiple algorithms."""
-from __future__ import absolute_import, print_function
 import os
 import matplotlib.pyplot as plt
 import numpy
@@ -170,20 +168,20 @@ def get_ecdfs_single_fcts_caption():
 
     if genericsettings.runlength_based_targets:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes in number
-             of %s divided by dimension (%s/DIM) for  
+             of {} divided by dimension ({}/DIM) for  
              targets in !!TARGET-RANGES-IN-ECDF!! that have just not
              been reached by !!THE-REF-ALG!!
              in a given budget of $k$ $\times$ DIM, with $!!NUM-OF-TARGETS-IN-ECDF!!$ 
-             different values of $k$ chosen equidistant in logscale within the interval $\{0.5, \dots, 50\}$.
-             Shown are functions $f_{#1}$ to $f_{#2}$ and all dimensions. """ % (
+             different values of $k$ chosen equidistant in logscale within the interval $\{{0.5, \dots, 50\}}$.
+             Shown are functions $f_{{#1}}$ to $f_{{#2}}$ and all dimensions. """.format(
                 testbedsettings.current_testbed.string_evals,
                 testbedsettings.current_testbed.string_evals_short)
              )
     else:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes in number
-             of %s divided by dimension (%s/DIM) for the 
+             of {} divided by dimension ({}/DIM) for the 
              $!!NUM-OF-TARGETS-IN-ECDF!!$ targets !!TARGET-RANGES-IN-ECDF!!
-             for functions $f_{#1}$ to $f_{#2}$ and all dimensions. """ % (
+             for functions $f_{{#1}}$ to $f_{{#2}}$ and all dimensions. """.format(
                 testbedsettings.current_testbed.string_evals,
                 testbedsettings.current_testbed.string_evals_short)
              )
@@ -195,13 +193,13 @@ def get_ecdfs_all_groups_caption():
     
     if genericsettings.runlength_based_targets:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
-             runtimes, measured in number of %s 
-             divided by dimension (%s/DIM) for all function groups and all 
+             runtimes, measured in number of {} 
+             divided by dimension ({}/DIM) for all function groups and all 
              dimensions and for those targets in
              !!TARGET-RANGES-IN-ECDF!! that have just not been reached by 
              !!THE-REF-ALG!! in a given budget of $k$ $\times$ DIM, with 
              $!!NUM-OF-TARGETS-IN-ECDF!!$ different values of $k$ chosen 
-             equidistant in logscale within the interval $\{0.5, \dots, 50\}$.""" % (
+             equidistant in logscale within the interval $\{{0.5, \dots, 50\}}$.""".format(
                 testbedsettings.current_testbed.string_evals,
                 testbedsettings.current_testbed.string_evals_short)
              + (r""" The aggregation over all !!TOTAL-NUM-OF-FUNCTIONS!! 
@@ -209,10 +207,10 @@ def get_ecdfs_all_groups_caption():
              )
     else:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
-             runtimes, measured in number of %s,
-             divided by dimension (%s/DIM) for the $!!NUM-OF-TARGETS-IN-ECDF!!$ 
+             runtimes, measured in number of {},
+             divided by dimension ({}/DIM) for the $!!NUM-OF-TARGETS-IN-ECDF!!$ 
              targets !!TARGET-RANGES-IN-ECDF!! for all function groups and all 
-             dimensions.""" % (
+             dimensions.""".format(
                 testbedsettings.current_testbed.string_evals,
                 testbedsettings.current_testbed.string_evals_short)
              + (r""" The aggregation over all !!TOTAL-NUM-OF-FUNCTIONS!! 
@@ -226,21 +224,21 @@ def get_ecdfs_single_functions_single_dim_caption():
     
     if genericsettings.runlength_based_targets:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
-             runtimes, measured in number of %s 
-             divided by dimension (%s/DIM) in 
+             runtimes, measured in number of {} 
+             divided by dimension ({}/DIM) in 
              dimension #1 and for those targets in
              !!TARGET-RANGES-IN-ECDF!! that have just not been reached by 
              !!THE-REF-ALG!! in a given budget of $k$ $\times$ DIM, with 
              $!!NUM-OF-TARGETS-IN-ECDF!!$ different values of $k$ chosen 
-             equidistant in logscale within the interval $\{0.5, \dots, 50\}$.""" % (
+             equidistant in logscale within the interval $\{{0.5, \dots, 50\}}$.""".format(
                 testbedsettings.current_testbed.string_evals,
                 testbedsettings.current_testbed.string_evals_short)
              )
     else:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
-             runtimes, measured in number of %s,
-             divided by dimension (%s/DIM) for the $!!NUM-OF-TARGETS-IN-ECDF!!$ 
-             targets !!TARGET-RANGES-IN-ECDF!! in dimension #1.""" % (
+             runtimes, measured in number of {},
+             divided by dimension ({}/DIM) for the $!!NUM-OF-TARGETS-IN-ECDF!!$ 
+             targets !!TARGET-RANGES-IN-ECDF!! in dimension #1.""".format(
                 testbedsettings.current_testbed.string_evals,
                 testbedsettings.current_testbed.string_evals_short)
              )
@@ -438,7 +436,7 @@ def generateData(dataSet, target):
     res = []
 
     data = dataSet.detEvals([target])[0]
-    succ = (numpy.isnan(data) == False)
+    succ = (numpy.isnan(data) is False)
     data[numpy.isnan(data)] = dataSet.maxevals[numpy.isnan(data)]
     res.extend(toolsstats.sp(data, issuccessful=succ, allowinf=False))
     res.append(numpy.mean(data))
@@ -654,12 +652,12 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
         alg_definitions = []
         alg_definitions_html = ''
         for i in range(len(sorted_algorithms)):
-            symb = r'{%s%s}' % (color_to_latex(styles[i]['color']),
+            symb = r'{{{}{}}}'.format(color_to_latex(styles[i]['color']),
                                 marker_to_latex(styles[i]['marker']))
-            symb_html = '<span style="color:%s;">%s</span>' % (styles[i]['color'], marker_to_html(styles[i]['marker']))
+            symb_html = '<span style="color:{};">{}</span>'.format(styles[i]['color'], marker_to_html(styles[i]['marker']))
             
-            alg_definitions.append((', ' if i > 0 else '') + '%s: %s' % (symb, '\\algorithm' + abc[i % len(abc)]))
-            alg_definitions_html += (', ' if i > 0 else '') + '%s: %s' % (symb_html, toolsdivers.str_to_latex(toolsdivers.strip_pathname1(sorted_algorithms[i])))
+            alg_definitions.append((', ' if i > 0 else '') + '{}: {}'.format(symb, '\\algorithm' + abc[i % len(abc)]))
+            alg_definitions_html += (', ' if i > 0 else '') + f'{symb_html}: {toolsdivers.str_to_latex(toolsdivers.strip_pathname1(sorted_algorithms[i]))}'
         toolsdivers.prepend_to_file(latex_commands_file,
                 [providecolorsforlatex()]) # needed since the latest change in ACM template
         toolsdivers.prepend_to_file(latex_commands_file,
@@ -687,13 +685,13 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
         f.write('Legend: ')
         
         for i in range(0, len(sorted_algorithms)):
-            symb = r'{%s%s}' % (color_to_latex(styles[i]['color']),
+            symb = r'{{{}{}}}'.format(color_to_latex(styles[i]['color']),
                                 marker_to_latex(styles[i]['marker']))
-            f.write((', ' if i > 0 else '') + '%s:%s' % (symb, writeLabels(sorted_algorithms[i])))
+            f.write((', ' if i > 0 else '') + f'{symb}:{writeLabels(sorted_algorithms[i])}')
         f.close()    
         if genericsettings.verbose:
             print('(obsolete) Wrote legend in %s' % filename)
-    except IOError:
+    except OSError:
         raise
 
 

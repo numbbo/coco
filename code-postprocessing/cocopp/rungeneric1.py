@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Module for post-processing the data of one algorithm.
 
@@ -15,14 +14,10 @@ Help:
 
 """
 
-from __future__ import absolute_import
-from __future__ import print_function
 
-import os, sys
-from pdb import set_trace
-import matplotlib
+import os
 
-import warnings, getopt, numpy as np
+import warnings, numpy as np
 
 from . import genericsettings, testbedsettings, config, ppfig, pptable, pprldistr, ppfigdim, ppfigcons1, pplogloss, findfiles
 from .pproc import DataSetList, store_reference_values, dictAlgByDim
@@ -178,7 +173,7 @@ def main(alg, outputdir, argv=None):
         replace_in_file(os.path.join(algoutputdir, 'pptable.html'), '??COCOVERSION??',
                         '<br />Data produced with COCO %s' % (get_version_label(None)))
 
-        for noise, sliceNoise in dictNoise.items():
+        for _noise, sliceNoise in dictNoise.items():
             pptable.main(sliceNoise, dims, algoutputdir, latex_commands_file)
         print_done()
 

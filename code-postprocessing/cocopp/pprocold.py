@@ -1,14 +1,11 @@
 #! /usr/bin/env python
-# coding: utf-8
 
 """Helper routines for read index files."""
 
-from __future__ import absolute_import
 
 import numpy
 import warnings
 
-from pdb import set_trace
 
 __version__ = "$Revision$"
 # $URL$
@@ -260,9 +257,9 @@ def split(dataFiles, dim=None):
             # This doesnt work with windows.
             # content = numpy.loadtxt(fil, comments='%')
 
-            file = open(fil,'r')               # read in the file
+            file = open(fil)               # read in the file
             lines = file.readlines()
-        except IOError:
+        except OSError:
             print('Could not find %s.' % fil)
             continue
 

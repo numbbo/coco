@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Recursively find :file:`info` and zipped files within a directory and
 administer archives.
@@ -13,7 +12,6 @@ displays found (extracted) files.
 
 TODO: we do not use pickle files anymore.
 """
-from __future__ import absolute_import, division, print_function
 import os
 import sys
 import warnings
@@ -21,10 +19,9 @@ import tarfile
 import zipfile
 
 if sys.version_info[0] >= 3:
-    from urllib.request import urlretrieve
+    pass
 else:
-    from urllib import urlretrieve
-from .toolsdivers import StringList  # def StringList(list_): return list_
+    pass
 from . import genericsettings
 
 # Initialization
@@ -90,7 +87,7 @@ def get_directory(directory, extract_files):
                         if ('win32' in sys.platform):
                             longest_file_length = max(len(i) for i in zipfile.ZipFile.namelist(zip_ref))
                             if len(dir_name) + longest_file_length > 259:
-                                raise IOError(2, 'Some of the files cannot be extracted ' +
+                                raise OSError(2, 'Some of the files cannot be extracted ' +
                                               'from "%s". The path is too long.' % directory)
                         zip_ref.extractall(dir_name)
 
@@ -106,7 +103,7 @@ def get_directory(directory, extract_files):
                     tar_file = tarfile.TarFile.open(directory)
                     longest_file_length = max(len(i) for i in tar_file.getnames())
                     if ('win32' in sys.platform) and len(dir_name) + longest_file_length > 259:
-                        raise IOError(2, 'Some of the files cannot be extracted ' +
+                        raise OSError(2, 'Some of the files cannot be extracted ' +
                                       'from "%s". The path is too long.' % directory)
 
                     tar_file.extractall(dir_name)

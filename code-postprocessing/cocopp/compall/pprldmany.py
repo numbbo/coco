@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Generates figure of the bootstrap distribution of ERT.
     
@@ -28,11 +27,9 @@ function evaluations of unsuccessful runs divided by dimension.
 
 """
 
-from __future__ import absolute_import, print_function
 
 import os
 import warnings
-from pdb import set_trace
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import (FixedLocator, FuncFormatter, NullFormatter)
@@ -212,10 +209,10 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
     
     """
     # Expect data to be a ndarray.
-    x = data[np.isnan(data) == False]  # Take away the nans
+    x = data[np.isnan(data) is False]  # Take away the nans
     nn = len(x)
 
-    x = x[np.isinf(x) == False]  # Take away the infs
+    x = x[np.isinf(x) is False]  # Take away the infs
     n = len(x)
 
     x = np.exp(CrE) * x  # correction by crafting effort CrE
@@ -442,7 +439,7 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
             x = [np.inf] * perfprofsamplesize
             runlengthunsucc = []
             evals = entry.detEvals([t])[0]
-            runlengthsucc = evals[np.isnan(evals) == False] / divisor
+            runlengthsucc = evals[np.isnan(evals) is False] / divisor
             if testbedsettings.current_testbed.has_constraints:
                 # maxevals is inconsistent in that case
                 maxevals_column = entry.maxfgevals
@@ -467,9 +464,9 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
 
     # Display data
     data = np.array(data)
-    data = data[np.isnan(data) == False]  # Take away the nans
+    data = data[np.isnan(data) is False]  # Take away the nans
     n = len(data)
-    data = data[np.isinf(data) == False]  # Take away the infs
+    data = data[np.isinf(data) is False]  # Take away the infs
     # data = data[data <= maxval] # Take away rightmost data
     data = np.exp(craftingeffort) * data  # correction by crafting effort CrE
     if len(data) == 0:  # data is empty.
@@ -532,7 +529,7 @@ def all_single_functions(dict_alg, is_single_algorithm, sorted_algs=None,
         else:
             dictDim = pp.dictAlgByDim(tempDictAlg)
             dims = sorted(dictDim)
-            for i, d in enumerate(dims):
+            for _i, d in enumerate(dims):
                 entries = dictDim[d]
                 main(entries,
                      order=sorted_algs,
@@ -557,7 +554,7 @@ def all_single_functions(dict_alg, is_single_algorithm, sorted_algs=None,
         dims = sorted(dictDim)
         for i, d in enumerate(dims):
             tempDictAlg = dictDim[d]
-            next_dim = dims[i+1] if i + 1 < len(dims) else dims[0]
+            dims[i+1] if i + 1 < len(dims) else dims[0]
             dictFG = pp.dictAlgByFuncGroup(tempDictAlg)
             for fg, entries in sorted(dictFG.items()):
                 main(entries,
@@ -636,7 +633,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 CrEperAlg[keyValue] = CrE
         elif plotType == PlotType.FUNC:
             tmp = pp.dictAlgByFun(dictAlg)
-            for f, dictAlgperFunc in tmp.items():
+            for f, _dictAlgperFunc in tmp.items():
                 keyValue = 'f%d' % (f)
                 CrEperAlg[keyValue] = CrE
         else:
@@ -691,7 +688,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             samplesize = int(samplesize)
         for f, dictAlgperFunc in sorted(dictFunc.items()):
             # print(target_values((f, dim)))
-            for j, t in enumerate(target_values((f, dim))):
+            for _j, t in enumerate(target_values((f, dim))):
                 # for j, t in enumerate(testbedsettings.current_testbed.ecdf_target_values(1e2, f)):
                 # funcsolved[j].add(f)
 
@@ -702,7 +699,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                         entry = dictAlgperFunc[alg][0]  # one element per fun and per dim.
                         evals = entry.detEvals([t])[0]
                         assert entry.dim == dim
-                        runlengthsucc = evals[np.isnan(evals) == False] / divisor
+                        runlengthsucc = evals[np.isnan(evals) is False] / divisor
                         if testbedsettings.current_testbed.has_constraints:
                             # maxevals is inconsistent in that case
                             maxevals_column = entry.maxfgevals
@@ -755,7 +752,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                             evals = refalgevals[0][j]
                             # set_trace()
                             assert dim == refalgentry.dim
-                            runlengthsucc = evals[np.isnan(evals) == False] / divisor
+                            runlengthsucc = evals[np.isnan(evals) is False] / divisor
                             runlengthunsucc = refalgentry.maxevals[refalgevals[1][j]][np.isnan(evals)] / divisor
                             x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
                                                   percentiles=[50],
@@ -838,11 +835,11 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
     if 11 < 3:
         import time
-        plt.text(1e5, 0, ' {}'.format(time.asctime()), fontsize=5)
+        plt.text(1e5, 0, f' {time.asctime()}', fontsize=5)
     labels, handles = plotLegend(lines, x_limit)
     if True:  # isLateXLeg:
         if info:
-            file_name = os.path.join(outputdir, '%s_%s.tex' % (genericsettings.pprldmany_file_name, info))
+            file_name = os.path.join(outputdir, f'{genericsettings.pprldmany_file_name}_{info}.tex')
         else:
             file_name = os.path.join(outputdir, '%s.tex' % genericsettings.pprldmany_file_name)
         with open(file_name, 'w') as file_obj:
@@ -857,7 +854,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             if displaybest:
                 tmp = r'\algzeroperfprof'
                 refalgname = testbedsettings.current_testbed.reference_algorithm_displayname
-                file_obj.write(r'\providecommand{%s}{%s}' % (tmp, refalgname))
+                file_obj.write(fr'\providecommand{{{tmp}}}{{{refalgname}}}')
                 algtocommand[algname_to_label(refalgname)] = tmp
 
             commandnames = []
@@ -880,7 +877,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 print('Wrote right-hand legend in %s' % file_name)
 
     if info:
-        figureName = os.path.join(outputdir, '%s_%s' % (genericsettings.pprldmany_file_name, info))
+        figureName = os.path.join(outputdir, f'{genericsettings.pprldmany_file_name}_{info}')
     else:
         figureName = os.path.join(outputdir, '%s' % genericsettings.pprldmany_file_name)
     # beautify(figureName, funcsolved, x_limit*x_annote_factor, False, fileFormat=figformat)
@@ -905,7 +902,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                                  groupName,
                                  dimList[0])
     else:
-        text = '%s %s' % (testbedsettings.current_testbed.name,
+        text = '{} {}'.format(testbedsettings.current_testbed.name,
                             ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f'))
         if not (plotType == PlotType.DIM):
             text += ', %d-D' % dimList[0]
@@ -957,7 +954,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     xmajorticks = [10 ** exponent for exponent in range(0, xmaxexp + 1, 2)]
     xminorticks = [10 ** exponent for exponent in range(0, xmaxexp + 1)]
     def formatlabel(val, pos):
-        labeltext = '{:d}'.format(int(round(np.log10(val))))
+        labeltext = f'{int(round(np.log10(val))):d}'
         return labeltext
     a.xaxis.set_major_locator(FixedLocator(xmajorticks))
     a.xaxis.set_major_formatter(FuncFormatter(formatlabel))

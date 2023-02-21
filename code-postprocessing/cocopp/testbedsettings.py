@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 
 import os
 import numpy as np
@@ -164,7 +163,7 @@ def get_first_reference_values():
 
 def get_short_names(file_name):
     try:
-        info_list = open(os.path.join(os.path.dirname(__file__), file_name), 'r').read().split('\n')
+        info_list = open(os.path.join(os.path.dirname(__file__), file_name)).read().split('\n')
         info_dict = {}
         for line in info_list:
             if len(line) == 0 or line.startswith('%') or line.isspace():
@@ -179,7 +178,7 @@ def get_short_names(file_name):
         print(os.path.join(os.path.dirname(__file__), file_name))
 
 
-class Testbed(object):
+class Testbed:
     """this might become the future way to have settings related to testbeds
     TODO: how do we pass information from the benchmark to the post-processing?
 
@@ -398,7 +397,7 @@ class BBOBLargeScaleJOINEDTestbed(GECCOBBOBTestbed):
     )
 
     def __init__(self, targetValues):
-        super(BBOBLargeScaleJOINEDTestbed, self).__init__(targetValues)
+        super().__init__(targetValues)
 
         if 11 < 3:
             # override settings if needed...
@@ -481,7 +480,7 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
             self.settings.reference_algorithm_filename = 'best2018-bbob-constrained.tar.gz'  # TODO: implement
             self.settings.reference_algorithm_displayname = 'best 2018'  # TODO: should be read in from data set in reference_algorithm_filename
 
-        super(CONSBBOBTestbed, self).__init__(target_values)
+        super().__init__(target_values)
 
         for key, val in CONSBBOBTestbed.settings.items():
             setattr(self, key, val)
@@ -554,7 +553,7 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
     )
     
     def __init__(self, target_values):
-        super(GECCOBBOBNoisyTestbed, self).__init__(target_values)
+        super().__init__(target_values)
 
         if 11 < 3:
             # override settings if needed...
@@ -698,7 +697,7 @@ class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):
     )
 
     def __init__(self, targetValues):        
-        super(GECCOBiObjExtBBOBTestbed, self).__init__(targetValues)
+        super().__init__(targetValues)
 
         if 11 < 3:
             # override settings if needed...
@@ -766,7 +765,7 @@ class BBOBLargeScaleTestbed(GECCOBBOBTestbed):
     )
 
     def __init__(self, targetValues):
-        super(BBOBLargeScaleTestbed, self).__init__(targetValues)
+        super().__init__(targetValues)
 
         if 11 < 3:
             # override settings if needed...
@@ -805,7 +804,7 @@ class GECCOBBOBMixintTestbed(GECCOBBOBTestbed):
     )
 
     def __init__(self, targetValues):
-        super(GECCOBBOBMixintTestbed, self).__init__(targetValues)
+        super().__init__(targetValues)
 
         for key, val in GECCOBBOBMixintTestbed.settings.items():
             setattr(self, key, val)
@@ -842,7 +841,7 @@ class GECCOBBOBBiObjMixintTestbed(GECCOBiObjExtBBOBTestbed):
     )
 
     def __init__(self, targetValues):
-        super(GECCOBBOBBiObjMixintTestbed, self).__init__(targetValues)
+        super().__init__(targetValues)
 
         for key, val in GECCOBBOBBiObjMixintTestbed.settings.items():
             setattr(self, key, val)

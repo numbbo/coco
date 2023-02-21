@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Raw post-processing routines.
 
@@ -17,7 +16,6 @@ for comparisons.
 # TODO: dictAlg should become the class DictALg that is a dictionary of DataSetLists with
 # usecase DictAlg(algdict).by_dim() etc  
 
-from __future__ import absolute_import, print_function
 
 import sys
 import os
@@ -29,7 +27,6 @@ import json
 import hashlib
 import functools
 import collections
-from pdb import set_trace
 from six import string_types, advance_iterator
 import numpy, numpy as np
 import matplotlib.pyplot as plt
@@ -38,7 +35,7 @@ from . import genericsettings, findfiles, toolsstats, toolsdivers
 from . import testbedsettings, dataformatsettings
 from .readalign import split, align_data, HMultiReader, VMultiReader, openfile
 from .readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
-from .ppfig import consecutiveNumbers, Usage
+from .ppfig import consecutiveNumbers
 from . import archiving
 
 do_assertion = genericsettings.force_assertions # expensive assertions
@@ -110,7 +107,7 @@ def asTargetValues(target_values):
     except:
         raise NotImplementedError("""type %s not recognized""" %
                                   str(type(target_values)))
-class TargetValues(object):
+class TargetValues:
     """store and retrieve a list of target function values:
 
         >>> import numpy as np
@@ -506,7 +503,7 @@ class RunlengthBasedTargetValues(TargetValues):
         raise NotImplementedError
               
 
-class DataSet(object):
+class DataSet:
     """Unit element for the COCO post-processing.
 
     An instance of this class is created from one unit element of
@@ -726,7 +723,7 @@ class DataSet(object):
         # experiment loggers. I believe it was never meant to be a specification
         # for a data set.
         if hasattr(self, 'data_format'):
-            return getattr(self, 'data_format')
+            return self.data_format
         if self.isBiobjective():
             return 'bbob-biobj'
         return None
@@ -736,14 +733,14 @@ class DataSet(object):
         """Returns a string, with the name of the DataSet's underlying test suite."""
         suite = None
         if hasattr(self, 'suite'):
-            suite = getattr(self, 'suite')
+            suite = self.suite
         if not suite:
             if self.isBiobjective():
                 suite = testbedsettings.default_suite_bi
             else:
                 # detect by hand whether we are in the noisy or the
                 # noiseless case (TODO: is there a better way?)
-                if getattr(self, 'funcId') > 100:  # getattr prevents lint error
+                if self.funcId > 100:  # getattr prevents lint error
                     suite = testbedsettings.default_suite_single_noisy
                 else:
                     suite = testbedsettings.default_suite_single
@@ -770,7 +767,7 @@ class DataSet(object):
         # In biobjective case we have some header info in the data line.
         self.__parseHeader(data)
         if _algId and _algId != self.algId:
-            warnings.warn("data overwrote header algId %s --> %s" % (_algId, self.algId))
+            warnings.warn(f"data overwrote header algId {_algId} --> {self.algId}")
         # Read in second line of entry (comment line). The information
         # is only stored if the line starts with "%", else it is ignored.
         if comment.startswith('%'):
@@ -827,7 +824,7 @@ class DataSet(object):
                 # We just skip the element.
                 continue
             else:
-                if not ':' in elem:
+                if ":" not in elem:
                     
                     # We might take only a subset of the given instances,
                     # given in testbedsettings.current_testbed.instancesOfInterest:
@@ -1086,7 +1083,7 @@ class DataSet(object):
                     s += sum(self.maxevals[np.logical_not(succ)])
                 self._ert.append(s / sum(succ))
             if np.random.rand() < 0.01:  # old code for cross checking, to be removed TODO
-                succ = (numpy.isnan(data)==False)
+                succ = (numpy.isnan(data) is False)
                 if any(numpy.isnan(data)):
                     data = data.copy()
                     data[numpy.isnan(data)] = self.maxevals[numpy.isnan(data)]
@@ -1209,7 +1206,7 @@ class DataSet(object):
         res = ('DataSet(%s on f%s %d-D'
                % (self.algId, str(self.funcId), self.dim))
         for i in getattr(self, '_extra_attr', ()):
-            res += ', %s = %s' % (i, getattr(self, i))
+            res += f', {i} = {getattr(self, i)}'
         res += ')'
         return res
 
@@ -1444,8 +1441,8 @@ class DataSet(object):
                 f.close()
                 if genericsettings.verbose:
                     print('Saved pickle in %s.' %(self.pickleFile))
-            except IOError as e:
-                print("I/O error(%s): %s" % (e.errno, e.strerror))
+            except OSError as e:
+                print(f"I/O error({e.errno}): {e.strerror}")
             except pickle.PicklingError:
                 print("Could not pickle %s" %(self))
                 
@@ -1564,7 +1561,7 @@ class DataSet(object):
         evalsums = []
         for evalrow in self.detEvals(targets):
             idxnan = np.isnan(evalrow)
-            evalsums.append(sum(evalrow[idxnan==False]) + sum(self.maxevals[idxnan]))
+            evalsums.append(sum(evalrow[idxnan is False]) + sum(self.maxevals[idxnan]))
         
         averages = np.array(evalsums, copy=False) / self.nbRuns()
             
@@ -1662,7 +1659,7 @@ class DataSet(object):
             assert evals[idata, 0] <= target and (idata == 0 or evals[idata - 1, 0] > target)
             evalsrows[target] = evals[idata, 1:].copy() if copy else evals[idata, 1:]
         if do_assertion:
-            assert all([all((np.isnan(evalsrows[target]) + (evalsrows[target] == self._detEvals2(targets)[i])))
+            assert all([all(np.isnan(evalsrows[target]) + (evalsrows[target] == self._detEvals2(targets)[i]))
                         for i, target in enumerate(targets)])
         if bootstrap:
             return [np.asarray(evalsrows[t])[np.random.randint(0,
@@ -1681,7 +1678,7 @@ class DataSet(object):
             return [self._number_of_better_runs(t, ref_eval) for t in target]
         if not np.isfinite(ref_eval):
             if np.isnan(ref_eval):
-                warnings.warn("ref_eval was nan when calling {}".format(self))
+                warnings.warn(f"ref_eval was nan when calling {self}")
             ref_eval = np.inf  # replace nan with inf
         evals = self.detEvals([target])[0]
         evals = evals[np.isfinite(evals)]
@@ -1813,7 +1810,7 @@ class DataSet(object):
             # tmp[idx] = -fvalues[j][idx]  # larger data is better
             # IndexError: boolean index did not match indexed array along dimension 0; dimension is 15 but corresponding boolean dimension is 18
             hasattr(self, '_instance_multipliers_instancenumbers') and
-            getattr(self, '_instance_multipliers_instancenumbers')
+            self._instance_multipliers_instancenumbers
                 == tuple(self.instancenumbers)):
             return self._instance_multipliers  # instancenumbers did not change
         instance_counters = collections.Counter(self.instancenumbers)
@@ -2164,7 +2161,7 @@ def get_DataSetList(*args, **kwargs):
         with open(name, "wb") as f:
             pickle.dump(dsl, f)
     except Exception as e:
-        warnings.warn("could not write pickle file {}: {}".format(name, e))
+        warnings.warn(f"could not write pickle file {name}: {e}")
     return dsl
 
 class DataSetList(list):
@@ -2195,7 +2192,7 @@ class DataSetList(list):
 
 
         if not args:
-            super(DataSetList, self).__init__()
+            super().__init__()
             return
 
         if isinstance(args, string_types):
@@ -2235,7 +2232,7 @@ class DataSetList(list):
                     if name.endswith('.gz'):
                         f = gzip.open(name)
                     else:
-                        f = open(name,'r')
+                        f = open(name)
                     try:
                         entry = pickle.load(f)
                     except pickle.UnpicklingError:
@@ -2251,8 +2248,8 @@ class DataSetList(list):
                     # if not hasattr(entry, 'detAverageEvals')
                     self.append(entry)
                     #set_trace()
-                except IOError as e:
-                    print("I/O error(%s): %s" % (e.errno, e.strerror))
+                except OSError as e:
+                    print(f"I/O error({e.errno}): {e.strerror}")
             else:
                 s = ('File or folder ' + name + ' not found. ' +
                               'Expecting as input argument either .info ' +
@@ -2334,9 +2331,9 @@ class DataSetList(list):
                         warnings.warn("    data file " + data_file_names[i])
                 warnings.warn("  This is likely to produce spurious results.")
 
-        except IOError as e:
+        except OSError as e:
             print('Could not load "%s".' % indexFile)
-            print('I/O error(%s): %s' % (e.errno, e.strerror))
+            print(f'I/O error({e.errno}): {e.strerror}')
 
     def append(self, o, check_data_type=False):
         """Redefines the append method to check for unicity."""
@@ -2688,7 +2685,7 @@ class DataSetList(list):
             dictAlg = self.dictByAlg()
             algs = sorted(dictAlg.keys())
             sys.stdout.write('Algorithm(s): %s' % (algs[0][0]))
-            for i in range(1, len(algs)):
+            for _i in range(1, len(algs)):
                 sys.stdout.write(', %s' % (algs[0][0]))
             sys.stdout.write('\n')
 
@@ -2729,7 +2726,7 @@ class DataSetList(list):
                             tmp2.append('%8f' % k)
                         else:
                             tmp2.append('%8d' % k)
-                    print('%2.1e |%s' % (j, ' '.join(tmp2)))
+                    print('{:2.1e} |{}'.format(j, ' '.join(tmp2)))
 
             # display distributions of final values
         else:
@@ -2932,7 +2929,7 @@ class DataSetList(list):
             if reference_data_set_list is not None:
                 rld_dict[alg].append(ref_scores)
 
-        for k, v in rld_dict.items():
+        for _k, v in rld_dict.items():
             if v[2] != funcs_processed:
                 print('TODO: HERE AN ASSERTION FAILED')
             # assert v[2] == funcs_processed  # the must all agree to the last
@@ -3200,7 +3197,7 @@ def parseinfo(s):
 
 
 def align_list(list_to_process, evals):
-    for i, item in enumerate(evals):
+    for i, _item in enumerate(evals):
         if i + 1 < len(evals) and evals[i] == evals[i + 1]:
             list_to_process.insert(i, list_to_process[i])
 
@@ -3412,7 +3409,7 @@ def dictAlgByDim2(dictAlg, remove_empty=False):
 
     if remove_empty:
         raise NotImplementedError
-        for dim, ds_dict in res.items():
+        for _dim, ds_dict in res.items():
             for alg, ds_dict2 in ds_dict.items():
                 if not len(ds_dict2):
                     pass

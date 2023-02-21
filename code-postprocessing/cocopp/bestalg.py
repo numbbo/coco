@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """ Best algorithm dataset module
 
@@ -17,8 +16,6 @@
 
 """
 
-from __future__ import absolute_import
-from __future__ import print_function
 
 import os
 import sys
@@ -160,7 +157,7 @@ class BestAlgSet(DataSet):
         for i in res:
             # Find best algorithm
             curerts = i[1:]
-            assert len((np.isnan(curerts) == False)) > 0
+            assert len(np.isnan(curerts) is False) > 0
             currentbestert = np.inf
             currentbestalg = ''
             for j, tmpert in enumerate(curerts):
@@ -284,8 +281,8 @@ class BestAlgSet(DataSet):
                 f.close()
                 if genericsettings.verbose:
                     print('Saved pickle in %s.' % self.pickleFile)
-            except IOError as e:
-                print("I/O error(%s): %s" % (e.errno, e.strerror))
+            except OSError as e:
+                print(f"I/O error({e.errno}): {e.strerror}")
             except pickle.PicklingError:
                 print("Could not pickle %s" % self)
                 # else: #What?
@@ -363,7 +360,7 @@ class BestAlgSet(DataSet):
             successful_runs = success_ratios[0][0]
             all_runs = success_ratios[0][1]
         else:
-            successful_runs = np.sum(np.isnan(det_evaluations[0][0]) == False)  # count the nb of success
+            successful_runs = np.sum(np.isnan(det_evaluations[0][0]) is False)  # count the nb of success
             all_runs = len(det_evaluations[0][0])
 
         return successful_runs, all_runs
@@ -600,8 +597,8 @@ def create_data_files(output_dir, result, suite):
             if suite is not None:
                 header += ", suite = '%s'" % suite
             info_lines.append(header)
-            info_lines.append("%% %s; instance_numbers: %s" % (value.comment, instances_list))
-            info_lines.append("%s, %s" % (filename_template % (key[1], key[0], 'dat'), instance_data))
+            info_lines.append(f"% {value.comment}; instance_numbers: {instances_list}")
+            info_lines.append("{}, {}".format(filename_template % (key[1], key[0], 'dat'), instance_data))
 
         filename = os.path.join(output_dir, filename_template % (key[1], key[0], 'dat'))
         write_to_file(filename, lines)
@@ -628,7 +625,7 @@ def create_data_files(output_dir, result, suite):
             comment = value.comment
         comment += '; coco_version: ' + pkg_resources.require('cocopp')[0].version
 
-        info_lines.insert(1, "%% %s; instance_numbers: %s" % (comment, instances_list))
+        info_lines.insert(1, f"% {comment}; instance_numbers: {instances_list}")
 
     filename = os.path.join(output_dir, '%s.info' % info_filename)
     write_to_file(filename, info_lines)
@@ -696,7 +693,7 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
 
     selectedalgsperdimension = {}
     for (d, a) in sorted(countsperalgorithm):
-        if not d in selectedalgsperdimension:
+        if d not in selectedalgsperdimension:
             selectedalgsperdimension[d] = []
         selectedalgsperdimension[d].append((countsperalgorithm[(d, a)], a))
 
@@ -791,7 +788,7 @@ def extractBestAlgorithms(args=algs2009, f_factor=2,
 
     selectedalgsperdimension = {}
     for (d, a) in sorted(countsperalgorithm):
-        if not d in selectedalgsperdimension:
+        if d not in selectedalgsperdimension:
             selectedalgsperdimension[d] = []
         selectedalgsperdimension[d].append((countsperalgorithm[(d, a)], a))
 

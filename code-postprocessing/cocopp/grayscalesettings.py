@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """This module contains settings for outputting grayscale figures.
 
@@ -8,7 +7,6 @@ This module modifies module-defined variables so
 
 """
 
-from __future__ import print_function
 from . import ppfigdim, pprldistr, pplogloss, genericsettings
 from .comp2 import ppscatter, ppfig2, pprldistr2
 from .compall import pprldmany, ppfigs

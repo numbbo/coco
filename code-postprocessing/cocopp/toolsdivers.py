@@ -1,10 +1,8 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Various tools. 
 
 """
-from __future__ import absolute_import, print_function
 
 import os, time, warnings
 import tempfile, shutil
@@ -17,7 +15,7 @@ import pkg_resources
 
 from . import genericsettings, testbedsettings
 
-class Infolder(object):
+class Infolder:
     """Contextmanager to do some work in a folder of choice and change dir
     back in the end.
 
@@ -294,9 +292,9 @@ def diff_attr(m1, m2, exclude=('_', )):
 def prepend_to_file(filename, lines, maxlines=1000, warn_message=None):
     """"prepend lines the tex-command filename """
     try:
-        with open(filename, 'r') as f:
+        with open(filename) as f:
             lines_to_append = list(f)
-    except IOError:
+    except OSError:
         lines_to_append = []
     with open(filename, 'w') as f:
         for line in lines:
@@ -312,9 +310,9 @@ def replace_in_file(filename, old_text, new_text):
 
     lines = []    
     try:
-        with open(filename, 'r') as f:
+        with open(filename) as f:
             lines = list(f)
-    except IOError:
+    except OSError:
         print('File %s does not exist.' % filename)
     
     if lines:    
@@ -325,7 +323,7 @@ def replace_in_file(filename, old_text, new_text):
 def truncate_latex_command_file(filename, keeplines=200):
     """truncate file but keep in good latex shape"""
     open(filename, 'a').close()
-    with open(filename, 'r') as f:
+    with open(filename) as f:
         lines = list(f)
     with open(filename, 'w') as f:
         for i, line in enumerate(lines):
@@ -385,7 +383,6 @@ def num2str(val, significant_digits=2, force_rounding=False,
         return '0'
     assert significant_digits > 0
     is_negative = val < 0
-    original_value = val
     val = float(np.abs(val))
 
     order_of_magnitude = int(np.floor(np.log10(val)))
@@ -512,7 +509,7 @@ def git(args):
         output = check_output(full_command, env=os.environ,
                               stderr=STDOUT, universal_newlines=True)
         output = output.rstrip()
-    except CalledProcessError as e:
+    except CalledProcessError:
         # print('Failed to execute "%s"' % str(full_command))
         raise
     return output
@@ -535,7 +532,7 @@ def get_version_label(algorithmID=None):
             label = label + " %s and" % (r)
         label = label[:-3] + "found!"
     else:
-        label = "v%s" % (coco_version) if reference_values is None else "v%s, hv-hash=%s" % (coco_version, reference_values)      
+        label = "v%s" % (coco_version) if reference_values is None else f"v{coco_version}, hv-hash={reference_values}"      
     return label
 
 

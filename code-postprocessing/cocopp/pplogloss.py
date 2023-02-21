@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Module for computing ERT loss ratio
 
@@ -9,10 +8,8 @@ reference (best) ERT value (or the inverse)
 
 """
 
-from __future__ import absolute_import, print_function
 
 import os
-from pdb import set_trace
 import numpy as np
 from matplotlib import pyplot as plt
 try:
@@ -247,7 +244,7 @@ def generateData(dsList, evals, CrE_A):
         ERT_A = np.array(ERT_A)
         ERT_ref = np.array(ERT_ref)
         loss_A = np.exp(CrE_A) * ERT_A / ERT_ref
-        assert (np.isnan(loss_A) == False).all()
+        assert (np.isnan(loss_A) is False).all()
         #set_trace()
         #if np.isnan(loss_A).any() or np.isinf(loss_A).any() or (loss_A == 0.).any():
         #    txt = 'Problem with entry %s' % str(entry)
@@ -436,7 +433,7 @@ def plot(xdata, ydata):
     if max(len(i) for i in ydata) < 20: # TODO: subgroups of function, hopefully.
         for i, y in enumerate(ydata):
             # plot all single data points
-            if (np.isfinite(y) == False).any():
+            if (np.isfinite(y) is False).any():
                 assert not (np.isinf(y) * y > 0.).any()
                 assert not np.isnan(y).any()
 
@@ -471,7 +468,7 @@ def plot(xdata, ydata):
     else:
         for i, y in enumerate(ydata):
             # plot all single data points
-            if (np.isfinite(y) == False).any():
+            if (np.isfinite(y) is False).any():
                 assert not (np.isinf(y) * y > 0.).any()
                 assert not np.isnan(y).any()
 
@@ -731,7 +728,7 @@ def generateSingleTableHtml(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
         else:
             tmp = writeFEvals2(EVALS[i]/d, 1)
 
-        tmp = ["<th sorttable_customkey=\"%f\">%s</th>\n" % ((EVALS[i]/d), tmp)]
+        tmp = [f"<th sorttable_customkey=\"{EVALS[i]/d:f}\">{tmp}</th>\n"]
 
         for j in tmpdata:
             # tmp.append(writeFEvals(j, '.2'))
@@ -748,7 +745,7 @@ def generateSingleTableHtml(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
                 ar = ("%1.1e" % j).split('e')
                 tmp1 = ar[0] + 'e' + str(int(ar[1]))
 
-            tmp.append("<td sorttable_customkey=\"%f\">%s</td>\n" % (j, tmp1))
+            tmp.append(f"<td sorttable_customkey=\"{j:f}\">{tmp1}</td>\n")
 
         res.append("".join(tmp))
         res.append("</tr>\n")
@@ -809,7 +806,7 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
 
     # do not aggregate over dimensions
     for d, dsdim in sorted(dsList.dictByDim().items()):
-        maxevals = max(max(i.ert[np.isinf(i.ert) == False]) for i in dsdim)
+        maxevals = max(max(i.ert[np.isinf(i.ert) is False]) for i in dsdim)
         EVALS = [2.*d]
         EVALS.extend(10.**(np.arange(1, np.ceil(1e-9 + np.log10(maxevals * 1./d))))*d)
         if not evalf:

@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Prepares the descriptions of images and tables which will be converted to html.
 
@@ -7,8 +6,6 @@ This module creates a tex file with all the descriptions of the images and table
 
 """
 
-import os
-import sys
 import warnings
 
 from . import genericsettings, pplogloss, ppfigdim, ppfigcons1, pptable, pprldistr, config
@@ -181,10 +178,10 @@ def prepare_item(name, command_name='', param=''):
     if not command_name:
         command_name = name
 
-    return '\#\#%s\#\#\n\\%s{%s}\n' % (name, command_name, param)
+    return f'\#\#{name}\#\#\n\\{command_name}{{{param}}}\n'
 
 def prepare_item_two(name, command_name='', paramOne='', paramTwo=''):
     if not command_name:
         command_name = name
 
-    return '\#\#%s\#\#\n\\%s{%s}{%s}\n' % (name, command_name, paramOne, paramTwo)
+    return f'\#\#{name}\#\#\n\\{command_name}{{{paramOne}}}{{{paramTwo}}}\n'

@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 """Generate performance scaling figures wrt constraints.
 See also:
@@ -10,7 +9,6 @@ TODOs:
     - add legend: on first figure ?
     - review the caption and html caption
 """
-from __future__ import absolute_import
 
 import os
 import warnings
@@ -202,7 +200,7 @@ def generateData(dataSet, targetFuncValue):
             break
 
     data = prev[1:].copy()  # keep only the number of function evaluations.
-    succ = (np.isnan(data) == False)
+    succ = (np.isnan(data) is False)
     if succ.any():
         med = toolsstats.prctile(data[succ], 50)[0]
         # Line above was modified at rev 3050 to make sure that we consider only
@@ -308,7 +306,7 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
         unsucc = []
         constraints = []
         maxevals = []
-        for icons, ds in enumerate(dsList):
+        for _icons, ds in enumerate(dsList):
             cons = ds.number_of_constraints
             maxevals.append(max(ds.maxevals))
             constraints.append(cons)
@@ -510,17 +508,17 @@ def main(dsList, _valuesOfInterest, outputdir):
     ppfig.copy_js_files(outputdir)
 
     funInfos = ppfigparam.read_fun_infos()
-    fontSize = ppfig.getFontSize(funInfos.values())
+    ppfig.getFontSize(funInfos.values())
 
     for ifunc, func in enumerate(dictFuncCons):
         dd = dictFuncCons[func].dictByDim()
         for idim, dim in enumerate(dd.keys()):
             plot(dd[dim], _valuesOfInterest, styles=styles)  # styles might have changed via config
             beautify(dim)
-            plt.title("%s, %s-D" % (func, dim))
+            plt.title(f"{func}, {dim}-D")
             # display number of instances in data and used targets type:
             if all(set(d.instancenumbers) == set(dd[dim][0].instancenumbers) for d in dd[dim]):
-                display_text = '%d instances\n' % len(((dd[dim][0]).instancenumbers))
+                display_text = '%d instances\n' % len((dd[dim][0]).instancenumbers)
             else:
                 display_text = 'instances %s' % [d.instancenumbers for d in dd[dim]]
             display_text += _valuesOfInterest.short_info
