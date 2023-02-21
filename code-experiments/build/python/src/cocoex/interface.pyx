@@ -23,7 +23,7 @@ _known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext",
 __all__ = ['Observer', 'Problem', 'Suite', 'known_suite_names']
 
 
-cdef extern from "coco.h":
+cdef extern from "coco.c":
     ctypedef struct coco_problem_t:
         pass
     ctypedef struct coco_observer_t:

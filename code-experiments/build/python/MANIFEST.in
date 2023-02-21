@@ -1,3 +1,4 @@
 exclude src/cocoex/interface.c
 include src/cocoex/coco.h
+include src/cocoex/coco.c
 include test/bbob2009*.txt
