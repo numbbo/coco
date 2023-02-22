@@ -575,7 +575,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                 if j == len(algerts[i]) - 1:
                     alignment = '@{\,}l@{\,}|'
 
-                # write star for significance against all other algorithms
+                # create superscript star for significance against all other algorithms
                 str_significance_subsup = ''
                 str_significance_subsup_html = ''
                 if (len(best_alg_idx) > 0 and len(significance_versus_others) > 0 and
@@ -587,6 +587,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                     str_significance_subsup_html = '<sup>%s%s</sup>' % (
                     significance_vs_others_symbol_html, str(int(logp)) if logp > 1 else '')
 
+                # create subscript arrow for significance against reference
                 if refalgentries:
                     if testres is not None:
                         # tmp2[-1] += r'$^{%s}$' % superscript
@@ -601,91 +602,85 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                 # curline.append(r'\multicolumn{2}{%s}{.}' % alignment)
                 # curlineHtml.append('<td>&nbsp;</td>')
                 # continue
-                if True:
-                    # write "raw" ERT when reference is inf:
-                    if numpy.isfinite(ert) and refalgentries and numpy.isinf(refalgert[j]):
-                        tableentry = r'\textbf{%s}' % writeFEvalsMaxPrec(algerts[i][j], 2)
-                        tableentryHtml = '<b>%s</b>' % writeFEvalsMaxPrec(algerts[i][j], 2)
-                        if dispersion and numpy.isfinite(dispersion):
-                            tableentry += r'\mbox{\tiny (%s)}' % writeFEvalsMaxPrec(dispersion, precdispersion)
-                            tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion, precdispersion)
 
-                        curline.append(r'\multicolumn{2}{%s}{%s}%s'
-                                       % (alignment,
-                                          tableentry,
-                                          str_significance_subsup))
+                # write "raw" ERT when reference is inf:
+                if numpy.isfinite(ert) and refalgentries and numpy.isinf(refalgert[j]):
+                    tableentry = r'\textbf{%s}' % writeFEvalsMaxPrec(algerts[i][j], 2)
+                    tableentryHtml = '<b>%s</b>' % writeFEvalsMaxPrec(algerts[i][j], 2)
+                    if dispersion and numpy.isfinite(dispersion):
+                        tableentry += r'\mbox{\tiny (%s)}' % writeFEvalsMaxPrec(dispersion, precdispersion)
+                        tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion, precdispersion)
+                    curline.append(r'\multicolumn{2}{%s}{%s}%s' % (
+                        alignment, tableentry, str_significance_subsup))
+                    curlineHtml.append('<td sorttable_customkey=\"%f\">%s%s</td>\n' % (
+                        algerts[i][j], tableentryHtml, str_significance_subsup_html))
+                    continue
 
-                        curlineHtml.append('<td sorttable_customkey=\"%f\">%s%s</td>\n'
-                                           % (algerts[i][j],
-                                              tableentryHtml,
-                                              str_significance_subsup_html))
-                        continue
+                denom = 1
+                if refalgentries and numpy.isfinite(refalgert[j]):
+                    denom = refalgert[j]
+                data = ert / denom
 
-                    denom = 1
-                    if refalgentries and numpy.isfinite(refalgert[j]):
-                        denom = refalgert[j]
-                    data = ert / denom
-
-                    # format display of variable data
-                    tmp = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
-                    tmpHtml = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
-                    sortKey = data
-                    if data >= maxfloatrepr or data < 0.01:  # either inf or scientific notation
-                        if numpy.isinf(data) and j == len(algerts[i]) - 1:
-                            tmp += r'\,\textit{%s}' % writeFEvalsMaxPrec(algfinaldata[i][1], 0,
-                                                                         maxfloatrepr=maxfloatrepr)
-                            tmpHtml += '<i>%s</i>' % writeFEvalsMaxPrec(algfinaldata[i][1], 0,
+                # format display of variable data
+                tmp = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
+                tmpHtml = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
+                sortKey = data
+                if data >= maxfloatrepr or data < 0.01:  # either inf or scientific notation
+                    if numpy.isinf(data) and j == len(algerts[i]) - 1:
+                        tmp += r'\,\textit{%s}' % writeFEvalsMaxPrec(algfinaldata[i][1], 0,
                                                                         maxfloatrepr=maxfloatrepr)
-                            sortKey = algfinaldata[i][1]
-                        else:
-                            tmp = writeFEvalsMaxPrec(data, precscien, maxfloatrepr=data)
-                            if isBold:
-                                tmpHtml = '<b>%s</b>' % tmp
-                                tmp = r'\textbf{%s}' % tmp
-
-                        if not numpy.isnan(dispersion):
-                            tmpdisp = dispersion / denom
-                            if tmpdisp >= maxfloatrepr or tmpdisp < 0.005:  # TODO: hack
-                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
-                            else:
-                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=maxfloatrepr)
-                            tmp += r'\mbox{\tiny (%s)}' % tmpdisp
-                            tmpHtml += ' (%s)' % tmpdisp
-                        curline.append(r'\multicolumn{2}{%s}{%s%s}' % (alignment, tmp, str_significance_subsup))
-                        if (numpy.isinf(sortKey)):
-                            sortKey = sys.maxsize
-                        curlineHtml.append('<td sorttable_customkey=\"%f\">%s%s</td>' % (
-                        sortKey, tmpHtml, str_significance_subsup_html))
+                        tmpHtml += '<i>%s</i>' % writeFEvalsMaxPrec(algfinaldata[i][1], 0,
+                                                                    maxfloatrepr=maxfloatrepr)
+                        sortKey = algfinaldata[i][1]
                     else:
-                        tmp2 = tmp.split('.', 1)
-                        if len(tmp2) < 2:
-                            tmp2.append('')
-                        else:
-                            tmp2[-1] = '.' + tmp2[-1]
+                        tmp = writeFEvalsMaxPrec(data, precscien, maxfloatrepr=data)
                         if isBold:
-                            tmp3 = []
-                            tmp3html = []
-                            for k in tmp2:
-                                tmp3.append(r'\textbf{%s}' % k)
-                                tmp3html.append('<b>%s</b>' % k)
-                            tmp2 = tmp3
-                            tmp2html = tmp3html
+                            tmpHtml = '<b>%s</b>' % tmp
+                            tmp = r'\textbf{%s}' % tmp
+
+                    if not numpy.isnan(dispersion):
+                        tmpdisp = dispersion / denom
+                        if tmpdisp >= maxfloatrepr or tmpdisp < 0.005:  # TODO: hack
+                            tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
                         else:
-                            tmp2html = []
-                            tmp2html.extend(tmp2)
-                        if not numpy.isnan(dispersion):
-                            tmpdisp = dispersion / denom
-                            if tmpdisp >= maxfloatrepr or tmpdisp < 0.01:
-                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
-                            else:
-                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=maxfloatrepr)
-                            tmp2[-1] += (r'\mbox{\tiny (%s)}' % (tmpdisp))
-                            tmp2html[-1] += ' (%s)' % tmpdisp
-                        tmp2[-1] += str_significance_subsup
-                        tmp2html[-1] += str_significance_subsup_html
-                        curline.extend(tmp2)
-                        tmp2html = ("").join(str(item) for item in tmp2html)
-                        curlineHtml.append('<td sorttable_customkey=\"%f\">%s</td>' % (data, tmp2html))
+                            tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=maxfloatrepr)
+                        tmp += r'\mbox{\tiny (%s)}' % tmpdisp
+                        tmpHtml += ' (%s)' % tmpdisp
+                    curline.append(r'\multicolumn{2}{%s}{%s%s}' % (alignment, tmp, str_significance_subsup))
+                    if (numpy.isinf(sortKey)):
+                        sortKey = sys.maxsize
+                    curlineHtml.append('<td sorttable_customkey=\"%f\">%s%s</td>' % (
+                    sortKey, tmpHtml, str_significance_subsup_html))
+                else:
+                    tmp2 = tmp.split('.', 1)
+                    if len(tmp2) < 2:
+                        tmp2.append('')
+                    else:
+                        tmp2[-1] = '.' + tmp2[-1]
+                    if isBold:
+                        tmp3 = []
+                        tmp3html = []
+                        for k in tmp2:
+                            tmp3.append(r'\textbf{%s}' % k)
+                            tmp3html.append('<b>%s</b>' % k)
+                        tmp2 = tmp3
+                        tmp2html = tmp3html
+                    else:
+                        tmp2html = []
+                        tmp2html.extend(tmp2)
+                    if not numpy.isnan(dispersion):
+                        tmpdisp = dispersion / denom
+                        if tmpdisp >= maxfloatrepr or tmpdisp < 0.01:
+                            tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
+                        else:
+                            tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=maxfloatrepr)
+                        tmp2[-1] += (r'\mbox{\tiny (%s)}' % (tmpdisp))
+                        tmp2html[-1] += ' (%s)' % tmpdisp
+                    tmp2[-1] += str_significance_subsup
+                    tmp2html[-1] += str_significance_subsup_html
+                    curline.extend(tmp2)
+                    tmp2html = ("").join(str(item) for item in tmp2html)
+                    curlineHtml.append('<td sorttable_customkey=\"%f\">%s</td>' % (data, tmp2html))
 
             curline.append('%d' % algnbsucc[i])
             curline.append('/%d' % algnbruns[i])
