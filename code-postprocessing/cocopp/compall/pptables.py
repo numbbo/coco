@@ -575,7 +575,6 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                 if j == len(algerts[i]) - 1:
                     alignment = '@{\,}l@{\,}|'
 
-                data = ert / refalgert[j] if refalgentries else ert  # this may be nan = inf/inf
                 # write star for significance against all other algorithms
                 str_significance_subsup = ''
                 str_significance_subsup_html = ''
@@ -598,12 +597,13 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                 if str_significance_subsup:
                     str_significance_subsup = '$%s$' % str_significance_subsup
 
-                # format number in variable data
-                if numpy.isnan(data):  # happens with df == (40, 20), ie on f20 in 40-D
-                    curline.append(r'\multicolumn{2}{%s}{.}' % alignment)
-                    curlineHtml.append('<td>&nbsp;</td>')
-                else:
-                    if refalgentries and numpy.isinf(refalgert[j]):  # write "raw" ERT instead of `data`
+                # was in case of ert=inf and refalgert[j]=inf:
+                # curline.append(r'\multicolumn{2}{%s}{.}' % alignment)
+                # curlineHtml.append('<td>&nbsp;</td>')
+                # continue
+                if True:
+                    # write "raw" ERT when reference is inf:
+                    if numpy.isfinite(ert) and refalgentries and numpy.isinf(refalgert[j]):
                         tableentry = r'\textbf{%s}' % writeFEvalsMaxPrec(algerts[i][j], 2)
                         tableentryHtml = '<b>%s</b>' % writeFEvalsMaxPrec(algerts[i][j], 2)
                         if dispersion and numpy.isfinite(dispersion):
@@ -621,6 +621,12 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                                               str_significance_subsup_html))
                         continue
 
+                    denom = 1
+                    if refalgentries and numpy.isfinite(refalgert[j]):
+                        denom = refalgert[j]
+                    data = ert / denom
+
+                    # format display of variable data
                     tmp = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
                     tmpHtml = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
                     sortKey = data
@@ -638,7 +644,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                                 tmp = r'\textbf{%s}' % tmp
 
                         if not numpy.isnan(dispersion):
-                            tmpdisp = dispersion / refalgert[j] if refalgentries else dispersion
+                            tmpdisp = dispersion / denom
                             if tmpdisp >= maxfloatrepr or tmpdisp < 0.005:  # TODO: hack
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
                             else:
@@ -668,7 +674,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                             tmp2html = []
                             tmp2html.extend(tmp2)
                         if not numpy.isnan(dispersion):
-                            tmpdisp = dispersion / refalgert[j] if refalgentries else dispersion
+                            tmpdisp = dispersion / denom
                             if tmpdisp >= maxfloatrepr or tmpdisp < 0.01:
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
                             else:
