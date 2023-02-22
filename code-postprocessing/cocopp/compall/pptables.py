@@ -492,6 +492,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
         replaceValue = '<b>f%d, %d-D</b>' % (df[1], df[0])
         curlineHtml = [item.replace('REPLACEH', replaceValue) for item in curlineHtml]
 
+        ### write the header row
         if refalgentries:
             if isinstance(targets_of_interest, pproc.RunlengthBasedTargetValues):
                 # write ftarget:fevals
@@ -546,6 +547,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
         tableHtml.append('<tbody>\n')
         extraeol.append('')
 
+        ### write a row for each algorithm
         additional_commands = ['\\providecommand{\\ntables}{%d}' % len(targets_of_interest)]
         for i, alg in enumerate(algnames):
             tableHtml.append('<tr>\n')
@@ -573,7 +575,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                 if j == len(algerts[i]) - 1:
                     alignment = '@{\,}l@{\,}|'
 
-                data = ert / refalgert[j] if refalgentries else ert
+                data = ert / refalgert[j] if refalgentries else ert  # this may be nan = inf/inf
                 # write star for significance against all other algorithms
                 str_significance_subsup = ''
                 str_significance_subsup_html = ''
@@ -587,9 +589,9 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                     significance_vs_others_symbol_html, str(int(logp)) if logp > 1 else '')
 
                 if refalgentries:
-                    if testres is not None:  # single digit percentage
+                    if testres is not None:
                         # tmp2[-1] += r'$^{%s}$' % superscript
-                        nb = str(int(testres + 1/2))  # number of runs that were worse
+                        nb = str(int(testres + 1/2))  # rounded number of runs that were worse
                         str_significance_subsup += r'_{%s%s}' % (significance_vs_ref_symbol, nb)
                         str_significance_subsup_html += '<sub>%s%s</sub>' % (significance_vs_ref_symbol_html, nb)
 
@@ -597,11 +599,11 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                     str_significance_subsup = '$%s$' % str_significance_subsup
 
                 # format number in variable data
-                if numpy.isnan(data):
+                if numpy.isnan(data):  # happens with df == (40, 20), ie on f20 in 40-D
                     curline.append(r'\multicolumn{2}{%s}{.}' % alignment)
                     curlineHtml.append('<td>&nbsp;</td>')
                 else:
-                    if refalgentries and numpy.isinf(refalgert[j]):
+                    if refalgentries and numpy.isinf(refalgert[j]):  # write "raw" ERT instead of `data`
                         tableentry = r'\textbf{%s}' % writeFEvalsMaxPrec(algerts[i][j], 2)
                         tableentryHtml = '<b>%s</b>' % writeFEvalsMaxPrec(algerts[i][j], 2)
                         if dispersion and numpy.isfinite(dispersion):
