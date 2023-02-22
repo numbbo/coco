@@ -25,7 +25,7 @@ def get_table_caption():
     table_caption_one = (r"""%
         Expected runtime (\ERT\ in number of """
         + testbedsettings.current_testbed.string_evals
-        + r""") divided by the respective !!BEST-ERT!! in
+        + r""") divided by the respective !!BEST-ERT!! (when finite) in
         #1.
         This \ERT\ ratio and, in braces as dispersion measure, the half difference between
         10 and 90\%-tile of bootstrapped run lengths appear for each algorithm and 
