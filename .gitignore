@@ -35,7 +35,9 @@ code-experiments/build/rust/coco-sys/vendor/
 code-experiments/build/rust/target/
 code-experiments/examples/*/coco.[ch]
 code-experiments/src/coco_version.h
-code-experiments/test/*/coco.[ch]
+code-experiments/test/**/coco.[ch]
+code-experiments/test/unit-test/build/
+code-experiments/test/unit-test/exdata/
 code-experiments/test/example-test/
 code-experiments/test/regression-test/data/
 code-experiments/test/integration-test/Makefile

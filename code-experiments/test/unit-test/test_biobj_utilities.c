@@ -1,5 +1,6 @@
-#include "coco.h"
-#include "minunit_c89.h"
+#include "minunit.h"
+
+#include "coco.c"
 
 /**
  * Tests the creation of new instances of the bi-objective suites.
@@ -30,7 +31,10 @@ MU_TEST(test_biobj_utilities_instances) {
 /**
  * Run all tests in this file.
  */
-MU_TEST_SUITE(test_all_biobj_utilities) {
+int main(void) {
   MU_RUN_TEST(test_biobj_utilities_instances);
-}
 
+  MU_REPORT();
+
+  return minunit_status;
+}

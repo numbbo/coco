@@ -1,7 +1,6 @@
-#include "coco.h"
-#include "minunit_c89.h"
-
-static int about_equal_value(const double a, const double b);
+#include "minunit.h"
+#include "minunit.h"
+#include "coco.c"
 
 /**
  * Tests coco_archive-related functions.
@@ -55,7 +54,7 @@ MU_TEST(test_coco_archive) {
 
   /* Checks that the computed hypervolume is correct */
   hypervolume_computed = coco_archive_get_hypervolume(archive);
-  mu_check(about_equal_value(hypervolume_computed, hypervolume_read));
+  mu_assert_double_eq(hypervolume_read, hypervolume_computed);
 
   i = 0;
   while (strcmp(text = coco_archive_get_next_solution_text(archive), "") != 0) {
@@ -104,7 +103,7 @@ MU_TEST(test_coco_archive_extreme_solutions) {
   /* Checks that the computed hypervolume is correct */
   mu_check(coco_archive_get_number_of_solutions(archive) == 2);
   hypervolume = coco_archive_get_hypervolume(archive);
-  mu_check(about_equal_value(hypervolume, 0));
+  mu_assert_double_eq(0.0, hypervolume);
 
   number_of_evaluations = 1;
   y[0] = 5.2220345785e+03;
@@ -116,7 +115,7 @@ MU_TEST(test_coco_archive_extreme_solutions) {
   /* Checks that the computed hypervolume is correct */
   mu_check(coco_archive_get_number_of_solutions(archive) == 3);
   hypervolume = coco_archive_get_hypervolume(archive);
-  mu_check(about_equal_value(hypervolume, 8.1699208579037619e-05));
+  mu_assert_double_eq(8.1699208579037619e-05, hypervolume);
 
   coco_free_memory(y);
   coco_archive_free(archive);
@@ -147,7 +146,7 @@ MU_TEST(test_coco_archive_precision_issues) {
   count = coco_archive_get_number_of_solutions(archive);
   hypervolume = coco_archive_get_hypervolume(archive);
   mu_check(count == 2);
-  mu_check(about_equal_value(hypervolume, 0));
+  mu_assert_double_eq(0.0, hypervolume);
 
   number_of_evaluations = 0;
   y[0] = 3.944800000000000e+02;
@@ -159,7 +158,7 @@ MU_TEST(test_coco_archive_precision_issues) {
   count = coco_archive_get_number_of_solutions(archive);
   hypervolume = coco_archive_get_hypervolume(archive);
   mu_check(count == 2);
-  mu_check(about_equal_value(hypervolume, 0));
+  mu_assert_double_eq(0.0, hypervolume);
 
   number_of_evaluations = 342;
   y[0] = 4.262796567880355e+02;
@@ -171,7 +170,7 @@ MU_TEST(test_coco_archive_precision_issues) {
   count = coco_archive_get_number_of_solutions(archive);
   hypervolume = coco_archive_get_hypervolume(archive);
   mu_check(count == 2);
-  mu_check(about_equal_value(hypervolume, 0));
+  mu_assert_double_eq(0.0, hypervolume);
 
   number_of_evaluations = 351;
   y[0] = 4.262796555526893e+02;
@@ -182,7 +181,7 @@ MU_TEST(test_coco_archive_precision_issues) {
 
   count = coco_archive_get_number_of_solutions(archive);
   mu_check(count == 2);
-  mu_check(about_equal_value(hypervolume, 0));
+  mu_assert_double_eq(0.0, hypervolume);
 
   number_of_evaluations = 2240;
   y[0] = 4.262796544864155e+02;
@@ -193,7 +192,7 @@ MU_TEST(test_coco_archive_precision_issues) {
 
   count = coco_archive_get_number_of_solutions(archive);
   mu_check(count == 2);
-  mu_check(about_equal_value(hypervolume, 0));
+  mu_assert_double_eq(0.0, hypervolume);
 
   coco_archive_free(archive);
 
@@ -211,7 +210,7 @@ MU_TEST(test_coco_archive_precision_issues) {
   count = coco_archive_get_number_of_solutions(archive);
   hypervolume = coco_archive_get_hypervolume(archive);
   mu_check(count == 3);
-  mu_check(about_equal_value(hypervolume, 9.998501993074473e-01));
+  mu_assert_double_eq(0.9998501993077, hypervolume);
 
   number_of_evaluations = 1;
   y[0] = 2790;
@@ -223,7 +222,7 @@ MU_TEST(test_coco_archive_precision_issues) {
   count = coco_archive_get_number_of_solutions(archive);
   hypervolume = coco_archive_get_hypervolume(archive);
   mu_check(count == 4);
-  mu_check(about_equal_value(hypervolume, 9.998510436916014e-01));
+  mu_assert_double_eq(9.998510436916014e-01, hypervolume);
 
   number_of_evaluations = 5118865;
   y[0] = 2.809875541591976e+03;
@@ -235,7 +234,7 @@ MU_TEST(test_coco_archive_precision_issues) {
   count = coco_archive_get_number_of_solutions(archive);
   hypervolume = coco_archive_get_hypervolume(archive);
   mu_check(count == 5);
-  mu_check(about_equal_value(hypervolume, 9.998510436916023e-01));
+  mu_assert_double_eq(9.998510436916023e-01, hypervolume);
 
   number_of_evaluations = 2173490;
   y[0] = 2.814996411168355e+03;
@@ -261,11 +260,12 @@ MU_TEST(test_coco_archive_precision_issues) {
   coco_archive_free(archive);
 }
 
-/**
- * Run all tests in this file.
- */
-MU_TEST_SUITE(test_all_coco_archive) {
+int main(void) {
   MU_RUN_TEST(test_coco_archive);
   MU_RUN_TEST(test_coco_archive_extreme_solutions);
   MU_RUN_TEST(test_coco_archive_precision_issues);
+	
+	MU_REPORT();
+
+  return minunit_status;
 }

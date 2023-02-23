@@ -1,5 +1,6 @@
-#include "coco.h"
-#include "minunit_c89.h"
+#include "minunit.h"
+
+#include "coco.c"
 
 /**
  * Tests coco_string-related functions.
@@ -42,6 +43,10 @@ MU_TEST(test_coco_string_trim) {
 /**
  * Run all tests in this file.
  */
-MU_TEST_SUITE(test_all_coco_string) {
+int main(void) {
   MU_RUN_TEST(test_coco_string_trim);
+
+  MU_REPORT();
+
+  return minunit_status;
 }

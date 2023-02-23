@@ -1,5 +1,5 @@
 #include "coco.h"
-#include "minunit_c89.h"
+#include "minunit.h"
 
 /* Since the move from cmocka to minunit, this code should not longer work. */
 #if 0

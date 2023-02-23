@@ -1,5 +1,6 @@
-#include "coco.h"
-#include "minunit_c89.h"
+#include "minunit.h"
+
+#include "coco.c"
 
 /**
  * Tests the function coco_observer_targets_trigger.
@@ -117,10 +118,11 @@ MU_TEST(test_coco_observer_evaluations_trigger) {
   coco_observer_evaluations_free(evaluations);
 }
 
-/**
- * Run all tests in this file.
- */
-MU_TEST_SUITE(test_all_coco_observer) {
+int main(void) {
   MU_RUN_TEST(test_coco_observer_targets_trigger);
   MU_RUN_TEST(test_coco_observer_evaluations_trigger);
+	
+	MU_REPORT();
+
+  return minunit_status;
 }
