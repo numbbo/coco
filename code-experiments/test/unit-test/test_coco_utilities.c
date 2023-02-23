@@ -1,5 +1,6 @@
-#include "coco.h"
-#include "minunit_c89.h"
+#include "minunit.h"
+
+#include "coco.c"
 
 static char *convert_to_string_with_newlines(char **array) {
 
@@ -540,7 +541,7 @@ MU_TEST(test_coco_is_orthogonal) {
 /**
  * Run all tests in this file.
  */
-MU_TEST_SUITE(test_all_coco_utilities) {
+int main(void) {
   MU_RUN_TEST(test_coco_is_nan);
   MU_RUN_TEST(test_coco_is_inf);
   MU_RUN_TEST(test_coco_set_log_level);
@@ -552,4 +553,8 @@ MU_TEST_SUITE(test_all_coco_utilities) {
   MU_RUN_TEST(test_coco_string_parse_ranges);
   MU_RUN_TEST(test_coco_create_remove_directory);
   MU_RUN_TEST(test_coco_is_orthogonal);
+
+  MU_REPORT();
+
+  return minunit_status;
 }

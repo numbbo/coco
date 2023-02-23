@@ -1,6 +1,7 @@
-#include "coco.h"
-#include "minunit_c89.h"
-static int about_equal_value(const double a, const double b);
+#include "minunit.h"
+
+#include "coco.c"
+#include "about_equal.h"
 
 /**
  * Tests the function coco_observer_targets_trigger.
@@ -222,12 +223,13 @@ MU_TEST(test_coco_observer_evaluations_trigger) {
   coco_observer_evaluations_free(evaluations);
 }
 
-/**
- * Run all tests in this file.
- */
-MU_TEST_SUITE(test_all_coco_observer) {
+int main(void) {
   MU_RUN_TEST(test_coco_observer_targets_trigger);
   MU_RUN_TEST(test_coco_observer_log_targets_trigger);
   MU_RUN_TEST(test_coco_observer_lin_targets_trigger);
   MU_RUN_TEST(test_coco_observer_evaluations_trigger);
+	
+	MU_REPORT();
+
+  return minunit_status;
 }

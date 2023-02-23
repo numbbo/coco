@@ -1,8 +1,7 @@
+#include "minunit.h"
+
 #include "coco.h"
-#include "minunit_c89.h"
-
-
-static int about_equal_value(const double a, const double b);
+#include "about_equal.h"
 
 /**
  * Tests the logarithmic and linear triggers via the bbob logger.
