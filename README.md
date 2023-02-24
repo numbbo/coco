@@ -1,8 +1,6 @@
 numbbo/coco: Comparing Continuous Optimizers
 ============================================
 
-[![CircleCI](https://circleci.com/gh/numbbo/coco/tree/master.svg?style=shield)](https://circleci.com/gh/numbbo/coco/tree/master)
-[![Appveyor](https://ci.appveyor.com/api/projects/status/4dawpqr7aq2ioici/branch/master?svg=true)](https://ci.appveyor.com/project/nikohansen/coco-j53aywshl8udzvb/branch/master)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2594848.svg)](https://doi.org/10.5281/zenodo.2594848)
 [[BibTeX](https://zenodo.org/record/2594848/export/hx#.XIu-BxP0nRY)] cite as:
 > Nikolaus Hansen, Dimo Brockhoff, Olaf Mersmann, Tea Tusar, Dejan Tusar, Ouassim Ait ElHara, Phillipe R. Sampaio, Asma Atamna, Konstantinos Varelas, Umut Batu, Duc Manh Nguyen, Filip Matzner, Anne Auger. COmparing Continuous Optimizers: numbbo/COCO on Github. Zenodo, [DOI:10.5281/zenodo.2594848](https://doi.org/10.5281/zenodo.2594848), March 2019.
@@ -17,7 +15,8 @@ Languages currently available to connect a solver to the benchmarks are
 
   - `C/C++`
   - `Java`
-  - `MATLAB/Octave`
+  - `MATLAB`
+  - `Octave`
   - `Python`
   - `Rust`
 
@@ -41,11 +40,10 @@ For more general information:
 - See [links below](#Links) to learn even more about the ideas behind COCO
 
 
-Requirements  <a name="Requirements"></a>
-------------
+# Requirements  <a name="Requirements"></a>
 1. For a machine running experiments 
   - A `C` compiler, such as gcc
-  - Python >=3.6 with `setuptools` installed
+  - Python >=3.7 with `setuptools` installed
   - optional: `git`
 2. For a machine displaying data by running the post-processing
   - Python 3 with `numpy`, `scipy`, `matplotlib`, and `six` installed.
