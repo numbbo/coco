@@ -13,7 +13,9 @@
 
 #include "coco.h"
 
+#ifndef max
 #define max(a,b) ((a) > (b) ? (a) : (b))
+#endif
 
 /**
  * The maximal budget for evaluations done by an optimization algorithm equals dimension * BUDGET_MULTIPLIER.

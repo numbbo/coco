@@ -19,28 +19,21 @@ cmake -B build .
 cmake --build build
 ```
 
-This will give you a debug build of the core COCO code and an example experiment in the `build/` subdirectory.
+This will give you a debug build of the core COCO code and an example
+experiment in the `build/` subdirectory.
 
 :::{note}
-On Windows the final executable is often placed in a subdirectory of the `build/` directory depending on the build type. 
-Check in `build/Debug/` or `build/Release/`.
+On Windows the final executable is often placed in a subdirectory of the
+`build/` directory depending on the build type. Check in `build/Debug/` or
+`build/Release/`.
 :::
 
 
 ### meson
 
-Instead of `make` you can use `meson` and `ninja`: 
+Instead of `cmake`, you can also use `meson` and `ninja`: 
 
 ```
 meson setup build
 meson compile -C build
 ```
-
-## Getting Started
-
-- Copy the files `example_experiment.c`, `coco.c`, `coco.h` and `Makefile` to a folder
-  of your choice. Modify the `example_experiment.c` file to include the solver of your
-  choice (instead of  `random_search`). Do not forget to also choose the right
-  benchmarking suite and the corresponding observer.
-
-- Invoke `make` to compile and run your experiment.
