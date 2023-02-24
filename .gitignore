@@ -10,7 +10,7 @@ __pycache__
 
 code-experiments/build/**/coco.[ch]
 code-experiments/build/**/exdata/
-code-experiments/build/c/Makefile
+code-experiments/build/c/build/
 code-experiments/build/c/example_experiment
 code-experiments/build/java/build/
 code-experiments/build/matlab/*.mex

@@ -1,38 +1,31 @@
-NumBBO/CoCO Framework in C (Experimental Part)
-==============================================
+# C/C++ bindings for NumBBO/CoCO Experiment Framework 
 
-Prerequisites
--------------
+## Getting Started
 
-The simplest way to check the prerequisits is to go directly to [_Getting Started_](#Getting-Started)
-below and give it a try. Then act upon failure, as in this case probably one of
-the following is lacking: 
-
-- Python is installed (version >=2.6). If this is not the case, check out
-  [Anaconda](https://www.continuum.io), as this provides additionally all
-  Python packages necessary to run the COCO postprocessing as well as the
-  ipython shell. The postprocessing needs currently Python < 3.0, i.e. 2.6 or 2.7.
-
-- `make` is installed and works with one of the Makefiles provided in 
-  this folder. You might want to type `make` within this folder to see 
-  whether this works. 
-  
-- A C compiler, like `gcc`, which is invoked by `make`, is installed. 
-
-### Nmake
-
-Instead of `make` and `Makefile` you can use `nmake` and the corresponding `NMakefile`
+Building the C code should be fairly straight forward. 
+We strive to make the code as portable as possible and provide two example build environments.
 
 ### CMake
 
-Instead of `make` you can use `cmake` and the corresponding `CMakeLists.txt`:
+Building the example experiment using CMake has minimal requirements:
+
+- CMake version 3.19 or greater
+- Working C compiler supporting C99 (any recent gcc, clang or msvc will do)
+
+To build the included example experiment, run
 
 ```
-mkdir build
-cd build
-cmake ../
-ninja # or make, depending on your version of CMake
+cmake -B build .
+cmake --build build
 ```
+
+This will give you a debug build of the core COCO code and an example experiment in the `build/` subdirectory.
+
+:::{note}
+On Windows the final executable is often placed in a subdirectory of the `build/` directory depending on the build type. 
+Check in `build/Debug/` or `build/Release/`.
+:::
+
 
 ### meson
 
@@ -43,10 +36,7 @@ meson setup build
 meson compile -C build
 ```
 
-Getting Started
----------------
-
-See [here](../../../README.md#Getting-Started) for the first steps. Then
+## Getting Started
 
 - Copy the files `example_experiment.c`, `coco.c`, `coco.h` and `Makefile` to a folder
   of your choice. Modify the `example_experiment.c` file to include the solver of your
