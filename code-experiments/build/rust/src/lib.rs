@@ -334,6 +334,19 @@ impl Problem<'_> {
         unsafe { coco_sys::coco_problem_final_target_hit(self.inner) == 1 }
     }
 
+    /// Returns the optimal function value + delta of the problem
+    pub fn final_target_value(&self) -> f64 {
+        unsafe { coco_sys::coco_problem_get_final_target_fvalue1(self.inner) }
+    }
+
+    /// Returns the optimal function value of the problem
+    ///
+    /// To check whether the target has been reached use [[Problem::final_target_value]]
+    /// or [[Problem::final_target_hit]] instead.
+    pub fn best_value(&self) -> f64 {
+        unsafe { coco_sys::coco_problem_get_best_value(self.inner) }
+    }
+
     /// Returns the dimension of the problem.
     pub fn dimension(&self) -> usize {
         unsafe {
