@@ -135,9 +135,9 @@ impl Suite {
 
         Some(Problem {
             inner,
-            function: function as usize,
-            dimension: dimension as usize,
-            instance: instance as usize,
+            function_idx: function as usize,
+            dimension_idx: dimension as usize,
+            instance_idx: instance as usize,
             _phantom: PhantomData,
         })
     }
@@ -168,9 +168,12 @@ impl Suite {
 
         Some(Problem {
             inner: problem,
-            function,
-            dimension,
-            instance,
+            function_idx: function,
+            dimension_idx: dimension,
+            instance_idx: instance,
+            _phantom: PhantomData,
+        })
+    }
             _phantom: PhantomData,
         })
     }
@@ -199,9 +202,9 @@ impl Drop for Suite {
 /// and [Suite::problem_by_function_dimension_instance].
 pub struct Problem<'suite> {
     inner: *mut coco_problem_t,
-    function: usize,
-    instance: usize,
-    dimension: usize,
+    function_idx: usize,
+    instance_idx: usize,
+    dimension_idx: usize,
     _phantom: PhantomData<&'suite Suite>,
 }
 
@@ -234,17 +237,17 @@ impl Problem<'_> {
 
     /// Returns the index of the problem.
     pub fn function_index(&self) -> usize {
-        self.function
+        self.function_idx
     }
 
     /// Returns the dimension index of the problem.
     pub fn dimension_index(&self) -> usize {
-        self.dimension
+        self.dimension_idx
     }
 
     /// Returns the instance of the problem.
     pub fn instance_index(&self) -> usize {
-        self.instance
+        self.instance_idx
     }
 
     /// Evaluates the problem at `x` and returns the result in `y`.
