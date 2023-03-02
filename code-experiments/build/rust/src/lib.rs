@@ -39,6 +39,20 @@ pub fn set_log_level(level: LogLevel) {
 /// A COCO suite
 pub struct Suite {
     inner: *mut coco_suite_t,
+    name: CString,
+    instance: CString,
+    options: CString,
+}
+
+impl Clone for Suite {
+    fn clone(&self) -> Self {
+        Suite::new_raw(
+            self.name.clone(),
+            self.instance.clone(),
+            self.options.clone(),
+        )
+        .unwrap()
+    }
 }
 
 unsafe impl Send for Suite {}
@@ -94,13 +108,22 @@ impl Suite {
         let instance = CString::new(instance).unwrap();
         let options = CString::new(options).unwrap();
 
+        Self::new_raw(name, instance, options)
+    }
+
+    fn new_raw(name: CString, instance: CString, options: CString) -> Option<Suite> {
         let inner =
             unsafe { coco_sys::coco_suite(name.as_ptr(), instance.as_ptr(), options.as_ptr()) };
 
         if inner.is_null() {
             None
         } else {
-            Some(Suite { inner })
+            Some(Suite {
+                inner,
+                name,
+                instance,
+                options,
+            })
         }
     }
 
