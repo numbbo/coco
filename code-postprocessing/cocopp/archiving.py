@@ -1396,21 +1396,46 @@ class OfficialArchives(object):
                 if name != 'test':
                     raise
 
+    def _make_folder_skeleton(self):
+        """workaround to avoid bailing when www is not reachable during
+
+        the very first import.
+        """
+        for url in [l[0] for l in self._list]:
+            path = _url_to_folder_name(url)
+            if path.endswith('/test'):
+                continue
+            if path.endswith('/all'):
+                path = path[:-4]
+                url = url[:-4]
+            _makedirs(path)  # may not be necessary?
+            df = _definition_file_to_read(path)
+            if os.path.exists(df):
+                warnings.warn('_make_folder_skeleton(): '
+                              'file "{}" exists'.format(df))
+            else:
+                with open(df, 'w') as f:
+                    f.write("[('_url_', '{}')]\n".format(url))
+
 # official_archives = OfficialArchives()
 for url in coco_urls[-1::-1]:  # loop over possible URLs until successful
+    official_archives = OfficialArchives(url)  # lazy init, does kinda nothing
+    coco_url = url
     try:
-        official_archives = OfficialArchives(url)  # lazy init, does kinda nothing
         # TODO-decide: when should we (try to) update/check these?
         # The following `set_as_attributes_in` calls `cocopp.archiving.get(url)` and works if the
         # connection was successful at least once (before or now)
         official_archives.set_as_attributes_in()  # set "official" archives as attributes by suite name
-        coco_url = url
         break
     except:  # (HTTPError, TimeoutError, URLError)
         warnings.warn("failed to connect to " + url)
 else:
-    warnings.warn("failed fo find workable URL or local folder for official archives")
-    official_archives = None
+    warnings.warn("Failed fo find workable URL or local folder for official archives."
+                  "\n After the www connection is restored, you may need to call"
+                  "\n `cocopp.archiving.official_archives.update_all()` to create"
+                  "\n valid definition files.")
+    official_archives._make_folder_skeleton()      
+    official_archives.set_as_attributes_in()
 
 class _old_ArchivesOfficial(ListOfArchives):
     """superseded by `OfficialArchives`
