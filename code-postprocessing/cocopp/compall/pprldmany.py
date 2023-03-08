@@ -35,7 +35,6 @@ import warnings
 from pdb import set_trace
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import ticker
 from .. import toolsstats, bestalg, genericsettings, testbedsettings
 from .. import pproc as pp  # import dictAlgByDim, dictAlgByFun
 from .. import toolsdivers  # strip_pathname, str_to_latex
@@ -952,23 +951,20 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                   fontsize=title_fontsize)
     a = plt.gca()
 
-    # beautify even more
-    plt.xlim(1e-0, x_limit)
-    xmaxexp = int(np.log10(x_limit))
-    def formatlabel(val, pos):
-        labeltext = '{:d}'.format(int(round(np.log10(val))))
-        return labeltext
-    a.xaxis.set_major_locator(ticker.FixedLocator(
-        [10**d for d in range(0, xmaxexp + 1)]))
-    a.xaxis.set_major_formatter(ticker.FuncFormatter(formatlabel))
-    a.xaxis.set_minor_locator(ticker.FixedLocator(  # ticks
-        [i * 10**d for d in range(0, xmaxexp)       # these should be default
-                    for i in [2, 3, 4, 5, 6, 7, 8, 9]]))
-    a.xaxis.set_minor_formatter(ticker.NullFormatter())
-    a.yaxis.set_minor_locator(ticker.FixedLocator(np.linspace(0, 1, 21)))
+    # beautify even more: ticks, grid and frame
+    a.set_xlim(1e-0, x_limit)
+    log_xlimit = int(np.log10(x_limit))  # last annotatable decade
+    a.set_xticks([10**d for d in range(log_xlimit + 1)])
+    a.set_xticklabels([str(d) for d in range(log_xlimit + 1)])
+    a.set_xticks([i * 10**d for d in range(log_xlimit)  # these should be default
+                      for i in [2, 3, 4, 5, 6, 7, 8, 9]],
+                 minor=True)
+    a.set_yticks(np.linspace(0, 1, 21), minor=True)  # every 0.05 = 5%
     a.tick_params(top=True, bottom=True,  which='both',
                   left=True, right=True, direction='out')
-    plt.grid(genericsettings.minor_grid_in_pprldmany, which='minor')
+    a.grid(True)
+    a.grid(genericsettings.minor_grid_alpha_in_pprldmany > 0,
+           alpha=genericsettings.minor_grid_alpha_in_pprldmany, which='minor')
     for pos in ['right', 'left']:  # top makes sense if figure ends at 1.0
         a.spines[pos].set_visible(False)  # remove visible frame
 
