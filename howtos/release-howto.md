@@ -1,11 +1,9 @@
-How to release the Coco software?
+How to release the COCO software?
 =================================
 
-In principle, users shall download the latest release from the master branch of the repository.
-**Merging to the `master` branch is only possible via a pull request from the `release` branch.**
-The merge is only possible after all tests have passed.
-Additionally, for a new release, the following steps should be followed (onto the `release` branch,
-not the `master` branch).
+Since 2023 it is no longer recommended to use the master branch directly.
+Instead, proper releases are cut for each tagged commit on the master branch and published to
+the [GitHub Releases](https://github.com/numbbo/coco/releases) tab, [PyPI](https://pypi.org) for Python packages, and [crates.io](https://crates.io) for the Rust crate.
 
 Simple Version (without documentation)
 --------------------------------------
