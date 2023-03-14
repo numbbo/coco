@@ -101,12 +101,14 @@ instancesOfInterest2016 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 51: 1, 52: 1, 53: 1, 54
 instancesOfInterest2017 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 61: 1, 62: 1, 63: 1, 64: 1,
                            65: 1, 66: 1, 67: 1, 68: 1, 69: 1, 70: 1}  # 2017 instances
 instancesOfInterest2018 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 71: 1, 72: 1, 73: 1, 74: 1,
-                           75: 1, 76: 1, 77: 1, 78: 1, 79: 1, 80: 1}  # 2018 instances
+                           75: 1, 76: 1, 77: 1, 78: 1, 79: 1, 80: 1}  # 2018-2020 instances
+instancesOfInterest2021 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 91: 1, 92: 1, 93: 1, 94: 1,
+                           95: 1, 96: 1, 97: 1, 98: 1, 99: 1, 100: 1}  # 2021-2022 instances
+instancesOfInterest2023 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 101: 1, 102: 1, 103: 1, 104: 1,
+                           105: 1, 106: 1, 107: 1, 108: 1, 109: 1, 110: 1}  # instances since 2023
 instancesOfInterestBiobj2016 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1}  # bi-objective 2016 instances
 instancesOfInterestBiobj2017 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1,
-                                10: 1, 11: 1, 12: 1, 13: 1, 14:1, 15:1}  # bi-objective 2017 instances
-instancesOfInterestBiobj2018 = instancesOfInterestBiobj2017  # bi-objective 2018 instances
-
+                                10: 1, 11: 1, 12: 1, 13: 1, 14:1, 15:1}  # bi-objective instances since 2017
 instancesOfInterest = [instancesOfInterest2009,
                        instancesOfInterest2010,
                        instancesOfInterest2012,
@@ -115,9 +117,10 @@ instancesOfInterest = [instancesOfInterest2009,
                        instancesOfInterest2016,
                        instancesOfInterest2017,
                        instancesOfInterest2018,
+                       instancesOfInterest2021,
+                       instancesOfInterest2023,
                        instancesOfInterestBiobj2016,
-                       instancesOfInterestBiobj2017,
-                       instancesOfInterestBiobj2018]
+                       instancesOfInterestBiobj2017]
 
 reference_algorithm_styles = {'linestyle': '-', 'linewidth': 5,  # used in compall.pprldmany
                               'marker': 'D', 'markersize': 1*0.8*11., 'markeredgewidth': 1*1.5/1.5,

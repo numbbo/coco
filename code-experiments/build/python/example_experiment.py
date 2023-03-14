@@ -217,7 +217,7 @@ current_batch = 1      # 1..number_of_batches
 SOLVER = random_search
 # SOLVER = optimize.fmin_cobyla
 # SOLVER = my_solver # SOLVER = fmin_slsqp # SOLVER = cma.fmin
-suite_instance = "" # "year:2016"
+suite_instance = "" # "year:2023"
 suite_options = ""  # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
 # for more suite options, see http://numbbo.github.io/coco-doc/C/#suite-parameters
 observer_options = ObserverOptions({  # is (inherited from) a dictionary

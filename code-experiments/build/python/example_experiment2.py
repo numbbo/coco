@@ -91,7 +91,7 @@ suite_filter_options = (""  # without filtering, a suite has instance_indices 1-
                         # "instance_indices: 1-5 "  # relative to suite instances
                        )
 # for more suite filter options see http://numbbo.github.io/coco-doc/C/#suite-parameters
-suite_year_option = ""  # "year: 2022"  # determine instances by year, not all years work for all suites :-(
+suite_year_option = ""  # "year: 2023"  # determine instances by year, not all years work for all suites :-(
 
 batches = 1  # number of batches, batch=3/32 works to set both, current_batch and batches
 current_batch = 1  # only current_batch modulo batches is relevant
