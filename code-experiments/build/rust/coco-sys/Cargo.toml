@@ -12,4 +12,5 @@ links = "coco"
 include = ["build.rs", "src/", "vendor/", "wrapper.c", "wrapper.h"]
 
 [build-dependencies]
+bindgen = "0.64.0"
 cc = "1.0"
