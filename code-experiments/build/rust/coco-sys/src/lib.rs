@@ -5,4 +5,4 @@
 #![allow(deref_nullptr)]
 #![allow(clippy::approx_constant)]
 
-include!("../vendor/coco.rs");
+include!(concat!(env!("OUT_DIR"), "/coco_sys.rs"));

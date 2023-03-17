@@ -741,7 +741,7 @@ def test_java():
 
 ################################################################################
 ## Rust
-def build_rust():
+def prepare_build_rust():
     """ Builds the example experiment in Rust """
     global RELEASE
 
@@ -754,24 +754,18 @@ def build_rust():
     copy_file('code-experiments/src/coco_internal.h',
               'code-experiments/build/rust/coco-sys/vendor/coco_internal.h')
 
+def build_rust():
+    """ Builds the example experiment in Rust """
+    global RELEASE
+
+    prepare_build_rust()
+
     write_file(git_revision(), "code-experiments/build/rust/REVISION")
     write_file(git_version(), "code-experiments/build/rust/VERSION")
 
     cargo_path = executable_path('cargo')
     if not cargo_path:
         raise RuntimeError('Can not find cargo path')
-
-    bindgen_path = executable_path('bindgen')
-    if not bindgen_path:
-        raise RuntimeError('Can not find bindgen path')
-
-    bindgen_call = ['bindgen', 'wrapper.h', '-o', 'vendor/coco.rs',
-                    '--blocklist-item', 'FP_NORMAL',
-                    '--blocklist-item', 'FP_SUBNORMAL',
-                    '--blocklist-item', 'FP_ZERO',
-                    '--blocklist-item', 'FP_INFINITE',
-                    '--blocklist-item', 'FP_NAN']
-    run('code-experiments/build/rust/coco-sys', bindgen_call, verbose=_verbosity)
 
     run('code-experiments/build/rust/coco-sys', ['cargo', 'build'], verbose=_verbosity)
     run('code-experiments/build/rust', ['cargo', 'build'], verbose=_verbosity)
@@ -1064,6 +1058,7 @@ def main(args):
     elif cmd == 'amalgamate-c': amalgamate_c()
     elif cmd == 'build-c': build_c()
     elif cmd == 'build-java': build_java()
+    elif cmd == 'prepare-build-rust': prepare_build_rust()
     elif cmd == 'build-rust': build_rust()
     elif cmd == 'build-matlab': build_matlab()
     elif cmd == 'build-matlab-sms': build_matlab_sms()
