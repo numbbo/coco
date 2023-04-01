@@ -24,7 +24,7 @@ fn generate_source() {
         let build_script_path = Path::new("../../../../do.py");
         assert!(build_script_path.exists(), "build script does not exist");
 
-        Command::new("python3")
+        Command::new("python")
             .arg(build_script_path)
             .arg("prepare-build-rust")
             .output()
