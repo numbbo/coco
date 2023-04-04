@@ -888,11 +888,13 @@ def get_plotting_styles(algorithms, only_foreground=False):
                 ppfigs_styles = {'marker': '',
                                  'color': format[0],
                                  'linestyle': format[1],
+                                 'zorder': -1.5,
                                  }
                 pprldmany_styles = {'marker': '',
                                     'label': '',
                                     'color': format[0],
                                     'linestyle': format[1],
+                                    'zorder': -1.5,
                                     }
                 plotting_styles.append(PlottingStyle(pprldmany_styles, ppfigs_styles, background_algorithms, True))
 
