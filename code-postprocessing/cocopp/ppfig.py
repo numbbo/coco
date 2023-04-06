@@ -36,6 +36,8 @@ HtmlPage = enum('NON_SPECIFIED', 'ONE', 'MANY', 'PPRLDMANY_BY_GROUP', 'PPRLDMANY
                 'PPTABLE', 'PPTABLE2', 'PPTABLES', 'PPRLDISTR', 'PPRLDISTR2', 'PPLOGLOSS',
                 'PPSCATTER', 'PPFIGS', 'PPFIGCONS', 'PPFIGCONS1')
 
+_figsize_warnings = 1  # couldn't convince filterwarnings('once') to work as desired
+'''remaining number of warnings to be issued'''
 
 def save_figure(filename,
                 algorithm=None,
@@ -94,6 +96,15 @@ def save_figure(filename,
                     ' with Exception: "%s"' %
                     (plt.matplotlib.__version__, str(e)))
         try:
+            if plt.rcParams['figure.figsize'] != genericsettings.figsize:
+                # prevent saved figure to be different under Jupyter notebooks
+                plt.gcf().set_size_inches(genericsettings.figsize)
+                global _figsize_warnings
+                if _figsize_warnings > 0:
+                    m = 'Plotting with genericsettings.figsize=={} instead of default {}'.format(
+                            genericsettings.figsize, plt.rcParams['figure.figsize'])
+                    warnings.warn(m)
+                    _figsize_warnings -= 1
             plt.savefig(filename + '.' + format,
                         dpi=60 if genericsettings.in_a_hurry else 300,
                         format=format,
@@ -877,11 +888,13 @@ def get_plotting_styles(algorithms, only_foreground=False):
                 ppfigs_styles = {'marker': '',
                                  'color': format[0],
                                  'linestyle': format[1],
+                                 'zorder': -1.5,
                                  }
                 pprldmany_styles = {'marker': '',
                                     'label': '',
                                     'color': format[0],
                                     'linestyle': format[1],
+                                    'zorder': -1.5,
                                     }
                 plotting_styles.append(PlottingStyle(pprldmany_styles, ppfigs_styles, background_algorithms, True))
 

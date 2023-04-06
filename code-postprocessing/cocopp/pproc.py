@@ -597,6 +597,7 @@ class DataSet(object):
         funvals
         ...
         info
+        info_str
         instance_multipliers
         instancenumbers
         isBiobjective
@@ -777,7 +778,7 @@ class DataSet(object):
         else:
             #raise Exception()
             warnings.warn('Comment line: %s is skipped,' % (comment) +
-                          'it does not start with \%.')
+                          'it does not start with %.')
             self.comment = ''
 
         filepath = os.path.split(indexfile)[0]
@@ -913,7 +914,7 @@ class DataSet(object):
                          for i in self.dataFiles)
                              
         if not any(os.path.isfile(dataFile) for dataFile in dataFiles):
-            warnings.warn("Missing tdat files in '{0}'. Please consider to rerun the experiments." % filepath)
+            warnings.warn("Missing tdat files in '%s'. Please consider to rerun the experiments." % filepath)
 
         datasets, algorithms, reference_values, success_ratio = split(dataFiles, idx_to_load=idx_of_instances_to_load)
         data = VMultiReader(datasets)
@@ -975,7 +976,7 @@ class DataSet(object):
 
             self._cut_data()
         if len(self._evals):
-            self.target = self._evals[:,0]  # needed for biobj best alg computation
+            self._target = self._evals[:,0]  # needed for biobj best alg computation
         # Compute ERT (will be done lazy from .ert access)
         # self.computeERTfromEvals()
         # asserts don't help though
@@ -999,11 +1000,6 @@ class DataSet(object):
             i += 1
             if i < Ndata:
                 self._evals = self._evals[:i, :]  # assumes that evals is an array
-                try:
-                    self.target = self.target[:i]
-                    assert self.target[-1] == self._evals[-1][0] 
-                except AttributeError:
-                    pass
                 try:
                     self._ert = self._ert[:i]
                 except AttributeError:
@@ -1044,14 +1040,8 @@ class DataSet(object):
             expectedNumberOfInstances = len(testbedsettings.current_testbed.instancesOfInterest)
         if len(set(self.instancenumbers)) < len(self.instancenumbers):
             # check exception of 2009 data sets with 3 times instances 1:5
-            for i in set(self.instancenumbers):
-                if i not in (1, 2, 3, 4, 5):
-                    is_consistent = False
-                    break
-                if self.instancenumbers.count(i) != 3:
-                    is_consistent = False
-                    break
-            if not is_consistent:
+            counts = [self.instancenumbers.count(i) for i in set(self.instancenumbers)]
+            if not len(set(counts)) == 1:  # require same number of repetition per instance
                 warnings.warn('  double instances in ' + 
                                 str(self.instancenumbers) + 
                                 ' (f' + str(self.funcId) + ', ' + str(self.dim)
@@ -1084,7 +1074,7 @@ class DataSet(object):
             return
         self._ert = []
         self._ert_nb_of_data = len(self.evals[0]) - 1
-        self.target = []
+        self._target = []  # computed here for historical reasons
         for row in self.evals:
             data = row[1:]
             if 1 < 3:
@@ -1102,10 +1092,10 @@ class DataSet(object):
                     data[numpy.isnan(data)] = self.maxevals[numpy.isnan(data)]
                 ert_val = toolsstats.sp(data, issuccessful=succ)[0]
                 assert np.isclose(ert_val, self._ert[-1])
-            self.target.append(row[0])
+            self._target.append(row[0])
 
         self._ert = numpy.array(self._ert)
-        self.target = numpy.array(self.target)
+        self._target = numpy.array(self._target)
         # asserts don't help though
         # assert self._evals.shape[1] - 1 == len(self.instancenumbers), self
         # assert self.evals.shape[1] - 1 == len(self.maxevals), self
@@ -1223,8 +1213,8 @@ class DataSet(object):
         res += ')'
         return res
 
-    def info(self, targets=None):
-        """print text info to stdout"""
+    def info_str(self, targets=None):
+        """return print info as string"""
         if targets is None:
             targets = [1e3, 10, 0.1, 1e-3, 1e-5, 1e-8]
             if self.target[-1] < targets[-1]:
@@ -1257,8 +1247,11 @@ class DataSet(object):
             sinfo += '\n' + line
             if target < self.target[-1]:
                 break
-        print(sinfo)
-        # return sinfo 
+        return sinfo
+        
+    def info(self, targets=None):
+        """print text info to stdout"""
+        print(self.info_str(targets))
 
     @property
     def number_of_constraints(self):
@@ -1296,6 +1289,14 @@ class DataSet(object):
         return res
 
     @property
+    def target(self):
+        """target values (`np.array`) corresponding to `ert` (which all have finite values)"""
+        if hasattr(self, '_target'):
+            return self._target  # was set in `computeERTfromEvals` (or elsewhere)
+        # this fallback may never be useful?
+        return np.asarray([row[0] for row in self._evals if any(np.isfinite(row[1:]))])
+
+    @property
     def ert(self):
         """expected runtimes for the targets in `target`.
 
@@ -1303,7 +1304,7 @@ class DataSet(object):
         evaluations to reach or surpass the given target for the
         first time.
 
-        Details: The values are precomputed using `computeERTfromEvals`.
+        Details: The values are (pre-)computed using `computeERTfromEvals`.
         Depending on `genericsettings.balance_instances`, the average is
         weighted to make up for unbalanced problem instance occurances.
         """
@@ -1332,6 +1333,9 @@ class DataSet(object):
         `maxevals` is a dictionary with maxevals as values and the source
         file or folder as key.
         """
+        if testbedsettings.current_testbed.has_constraints:
+            return self.maxfgevals
+
         if self._need_balancing:
             return np.hstack([self._maxevals, np.hstack([(m - 1) * [self._maxevals[i]]
                               for i, m in enumerate(self.instance_multipliers)
@@ -1607,7 +1611,8 @@ class DataSet(object):
         Details: uses attribute ``self.ert``.
         """
         res = {}
-        tmparray = numpy.vstack((self.target, self.ert)).transpose()
+        _ert = self.ert  # for the side effect of correctly setting self._target
+        tmparray = numpy.vstack((self.target, _ert)).transpose()
         it = reversed(tmparray)
         # expect this array to be sorted by decreasing function values
 
@@ -1664,7 +1669,41 @@ class DataSet(object):
                                 len(evalsrows[t]), len(evalsrows[t]))]
                     for t in targets]
         return [evalsrows[t] for t in targets]  # order w.r.t. input targets
-        
+
+    def _number_of_better_runs(self, target, ref_eval):
+        """return the number of ``self.evals(target)`` that are smaller
+
+        (i.e. better) than ``ref_eval``, where equality counts 1/2.
+
+        `target` may be a scalar or an iterable of targets.
+        """
+        if not np.isscalar(target):
+            return [self._number_of_better_runs(t, ref_eval) for t in target]
+        if not np.isfinite(ref_eval):
+            if np.isnan(ref_eval):
+                warnings.warn("ref_eval was nan when calling {}".format(self))
+            ref_eval = np.inf  # replace nan with inf
+        evals = self.detEvals([target])[0]
+        evals = evals[np.isfinite(evals)]
+        return sum(evals < ref_eval) + sum(evals == ref_eval) / 2
+
+    def _WIP_number_of_better_runs(self, refalg_dataset, target):
+        """return the number of ``self.evals([target])`` that are better
+
+        than the ``min(refalg_dataset.evals([target]))``, where equality
+        counts 1/2.
+
+        TODO: handle the case when evals is nan using of f-values
+        """
+        ref_evals = refalg_dataset.detEvals([target])[0][0]  # first return value is the evals
+        evals = self.detEvals([target])[0]
+        if len(ref_evals) > 1:
+            warnings.warn('found {} evals data in reference algorithm {}, detEvals([{}])={}'
+                        .format(len(ref_evals), refalg_dataset.algId, target, ref_evals))
+        ref_evals[~np.isfinite(ref_evals)] = np.inf  # replace nan with inf
+        m, a = np.min(ref_evals), np.asarray(evals[np.isfinite(evals)])
+        return sum(a < m) + sum(a == m) / 2
+
     def _detEvals2(self, targets):
         """Determine the number of evaluations to reach target values.
 
@@ -1981,7 +2020,7 @@ class DataSet(object):
         for funvals in self.funvals.T[1:]:  # loop over the rows of the transposed array
             idx = np.isfinite(funvals > 1e-19)
             plt.loglog(self.funvals[idx, 0], funvals[idx], **kwargs)
-            plt.ylabel('target $\Delta f$ value')
+            plt.ylabel(r'target $\Delta f$ value')
             plt.xlabel('number of function evaluations')
             plt.xlim(1, max(self.maxevals))
         return plt.gca()
@@ -2000,13 +2039,13 @@ class DataSet(object):
             # plt.semilogx(self.evals[idx, 0], evals[idx])
             if 1 < 3:
                 plt.loglog(evals[idx], self.evals[idx, 0], **kwargs)
-                plt.ylabel('target $\Delta f$ value')
+                plt.ylabel(r'target $\Delta f$ value')
                 plt.xlabel('number of function evaluations')
                 plt.xlim(1, max(self.maxevals))
             else:  # old version
                 plt.loglog(self.evals[idx, 0], evals[idx])
                 plt.gca().invert_xaxis()
-                plt.xlabel('target $\Delta f$ value')
+                plt.xlabel(r'target $\Delta f$ value')
                 plt.ylabel('number of function evaluations')
         return plt.gca()
 
@@ -2081,6 +2120,52 @@ class DataSet(object):
         plt.title("F %d in dimension %d" % (self.funcId, self.dim))
         plt.grid(True)
         return plt.gca()  # not sure which makes most sense
+
+def get_DataSetList(*args, **kwargs):
+    """try to load pickle file or fall back to `DataSetList` constructor.
+
+    Also write pickle file if reading failed. Global side effect:
+    `testbedsettings.load_current_testbed` is called as it is in
+    `DataSet.__init__`.
+
+    `args[0]` is expected to be either a `list` with one element which is a
+    repository filetype name or the name itself. Otherwise, the fallback is
+    executed.
+    """
+    extension = '.pickle'
+    def fallback():
+        return DataSetList(*args, **kwargs)
+    if len(args) != 1 or len(kwargs) or sys.version_info[0] < 3:
+        return fallback()
+    arg1 = args[0]
+    if isinstance(arg1, string_types):
+        arg1 = [arg1]
+    if (len(args) != 1 or
+        not isinstance(arg1[0], string_types) or
+        not findfiles.is_recognized_repository_filetype(arg1[0])):
+        return fallback()
+    try: import pickle
+    except: return fallback()
+    name = arg1[0] + extension
+    if os.path.exists(name) and os.path.getmtime(name) > os.path.getmtime(arg1[0]):
+        try:
+            with open(name, "rb") as f:
+                dsl = pickle.load(f)
+        except: pass
+        else:
+            if isinstance(dsl, DataSetList):  # found valid pickle file
+                # to be compatible with DataSet.__init__:
+                if not testbedsettings.current_testbed:
+                    testbedsettings.load_current_testbed(dsl[0].suite_name, TargetValues)
+                print("  using pickled DataSetList", end=' ')  # remove when all went well for a while?
+                return dsl
+    dsl = fallback()
+    try:
+        with open(name, "wb") as f:
+            pickle.dump(dsl, f)
+    except Exception as e:
+        warnings.warn("could not write pickle file {}: {}".format(name, e))
+    return dsl
 
 class DataSetList(list):
     """List of instances of :py:class:`DataSet`.
@@ -2287,7 +2372,7 @@ class DataSetList(list):
                     i.finalfunvals = numpy.r_[i.finalfunvals, o.finalfunvals]
                     i._evals = alignArrayData(HArrayMultiReader([i._evals, o._evals]))
                     i._maxevals = numpy.r_[i._maxevals, o._maxevals]
-                    i.computeERTfromEvals()
+                    # i.computeERTfromEvals()  # breaks with constrained testbed and there is no need to do this now as .ert is now a property
                     i.reference_values.update(o.reference_values)
                     if getattr(i, 'pickleFile', False):
                         i.modsFromPickleVersion = True
@@ -3200,7 +3285,7 @@ def process_arguments(args, current_hash, dictAlg, dsList, sortedAlgs):
                 # Do here any sorting or filtering necessary.
                 # filelist = list(i for i in filelist if i.count('ppdata_f005'))
             else:
-                tmpDsList = DataSetList(alg)
+                tmpDsList = get_DataSetList(alg)
             for ds in tmpDsList:
                 ds._data_folder = alg
                 # to restore name information:

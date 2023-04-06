@@ -354,7 +354,7 @@ static void f_gallagher_evaluate_core(coco_problem_t *problem, const double *x, 
   assert(problem->number_of_objectives == 1);
   y[0] = f_gallagher_core(x, problem->number_of_variables, ((f_gallagher_versatile_data_t *) problem->versatile_data));
   if (! (y[0] + 1e-13 >= problem->best_value[0])) {
-    printf("\n x[0]= %f: %f < %f\n", x[0], y[0] + 1e-13, problem->best_value[0]);
+    coco_warning("x[0]= %f: %f < %f", x[0], y[0] + 1e-13, problem->best_value[0]);
   }
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }

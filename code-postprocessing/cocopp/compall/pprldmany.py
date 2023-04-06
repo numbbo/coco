@@ -35,7 +35,6 @@ import warnings
 from pdb import set_trace
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.ticker import (FixedLocator, FuncFormatter, NullFormatter)
 from .. import toolsstats, bestalg, genericsettings, testbedsettings
 from .. import pproc as pp  # import dictAlgByDim, dictAlgByFun
 from .. import toolsdivers  # strip_pathname, str_to_latex
@@ -46,16 +45,19 @@ from .. import pptex  # numtotex
 PlotType = ppfig.enum('ALG', 'DIM', 'FUNC')
 
 displaybest = True
+x_limit = genericsettings.xlimit_pprldmany  # also (re-)set via config
 divide_by_dimension = True
 annotation_line_end_relative = 1.065  # lines between graph and annotation, was 1.11, see also subplots_adjust
 annotation_space_end_relative = 1.21  # figure space end relative to x_limit, space is however determined rather by subplots_adjust(...) below!?
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # number of bootstrap samples drawn for each fct+target in the performance profile
 nbperdecade = 1
-median_max_evals_marker_format = ['x', 24, 1]
-label_fontsize = 17
+median_max_evals_marker_format = ['x', 12.5, 1]  # [symbol, size, edgewidth]
+label_fontsize = 15  # was 17
+xticks_fontsize = 16
+yticks_fontsize = 14
 title_fontsize = 20
-styles = [d.copy() for d in genericsettings.line_styles]  # deep copy
+size_correction_from_n_foreground = 1  # is (re-)set in main and used in plotdata
 
 def text_infigure_if_constraints():
     """to be displayed in the figure corner
@@ -73,10 +75,6 @@ def text_infigure_if_constraints():
     else:
         _text = ""
     return _text
-
-
-refcolor = 'wheat'
-"""color of reference (best) algorithm"""
 
 save_figure = True
 close_figure = True
@@ -191,8 +189,9 @@ def beautify():
         plt.xlabel('log10(%s)' % testbedsettings.current_testbed.string_evals_legend, fontsize=label_fontsize)
     plt.ylabel('Fraction of function,target pairs', fontsize=label_fontsize)
     ppfig.logxticks()
-    plt.xticks(fontsize=label_fontsize)  # the "original" size is for some reason too large
+    plt.xticks(fontsize=xticks_fontsize)  # the "original" size is for some reason too large
     pprldistr.beautifyECDF()
+    plt.yticks(fontsize=yticks_fontsize)
     plt.ylim(-0.0, 1.0)
 
 
@@ -211,8 +210,6 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
     :param kwargs: optional arguments provided to plot function.
     
     """
-    x_limit = genericsettings.xlimit_pprldmany
-
     # Expect data to be a ndarray.
     x = data[np.isnan(data) == False]  # Take away the nans
     nn = len(x)
@@ -243,7 +240,7 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
 
         try:  # plot the very last point outside of the "normal" plotting area
             c = kwargs['color']
-            plt_plot([x_last] * 2, [y_last] * 2, '.', color=c, markeredgecolor=c)
+            plt_plot(x_last, y_last, '.', color=c, markeredgecolor=c, markersize=4)
         except:
             pass
         x2 = np.hstack([np.repeat(x, 2), maxval])  # repeat x-values for each step in the cdf
@@ -269,7 +266,7 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
                     y3 = y2[0]
             h = plt.plot((x3,), (y3,),
                          marker=median_max_evals_marker_format[0],
-                         markersize=median_max_evals_marker_format[1],
+                         markersize=median_max_evals_marker_format[1] * size_correction_from_n_foreground**0.85,
                          markeredgewidth=median_max_evals_marker_format[2],
                          # marker='x', markersize=24, markeredgewidth=3, 
                          markeredgecolor=plt.getp(res[0], 'color'),
@@ -326,6 +323,8 @@ def plotLegend(handles, maxval):
         return min(numberOfCharacters + 2, maxLength)
 
     handles_with_legend = [h for h in handles if not plt.getp(h[-1], 'label').startswith('_line')]
+    handles_with_legend = [h for h in handles_with_legend  # fix for matplotlib since v 3.5.0
+                           if not plt.getp(h[-1], 'label').startswith('_child')]
     label_list = [toolsdivers.strip_pathname1(plt.getp(h[-1], 'label')) for h in handles_with_legend]
     numberOfCharacters = label_length(label_list)
     for h in handles_with_legend:
@@ -597,7 +596,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
     """
     global divide_by_dimension  # not fully implemented/tested yet
-    x_limit = genericsettings.xlimit_pprldmany
+    global size_correction_from_n_foreground
+    size_correction_from_n_foreground = 1  # reset for reference alg here, later set depending on n
 
     tmp = pp.dictAlgByDim(dictAlg)
     algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
@@ -621,7 +621,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     CrEperAlg = {}
     for alg in algorithms_with_data:
         CrE = 0.
-        if 1 < 3 and dictAlg[alg][0].algId == 'GLOBAL':
+        if 1 < 3 and str(dictAlg[alg][0].algId).startswith('GLOBAL') and (
+                not dictAlg[alg][0].indexFiles or '_pal' in dictAlg[alg][0].indexFiles[0]):
             tmp = dictAlg[alg].dictByNoise()
             assert len(tmp.keys()) == 1
             if list(tmp.keys())[0] == 'noiselessall':
@@ -662,11 +663,31 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         run_numbers = []
         for dsl in dictDim.values():
             run_numbers.extend([ds.nbRuns() for ds in dsl])
-        try: lcm = np.lcm.reduce(run_numbers)  # lowest common multiplier
-        except: lcm = max(run_numbers)  # fallback for old numpy versions
-        samplesize = lcm
+        if genericsettings.in_a_hurry >= 100:
+            samplesize = max(run_numbers)
+        else:
+            try: lcm = np.lcm.reduce(run_numbers)  # lowest common multiplier
+            except: lcm = max(run_numbers)  # fallback for old numpy versions
+            # slight abuse of bootstrap_sample_size to avoid a huge number
+            samplesize = min((int(genericsettings.simulated_runlength_bootstrap_sample_size), lcm))
         if testbedsettings.current_testbed.instances_are_uniform:
-            samplesize = max(perfprofsamplesize, lcm)  # maybe more bootstrapping with unsuccessful trials
+            samplesize = max((int(genericsettings.simulated_runlength_bootstrap_sample_size),
+                              samplesize))  # maybe more bootstrapping with unsuccessful trials
+        if samplesize > 1e4:
+            warntxt = ("Sample size equals {} which may take very long. "
+                       "This is likely to be unintended, hence a bug.".format(samplesize))
+            warnings.warn(warntxt)
+        if not isinstance(samplesize, int):
+            warntxt = ("samplesize={} was of type {}. This must be considered a bug."
+                       "\n run_numbers={} \n lcm={}"
+                       "\n genericsettings.simulated_runlength_bootstrap_sample_size={}".format(
+                           samplesize,
+                           type(samplesize),
+                           run_numbers,
+                           lcm if 'lcm' in locals() else '"not computed"',
+                           genericsettings.simulated_runlength_bootstrap_sample_size))
+            warnings.warn(warntxt)
+            samplesize = int(samplesize)
         for f, dictAlgperFunc in sorted(dictFunc.items()):
             # print(target_values((f, dim)))
             for j, t in enumerate(target_values((f, dim))):
@@ -750,11 +771,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     # Display data
     lines = []
     if displaybest:
-        args = {'linestyle': '-', 'linewidth': 4, 'marker': 'D', 'markersize': 11.,
-                'markeredgewidth': 1.5, 'markerfacecolor': refcolor,
-                'markeredgecolor': refcolor, 'color': refcolor,
-                'label': testbedsettings.current_testbed.reference_algorithm_displayname,
+        args = {'label': testbedsettings.current_testbed.reference_algorithm_displayname,
                 'zorder': -1}
+        args.update(genericsettings.reference_algorithm_styles)
         lines.append(plotdata(np.array(xbest), x_limit, maxevalsbest,
                               CrE=0., **args))
 
@@ -765,6 +784,19 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         return str(algname)
 
     plotting_style_list = ppfig.get_plotting_styles(order)
+    try:  # set n_foreground to tweak line sizes later
+        bg_algs = []
+        for v in genericsettings.background.values():
+            bg_algs.extend(v)
+        n_foreground = len([a for a in dictData if a not in bg_algs])
+    except: n_foreground = len(dictData)
+    size_correction_from_n_foreground = 1.8 - 1 * min((1, (n_foreground - 1) / 30))
+
+    styles = [s.copy() for s in genericsettings.line_styles]  # list of line/marker style dicts
+    if styles[0]['color'] == '#000080':  # fix old styles marker size
+        for s in styles:
+            try: s['markersize'] /= 3.3  # apparently the appearance of sizes changed
+            except: pass
     for plotting_style in plotting_style_list:
         for i, alg in enumerate(plotting_style.algorithm_list):
             try:
@@ -773,15 +805,20 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             except KeyError:
                 continue
 
-            args = styles[i % len(styles)]
-            args = args.copy()
-            args['linewidth'] = 1.5
-            args['markersize'] = 12.
-            args['markeredgewidth'] = 1.5
-            args['markerfacecolor'] = 'None'
-            args['markeredgecolor'] = args['color']
+            args = dict(styles[i % len(styles)])  # kw-args passed to plot
+            args.setdefault('markeredgewidth', 1.0)  # was: 1.5
+            args.setdefault('markerfacecolor', 'None')  # transparent
+            args.setdefault('markeredgecolor', styles[i % len(styles)]['color'])
+            args.setdefault('markersize', 9)  # was: 12
+            args.setdefault('linewidth', 1)
+            args['markersize'] *= genericsettings.marker_size_multiplier
+            args['markersize'] *= size_correction_from_n_foreground
+            args['linewidth'] *= size_correction_from_n_foreground
+            args['linewidth'] *= 1 + max((-0.5, min((1.5,  # larger zorder creates thicker lines below others
+                                     2 - args.get('zorder', 2)))))
             args['label'] = algname_to_label(alg)
-            if plotType == PlotType.DIM:
+
+            if plotType == PlotType.DIM:  # different lines are different dimensions
                 args['marker'] = genericsettings.dim_related_markers[i]
                 args['markeredgecolor'] = genericsettings.dim_related_colors[i]
                 args['color'] = genericsettings.dim_related_colors[i]
@@ -793,11 +830,14 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 # args['zorder'] = -1
             # plotdata calls pprldistr.plotECDF which calls ppfig.plotUnifLog... which does the work
 
-            args.update(plotting_style.pprldmany_styles)
+            args.update(plotting_style.pprldmany_styles)  # no idea what this does, maybe update for background algorithms?
 
             lines.append(plotdata(np.array(data), x_limit, maxevals,
                                   CrE=CrEperAlg[alg], **args))
 
+    if 11 < 3:
+        import time
+        plt.text(1e5, 0, ' {}'.format(time.asctime()), fontsize=5)
     labels, handles = plotLegend(lines, x_limit)
     if True:  # isLateXLeg:
         if info:
@@ -843,7 +883,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     else:
         figureName = os.path.join(outputdir, '%s' % genericsettings.pprldmany_file_name)
     # beautify(figureName, funcsolved, x_limit*x_annote_factor, False, fileFormat=figformat)
-    beautify()
+    beautify()  # see also below where the ticks are set
 
     if plotType == PlotType.FUNC:
         dictFG = pp.dictAlgByFuncGroup(dictAlg)
@@ -911,17 +951,20 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                   fontsize=title_fontsize)
     a = plt.gca()
 
-    plt.xlim(1e-0, x_limit)
-    xmaxexp = int(np.floor(np.log10(x_limit)))
-    xmajorticks = [10 ** exponent for exponent in range(0, xmaxexp + 1, 2)]
-    xminorticks = [10 ** exponent for exponent in range(0, xmaxexp + 1)]
-    def formatlabel(val, pos):
-        labeltext = '{:d}'.format(int(round(np.log10(val))))
-        return labeltext
-    a.xaxis.set_major_locator(FixedLocator(xmajorticks))
-    a.xaxis.set_major_formatter(FuncFormatter(formatlabel))
-    a.xaxis.set_minor_locator(FixedLocator(xminorticks))
-    a.xaxis.set_minor_formatter(NullFormatter())
+    # beautify even more: ticks, grid and frame
+    a.set_xlim(1e-0, x_limit)
+    log_xlimit = int(np.log10(x_limit))  # last annotatable decade
+    a.set_xticks([10**d for d in range(log_xlimit + 1)])
+    a.set_xticklabels([str(d) for d in range(log_xlimit + 1)])
+    a.set_xticks([i * 10**d for d in range(log_xlimit)  # these should be default
+                      for i in [2, 3, 4, 5, 6, 7, 8, 9]],
+                 minor=True)
+    a.set_yticks(np.linspace(0, 1, 21), minor=True)  # every 0.05 = 5%
+    a.tick_params(top=True, bottom=True,  which='both',
+                  left=True, right=True, direction='out')
+    a.grid(True)
+    a.grid(genericsettings.minor_grid_alpha_in_pprldmany > 0,
+           alpha=genericsettings.minor_grid_alpha_in_pprldmany, which='minor')
     for pos in ['right', 'left']:  # top makes sense if figure ends at 1.0
         a.spines[pos].set_visible(False)  # remove visible frame
 

@@ -60,20 +60,64 @@ Examples:
 
 from __future__ import absolute_import
 
-from .pproc import DataSetList as _DataSetList
+from .pproc import get_DataSetList as _DataSetList
 from .toolsdivers import StringList as _StringList
 from .archiving import official_archives
+from . import config as _config
+from . import pproc as _pproc
+from . import testbedsettings as _testbedsettings
 
 def load(filename):
-    """Create a :py:class:`DataSetList` instance from a file or folder.
+    """[currently broken when further used within `cocopp`, see `load2`] Create a :py:class:`DataSetList` instance from a file or folder.
 
     Input argument filename can be a single :file:`info` file name, a
     single pickle filename or a folder name. In the latter case, the
     folder is browsed recursively for :file:`info` or :file:`pickle`
     files.
 
+    Details: due to newly implemented side effects when data are read in,
+    the returned data set list may not work anymore when used with plotting
+    functions of the `cocopp` module, see also `load2`.
     """
     return _DataSetList(official_archives.all.get_extended(_StringList(filename)))
+
+def load2(args):
+    """[WIP] return a `dict` of `dict` of `DataSetLists` with dimension and pathname as keys.
+
+    `args` is a string or a list of strings passed to
+    `cocopp.official_archives.all.get_extended` to determine the desired
+    data sets which can also come from a local folder or a zip-file.
+
+    Examples:
+
+    >>> import cocopp
+    >>> def load2(s):
+    ...     print(s)  # predictable output
+    ...     return cocopp.load2(s)
+    >>> def pprld(dsl):
+    ...     print('_')  # predictable output
+    ...     with cocopp.toolsdivers.InfolderGoneWithTheWind():
+    ...         cocopp.compall.pprldmany.main(dsl)  # writes pprldmany_default.*
+    >>> ddsl = load2('bbob/2009/B*')  # doctest:+ELLIPSIS
+    bbob/200...
+    >>> assert sorted(ddsl) == [2, 3, 5, 10, 20, 40], ddsl
+    >>> assert all([len(ddsl[i]) == 3 for i in ddsl]), ddsl  # 3 algorithms
+    >>> pprld(ddsl[2])  # doctest:+ELLIPSIS
+    _...
+
+    ::
+
+        >> ddsl31 = load('bbob/2009/*')  # 31 data sets, takes ~3 minutes at first ever loading
+        >> assert sorted(ddsl31) == [2, 3, 5, 10, 20, 40], ddsl
+        >> assert len(ddsl31[3]) == 31, ddsl
+
+    """
+    args2 = official_archives.all.get_extended(args)
+    dsList, _sortedAlgs, dictAlg = _pproc.processInputArgs(args2, True)  # takes ~1 minutes per 10 data sets
+    dsList2 = _pproc.DataSetList(_testbedsettings.current_testbed.filter(dsList))
+    dictAlg = dsList2.dictByAlgName()
+    _config.config() # make sure that the filtered settings are taken into account?
+    return _pproc.dictAlgByDim(dictAlg)
 
 # info on the DataSetList: algId, function, dim
 
@@ -81,8 +125,8 @@ def info(dsList):
     """Display more info on an instance of DatasetList."""
     dsList.info()
 
-# TODO: method for pickling data in the current folder!
-def pickle(dsList):
+# pproc.get_DataSetList writes and loads the pickled class
+def _pickle(dsList):
     """Pickle a DataSetList."""
     dsList.pickle()
     # TODO this will create a folder with suffix -pickle from anywhere:

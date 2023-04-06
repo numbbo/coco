@@ -1,6 +1,7 @@
 use coco_sys::{coco_observer_t, coco_problem_t, coco_random_state_t, coco_suite_t};
 use std::{
     ffi::{CStr, CString},
+    marker::PhantomData,
     ops::RangeInclusive,
     ptr,
 };
@@ -104,7 +105,7 @@ impl Suite {
     }
 
     /// Returns the next problem or `None` when the suite completed.
-    pub fn next_problem(&mut self, observer: Option<&mut Observer>) -> Option<Problem> {
+    pub fn next_problem<'s>(&'s mut self, observer: Option<&mut Observer>) -> Option<Problem<'s>> {
         let observer = observer.map(|o| o.inner).unwrap_or(ptr::null_mut());
         let inner = unsafe { coco_sys::coco_suite_get_next_problem(self.inner, observer) };
 
@@ -137,6 +138,40 @@ impl Suite {
             function: function as usize,
             dimension: dimension as usize,
             instance: instance as usize,
+            _phantom: PhantomData,
+        })
+    }
+
+    /// Returns the problem for the given function, dimension and instance.
+    ///
+    /// While a suite can contain multiple problems with equal function, dimension and instance, this
+    /// function always returns the first problem in the suite with the given function, dimension and instance
+    /// values. If the given values don't correspond to a problem, the function returns `None`.
+    pub fn problem_by_function_dimension_instance(
+        &mut self,
+        function: usize,
+        dimension: usize,
+        instance: usize,
+    ) -> Option<Problem> {
+        let problem = unsafe {
+            coco_sys::coco_suite_get_problem_by_function_dimension_instance(
+                self.inner,
+                function as usize,
+                dimension as usize,
+                instance as usize,
+            )
+        };
+
+        if problem.is_null() {
+            return None;
+        }
+
+        Some(Problem {
+            inner: problem,
+            function,
+            dimension,
+            instance,
+            _phantom: PhantomData,
         })
     }
 
@@ -158,27 +193,21 @@ impl Drop for Suite {
     }
 }
 
-impl Iterator for Suite {
-    type Item = Problem;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.next_problem(None)
-    }
-}
-
 /// A specific problem instance.
 ///
-/// Instances can be optained using [Suite::next_problem].
-pub struct Problem {
+/// Instances can be optained using [Suite::next_problem]
+/// and [Suite::problem_by_function_dimension_instance].
+pub struct Problem<'suite> {
     inner: *mut coco_problem_t,
     function: usize,
     instance: usize,
     dimension: usize,
+    _phantom: PhantomData<&'suite Suite>,
 }
 
-unsafe impl Send for Problem {}
+unsafe impl Send for Problem<'_> {}
 
-impl Problem {
+impl Problem<'_> {
     /// Returns the ID of the problem.
     ///
     /// For the `toy` suite this is
@@ -334,7 +363,7 @@ impl Problem {
     }
 }
 
-impl Drop for Problem {
+impl Drop for Problem<'_> {
     fn drop(&mut self) {
         unsafe {
             coco_sys::coco_problem_free(self.inner);

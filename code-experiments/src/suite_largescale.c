@@ -44,7 +44,9 @@ static coco_suite_t *suite_largescale_initialize(void) {
  * @brief Sets the instances associated with years for the bbob large-scale suite.
  */
 static const char *suite_largescale_get_instances_by_year(const int year) {
-   if (year == 2016 || year == 0) {
+  if (year >= 2016 || year == 0) {
+    return "1-15";
+  } else if (year >= 2009) {
     return "1-15";
   }
   else {

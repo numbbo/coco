@@ -298,6 +298,8 @@ def get(url_or_folder=None):
     >>> assert arch.remote_data_path.split('//', 1)[1] == url.split('//', 1)[1], (arch.remote_data_path, url)
  
     See `cocopp.archives` for "officially" available archives.
+
+    See also: `get_all`, `get_extended`.
     """
     if url_or_folder in (None, 'help'):
         raise ValueError(
@@ -576,12 +578,12 @@ class COCODataArchive(_td.StrList):
         by repeatedly calling `get`. Elements of the `indices` list can
         be an index or a substring that matches one and only one name
         in the archive. If ``indices is None``, the results from the
-        last call to `find` are used. Download the data if necessary.
+        last call to `find` are used. Data are downloaded if necessary.
 
         See `find` or `cocopp.archiving.OfficialArchives` for how matching
         is determined.
 
-        See also `get`.
+        See also `get`, `get_extended`.
         """
         if indices is not None:  # TODO: just "if indices" should do?
             names = self.find(indices)
@@ -665,6 +667,10 @@ class COCODataArchive(_td.StrList):
                 self.check_hash(full_name)
             except ValueError:
                 if names[0] in self._redownload_if_changed:
+                    self._download(names[0])
+                    self.check_hash(full_name)
+                elif 11 < 3 and not input("\n\n  ** wrong hash, download {} again? [n=no, return=yes] **".format(names[0])).lower().startswith('n'):
+                    # seems to break tests?
                     self._download(names[0])
                     self.check_hash(full_name)
                 else:
@@ -832,7 +838,8 @@ class COCODataArchive(_td.StrList):
                 '   %s\n'
                 'as it may be a partial or unsuccessful download.\n'
                 'A missing file will be downloaded again by `get`.\n'
-                'Alternatively, call `update` to update definitions\n'
+                'Alternatively, call `cocopp.archives.this-archive.update()`\n'
+                'of the respective data archive to update definitions\n'
                 'and checksums and allow for automatic re-downloads.\n'
                 'If this is not a remote archive consider to re-`create` it.'
                 '' % (name, self.local_data_path, str(self.remote_data_path),
@@ -1374,6 +1381,12 @@ class OfficialArchives(object):
         return self._get(name, 1) or COCODataArchive
 
     def update_all(self):
+        """update archive definition files from their remote location.
+
+        The update is necessary to account for newly added data. This
+        method requires www connectivity with only a few KB of transmitted
+        data.
+        """
         # self.set_as_attributes_in(update=True)
         for name in self.names:
             name = name.replace('-', '_')
@@ -1383,21 +1396,46 @@ class OfficialArchives(object):
                 if name != 'test':
                     raise
 
+    def _make_folder_skeleton(self):
+        """workaround to avoid bailing when www is not reachable during
+
+        the very first import.
+        """
+        for url in [l[0] for l in self._list]:
+            path = _url_to_folder_name(url)
+            if path.endswith('/test'):
+                continue
+            if path.endswith('/all'):
+                path = path[:-4]
+                url = url[:-4]
+            _makedirs(path)  # may not be necessary?
+            df = _definition_file_to_read(path)
+            if os.path.exists(df):
+                warnings.warn('_make_folder_skeleton(): '
+                              'file "{}" exists'.format(df))
+            else:
+                with open(df, 'w') as f:
+                    f.write("[('_url_', '{}')]\n".format(url))
+
 # official_archives = OfficialArchives()
 for url in coco_urls[-1::-1]:  # loop over possible URLs until successful
+    official_archives = OfficialArchives(url)  # lazy init, does kinda nothing
+    coco_url = url
     try:
-        official_archives = OfficialArchives(url)  # lazy init, does kinda nothing
         # TODO-decide: when should we (try to) update/check these?
         # The following `set_as_attributes_in` calls `cocopp.archiving.get(url)` and works if the
         # connection was successful at least once (before or now)
         official_archives.set_as_attributes_in()  # set "official" archives as attributes by suite name
-        coco_url = url
         break
     except:  # (HTTPError, TimeoutError, URLError)
         warnings.warn("failed to connect to " + url)
 else:
-    warnings.warn("failed fo find workable URL or local folder for official archives")
-    official_archives = None
+    warnings.warn("Failed fo find workable URL or local folder for official archives."
+                  "\n After the www connection is restored, you may need to call"
+                  "\n `cocopp.archiving.official_archives.update_all()` to create"
+                  "\n valid definition files.")
+    official_archives._make_folder_skeleton()      
+    official_archives.set_as_attributes_in()
 
 class _old_ArchivesOfficial(ListOfArchives):
     """superseded by `OfficialArchives`

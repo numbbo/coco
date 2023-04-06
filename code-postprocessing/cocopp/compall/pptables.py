@@ -11,8 +11,8 @@ import numpy
 
 from .. import genericsettings, bestalg, toolsstats, pproc, ppfigparam, testbedsettings, captions, ppfig
 from ..pptex import writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
-from ..toolsstats import significancetest, significance_all_best_vs_other
-from ..toolsdivers import str_to_latex, strip_pathname1, replace_in_file, get_version_label, prepend_to_file
+from ..toolsstats import significancetest, significance_all_best_vs_other, best_alg_indices
+from ..toolsdivers import str_to_latex, strip_pathname1, strip_pathname3, replace_in_file, get_version_label, prepend_to_file
 
 
 def get_table_caption():
@@ -25,7 +25,7 @@ def get_table_caption():
     table_caption_one = (r"""%
         Expected runtime (\ERT\ in number of """
         + testbedsettings.current_testbed.string_evals
-        + r""") divided by the respective !!BEST-ERT!! in
+        + r""") divided by the respective !!BEST-ERT!! (when finite) in
         #1.
         This \ERT\ ratio and, in braces as dispersion measure, the half difference between
         10 and 90\%-tile of bootstrapped run lengths appear for each algorithm and 
@@ -62,11 +62,13 @@ def get_table_caption():
         the rank-sum test) when compared to all other algorithms of the table, with
         $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
         than 1, with Bonferroni correction by the number of functions (!!TOTAL-NUM-OF-FUNCTIONS!!). """ +
-                          (r"""A $\downarrow$ indicates the same tested against !!THE-REF-ALG!!. """
-                           if not (testbedsettings.current_testbed.name in (testbedsettings.suite_name_bi_ext,
-                                                                            testbedsettings.suite_name_ls,
-                                                                            testbedsettings.suite_name_mixint,
-                                                                            testbedsettings.suite_name_bi_mixint))
+                (r"""A ${}$ signifies the number of trials that were worse than the ERT of !!THE-REF-ALG!! """
+                 r"""shown only when less than 10 percent were worse and the ERT was better."""
+                 .format(significance_vs_ref_symbol)
+                    if not (testbedsettings.current_testbed.name in (testbedsettings.suite_name_bi_ext,
+                                                                     testbedsettings.suite_name_ls,
+                                                                     testbedsettings.suite_name_mixint,
+                                                                     testbedsettings.suite_name_bi_mixint))
                            else "") + r"""Best results are printed in bold.
         """)
 
@@ -90,6 +92,10 @@ def get_table_caption():
 
     return captions.replace(table_caption)
 
+show_number_of_better_runs_threshold = 0.9  # compared to reference/best algorithm
+
+table_column_width = 100  # used with <td style="min-width:%dpx"> % ...
+table_first_column_width = 250  # in 'px', aligns the second column in the table
 
 with_table_heading = False  # in case the page is long enough
 
@@ -98,8 +104,8 @@ allmedtarget = {}
 
 significance_vs_others_symbol = r"\star"
 significance_vs_others_symbol_html = r"&#9733;"
-significance_vs_ref_symbol = r"\downarrow"
-significance_vs_ref_symbol_html = r"&darr;"
+significance_vs_ref_symbol = r"\uparrow"
+significance_vs_ref_symbol_html = r"&uarr;"
 maxfloatrepr = 10000.
 samplesize = genericsettings.simulated_runlength_bootstrap_sample_size
 precfloat = 2
@@ -369,7 +375,20 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
             # algmedfinalfunvals.append(numpy.median(entry.finalfunvals))
 
             if refalgentries:
-                algtestres.append(significancetest(refalgentry, entry, targets))
+                nbs = []  # number of worse runs to show for each target
+                for target in targets:
+                    nbs.append(None)  # overwrite when "significance" is found
+                    ert = entry.detERT([target])[0]
+                    if not numpy.isfinite(ert):
+                        continue
+                    ref_ert = refalgentry.detERT([target])[0]
+                    if ert >= ref_ert:
+                        continue
+                    nbetter = entry._number_of_better_runs(target, ref_ert)
+                    if nbetter > show_number_of_better_runs_threshold * entry.nbRuns():
+                        nbs[-1] = entry.nbRuns() - nbetter  # number of worse runs
+                        assert nbs[-1] >= 0
+                algtestres.append(nbs)
 
             # determine success probability for Df = 1e-8
             e = entry.detEvals((targetf,))[0]
@@ -393,8 +412,8 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
             algfinaldata.append((algmedfinalfunvals[i], algmedmaxevals[i]))
 
         # significance test of best given algorithm against all others
-        best_alg_idx = numpy.array(algerts).argsort(0)[0, :]  # indexed by target index
-        significance_versus_others = significance_all_best_vs_other(algentries, targets, best_alg_idx)[0]
+        significance_versus_others, best_alg_idx = significance_all_best_vs_other(
+            algentries, targets, best_alg_indices(algerts, algmedfinalfunvals))
         # Create the table
         table = []
         tableHtml = []
@@ -447,7 +466,8 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
             curlineHtml = ['<thead>\n<tr>\n<th>#FEs/D<br>REPLACEH</th>\n']
             counter = 1
             for i in targets_of_interest.labels():
-                curlineHtml.append('<td>%s<br>REPLACE%d</td>\n' % (i, counter))
+                curlineHtml.append('<td style="min-width:%dpx">%s<br>REPLACE%d</td>\n' % (
+                    table_column_width, i, counter))
                 counter += 1
         else:
             if (testbed.name in [testbedsettings.suite_name_bi,
@@ -459,7 +479,8 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
             counter = 1
             for t in targets:
                 curlineHtml.append(
-                    '<td>%s<br>REPLACE%d</td>\n' % (writeFEvals2(t, precision=1, isscientific=True), counter))
+                    '<td style="min-width:%dpx">%s<br>REPLACE%d</td>\n' % (
+                        table_column_width, writeFEvals2(t, precision=1, isscientific=True), counter))
                 counter += 1
         curlineHtml.append('<td>#succ<br>REPLACEF</td>\n</tr>\n</thead>\n')
  
@@ -471,6 +492,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
         replaceValue = '<b>f%d, %d-D</b>' % (df[1], df[0])
         curlineHtml = [item.replace('REPLACEH', replaceValue) for item in curlineHtml]
 
+        ### write the header row
         if refalgentries:
             if isinstance(targets_of_interest, pproc.RunlengthBasedTargetValues):
                 # write ftarget:fevals
@@ -525,6 +547,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
         tableHtml.append('<tbody>\n')
         extraeol.append('')
 
+        ### write a row for each algorithm
         additional_commands = ['\\providecommand{\\ntables}{%d}' % len(targets_of_interest)]
         for i, alg in enumerate(algnames):
             tableHtml.append('<tr>\n')
@@ -536,7 +559,8 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                 additional_commands.append('\\providecommand{%s}{\\StrLeft{%s}{\\ntables}}' %
                                            (command_name, str_to_latex(strip_pathname1(alg))))
             curline = [command_name + r'\hspace*{\fill}']  # each list element becomes a &-separated table entry?
-            curlineHtml = ['<th>%s</th>\n' % str_to_latex(strip_pathname1(alg))]
+            curlineHtml = ['<th style="width:%dpx">%s</th>\n' % (
+                table_first_column_width, str_to_latex(strip_pathname3(alg)))]
 
             zipToEnumerate = zip(algerts[i], algdisp[i], isBoldArray[i], algtestres[i]) if refalgentries else zip(
                 algerts[i], algdisp[i], isBoldArray[i])
@@ -551,8 +575,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                 if j == len(algerts[i]) - 1:
                     alignment = '@{\,}l@{\,}|'
 
-                data = ert / refalgert[j] if refalgentries else ert
-                # write star for significance against all other algorithms
+                # create superscript star for significance against all other algorithms
                 str_significance_subsup = ''
                 str_significance_subsup_html = ''
                 if (len(best_alg_idx) > 0 and len(significance_versus_others) > 0 and
@@ -564,114 +587,100 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                     str_significance_subsup_html = '<sup>%s%s</sup>' % (
                     significance_vs_others_symbol_html, str(int(logp)) if logp > 1 else '')
 
+                # create subscript arrow for significance against reference
                 if refalgentries:
-                    # moved out of the above else: this was a bug!?
-                    z, p = testres
-                    if (nbtests * p) < 0.05 and data < 1. and z < 0.:
-                        if not numpy.isinf(refalgert[j]):
-                            tmpevals = algevals[i][j].copy()
-                            tmpevals[numpy.isnan(tmpevals)] = algentries[i].maxevals[numpy.isnan(tmpevals)]
-                            bestevals = refalgentry.detEvals(targets)
-                            bestevals, refalgalg = (bestevals[0][0], bestevals[1][0])
-                            bestevals[numpy.isnan(bestevals)] = refalgentry.maxevals[refalgalg][numpy.isnan(bestevals)]
-                            tmpevals = numpy.array(sorted(tmpevals))[0:min(len(tmpevals), len(bestevals))]
-                            bestevals = numpy.array(sorted(bestevals))[0:min(len(tmpevals), len(bestevals))]
+                    if testres is not None:
+                        # tmp2[-1] += r'$^{%s}$' % superscript
+                        nb = str(int(testres + 1/2))  # rounded number of runs that were worse
+                        str_significance_subsup += r'_{%s%s}' % (significance_vs_ref_symbol, nb)
+                        str_significance_subsup_html += '<sub>%s%s</sub>' % (significance_vs_ref_symbol_html, nb)
 
-                        # The conditions are now that ERT < ERT_best and
-                        # all(sorted(FEvals_best) > sorted(FEvals_current)).
-                        if numpy.isinf(refalgert[j]) or all(tmpevals < bestevals):
-                            nbstars = -numpy.ceil(numpy.log10(nbtests * p))
-                            # tmp2[-1] += r'$^{%s}$' % superscript
-                            str_significance_subsup += r'_{%s%s}' % (significance_vs_ref_symbol,
-                                                                     str(int(nbstars)) if nbstars > 1 else '')
-                            str_significance_subsup_html = '<sub>%s%s</sub>' % (significance_vs_ref_symbol_html,
-                                                                                str(int(
-                                                                                    nbstars)) if nbstars > 1 else '')
                 if str_significance_subsup:
                     str_significance_subsup = '$%s$' % str_significance_subsup
 
-                # format number in variable data
-                if numpy.isnan(data):
-                    curline.append(r'\multicolumn{2}{%s}{.}' % alignment)
-                    curlineHtml.append('<td>&nbsp;</td>')
-                else:
-                    if refalgentries and numpy.isinf(refalgert[j]):
-                        tableentry = r'\textbf{%s}' % writeFEvalsMaxPrec(algerts[i][j], 2)
-                        tableentryHtml = '<b>%s</b>' % writeFEvalsMaxPrec(algerts[i][j], 2)
-                        if dispersion and numpy.isfinite(dispersion):
-                            tableentry += r'\mbox{\tiny (%s)}' % writeFEvalsMaxPrec(dispersion, precdispersion)
-                            tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion, precdispersion)
+                # was in case of ert=inf and refalgert[j]=inf:
+                # curline.append(r'\multicolumn{2}{%s}{.}' % alignment)
+                # curlineHtml.append('<td>&nbsp;</td>')
+                # continue
 
-                        curline.append(r'\multicolumn{2}{%s}{%s}%s'
-                                       % (alignment,
-                                          tableentry,
-                                          str_significance_subsup))
+                # write "raw" ERT when reference is inf:
+                if numpy.isfinite(ert) and refalgentries and numpy.isinf(refalgert[j]):
+                    tableentry = r'\textbf{%s}' % writeFEvalsMaxPrec(algerts[i][j], 2)
+                    tableentryHtml = '<b>%s</b>' % writeFEvalsMaxPrec(algerts[i][j], 2)
+                    if dispersion and numpy.isfinite(dispersion):
+                        tableentry += r'\mbox{\tiny (%s)}' % writeFEvalsMaxPrec(dispersion, precdispersion)
+                        tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion, precdispersion)
+                    curline.append(r'\multicolumn{2}{%s}{%s}%s' % (
+                        alignment, tableentry, str_significance_subsup))
+                    curlineHtml.append('<td sorttable_customkey=\"%f\">%s%s</td>\n' % (
+                        algerts[i][j], tableentryHtml, str_significance_subsup_html))
+                    continue
 
-                        curlineHtml.append('<td sorttable_customkey=\"%f\">%s%s</td>\n'
-                                           % (algerts[i][j],
-                                              tableentryHtml,
-                                              str_significance_subsup_html))
-                        continue
+                denom = 1
+                if refalgentries and numpy.isfinite(refalgert[j]):
+                    denom = refalgert[j]
+                data = ert / denom
 
-                    tmp = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
-                    tmpHtml = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
-                    sortKey = data
-                    if data >= maxfloatrepr or data < 0.01:  # either inf or scientific notation
-                        if numpy.isinf(data) and j == len(algerts[i]) - 1:
-                            tmp += r'\,\textit{%s}' % writeFEvalsMaxPrec(algfinaldata[i][1], 0,
-                                                                         maxfloatrepr=maxfloatrepr)
-                            tmpHtml += '<i>%s</i>' % writeFEvalsMaxPrec(algfinaldata[i][1], 0,
+                # format display of variable data
+                tmp = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
+                tmpHtml = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
+                sortKey = data
+                if data >= maxfloatrepr or data < 0.01:  # either inf or scientific notation
+                    if numpy.isinf(data) and j == len(algerts[i]) - 1:
+                        tmp += r'\,\textit{%s}' % writeFEvalsMaxPrec(algfinaldata[i][1], 0,
                                                                         maxfloatrepr=maxfloatrepr)
-                            sortKey = algfinaldata[i][1]
-                        else:
-                            tmp = writeFEvalsMaxPrec(data, precscien, maxfloatrepr=data)
-                            if isBold:
-                                tmpHtml = '<b>%s</b>' % tmp
-                                tmp = r'\textbf{%s}' % tmp
-
-                        if not numpy.isnan(dispersion):
-                            tmpdisp = dispersion / refalgert[j] if refalgentries else dispersion
-                            if tmpdisp >= maxfloatrepr or tmpdisp < 0.005:  # TODO: hack
-                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
-                            else:
-                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=maxfloatrepr)
-                            tmp += r'\mbox{\tiny (%s)}' % tmpdisp
-                            tmpHtml += ' (%s)' % tmpdisp
-                        curline.append(r'\multicolumn{2}{%s}{%s%s}' % (alignment, tmp, str_significance_subsup))
-                        if (numpy.isinf(sortKey)):
-                            sortKey = sys.maxsize
-                        curlineHtml.append('<td sorttable_customkey=\"%f\">%s%s</td>' % (
-                        sortKey, tmpHtml, str_significance_subsup_html))
+                        tmpHtml += '<i>%s</i>' % writeFEvalsMaxPrec(algfinaldata[i][1], 0,
+                                                                    maxfloatrepr=maxfloatrepr)
+                        sortKey = algfinaldata[i][1]
                     else:
-                        tmp2 = tmp.split('.', 1)
-                        if len(tmp2) < 2:
-                            tmp2.append('')
-                        else:
-                            tmp2[-1] = '.' + tmp2[-1]
+                        tmp = writeFEvalsMaxPrec(data, precscien, maxfloatrepr=data)
                         if isBold:
-                            tmp3 = []
-                            tmp3html = []
-                            for k in tmp2:
-                                tmp3.append(r'\textbf{%s}' % k)
-                                tmp3html.append('<b>%s</b>' % k)
-                            tmp2 = tmp3
-                            tmp2html = tmp3html
+                            tmpHtml = '<b>%s</b>' % tmp
+                            tmp = r'\textbf{%s}' % tmp
+
+                    if not numpy.isnan(dispersion):
+                        tmpdisp = dispersion / denom
+                        if tmpdisp >= maxfloatrepr or tmpdisp < 0.005:  # TODO: hack
+                            tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
                         else:
-                            tmp2html = []
-                            tmp2html.extend(tmp2)
-                        if not numpy.isnan(dispersion):
-                            tmpdisp = dispersion / refalgert[j] if refalgentries else dispersion
-                            if tmpdisp >= maxfloatrepr or tmpdisp < 0.01:
-                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
-                            else:
-                                tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=maxfloatrepr)
-                            tmp2[-1] += (r'\mbox{\tiny (%s)}' % (tmpdisp))
-                            tmp2html[-1] += ' (%s)' % tmpdisp
-                        tmp2[-1] += str_significance_subsup
-                        tmp2html[-1] += str_significance_subsup_html
-                        curline.extend(tmp2)
-                        tmp2html = ("").join(str(item) for item in tmp2html)
-                        curlineHtml.append('<td sorttable_customkey=\"%f\">%s</td>' % (data, tmp2html))
+                            tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=maxfloatrepr)
+                        tmp += r'\mbox{\tiny (%s)}' % tmpdisp
+                        tmpHtml += ' (%s)' % tmpdisp
+                    curline.append(r'\multicolumn{2}{%s}{%s%s}' % (alignment, tmp, str_significance_subsup))
+                    if (numpy.isinf(sortKey)):
+                        sortKey = sys.maxsize
+                    curlineHtml.append('<td sorttable_customkey=\"%f\">%s%s</td>' % (
+                    sortKey, tmpHtml, str_significance_subsup_html))
+                else:
+                    tmp2 = tmp.split('.', 1)
+                    if len(tmp2) < 2:
+                        tmp2.append('')
+                    else:
+                        tmp2[-1] = '.' + tmp2[-1]
+                    if isBold:
+                        tmp3 = []
+                        tmp3html = []
+                        for k in tmp2:
+                            tmp3.append(r'\textbf{%s}' % k)
+                            tmp3html.append('<b>%s</b>' % k)
+                        tmp2 = tmp3
+                        tmp2html = tmp3html
+                    else:
+                        tmp2html = []
+                        tmp2html.extend(tmp2)
+                    if not numpy.isnan(dispersion):
+                        tmpdisp = dispersion / denom
+                        if tmpdisp >= maxfloatrepr or tmpdisp < 0.01:
+                            tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
+                        else:
+                            tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=maxfloatrepr)
+                        tmp2[-1] += (r'\mbox{\tiny (%s)}' % (tmpdisp))
+                        tmp2html[-1] += ' (%s)' % tmpdisp
+                    tmp2[-1] += str_significance_subsup
+                    tmp2html[-1] += str_significance_subsup_html
+                    curline.extend(tmp2)
+                    tmp2html = ("").join(str(item) for item in tmp2html)
+                    curlineHtml.append('<td sorttable_customkey=\"%f\">%s</td>' % (data, tmp2html))
 
             curline.append('%d' % algnbsucc[i])
             curline.append('/%d' % algnbruns[i])
@@ -692,7 +701,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
             f.write(res)
 
             res = "".join(str(item) for item in tableHtml)
-            res = '\n<table class=\"sortable\" style=\"width:800px \">\n%s</table>\n<p/>\n' % res
+            res = '\n<table class=\"sortable\" >\n%s</table>\n<p/>\n' % res
 
             if True:
                 filename = os.path.join(output_dir, genericsettings.pptables_file_name + '.html')

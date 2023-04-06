@@ -48,6 +48,7 @@ def config(suite_name=None):
     """called from a high level, e.g. rungeneric, to configure the lower level
     modules via modifying parameter settings.
     """
+    config_target_values_setting(settings.isExpensive, settings.runlength_based_targets)
     if suite_name:
         tbs.load_current_testbed(suite_name, pproc.TargetValues)
 
@@ -145,8 +146,8 @@ def config(suite_name=None):
         ppscatter.markersize = 16
 
     else:
-        pass  # here the default values of the modules apply
-        # pprlmany.x_limit = ...should depend on noisy/noiseless
+        # here the default values of the modules apply
+        pprldmany.x_limit = settings.xlimit_pprldmany  # ...should depend on noisy/noiseless
     if 11 < 3:  # for testing purpose
         if tbs.current_testbed:
             # TODO: this case needs to be tested yet: the current problem is that no noisy data are in this folder

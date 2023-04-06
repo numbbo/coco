@@ -596,7 +596,6 @@ def main(dsList, _valuesOfInterest, outputdir):
             if len(ws):
                 for w in ws:
                     print(w)
-                print('while saving figure in "' + filename +
-                        '" (in ppfigdim.py:551)')
+                print('while saving figure to "' + filename + '" (at ppfigdim.py:595)')
 
         plt.close()

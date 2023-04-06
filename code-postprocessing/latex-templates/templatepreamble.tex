@@ -1,12 +1,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % preamble for the BBOB ACM-compliant LaTeX templates                         %
 %                                                                             %
-% copyright 2009--2022 the BBOBies                                            %
+% copyright 2009--2023 the BBOBies                                            %
 % (under BSD licence, see https://github.com/numbbo/coco/blob/master/LICENSE) %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % to be updated from year to year:
-\titlenote{Submission deadline: April 11th.}
+\titlenote{Submission deadline: to be announced (likely late March/early April.}
 \newcommand{\version}{2.6}
 
 
@@ -91,9 +91,12 @@
 
 \usepackage{xcolor}
 \usepackage{colortbl}
+\usepackage{booktabs}
 %It sets your colour line and then sets back to default (black)
-\newcommand{\blueline}{\arrayrulecolor{blue}\hline\arrayrulecolor{black}}
-\newcommand{\greenline}{\arrayrulecolor{green}\hline\arrayrulecolor{black}}
+\definecolor{bbobblue}{HTML}{7f7fff}
+\definecolor{bbobgreen}{HTML}{7fbf7f}
+\newcommand{\blueline}{\arrayrulecolor{bbobblue}\specialrule{0.15em}{0em}{0em}\arrayrulecolor{black}}
+\newcommand{\greenline}{\arrayrulecolor{bbobgreen}\specialrule{0.15em}{0em}{0em}\arrayrulecolor{black}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%   END OF PREAMBLE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -114,17 +117,20 @@
 
 
 % DOI
-\acmDOI{10.1145/123_4}
+\acmDOI{10.1145/nnnnnnn.nnnnnnn} % To be updated after completing copyright process
 
 % ISBN
-\acmISBN{123-4567-89-101/11/21}
+\acmISBN{978-x-xxxx-xxxx-x/YY/MM} % To be updated after completing copyright process
 
 %Conference
-\acmConference[GECCO '22]{the Genetic and Evolutionary Computation Conference 2022}{July 9--13, 2022}{Boston, MA, USA}
-\acmYear{2022}
-\copyrightyear{2022}
+\acmConference[GECCO '23]{The Genetic and Evolutionary Computation Conference 2023}{July 15--19, 2023}{Lisbon, Portugal}
+\acmYear{2023}
+\copyrightyear{2023}
 
 \acmPrice{15.00}
+
+
+
 
 
 

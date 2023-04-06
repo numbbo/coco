@@ -36,7 +36,10 @@ static coco_suite_t *suite_cons_bbob_initialize(const char *suite_name) {
  */
 static const char *suite_cons_bbob_get_instances_by_year(const int year) {
 
-  if ((year == 2022) || (year == 0)) {
+  if ((year >= 2022) || (year == 0)) {
+    return "1-15";
+  }
+  else if ((year >= 2009)) {
     return "1-15";
   }
   else {
@@ -156,10 +159,10 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
     problem = transform_obj_scale(problem, 10.);  /* move initial feasible point to a delta-f between 100 and 10000 */
       
   } else {
-    coco_error("get_cons_bbob_problem(): cannot retrieve problem f%lu instance %lu in %luD", 
-        function, instance, dimension);
     coco_free_memory(xopt);
     coco_free_memory(feasible_direction);
+    coco_error("get_cons_bbob_problem(): cannot retrieve problem f%lu instance %lu in %luD", 
+        function, instance, dimension);
     return NULL; /* Never reached */
   }
 

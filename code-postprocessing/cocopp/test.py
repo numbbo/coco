@@ -438,6 +438,13 @@ def main(arguments):
             print('**  subtest 19 finished in ', time.time() - t0, ' seconds')
             assert result == 0, 'Test failed: running postprocessing twice within same python session'
 
+        with InfolderGoneWithTheWind():
+            t0 = time.time()
+            result = os.system("""python -c "import cocopp; cocopp.main('constrained/2022/RandomSearch-5')" """)
+            print('**  subtest 20 finished in ', time.time() - t0, ' seconds')
+            assert result == 0, 'Test failed: running postprocessing on bbob-constrained data'
+
+
     print('launching doctest (it might be necessary to close a few pop up windows to finish)')
     t0 = time.time()
 

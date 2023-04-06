@@ -57,7 +57,7 @@ def _split_short_opt_list(short_opt_list):
     tmp = short_opt_list[:]
     # split into logical elements: one-letter that could be followed by colon
     while tmp:
-        if len(tmp) > 1 and tmp[1] is ':':
+        if len(tmp) > 1 and tmp[1] == ':':
             res.add(tmp[0:2])
             tmp = tmp[2:]
         else:

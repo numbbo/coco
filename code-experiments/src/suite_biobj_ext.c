@@ -97,7 +97,10 @@ static const char *suite_biobj_ext_get_instances_by_year(const int year) {
   if (year == 0000) { /* default/test case */
     return "1-10";
   }
-  else if ((year == 2017) || (year == 2018)) {
+  else if (year >= 2017) {
+    return "1-15";
+  }
+  else if (year >= 2009) {
     return "1-15";
   }
   else {

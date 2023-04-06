@@ -11,8 +11,10 @@ dataset (that is, each benchmarked algorithm variant):
   1. <details><summary><b>Zip the data folder.
      </b> (click to view)</summary>
      A data zipfile contains a single folder under which all data from a
-     single full experiment was collected.
-     <tt>.gzip</tt> or <tt>.tgz</tt> or <tt>.zip</tt> are valid formats.
+     single full experiment was collected. The folder can contain subfolders
+     (or subsub...folders), for example of data from different (sub)batches of
+     the complete experiment. Valid formats are
+     <tt>.gzip</tt> or <tt>.tgz</tt> or <tt>.zip</tt>
      </details>
 
   1. <details><summary><b>Rename the zip file.

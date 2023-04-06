@@ -19,7 +19,7 @@ dry_run = False
 # ============== VARIABLES ==============
 substitutes = dict(
     CC = os.environ.get('CC', 'cc'),
-    CCFLAGS = '-g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow -Wno-sign-compare -Wconversion',
+    CCFLAGS = '-g -ggdb -std=c99 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow -Wno-sign-compare -Wconversion',
     LDFLAGS = os.environ.get('LDFLAGS', '') + ' -lm'
 )
 

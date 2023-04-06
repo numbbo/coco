@@ -45,11 +45,18 @@ target_runlength = 10  # used in ppfigs.main
 single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)] # used in pprldistr
 
 xlimit_pprldmany = 1e7
-"""maximal run length multiplier used in `pprldmany`, noisy: rather 1e8
-   maybe better: ``10 * genericsettings.evaluation_setting[1]``?"""
+"""maximal run length multiplier used in `pprldmany`.
+
+   This sets ``cocopp.compall.pprldmany.x_limit`` via
+   calling `cocopp.config.config()``.
+
+   Noisy setting should be rather 1e8?
+   ?maybe better: ``10 * genericsettings.evaluation_setting[1]``?"""
 xlimit_expensive = 1e3
 """maximal run length multiplier in expensive setting, used in config for
    `pprldmany` and `ppfigdim`"""
+minor_grid_alpha_in_pprldmany = 0.15
+"""used in `pprldmany` for empirical runtime distributions, 0 means no minor grid"""
 len_of_names_in_pprldmany_legend = None
 """set the length, for example when we want to remove characters that are
    not fully displayed, 9 == len('best 2009')"""
@@ -64,8 +71,11 @@ len_of_names_in_pprldmany_legend = None
 dim_related_markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 dim_related_colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
 
-simulated_runlength_bootstrap_sample_size = 10 + 990 // (1 + 10 * max((0, in_a_hurry)))  # for tables and plots
-"""10000 would be better for a final camera-ready paper version"""
+simulated_runlength_bootstrap_sample_size = 30 + int(970 / (1 + 10 * max((0, in_a_hurry))))
+"""bootstrap samples, 30 is a multiple of 10 and 15.
+   Used for tables and plots. `int(1e4)` would be preferable
+   for a final camera-ready paper version.
+   """
 
 
 # single_target_pprldistr_values = (10., 1e-1, 1e-4, 1e-8)  # used as default in pprldistr.plot method, on graph for each
@@ -91,12 +101,14 @@ instancesOfInterest2016 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 51: 1, 52: 1, 53: 1, 54
 instancesOfInterest2017 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 61: 1, 62: 1, 63: 1, 64: 1,
                            65: 1, 66: 1, 67: 1, 68: 1, 69: 1, 70: 1}  # 2017 instances
 instancesOfInterest2018 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 71: 1, 72: 1, 73: 1, 74: 1,
-                           75: 1, 76: 1, 77: 1, 78: 1, 79: 1, 80: 1}  # 2018 instances
+                           75: 1, 76: 1, 77: 1, 78: 1, 79: 1, 80: 1}  # 2018-2020 instances
+instancesOfInterest2021 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 91: 1, 92: 1, 93: 1, 94: 1,
+                           95: 1, 96: 1, 97: 1, 98: 1, 99: 1, 100: 1}  # 2021-2022 instances
+instancesOfInterest2023 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 101: 1, 102: 1, 103: 1, 104: 1,
+                           105: 1, 106: 1, 107: 1, 108: 1, 109: 1, 110: 1}  # instances since 2023
 instancesOfInterestBiobj2016 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1}  # bi-objective 2016 instances
 instancesOfInterestBiobj2017 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1,
-                                10: 1, 11: 1, 12: 1, 13: 1, 14:1, 15:1}  # bi-objective 2017 instances
-instancesOfInterestBiobj2018 = instancesOfInterestBiobj2017  # bi-objective 2018 instances
-
+                                10: 1, 11: 1, 12: 1, 13: 1, 14:1, 15:1}  # bi-objective instances since 2017
 instancesOfInterest = [instancesOfInterest2009,
                        instancesOfInterest2010,
                        instancesOfInterest2012,
@@ -105,176 +117,73 @@ instancesOfInterest = [instancesOfInterest2009,
                        instancesOfInterest2016,
                        instancesOfInterest2017,
                        instancesOfInterest2018,
+                       instancesOfInterest2021,
+                       instancesOfInterest2023,
                        instancesOfInterestBiobj2016,
-                       instancesOfInterestBiobj2017,
-                       instancesOfInterestBiobj2018]
+                       instancesOfInterestBiobj2017]
 
-reference_algorithm_styles = {'ls': '-', 'linewidth': 4,
-                              'marker': 'D', 'markersize': 11., 'markeredgewidth': 1.5,
-                              'markerfacecolor': 'linen', #'wheat', OR: antiquewhite
-                              'markeredgecolor': 'linen', #'wheat',
-                              'color': 'linen', #'wheat'
+reference_algorithm_styles = {'linestyle': '-', 'linewidth': 5,  # used in compall.pprldmany
+                              'marker': 'D', 'markersize': 1*0.8*11., 'markeredgewidth': 1*1.5/1.5,
+                              'color': 'linen',  # from heavy to light: 'antiquewhite', 'wheat', 'linen'
+                              # we could set 'markerfacecolor' and/or 'markeredgecolor' differently
                              }
+marker_size_multiplier = 1.1
+'''multiply all marker sizes in below line_styles, used in compall.pprldmany.main'''
+line_styles = [  # used by ppfigs and pprlmany, linewidth=1 can also be set here but is also modified later using style and zorder
+    {'color': '#1874b4', 'linestyle': '-', 'marker': 'o', 'markersize': 7, 'zorder': 2},
+    {'color': '#ff7d0b', 'linestyle': '-', 'marker': 'd', 'markersize': 7, 'zorder': 2},
+    {'color': '#22a022', 'linestyle': '-', 'marker': '*', 'markersize': 8.7, 'zorder': 2},
+    {'color': '#d61e1f', 'linestyle': '-', 'marker': 'P', 'markersize': 8, 'zorder': 2},
+    {'color': '#8a52bd', 'linestyle': '-', 'marker': 'p', 'markersize': 8, 'zorder': 2},
+    {'color': '#8c493c', 'linestyle': '-', 'marker': 'v', 'markersize': 8, 'zorder': 2},
+    {'color': '#e35fbb', 'linestyle': '-', 'marker': 'X', 'markersize': 8, 'zorder': 2},
+    {'color': '#11bdcf', 'linestyle': '-', 'marker': '^', 'markersize': 8, 'zorder': 2},
+    {'color': '#7f7f7f', 'linestyle': '-', 'marker': 'D', 'markersize': 6, 'zorder': 2},
+    {'color': '#bcbd1a', 'linestyle': '-', 'marker': '<', 'markersize': 8, 'zorder': 2},
+    {'color': '#440154', 'linestyle': '--', 'marker': '>', 'markersize': 8, 'zorder': 2.001},
+#    {'color': '#00ff5c', 'linestyle': '-', 'marker': 'h', 'markersize': 8, 'zorder': 1.999},  # shiny green
+    {'color': '#2500bb', 'linestyle': '--', 'marker': 'o', 'markersize': 7, 'zorder': 2.001},  # blue, ff->bb
+    {'color': '#f800fd', 'linestyle': '--', 'marker': 'd', 'markersize': 7, 'zorder': 2.001},
+    {'color': '#91b6e8', 'linestyle': '-', 'marker': '*', 'markersize': 8.5, 'zorder': 1.4},
+    {'color': '#ffae5f', 'linestyle': '-', 'marker': 'P', 'markersize': 8, 'zorder': 1.4},
+    {'color': '#82df70', 'linestyle': '-', 'marker': 'p', 'markersize': 8, 'zorder': 1.4},
+    {'color': '#ff7b79', 'linestyle': '-', 'marker': 'v', 'markersize': 8, 'zorder': 1.4},
+    {'color': '#ba96d5', 'linestyle': '-', 'marker': 'X', 'markersize': 8, 'zorder': 1.4},
+    {'color': '#f797c0', 'linestyle': '-', 'marker': '^', 'markersize': 8, 'zorder': 1.4},
+    {'color': '#dbdb73', 'linestyle': '-', 'marker': 'D', 'markersize': 6, 'zorder': 1.4},
+    {'color': '#82d6e5', 'linestyle': '-', 'marker': '<', 'markersize': 8, 'zorder': 1.4},
+    {'color': '#1874b4', 'linestyle': '--', 'marker': '>', 'markersize': 8, 'zorder': 2.001},
+    {'color': '#ff7d0b', 'linestyle': '--', 'marker': 'h', 'markersize': 8, 'zorder': 2.001},
+    {'color': '#22a022', 'linestyle': '--', 'marker': 'o', 'markersize': 7, 'zorder': 2.001},
+    {'color': '#d61e1f', 'linestyle': '--', 'marker': 'd', 'markersize': 7, 'zorder': 2.001},
+    {'color': '#8a52bd', 'linestyle': '--', 'marker': '*', 'markersize': 8.5, 'zorder': 2.001},
+    {'color': '#8c493c', 'linestyle': '--', 'marker': 'P', 'markersize': 8, 'zorder': 2.001},
+    {'color': '#e35fbb', 'linestyle': '--', 'marker': 'p', 'markersize': 8, 'zorder': 2.001},
+    {'color': '#11bdcf', 'linestyle': '--', 'marker': 'v', 'markersize': 8, 'zorder': 2.001},
+    {'color': '#7f7f7f', 'linestyle': '--', 'marker': 'X', 'markersize': 8, 'zorder': 2.001},
+    {'color': '#bcbd1a', 'linestyle': '--', 'marker': '^', 'markersize': 8, 'zorder': 2.001},
+    {'color': '#440154', 'linestyle': '-', 'marker': 'D', 'markersize': 6, 'zorder': 2},
+    {'color': '#00ff5c', 'linestyle': '--', 'marker': '<', 'markersize': 8, 'zorder': 2.001},
+    {'color': '#2500bb', 'linestyle': '-', 'marker': '>', 'markersize': 8, 'zorder': 1.999},  # blue, ff->bb
+    {'color': '#f800fd', 'linestyle': '-', 'marker': 'h', 'markersize': 8, 'zorder': 1.999},
+    {'color': '#91b6e8', 'linestyle': '--', 'marker': 'o', 'markersize': 7, 'zorder': 1.4},
+    {'color': '#ffae5f', 'linestyle': '--', 'marker': 'd', 'markersize': 7, 'zorder': 1.4},
+    {'color': '#82df70', 'linestyle': '--', 'marker': '*', 'markersize': 8.5, 'zorder': 1.4},
+    {'color': '#ff7b79', 'linestyle': '--', 'marker': 'P', 'markersize': 8, 'zorder': 1.4},
+    {'color': '#ba96d5', 'linestyle': '--', 'marker': 'p', 'markersize': 8, 'zorder': 1.4},
+    {'color': '#f797c0', 'linestyle': '--', 'marker': 'v', 'markersize': 8, 'zorder': 1.4},
+    {'color': '#dbdb73', 'linestyle': '--', 'marker': 'X', 'markersize': 8, 'zorder': 1.4},
+    {'color': '#82d6e5', 'linestyle': '--', 'marker': '^', 'markersize': 8, 'zorder': 1.4},
+    {'color': '#1874b4', 'linestyle': '-', 'marker': 'D', 'markersize': 6, 'zorder': 2},
+    {'color': '#ff7d0b', 'linestyle': '-', 'marker': '<', 'markersize': 8, 'zorder': 2},
+    {'color': '#22a022', 'linestyle': '-', 'marker': '>', 'markersize': 8, 'zorder': 2},
+    {'color': '#d61e1f', 'linestyle': '-', 'marker': 'h', 'markersize': 8, 'zorder': 2},
+    {'color': '#8a52bd', 'linestyle': '-', 'marker': 'o', 'markersize': 7, 'zorder': 2},
+    {'color': '#8c493c', 'linestyle': '-', 'marker': 'd', 'markersize': 7, 'zorder': 2}]
 
-line_styles = [  # used by ppfigs and pprlmany  
-    {'marker': 'o', 'markersize': 31, 'linestyle': '-', 'color': '#000080'},  # 'NavyBlue'
-    {'marker': 'd', 'markersize': 26, 'linestyle': '-', 'color': '#ff00ff'},  # 'Magenta'
-    {'marker': '*', 'markersize': 33, 'linestyle': '-', 'color': '#ff7500'},  # 'Orange' (was too yellow)
-    {'marker': 'v', 'markersize': 28, 'linestyle': '-', 'color': '#6495ed'},  # 'CornflowerBlue'
-    {'marker': 'h', 'markersize': 30, 'linestyle': '-', 'color': 'r'},  # 'Red'
-    {'marker': '^', 'markersize': 25, 'linestyle': '-', 'color': '#9acd32'},  # 'YellowGreen' (glaring)
-    #          {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': 'g'}, # 'green' avoid green because of
-    #          {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': '#ffd700'}, # 'Goldenrod' seems too light
-    #          {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'k'}, # 'Black' is too close to NavyBlue
-    #          {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': '#d02090'}, # square, 'VioletRed' seems too close to red
-    {'marker': 'p', 'markersize': 24, 'linestyle': '-', 'color': 'c'},
-    #{'marker': 'H', 'markersize': 23, 'linestyle': '-', 'color': '#bebebe'},  # 'Gray'
-    # {'marker': 'o', 'markersize': 23, 'linestyle': '-', 'color': '#ffff00'}, # 'Yellow'
-    # {'marker': '3', 'markersize': 23, 'linestyle': '-', 'color': '#adff2f'},  # 'GreenYellow'
-    {'marker': '1', 'markersize': 23, 'linestyle': '-', 'color': '#228b22'},  # 'ForestGreen'
-    {'marker': 'D', 'markersize': 23, 'linestyle': '-', 'color': '#ffc0cb'},  # 'Lavender'
-    {'marker': '<', 'markersize': 23, 'linestyle': '-', 'color': '#87ceeb'},  # 'SkyBlue' close to CornflowerBlue
-    {'marker': 'v', 'markersize': 23, 'linestyle': '-', 'color': '#000080'},  # 'NavyBlue'
-    {'marker': '*', 'markersize': 23, 'linestyle': '-', 'color': 'r'},  # 'Red'
-    {'marker': 's', 'markersize': 23, 'linestyle': '-', 'color': '#ffd700'},  # 'Goldenrod'
-    {'marker': 'd', 'markersize': 23, 'linestyle': '-', 'color': '#d02090'},  # square, 'VioletRed'
-    {'marker': '^', 'markersize': 23, 'linestyle': '-', 'color': '#6495ed'},  # 'CornflowerBlue'
-    {'marker': '<', 'markersize': 23, 'linestyle': '-', 'color': '#ff7500'},  # 'Orange'
-    {'marker': 'h', 'markersize': 23, 'linestyle': '-', 'color': '#ff00ff'},  # 'Magenta'
-    # {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'm'}, # square, magenta
-    {'marker': 'p', 'markersize': 23, 'linestyle': '-', 'color': '#bebebe'},  # 'Gray'
-    {'marker': 'H', 'markersize': 23, 'linestyle': '-', 'color': '#87ceeb'},  # 'SkyBlue'
-    {'marker': '1', 'markersize': 23, 'linestyle': '-', 'color': '#ffc0cb'},  # 'Lavender'
-    {'marker': '2', 'markersize': 23, 'linestyle': '-', 'color': '#228b22'},  # 'ForestGreen'
-    {'marker': '4', 'markersize': 23, 'linestyle': '-', 'color': '#32cd32'},  # 'LimeGreen'
-    {'marker': '3', 'markersize': 23, 'linestyle': '-', 'color': '#9acd32'},  # 'YellowGreen'
-    {'marker': 'D', 'markersize': 23, 'linestyle': '-', 'color': '#adff2f'},  # 'GreenYellow'
-    {'marker': 'd', 'markersize': 31, 'linestyle': '-', 'color': '#000080'},  # 'NavyBlue'
-    {'marker': '*', 'markersize': 26, 'linestyle': '-', 'color': '#ff00ff'},  # 'Magenta'
-    {'marker': 'v', 'markersize': 33, 'linestyle': '-', 'color': '#ffa500'},  # old 'Orange'
-    {'marker': 'h', 'markersize': 28, 'linestyle': '-', 'color': '#6495ed'},  # 'CornflowerBlue'
-    {'marker': '^', 'markersize': 30, 'linestyle': '-', 'color': 'r'},  # 'Red'
-    {'marker': 'p', 'markersize': 25, 'linestyle': '-', 'color': '#9acd32'},  # 'YellowGreen'
-    {'marker': 'H', 'markersize': 24, 'linestyle': '-', 'color': 'c'},
-    {'marker': '3', 'markersize': 23, 'linestyle': '-', 'color': '#bebebe'},  # 'Gray'
+# see old_line_styles for older line styles
 
-]
-line_styles_old = [  # used by ppfigs and pprlmany see https://matplotlib.org/gallery/color/named_colors.html https://i.stack.imgur.com/lFZum.png
-    {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'midnightblue'},
-    {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'blue'},
-    {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': 'mediumpurple'},
-    {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'rebeccapurple'},  # square
-    {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'blueviolet'},  # or darkviolet
-    {'marker': 'd', 'markersize': 26, 'linestyle': '-', 'color': 'violet'},
-    {'marker': 'h', 'markersize': 25, 'linestyle': '-', 'color': 'fuchsia'},  # like magenta
-    {'marker': 's', 'markersize': 24, 'linestyle': '-', 'color': 'cornerflowerblue'},  # deeppink seems too close to reddish
-    {'marker': 'H', 'markersize': 24, 'linestyle': '-', 'color': 'crimson'},  # dark reddish
-    {'marker': '<', 'markersize': 24, 'linestyle': '-', 'color': 'deepskyblue'}, # or lightskyblue
-    {'marker': 'D', 'markersize': 24, 'linestyle': '-', 'color': 'darkturquoise'},
-    {'marker': '1', 'markersize': 24, 'linestyle': '-', 'color': 'cyan'},
-    {'marker': '2', 'markersize': 24, 'linestyle': '-', 'color': 'lime'},
-    {'marker': '4', 'markersize': 24, 'linestyle': '-', 'color': 'green'},
-    {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'yellowgreen'},
-    {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'r'},
-    {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'b'},
-    {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': 'm'},
-    {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'c'},  # square
-    {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'y'},
-    {'marker': 'd', 'markersize': 26, 'linestyle': '-', 'color': 'k'},
-    {'marker': 'h', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
-    {'marker': 's', 'markersize': 24, 'linestyle': '-', 'color': 'g'},
-    {'marker': 'H', 'markersize': 24, 'linestyle': '-', 'color': 'c'},
-    {'marker': '<', 'markersize': 24, 'linestyle': '-', 'color': 'r'},
-    {'marker': 'D', 'markersize': 24, 'linestyle': '-', 'color': 'k'},
-    {'marker': '1', 'markersize': 24, 'linestyle': '-', 'color': 'm'},
-    {'marker': '2', 'markersize': 24, 'linestyle': '-', 'color': 'g'},
-    {'marker': '4', 'markersize': 24, 'linestyle': '-', 'color': 'y'},
-    {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'r'}
-]
-line_styles_old = [  # used by ppfigs and pprlmany
-    {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
-    {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'r'},
-    {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': 'c'},
-    {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'm'},  # square
-    {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'k'},
-    {'marker': 'd', 'markersize': 26, 'linestyle': '-', 'color': 'y'},
-    {'marker': 'h', 'markersize': 25, 'linestyle': '-', 'color': 'g'},
-    {'marker': 's', 'markersize': 24, 'linestyle': '-', 'color': 'b'},
-    {'marker': 'H', 'markersize': 24, 'linestyle': '-', 'color': 'r'},
-    {'marker': '<', 'markersize': 24, 'linestyle': '-', 'color': 'c'},
-    {'marker': 'D', 'markersize': 24, 'linestyle': '-', 'color': 'm'},
-    {'marker': '1', 'markersize': 24, 'linestyle': '-', 'color': 'k'},
-    {'marker': '2', 'markersize': 24, 'linestyle': '-', 'color': 'y'},
-    {'marker': '4', 'markersize': 24, 'linestyle': '-', 'color': 'g'},
-    {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'g'},
-    {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'r'},
-    {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'b'},
-    {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': 'm'},
-    {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'c'},  # square
-    {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'y'},
-    {'marker': 'd', 'markersize': 26, 'linestyle': '-', 'color': 'k'},
-    {'marker': 'h', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
-    {'marker': 's', 'markersize': 24, 'linestyle': '-', 'color': 'g'},
-    {'marker': 'H', 'markersize': 24, 'linestyle': '-', 'color': 'c'},
-    {'marker': '<', 'markersize': 24, 'linestyle': '-', 'color': 'r'},
-    {'marker': 'D', 'markersize': 24, 'linestyle': '-', 'color': 'k'},
-    {'marker': '1', 'markersize': 24, 'linestyle': '-', 'color': 'm'},
-    {'marker': '2', 'markersize': 24, 'linestyle': '-', 'color': 'g'},
-    {'marker': '4', 'markersize': 24, 'linestyle': '-', 'color': 'y'},
-    {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'r'}
-]
-
-more_old_line_styles = [  # used by ppfigs and pprlmany
-    {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': '#000080'},  # 'NavyBlue'
-    {'marker': 'v', 'markersize': 30, 'linestyle': '-', 'color': 'r'},  # 'Red'
-    {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': '#ffd700'},  # 'Goldenrod' seems too light
-    {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': '#d02090'},  # square, 'VioletRed'
-    {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'k'},  # 'Black' is too close to NavyBlue
-    {'marker': 'd', 'markersize': 26, 'linestyle': '-', 'color': '#6495ed'},  # 'CornflowerBlue'
-    {'marker': 'h', 'markersize': 25, 'linestyle': '-', 'color': '#ffa500'},  # 'Orange'
-    {'marker': 'p', 'markersize': 24, 'linestyle': '-', 'color': '#ff00ff'},  # 'Magenta'
-    {'marker': 'H', 'markersize': 24, 'linestyle': '-', 'color': '#bebebe'},  # 'Gray'
-    {'marker': '<', 'markersize': 24, 'linestyle': '-', 'color': '#87ceeb'},  # 'SkyBlue'
-    {'marker': 'D', 'markersize': 24, 'linestyle': '-', 'color': '#ffc0cb'},  # 'Lavender'
-    {'marker': '1', 'markersize': 24, 'linestyle': '-', 'color': '#228b22'},  # 'ForestGreen'
-    {'marker': '2', 'markersize': 24, 'linestyle': '-', 'color': '#32cd32'},  # 'LimeGreen'
-    {'marker': '4', 'markersize': 24, 'linestyle': '-', 'color': '#9acd32'},  # 'YellowGreen'
-    {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': '#adff2f'},  # 'GreenYellow'
-    # {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': '#ffff00'}, # 'Yellow'
-    {'marker': 'v', 'markersize': 30, 'linestyle': '--', 'color': '#000080'},  # 'NavyBlue'
-    {'marker': '*', 'markersize': 31, 'linestyle': '--', 'color': 'r'},  # 'Red'
-    {'marker': 's', 'markersize': 20, 'linestyle': '--', 'color': '#ffd700'},  # 'Goldenrod'
-    {'marker': 'd', 'markersize': 27, 'linestyle': '--', 'color': '#d02090'},  # square, 'VioletRed'
-    {'marker': '^', 'markersize': 26, 'linestyle': '--', 'color': '#6495ed'},  # 'CornflowerBlue'
-    {'marker': '<', 'markersize': 25, 'linestyle': '--', 'color': '#ffa500'},  # 'Orange'
-    {'marker': 'h', 'markersize': 24, 'linestyle': '--', 'color': '#ff00ff'},  # 'Magenta'
-    {'marker': 'p', 'markersize': 24, 'linestyle': '--', 'color': '#bebebe'},  # 'Gray'
-    {'marker': 'H', 'markersize': 24, 'linestyle': '--', 'color': '#87ceeb'},  # 'SkyBlue'
-    {'marker': '1', 'markersize': 24, 'linestyle': '--', 'color': '#ffc0cb'},  # 'Lavender'
-    {'marker': '2', 'markersize': 24, 'linestyle': '--', 'color': '#228b22'},  # 'ForestGreen'
-    {'marker': '4', 'markersize': 24, 'linestyle': '--', 'color': '#32cd32'},  # 'LimeGreen'
-    {'marker': '3', 'markersize': 24, 'linestyle': '--', 'color': '#9acd32'},  # 'YellowGreen'
-    {'marker': 'D', 'markersize': 24, 'linestyle': '--', 'color': '#adff2f'},  # 'GreenYellow'
-]
-
-if 11 < 3:  # in case using my own linestyles
-    line_styles = [  # used by ppfigs and pprlmany, to be modified  
-        {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},
-        {'marker': 'o', 'markersize': 30, 'linestyle': '-', 'color': 'r'},
-        {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': 'b'},
-        {'marker': '*', 'markersize': 20, 'linestyle': '-', 'color': 'r'},
-        {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'b'},
-        {'marker': '^', 'markersize': 26, 'linestyle': '-', 'color': 'r'},
-        {'marker': 'h', 'markersize': 25, 'linestyle': '-', 'color': 'g'},
-        {'marker': 'p', 'markersize': 24, 'linestyle': '-', 'color': 'b'},
-        {'marker': 'H', 'markersize': 24, 'linestyle': '-', 'color': 'r'},
-        {'marker': '<', 'markersize': 24, 'linestyle': '-', 'color': 'c'},
-        {'marker': 'D', 'markersize': 24, 'linestyle': '-', 'color': 'm'},
-        {'marker': '1', 'markersize': 24, 'linestyle': '-', 'color': 'k'},
-        {'marker': '2', 'markersize': 24, 'linestyle': '-', 'color': 'y'},
-        {'marker': '4', 'markersize': 24, 'linestyle': '-', 'color': 'g'},
-        {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'g'}
-    ]
+figsize = [6.4, 4.8]  # == rcParamsDefault['figure.figsize'], used in compall.pprldmany
 
 minmax_algorithm_fontsize = [9, 14]  # used in pprldmany, depending on the number of algorithms
 

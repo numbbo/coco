@@ -33,28 +33,35 @@ from using the platform:
 ![General COCO Structure](coco.png)
 
 For more general information:
-- read our benchmarking guidelines introduction [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting (pdf)](https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977) or at [arXiv](https://arxiv.org/abs/1603.08785).
-- read the [COCO experimental setup](http://numbbo.github.io/coco-doc/experimental-setup) description
-- see the [`bbob-biobj` and `bbob-biobj-ext` COCO multi-objective functions testbed](http://numbbo.github.io/coco-doc/bbob-biobj/functions) documentation and the [specificities of the performance assessment for the bi-objective testbeds](http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment).
-- consult the [BBOB workshops series](http://numbbo.github.io/workshops),
-- consider to [register here](http://numbbo.github.io/register) for news, and 
-- see the [links below](#Links) to learn more about the ideas behind CoCO.
+- The [GitHub.io documentation pages](https://numbbo.github.io/coco/) for COCO
+- The article on benchmarking guidelines and an introduction to [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting (pdf)](https://www.tandfonline.com/eprint/DQPF7YXFJVMTQBH8NKR8/pdf?target=10.1080/10556788.2020.1808977) or at [arXiv](https://arxiv.org/abs/1603.08785)
+- The [COCO experimental setup](http://numbbo.github.io/coco-doc/experimental-setup) description
+- The [BBOB workshops series](http://numbbo.github.io/workshops)
+- For COCO/BBOB news [register here](http://numbbo.github.io/register)
+- See [links below](#Links) to learn even more about the ideas behind COCO
 
 
 Requirements  <a name="Requirements"></a>
 ------------
 1. For a machine running experiments 
   - A `C` compiler, such as gcc
-  - Python >=2.6 with `setuptools` installed
+  - Python >=3.6 with `setuptools` installed
   - optional: `git`
 2. For a machine displaying data by running the post-processing
   - Python 3 with `numpy`, `scipy`, `matplotlib`, and `six` installed.
-    We recommend to install the [Anaconda Python library](https://www.continuum.io/downloads)
+    We recommend installing the [Anaconda Python library](https://www.continuum.io/downloads)
 
 For Ubuntu 16.04+, all the requirements can be installed using the following command:
+
 ```
 apt-get install build-essential python-dev python-numpy python-matplotlib \
                 python-scipy python-six python-setuptools
+```
+
+For macOS, the `C` compiler comes with installing the Xcode command line tools like
+
+```
+xcode-select install
 ```
 
 ### Windows Specifics
@@ -520,6 +527,26 @@ effect. In this case it has been successful to remove all previously installed v
 see [here](https://github.com/numbbo/coco/issues/586) for a few more details. 
 
 
+#### Installing `cocoex` after migrating macOS to the ARM chipset (M1 or M2)
+Reinstall the Xcode command line tools with
+```
+xcode-select install
+```
+and uninstall previous versions of `cocoex`
+```
+pip uninstall cocoex
+```
+until the message
+```
+WARNING: Skipping cocoex as it is not installed.
+```
+appears. Then
+```
+python do.py run-python
+```
+in the coco home folder should do the job.
+
+
 ### Post-Processing
 
 #### Too long paths for postprocessing
@@ -638,7 +665,7 @@ Comprehensive List of Documentations <a name="Documentations"></a>
   - `bbob`: https://numbbo.github.io/gforge/downloads/download16.00/bbobdocfunctions.pdf
   - `bbob-biobj`: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
   - `bbob-biobj-ext`: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
-  - `bbob-noisy` (only in old code basis): http://coco.lri.fr/downloads/download15.03/bbobdocnoisyfunctions.pdf
+  - `bbob-noisy` (only in old code basis): https://hal.inria.fr/inria-00369466/document/
   - `bbob-largescale`: https://arxiv.org/pdf/1903.06396.pdf
   - `bbob-mixint`: https://hal.inria.fr/hal-02067932/document
   - `bbob-biobj-mixint`: https://numbbo.github.io/gforge/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
