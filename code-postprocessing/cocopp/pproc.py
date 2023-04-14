@@ -2142,7 +2142,7 @@ def get_DataSetList(*args, **kwargs):
         arg1 = [arg1]
     if (len(args) != 1 or
         not isinstance(arg1[0], string_types) or
-        not findfiles.is_recognized_repository_filetype(arg1[0])):
+        not findfiles.is_recognized_repository_filetype2(arg1[0])):
         return fallback()
     try: import pickle
     except: return fallback()

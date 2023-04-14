@@ -36,6 +36,17 @@ def is_recognized_repository_filetype(filename):
             or filename.find('.tgz') > 0
             or filename.find('.zip') > 0)
 
+def is_recognized_repository_filetype2(filename):
+    """return True if `filename` is a file and ends with a recognized extension"""
+    n = filename.strip()
+    if os.path.isdir(n):
+        return False
+    return (n.endswith('.tgz') or
+            n.endswith('.zip') or
+            n.endswith('.tar.gz') or
+            n.endswith('.tar')
+            )
+
 
 def main(directory='.'):
     """Lists "data" files recursively in a given directory, tar files
