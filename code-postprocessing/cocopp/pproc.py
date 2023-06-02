@@ -2360,7 +2360,7 @@ class DataSetList(list):
                     warn_message = ('in DataSetList.processIndexFile: instances '
                                     + str(set(i.instancenumbers).intersection(o.instancenumbers))
                                     + ' found several times.'
-                                    + ' Read data for F%d in %d-D might be inconsistent' % (i.funcId, i.dim))
+                                    + ' Read data for F%d in %d-D of %s might be inconsistent' % (i.funcId, i.dim, i.algId))
                     warnings.warn(warn_message)
                                   # + ' found several times. Read data for F%(argone)d in %(argtwo)d-D ' % {'argone':i.funcId, 'argtwo':i.dim}
                 # tmp = set(i.dataFiles).symmetric_difference(set(o.dataFiles))
