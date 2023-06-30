@@ -1,0 +1,154 @@
+import cocoex
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+
+
+def best_parameter(problem):
+    problem._best_parameter('print')
+    with open('._bbob_problem_best_parameter.txt', 'rt') as file_:
+        return [float(s) for s in file_.read().split()]
+
+
+def get_landscape(problem, num_intervals, best_param, x_index=0, y_index=1):
+    """Returns the problem landscape - the chosen axis-aligned plane through the optimum"""
+    X, Y = np.meshgrid(np.linspace(-5, 5, num_intervals),
+                       np.linspace(-5, 5, num_intervals))
+    x = X.reshape(num_intervals * num_intervals)
+    y = Y.reshape(num_intervals * num_intervals)
+    z = np.vstack([x, y]).transpose()
+    x_best = np.tile(best_param, (len(z), 1))
+    x_best[:, x_index] = z[:, 0]
+    x_best[:, y_index] = z[:, 1]
+    z = np.array([problem(x_i) for x_i in x_best])
+    Z = z.reshape((num_intervals, num_intervals))
+    return X, Y, Z
+
+
+def get_cuts(problem, num_intervals, best_param, x_index=0):
+    """Returns axis-aligned 1-D cuts through the optimum"""
+    x = np.linspace(-5, 5, num_intervals)
+    x_best = np.tile(best_param, (num_intervals, 1))
+    x_best[:, x_index] = x
+    z = np.array([problem(x_i) for x_i in x_best])
+    return x, z
+
+
+def get_diagonal_cuts(problem, num_intervals, best_param):
+    """Returns diagonal 1-D cuts through the optimum"""
+    x = np.linspace(-5 * np.sqrt(problem.dimension), 5 * np.sqrt(problem.dimension), num_intervals)
+    x_best = np.tile(best_param, (num_intervals, 1))
+    x_best += x[:, np.newaxis]
+    z = np.array([problem(x_i) for x_i in x_best])
+    x_scaled = np.interp(x, (min(x), max(x)), (-5, +5))
+    return x, x_scaled, z
+
+
+def plot_all(func, dim, inst, N=51, plot_folder='plots_bbob', x_index=0, y_index=1,
+             cmap='viridis', cmap_lines='Greys', save_plots=False):
+    suite = cocoex.Suite("bbob", "", "")
+    problem = suite.get_problem_by_function_dimension_instance(func, dim, inst)
+    best_param = best_parameter(problem)
+    best_value = problem(best_param)
+    best = best_param + [best_value]
+    problem_name = f'bbob $f_{{{func}}}$, {dim}-D, inst. {inst}'
+
+    if save_plots:
+        if not os.path.exists(plot_folder):
+            os.makedirs(plot_folder)
+
+    if dim == 2:
+        X, Y, Z = get_landscape(problem, num_intervals=N, best_param=best_param, x_index=x_index, y_index=y_index)
+
+        # Surface plot
+        fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+        ax.plot_surface(X, Y, Z, cmap=cmap, alpha=0.8)
+        ax.scatter(*best, c='black', marker='x', zorder=10)
+        ax.set_xlabel('x1')
+        ax.set_ylabel('x2')
+        ax.set_zlabel('f')
+        ax.set_title(problem_name)
+        plt.tight_layout()
+        if save_plots:
+            plt.savefig(f'{plot_folder}/bbob_f{func:02}_d{dim:02}_i{inst:02}_surface.png')
+        else:
+            plt.show()
+        plt.close()
+
+        # Heat map with level sets
+        fig, ax = plt.subplots(figsize=(6.4 * 0.75, 4.8 * 0.75))
+        plot = ax.pcolormesh(X, Y, Z)
+        ax.contour(X, Y, Z, cmap=cmap_lines)
+        ax.scatter(*best_param, c='white', marker='x', zorder=10)
+        ax.set_xlabel('x1')
+        ax.set_ylabel('x2', rotation=0)
+        ax.set_title(problem_name)
+        fig.colorbar(plot)
+        plt.tight_layout()
+        if save_plots:
+            plt.savefig(f'{plot_folder}/bbob_f{func:02}_d{dim:02}_i{inst:02}_heat.png')
+        else:
+            plt.show()
+        plt.close()
+
+    else:
+        # A matrix of heat maps with level sets
+        fig, axes = plt.subplots(dim - 1, dim - 1, figsize=((dim - 1) * 6.4 * 0.5, (dim - 1) * 4.8 * 0.5))
+        for r, row in enumerate(axes):
+            x2 = r + 1
+            for x1, ax in enumerate(row):
+                if x1 < x2:
+                    X, Y, Z = get_landscape(problem, num_intervals=N, best_param=best_param, x_index=x1, y_index=x2)
+                    best_param_x_y = np.take(best_param, [x1, x2])
+                    plot = ax.pcolormesh(X, Y, Z)
+                    ax.contour(X, Y, Z, cmap=cmap_lines)
+                    ax.scatter(*best_param_x_y, c='white', marker='x', zorder=10)
+                    ax.set_xlabel(f'x{x1 + 1}')
+                    ax.set_ylabel(f'x{x2 + 1}', rotation=0)
+                    plt.colorbar(plot, ax=ax)
+                else:
+                    ax.set_visible(False)
+        plt.suptitle(problem_name)
+        plt.tight_layout()
+        if save_plots:
+            plt.savefig(f'{plot_folder}/bbob_f{func:02}_d{dim:02}_i{inst:02}_heat.png')
+        else:
+            plt.show()
+        plt.close()
+
+    # Cuts through the search space
+    fig, ax = plt.subplots(figsize=(6.4 * 0.75, 4.8 * 0.75))
+    z_min = np.inf
+    z_max = - np.inf
+    for i in range(dim):
+        x_i, z_i = get_cuts(problem, N, best_param, x_index=i)
+        ax.plot(x_i, z_i, label=f'x{i + 1}')
+        z_min = min(z_min, min(z_i))
+        z_max = max(z_max, max(z_i))
+    x, x_scaled, z = get_diagonal_cuts(problem, N, best_param)
+    ax.plot(x_scaled, z, label='ones', linestyle='dashed', color='gray')
+    # Find where the diagonal cut exits the [-5, 5]^d range
+    valid_idx = np.where((x >= -5) & (x <= 5))[0]
+    x_low = x_scaled[valid_idx[0]]
+    x_high = x_scaled[valid_idx[-1]]
+    z_low = z[valid_idx[0]]
+    z_high = z[valid_idx[-1]]
+    z_min = min(z_min, z_low)
+    z_max = max(z_max, z_high)
+    ax.scatter([x_low, x_high], [z_low, z_high], marker='*', color='gray')
+    ax.set_ylim([z_min - 0.02 * (z_max - z_min), z_max + 0.1 * (z_max - z_min)])
+    ax.legend()
+    plt.suptitle(problem_name)
+    plt.tight_layout()
+    if save_plots:
+        plt.savefig(f'{plot_folder}/bbob_f{func:02}_d{dim:02}_i{inst:02}_cuts.png')
+    else:
+        plt.show()
+    plt.close()
+
+
+if __name__ == '__main__':
+    plot_all(func=22, dim=5, inst=1)
+    plot_all(func=22, dim=3, inst=1)
+    plot_all(func=22, dim=2, inst=1)
+
