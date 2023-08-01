@@ -50,7 +50,7 @@ static void f_sphere_gaussian_evaluate(
         coco_random_state_t * coco_seed = coco_random_new(seed);
         double gaussian_noise = coco_random_normal(coco_seed);
         gaussian_noise = exp(scale * gaussian_noise);
-        problem -> last_noise_value = gaussian_noise
+        problem -> last_noise_value = gaussian_noise;
         y[0] = f_sphere_gaussian_raw(x, gaussian_noise, number_of_variables);    
         assert(y[0] + 1e-13 >= problem->best_value[0]);/**<How to handle the tolerance considering the noise??>*/
 }
@@ -66,7 +66,7 @@ static void f_sphere_gaussian_evaluate_gradient(
     size_t i;
     double gaussian_noise = problem -> last_noise_value;
     for (i = 0; i < problem -> number_of_variables; i++){
-        y[i] = 2*x[i]*gaussian_noise
+        y[i] = 2*x[i]*gaussian_noise;
     }
 }
 
@@ -78,7 +78,7 @@ static coco_problem_t *f_sphere_gaussian_allocate(
         const uint32_t seed,
         const double scale,
     ){
-    const double *distribution_theta = &scale
+    const double *distribution_theta = &scale;
     coco_problem_t *problem = coco_noisy_problem_allocate_from_scalars("sphere function with gaussian noise",
      f_sphere_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0, seed, distribution_theta);
     problem->evaluate_gradient = f_sphere_evaluate_gradient;

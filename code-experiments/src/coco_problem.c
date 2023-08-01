@@ -308,7 +308,7 @@ static coco_problem_t *coco_noisy_problem_allocate_from_scalars(const char *prob
   );
   problem -> random_seed = random_seed;
   problem -> distribution_theta = distribution_theta;
-  return problem
+  return problem;
 }
 
 void coco_problem_free(coco_problem_t *problem) {
