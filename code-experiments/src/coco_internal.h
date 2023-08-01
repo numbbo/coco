@@ -127,6 +127,12 @@ struct coco_problem_s {
   coco_recommend_function_t recommend_solution;       /**< @brief  The function for recommending a solution. */
   coco_problem_free_function_t problem_free_function; /**< @brief  The function for freeing this problem. */
 
+  uint32_t random_seed;                               /**< @brief Random seed for noisy problems.*/
+  double *distribution_theta;                         /**< @brief Parameters of the distribution from which the noise is drawn*/
+  double last_noise_value;                            /**< @brief Last noise value in the case of noisy problems.
+                                                       Needed to compute the correct gradient for noisy problems.
+                                                       It assumes that the gradient will be computed after each function evaluation*/
+
   size_t number_of_variables;          /**< @brief Number of variables expected by the function, i.e.
                                        problem dimension */
   size_t number_of_objectives;         /**< @brief Number of objectives. */

@@ -283,6 +283,34 @@ static coco_problem_t *coco_problem_allocate_from_scalars(const char *problem_na
   return problem;
 }
 
+/**
+ * @brief Allocates a noisy problem by calling coco_problem_allocate_from_scalars and further setting theta and random seed
+ * @param random_seed Seed for generating random states for the noisy problem
+ * @param distribution_theta Parameters of the distribution from which the noise is drawn
+*/
+static coco_problem_t *coco_noisy_problem_allocate_from_scalars(const char *problem_name,
+                                                          coco_evaluate_function_t evaluate_function,
+                                                          coco_problem_free_function_t problem_free_function,
+                                                          const size_t number_of_variables,
+                                                          const double smallest_value_of_interest,
+                                                          const double largest_value_of_interest,
+                                                          const double best_parameter,
+                                                          const uint32_t random_seed, 
+                                                          const double *distribution_theta) {
+  coco_problem_t problem = coco_problem_allocate_from_scalars(
+    problem_name, 
+    evaluate_function, 
+    problem_free_function, 
+    number_of_variables,
+    smallest_value_of_interest. 
+    largest_value_of_interest, 
+    best_parameter
+  );
+  problem -> random_seed = random_seed;
+  problem -> distribution_theta = distribution_theta;
+  return problem
+}
+
 void coco_problem_free(coco_problem_t *problem) {
   assert(problem != NULL);
   if (problem->problem_free_function != NULL) {
