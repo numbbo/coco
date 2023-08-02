@@ -833,6 +833,28 @@ void coco_problem_sample_gaussian_noise(coco_problem_t * problem){
   problem -> last_noise_value = gaussian_noise;
 }
 
+/**
+ * @brief Samples uniform noise for a noisy problem
+*/
+/**@{*/
+void coco_problem_sample_uniform_noise(coco_problem_t * problem, double fvalue){
+  uint32_t random_seed = coco_problem_get_random_seed(problem);
+  double *distribution_theta = coco_problem_get_distribution_theta(problem);
+  assert(random_seed != NAN);
+  double alpha = *(distribution_theta);
+  double beta = *(distribution_theta++);
+  coco_random_state_t * coco_seed1 = coco_random_new(random_seed);
+  coco_random_state_t * coco_seed2 = coco_random_new(random_seed);
+  double uniform_noise_term1 = coco_random_uniform(coco_seed1);
+  double uniform_noise_term2 = coco_random_uniform(coco_seed2);
+  double uniform_noise_factor = pow(uniform_noise_term1, beta);
+  double scaling_factor = pow(10, 9)/(fvalue + 10e-99);
+  scaling_factor = pow(scaling_factor, alpha * uniform_noise_term2);
+  scaling_factor = scaling_factor > 1 ? scaling_factor : 1;
+  double uniform_noise = uniform_noise_factor * scaling_factor;
+  problem -> last_noise_value = uniform_noise;
+}
+
 /**@}*/
 
 /***********************************************************************************************************/

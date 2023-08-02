@@ -1,6 +1,6 @@
 /**
-    * @file f_sphere_bbob_noisy.c
-    * @brief Implementation of the noisy of the sphere function in the bbob-noisy suite
+    * @file f_sphere_gaussian.c
+    * @brief Implementation of the gaussian noisy version of the sphere function in the bbob-noisy suite
 */
 
 #include <stdio.h>
@@ -19,8 +19,6 @@
 
 /**
     * @brief Implements the sphere function with gaussian noise, by calling the functions of the f_sphere.c and coco_random.c files
-    * @param scale Scaling parameter of the Gaussian random variable
-    * @param seed Seed number for the random generator  
 */
 static double f_sphere_gaussian_raw(
         const double * x,
@@ -43,9 +41,6 @@ static void f_sphere_gaussian_evaluate(
         double * y
     ){
         assert(problem->number_of_objectives == 1);
-        double *distribution_theta = coco_problem_get_distribution_theta(problem);
-        double scale = *(distribution_theta);
-        uint32_t seed = coco_problem_get_random_seed(problem);
         coco_problem_sample_gaussian_noise(problem);
         double gaussian_noise = coco_problem_get_last_noise_value(problem);
         y[0] = f_sphere_gaussian_raw(x, gaussian_noise, number_of_variables);    
@@ -77,10 +72,10 @@ static coco_problem_t *f_sphere_gaussian_allocate(
     ){
     const double *distribution_theta = &scale;
     coco_problem_t *problem = coco_problem_allocate_from_scalars("sphere function with gaussian noise",
-     f_sphere_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0, seed, distribution_theta);    
+     f_sphere_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0);    
     problem -> random_seed = random_seed;
     problem -> distribution_theta = distribution_theta;
-    problem -> evaluate_gradient = f_sphere_evaluate_gradient;
+    problem -> evaluate_gradient = f_sphere_gaussian_evaluate_gradient;
     coco_problem_set_id(problem, "%s_d%02lu", "sphere-gaussian", number_of_variables); 
     /* Compute best solution */
     f_sphere_evaluate(problem, problem->best_parameter, problem->best_value);

@@ -418,6 +418,11 @@ double coco_problem_get_last_noise_value(const coco_problem_t *problem);
 void coco_problem_sample_gaussian_noise(coco_problem_t * problem);
 
 /**
+ * @brief Samples gaussian variate for noisy function
+ */
+void coco_problem_sample_uniform_noise(coco_problem_t * problem, double fvalue);
+
+/**
  * @brief Returns 1 if the final target was hit, 0 otherwise.
  */
 int coco_problem_final_target_hit(const coco_problem_t *problem);
