@@ -69,7 +69,7 @@ static coco_problem_t *f_sphere_uniform_allocate(
 /**
  * @brief Creates the BBOB sphere gaussian problem.
 */
-static coco_problem_t *f_sphere_gaussian_bbob_problem_allocate(
+static coco_problem_t *f_sphere_uniform_bbob_problem_allocate(
         const size_t function,
         const size_t dimension,
         const size_t instance,
@@ -77,7 +77,8 @@ static coco_problem_t *f_sphere_gaussian_bbob_problem_allocate(
         const char *problem_id_template,
         const char *problem_name_template,
         const uint32_t seed, 
-        const double scale,
+        const double alpha,
+        const double beta, 
     ){
 
     double *xopt, fopt;
@@ -87,7 +88,7 @@ static coco_problem_t *f_sphere_gaussian_bbob_problem_allocate(
     bbob2009_compute_xopt(xopt, rseed, dimension);
     fopt = bbob2009_compute_fopt(function, instance);
 
-    problem = f_sphere_gaussian_allocate(dimension, seed, scale);
+    problem = f_sphere_gaussian_allocate(dimension, seed, alpha, beta);
     problem = transform_vars_shift(problem, xopt, 0);
 
     /*if large scale test-bed, normalize by dim*/

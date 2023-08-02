@@ -6,6 +6,7 @@ REVISION
 VERSION
 __pycache__
 *.egg-info/
+.vscode/*
 
 
 code-experiments/build/*/coco.[ch]

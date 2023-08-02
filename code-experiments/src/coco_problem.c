@@ -820,7 +820,7 @@ static coco_problem_t *coco_problem_transformed_allocate(coco_problem_t *inner_p
 
 /**
  * @brief Samples gaussian noise for a noisy problem
-*/
+ */
 /**@{*/
 void coco_problem_sample_gaussian_noise(coco_problem_t * problem){
   uint32_t random_seed = coco_problem_get_random_seed(problem);
@@ -835,8 +835,7 @@ void coco_problem_sample_gaussian_noise(coco_problem_t * problem){
 
 /**
  * @brief Samples uniform noise for a noisy problem
-*/
-/**@{*/
+ */
 void coco_problem_sample_uniform_noise(coco_problem_t * problem, double fvalue){
   uint32_t random_seed = coco_problem_get_random_seed(problem);
   double *distribution_theta = coco_problem_get_distribution_theta(problem);
@@ -853,6 +852,28 @@ void coco_problem_sample_uniform_noise(coco_problem_t * problem, double fvalue){
   scaling_factor = scaling_factor > 1 ? scaling_factor : 1;
   double uniform_noise = uniform_noise_factor * scaling_factor;
   problem -> last_noise_value = uniform_noise;
+}
+
+/**
+ * @brief Samples cauchy noise for a noisy problem
+ */
+void coco_problem_sample_cauchy_noise(coco_problem_t * problem){
+  uint32_t random_seed = coco_problem_get_random_seed(problem);
+  double *distribution_theta = coco_problem_get_distribution_theta(problem);
+  assert(random_seed != NAN);
+  double alpha = *(distribution_theta);
+  double p = *(distribution_theta++);
+  coco_random_state_t * coco_seed1 = coco_random_new(random_seed);
+  coco_random_state_t * coco_seed2 = coco_random_new(random_seed); 
+  coco_random_state_t * coco_seed3 = coco_random_new(random_seed);
+  double uniform_indicator = coco_random_uniform(coco_seed1);
+  double numerator_normal_variate = coco_random_normal(coco_seed2);
+  double denominator_normal_variate = coco_random_normal(coco_seed3);
+  denominator_normal_variate = fabs(denominator_normal_variate);
+  double cauchy_noise = numerator_normal_variate / (denominator_normal_variate + 10e-99);
+  cauchy_noise = uniform_indicator < p ?  1000 + cauchy_noise : 1000;
+  cauchy_noise = alpha * cauchy_noise;
+  problem -> last_noise_value = cauchy_noise;
 }
 
 /**@}*/
