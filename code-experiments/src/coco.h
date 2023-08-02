@@ -398,6 +398,26 @@ size_t coco_problem_get_evaluations(const coco_problem_t *problem);
 size_t coco_problem_get_evaluations_constraints(const coco_problem_t *problem);
 
 /**
+ * @brief Returns the problem's random seed
+ */
+uint32_t coco_problem_get_random_seed(const coco_problem_t *problem);
+
+/**
+ * @brief Returns the parameters of the noise distribution 
+ */
+double *coco_problem_get_theta_distribution(const coco_problem_t *problem);
+
+/**
+ * @brief Returns the problem's last noise value
+ */
+double coco_problem_get_last_noise_value(const coco_problem_t *problem);
+
+/**
+ * @brief Samples gaussian variate for noisy function
+ */
+void coco_problem_sample_gaussian_noise(coco_problem_t * problem);
+
+/**
  * @brief Returns 1 if the final target was hit, 0 otherwise.
  */
 int coco_problem_final_target_hit(const coco_problem_t *problem);

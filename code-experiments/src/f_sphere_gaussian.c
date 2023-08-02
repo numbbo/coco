@@ -1,7 +1,6 @@
 /**
     * @file f_sphere_bbob_noisy.c
     * @brief Implementation of the noisy of the sphere function in the bbob-noisy suite
-
 */
 
 #include <stdio.h>
@@ -27,10 +26,9 @@ static double f_sphere_gaussian_raw(
         const double * x,
         const double gaussian_noise,
         const size_t number_of_variables,
-    ){        
-        if (coco_vector_contains_nan(x, number_of_variables))
-            return NAN;
+    ){       
         double result = f_sphere_raw(x, number_of_variables);
+        assert(result != NULL);
         result = result * gaussian_noise;
         return result;
 }
@@ -45,12 +43,11 @@ static void f_sphere_gaussian_evaluate(
         double * y
     ){
         assert(problem->number_of_objectives == 1);
-        double scale = *(problem -> distribution_theta);
-        uint32_t seed = problem -> random_seed;
-        coco_random_state_t * coco_seed = coco_random_new(seed);
-        double gaussian_noise = coco_random_normal(coco_seed);
-        gaussian_noise = exp(scale * gaussian_noise);
-        problem -> last_noise_value = gaussian_noise;
+        double *distribution_theta = coco_problem_get_distribution_theta(problem);
+        double scale = *(distribution_theta);
+        uint32_t seed = coco_problem_get_random_seed(problem);
+        coco_problem_sample_gaussian_noise(problem);
+        double gaussian_noise = coco_problem_get_last_noise_value(problem);
         y[0] = f_sphere_gaussian_raw(x, gaussian_noise, number_of_variables);    
         assert(y[0] + 1e-13 >= problem->best_value[0]);/**<How to handle the tolerance considering the noise??>*/
 }
@@ -64,7 +61,7 @@ static void f_sphere_gaussian_evaluate_gradient(
         double *y, 
     ){
     size_t i;
-    double gaussian_noise = problem -> last_noise_value;
+    double gaussian_noise = coco_problem_get_last_noise_value(problem);
     for (i = 0; i < problem -> number_of_variables; i++){
         y[i] = 2*x[i]*gaussian_noise;
     }
@@ -79,9 +76,11 @@ static coco_problem_t *f_sphere_gaussian_allocate(
         const double scale,
     ){
     const double *distribution_theta = &scale;
-    coco_problem_t *problem = coco_noisy_problem_allocate_from_scalars("sphere function with gaussian noise",
-     f_sphere_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0, seed, distribution_theta);
-    problem->evaluate_gradient = f_sphere_evaluate_gradient;
+    coco_problem_t *problem = coco_problem_allocate_from_scalars("sphere function with gaussian noise",
+     f_sphere_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0, seed, distribution_theta);    
+    problem -> random_seed = random_seed;
+    problem -> distribution_theta = distribution_theta;
+    problem -> evaluate_gradient = f_sphere_evaluate_gradient;
     coco_problem_set_id(problem, "%s_d%02lu", "sphere-gaussian", number_of_variables); 
     /* Compute best solution */
     f_sphere_evaluate(problem, problem->best_parameter, problem->best_value);
@@ -90,7 +89,7 @@ static coco_problem_t *f_sphere_gaussian_allocate(
 
 /**
  * @brief Creates the BBOB sphere gaussian problem.
- */
+*/
 static coco_problem_t *f_sphere_gaussian_bbob_problem_allocate(
             const size_t function,
             const size_t dimension,
@@ -99,7 +98,7 @@ static coco_problem_t *f_sphere_gaussian_bbob_problem_allocate(
             const char *problem_id_template,
             const char *problem_name_template,
             const uint32_t seed, 
-            const double scale
+            const double scale,
         ) {
 
         double *xopt, fopt;
