@@ -9,6 +9,7 @@ VERSION
 __pycache__
 *.egg-info/
 .vscode/*
+.version
 
 code-experiments/build/**/bbob2009_testcases.txt
 code-experiments/build/**/bbob2009_testcases2.txt
@@ -53,6 +54,8 @@ code-experiments/test/integration-test/test_bbob-mixint
 code-experiments/test/integration-test/test_biobj
 code-experiments/test/integration-test/test_coco
 code-experiments/test/integration-test/test_instance_extraction
+code-experiments/test/regression-test/data/
+code-experiments/test/regression-test/regression-test-bbob-noisy/
 
 code-postprocessing/build/
 code-postprocessing/cocopp/_version.py
@@ -62,5 +65,5 @@ code-postprocessing/cocopp/**/*.info
 code-postprocessing/dist/
 code-postprocessing/ppdata/
 
-.version
+data/
 dist/
