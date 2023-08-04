@@ -73,7 +73,6 @@ static coco_problem_t *f_rosenbrock_bbob_problem_allocate(const size_t function,
                                                           const long rseed,
                                                           const char *problem_id_template,
                                                           const char *problem_name_template) {
-
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
   size_t i, block_size;

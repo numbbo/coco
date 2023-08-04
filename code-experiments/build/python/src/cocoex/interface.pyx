@@ -13,12 +13,13 @@ known_suite_names = ["bbob",
                      "bbob-biobj", "bbob-biobj-ext",
                      "bbob-constrained",
                      "bbob-largescale",
-                     "bbob-mixint", "bbob-biobj-mixint"
+                     "bbob-mixint", "bbob-biobj-mixint",
+                     "bbob-noisy"
                      ]
 _known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext",
                       "bbob-constrained",
                       "bbob-constrained-active-only", "bbob-constrained-no-disguise",
-                      "bbob-largescale", "bbob-mixint", "bbob-biobj-mixint"]
+                      "bbob-largescale", "bbob-mixint", "bbob-biobj-mixint", "bbob-noisy"]
 
 __all__ = ['Observer', 'Problem', 'Suite', 'known_suite_names']
 
