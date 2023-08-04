@@ -819,9 +819,7 @@ static coco_problem_t *coco_problem_transformed_allocate(coco_problem_t *inner_p
 
   return inner_copy;
 }
-
 /**@}*/
-
 
 /***********************************************************************************************************/
 
