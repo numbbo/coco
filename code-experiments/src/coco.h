@@ -136,24 +136,6 @@ struct coco_suite_s;
  * See coco_suite_s for more information on its fields. */
 typedef struct coco_suite_s coco_suite_t;
 
-/** @brief Structure containing a COCO noisy problem. */
-struct coco_noisy_problem_s;
-
-/**
- * @brief The COCO noisy problem type.
- *
- * See coco_noisy_problem_s for more information on its fields. */
-typedef struct coco_noisy_problem_s coco_noisy_problem_t;
-
-/** @brief Structure containing a COCO model. */
-struct coco_noise_model_s;
-
-/**
- * @brief The COCO noise model type.
- *
- * See coco_noise_model for more information on its fields. */
-typedef struct coco_noise_model_s coco_noise_model_t;
-
 /** @brief Structure containing a COCO observer. */
 struct coco_observer_s;
 
@@ -180,6 +162,19 @@ struct coco_random_state_s;
  *
  * See coco_random_state_s for more information on its fields. */
 typedef struct coco_random_state_s coco_random_state_t;
+
+/**
+ * @brief The noisy COCO noisy problem type 
+ * Wraps a noisy problem around a inner one 
+ */
+typedef struct coco_noisy_problem_s coco_noisy_problem_t;
+
+/**
+ * @brief The noisy COCO noise model type 
+ * Wraps a noisy problem around a inner one 
+ */
+typedef struct coco_noise_model_s coco_noise_model_t;
+/**@}*/
 
 /***********************************************************************************************************/
 
@@ -576,17 +571,45 @@ coco_noisy_problem_t *coco_problem_allocate_f_wrap_noisy(const coco_problem_t *i
   * works as a wrapper around the function type coco_problem_allocate_f
  */
 coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy(
-        const coco_problem_bbob_allocator_t *coco_problem_bbob_allocator_t,
-        const size_t function, 
-        const size_t dimension, 
-        const size_t instance, 
-        const long rseed, 
-        const char *problem_id_template, 
-        const char *problem_name_template, 
-        const uint32_t random_seed, 
-        const double *distribution_theta,
-        const coco_problem_evaluate_noise_model_t *noise_model, 
-        const coco_problem_noise_sampler_t *noise_sampler);
+  const coco_problem_bbob_allocator_t *coco_problem_bbob_allocator,
+  const size_t function, 
+  const size_t dimension, 
+  const size_t instance, 
+  const long rseed, 
+  const char *problem_id_template, 
+  const char *problem_name_template
+);
+
+/**
+ * @brief Allocates the gaussian noise model to the coco_noisy_problem instance
+ */
+coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_gaussian(
+  const coco_problem_bbob_allocator_t *coco_problem_bbob_allocator,
+  const size_t function, 
+  const size_t dimension, 
+  const size_t instance, 
+  const long rseed, 
+  const char *problem_id_template, 
+  const char *problem_name_template, 
+  const uint32_t random_seed, 
+  const double *distribution_theta
+);
+
+
+/**
+ * @brief Allocates the gaussian noise model to the coco_noisy_problem instance
+ */
+coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_cauchy(
+  const coco_problem_bbob_allocator_t *coco_problem_bbob_allocator ,
+  const size_t function, 
+  const size_t dimension, 
+  const size_t instance, 
+  const long rseed, 
+  const char *problem_id_template, 
+  const char *problem_name_template, 
+  const uint32_t random_seed, 
+  const double *distribution_theta
+);
 
 /**
   * @brief Sets the noisy problem id from its inner problem id, noise sampler and theta distribution
