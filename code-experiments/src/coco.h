@@ -160,7 +160,8 @@ struct coco_random_state_s;
 /**
  * @brief The COCO random state type.
  *
- * See coco_random_state_s for more information on its fields. */
+ * See coco_random_state_s for more information on its fields. 
+ */
 typedef struct coco_random_state_s coco_random_state_t;
 
 /**
@@ -179,7 +180,7 @@ typedef struct coco_noise_model_s coco_noise_model_t;
  * @brief The allocate objective function type 
  * This is a template for functions that perform the allocation of the objective function 
  * given the number of dimensions of the problem
-*/
+ */
 typedef coco_problem_t *(*coco_problem_bbob_allocator_t)(
   const size_t function, 
   const size_t dimension, 

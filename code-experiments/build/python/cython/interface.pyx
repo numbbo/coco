@@ -11,12 +11,13 @@ known_suite_names = ["bbob",
                      "bbob-biobj", "bbob-biobj-ext",
                      "bbob-constrained",
                      "bbob-largescale",
-                     "bbob-mixint", "bbob-biobj-mixint"
+                     "bbob-mixint", "bbob-biobj-mixint",
+                     "bbob-noisy"
                      ]
 _known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext",
                       "bbob-constrained",
                       "bbob-constrained-active-only", "bbob-constrained-no-disguise",
-                      "bbob-largescale", "bbob-mixint", "bbob-biobj-mixint"]
+                      "bbob-largescale", "bbob-mixint", "bbob-biobj-mixint", "bbob-noisy"]
 
 # _test_assignment = "seems to prevent an 'export' error (i.e. induce export) to make this module known under Linux and Windows (possibly because of the leading underscore of _interface)"
 # __all__ = ['Observer', 'Problem', 'Suite']
