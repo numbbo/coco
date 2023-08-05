@@ -174,6 +174,19 @@ typedef struct coco_noisy_problem_s coco_noisy_problem_t;
  * Wraps a noisy problem around a inner one 
  */
 typedef struct coco_noise_model_s coco_noise_model_t;
+
+/**
+ * @brief The allocate objective function type 
+ * This is a template for functions that perform the allocation of the objective function 
+ * given the number of dimensions of the problem
+*/
+typedef coco_problem_t *(*coco_problem_bbob_allocator_t)(
+  const size_t function, 
+  const size_t dimension, 
+  const size_t instance, 
+  const long rseed, 
+  const char *problem_id_template, 
+  const char *problem_name_template);
 /**@}*/
 
 /***********************************************************************************************************/
@@ -497,19 +510,6 @@ double coco_random_normal(coco_random_state_t *state);
 /**@{*/
 
 /**
- * @brief The allocate objective function type 
- * This is a template for functions that perform the allocation of the objective function 
- * given the number of dimensions of the problem
-*/
-typedef coco_problem_t *(*coco_problem_bbob_allocator_t)(
-  const size_t function, 
-  const size_t dimension, 
-  const size_t instance, 
-  const long rseed, 
-  const char *problem_id_template, 
-  const char *problem_name_template);
-
-/**
  * @brief Returns the problem's random seed
  */
 uint32_t coco_problem_get_random_seed(const coco_noisy_problem_t *problem);
@@ -612,7 +612,7 @@ coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_cauchy(
 );
 
 /**
-  * @brief Sets the noisy problem id from its inner problem id, noise sampler and theta distribution
+  * @brief Computes the noisy problem id from its inner problem id, noise sampler and theta distribution
  */
 void coco_problem_get_noisy_problem_id_from_problem_id(coco_problem_t inner_problem, coco_noisy_problem_t problem);
 /**@}*/

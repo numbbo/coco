@@ -22,14 +22,14 @@ uint32_t coco_problem_get_random_seed(const coco_noisy_problem_t *problem){
 
 double *coco_problem_get_distribution_theta(const coco_noisy_problem_t *problem){
   assert(problem != NULL);
-  assert(problem -> distribution_theta != NULL);
+  assert(problem -> noise_model -> distribution_theta != NULL);
   return problem -> noise_model -> distribution_theta;
 } 
 
 double coco_problem_get_last_noise_value(const coco_noisy_problem_t *problem){
   assert(problem != NULL);
   assert(problem -> last_noise_value != NAN);
-  return problem -> noise_model -> last_noise_value;
+  return problem -> last_noise_value;
 }
 
 /***********************************************************************************************************/
@@ -47,8 +47,8 @@ void coco_problem_sample_gaussian_noise(coco_noisy_problem_t * problem, const do
   double *distribution_theta = coco_problem_get_distribution_theta(problem);
   assert(random_seed != NAN);
   double scale = *(distribution_theta);
-  coco_random_state_t * coco_seed = coco_random_new(random_seed);
-  double gaussian_noise = coco_random_normal(coco_seed);
+  coco_random_state_t * coco_state = coco_random_new(random_seed);
+  double gaussian_noise = coco_random_normal(coco_state);
   gaussian_noise = exp(scale * gaussian_noise);
   problem -> last_noise_value = gaussian_noise;
 }
@@ -62,10 +62,10 @@ void coco_problem_sample_uniform_noise(coco_noisy_problem_t * problem, const dou
   assert(random_seed != NAN);
   double alpha = *(distribution_theta);
   double beta = *(distribution_theta++);
-  coco_random_state_t * coco_seed1 = coco_random_new(random_seed);
-  coco_random_state_t * coco_seed2 = coco_random_new(random_seed);
-  double uniform_noise_term1 = coco_random_uniform(coco_seed1);
-  double uniform_noise_term2 = coco_random_uniform(coco_seed2);
+  coco_random_state_t * coco_state1 = coco_random_new(random_seed);
+  coco_random_state_t * coco_state2 = coco_random_new(random_seed);
+  double uniform_noise_term1 = coco_random_uniform(coco_state1);
+  double uniform_noise_term2 = coco_random_uniform(coco_state2);
   double uniform_noise_factor = pow(uniform_noise_term1, beta);
   double scaling_factor = pow(10, 9)/(fvalue + 10e-99);
   scaling_factor = pow(scaling_factor, alpha * uniform_noise_term2);
@@ -83,12 +83,12 @@ void coco_problem_sample_cauchy_noise(coco_noisy_problem_t * problem, const doub
   assert(random_seed != NAN);
   double alpha = *(distribution_theta);
   double p = *(distribution_theta++);
-  coco_random_state_t * coco_seed1 = coco_random_new(random_seed);
-  coco_random_state_t * coco_seed2 = coco_random_new(random_seed); 
-  coco_random_state_t * coco_seed3 = coco_random_new(random_seed);
-  double uniform_indicator = coco_random_uniform(coco_seed1);
-  double numerator_normal_variate = coco_random_normal(coco_seed2);
-  double denominator_normal_variate = coco_random_normal(coco_seed3);
+  coco_random_state_t * coco_state1 = coco_random_new(random_seed);
+  coco_random_state_t * coco_state2 = coco_random_new(random_seed); 
+  coco_random_state_t * coco_state3 = coco_random_new(random_seed);
+  double uniform_indicator = coco_random_uniform(coco_state1);
+  double numerator_normal_variate = coco_random_normal(coco_state2);
+  double denominator_normal_variate = coco_random_normal(coco_state3);
   denominator_normal_variate = fabs(denominator_normal_variate);
   double cauchy_noise = numerator_normal_variate / (denominator_normal_variate + 10e-99);
   cauchy_noise = uniform_indicator < p ?  1000 + cauchy_noise : 1000;
