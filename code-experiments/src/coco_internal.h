@@ -250,7 +250,12 @@ typedef void (*coco_problem_noise_sampler_t)(coco_noisy_problem_t *problem, doub
 /**
  * @brief The COCO problem noise sampler function type 
  */
-typedef void (*coco_problem_evaluate_noise_model_t)(coco_noisy_problem_t *problem, const double *x, double *y);
+typedef void (*coco_problem_evaluate_noise_model_t)(coco_noisy_problem_t *problem, double *y);
+
+/**
+ * @brief The COCO problem noise sampler function type 
+ */
+typedef void (*coco_problem_evaluate_noisy_function_t)(coco_noisy_problem_t *problem, const double *x, double *y);
 
 /**
  * @brief The COCO noise model structure
@@ -272,7 +277,7 @@ struct coco_noise_model_s{
  */
 struct coco_noisy_problem_s{
   coco_problem_t *inner_problem;                      /**@brief Pointer to the inner problem*/
-  coco_problem_evaluate_noise_model_t evaluate_noisy_function;   /**< @brief  The function for evaluating the noisy problem. */
+  coco_problem_evaluate_noisy_function_t evaluate_noisy_function;   /**< @brief  The function for evaluating the noisy problem. */
   coco_noise_model_t *noise_model;
   double last_noise_value;                            /**< @brief Last noise value in the case of noisy problems.
                                                        * Needed to compute the correct gradient for noisy problems.

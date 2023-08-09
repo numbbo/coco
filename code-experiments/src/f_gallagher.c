@@ -17,6 +17,11 @@
 #include "transform_vars_scale.c"
 #include "transform_obj_norm_by_dim.c"
 
+#include "transform_vars_conditioning.c"
+#include "transform_obj_oscillate.c"
+#include "transform_obj_power.c"
+#include "transform_obj_penalize.c"
+
 #include "f_sphere.c"
 #include "transform_vars_gallagher_blockrotation.c"
 /**

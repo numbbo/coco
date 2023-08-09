@@ -15,6 +15,7 @@
 #include "coco_internal.h"
 #include "coco_utilities.c"
 
+#include "suite_bbob_noisy.c"
 #include "suite_bbob.c"
 #include "suite_bbob_mixint.c"
 #include "suite_biobj.c"
@@ -50,6 +51,8 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
     suite = suite_bbob_mixint_initialize(suite_name);
   } else if (strcmp(suite_name, "bbob-biobj-mixint") == 0) {
     suite = suite_biobj_mixint_initialize();
+  } else if (strcmp(suite_name, "bbob-noisy") == 0) {
+    suite = suite_bbob_noisy_initialize();
   }
   else {
     coco_error("coco_suite_intialize(): unknown problem suite");

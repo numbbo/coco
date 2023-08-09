@@ -16,7 +16,7 @@
 
 uint32_t coco_problem_get_random_seed(const coco_noisy_problem_t *problem){
   assert(problem != NULL);
-  assert(problem -> random_seed != NAN); /**<@ warning: comparison between pointer and integer>*/
+  assert(problem -> noise_model -> random_seed != NAN); /**<@ warning: comparison between pointer and integer>*/
   return problem ->  noise_model -> random_seed;
 }
 
@@ -30,6 +30,13 @@ double coco_problem_get_last_noise_value(const coco_noisy_problem_t *problem){
   assert(problem != NULL);
   assert(problem -> last_noise_value != NAN);
   return problem -> last_noise_value;
+}
+
+/**
+  * @brief Computes the noisy problem id from its inner problem id, noise sampler and theta distribution
+ */
+void coco_problem_get_noisy_problem_id_from_problem_id(coco_problem_t *inner_problem, coco_noisy_problem_t *problem){
+  ;
 }
 
 /***********************************************************************************************************/
@@ -110,8 +117,7 @@ void coco_problem_sample_cauchy_noise(coco_noisy_problem_t * problem, const doub
   * Should be used as a wrapper around f_<function_name>_evaluate
  */
 void coco_problem_evaluate_additive_noise_model(
-        const coco_noisy_problem_t *problem,
-        const double * x,  
+        coco_noisy_problem_t *problem,
         double * y
     ){
     double noise_value = coco_problem_get_last_noise_value(problem);
@@ -124,8 +130,7 @@ void coco_problem_evaluate_additive_noise_model(
   * Should be used as a wrapper around f_<function_name>_evaluate
  */
 void coco_problem_evaluate_multiplicative_noise_model(
-        const coco_noisy_problem_t *problem, 
-        const double * x,
+        coco_noisy_problem_t *problem,
         double * y
     ){
     double noise_value = coco_problem_get_last_noise_value(problem);
@@ -151,14 +156,14 @@ void coco_problem_evaluate_multiplicative_noise_model(
   * 3) Computes the final function value by applying the given noise model 
  */
 void coco_problem_f_evaluate_wrap_noisy(
-        const coco_noisy_problem_t *problem, 
+        coco_noisy_problem_t *problem, 
         const double *x, 
         double *y
     ){
-    assert(inner_problem -> evaluate_function != NULL);
-    assert(problem -> noise_sampler != NULL);
+    assert(problem -> inner_problem -> evaluate_function != NULL);
     assert(problem -> noise_model != NULL);
-    problem -> inner_problem -> evaluate_function(inner_problem, x, y);
+    assert(problem -> noise_model -> noise_sampler != NULL);
+    problem -> inner_problem -> evaluate_function(problem -> inner_problem, x, y);
     problem -> noise_model -> noise_sampler(problem, y[0]);
     problem -> noise_model -> noise_model_evaluator(problem, y);
 }
@@ -169,9 +174,9 @@ void coco_problem_f_evaluate_wrap_noisy(
   * @return problem, a coco_noisy_problem_t "instance" 
  */
 coco_noisy_problem_t *coco_problem_allocate_f_wrap_noisy(
-        const coco_problem_t *inner_problem,
+        coco_problem_t *inner_problem
     ){
-    coco_noisy_problem_t problem;
+    coco_noisy_problem_t *problem = NULL;
     problem -> inner_problem = inner_problem;
     problem -> evaluate_noisy_function = coco_problem_f_evaluate_wrap_noisy;
     coco_problem_get_noisy_problem_id_from_problem_id(inner_problem, problem);
@@ -186,15 +191,15 @@ coco_noisy_problem_t *coco_problem_allocate_f_wrap_noisy(
   * @param coco_f_evaluator Function evaluator used to compute the deterministic function value
  */
 coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy(
-        const coco_problem_bbob_allocator_t *coco_problem_bbob_allocator_t,
+        coco_problem_bbob_allocator_t coco_problem_bbob_allocator,
         const size_t function, 
         const size_t dimension, 
         const size_t instance, 
         const long rseed, 
         const char *problem_id_template, 
-        const char *problem_name_template,
+        const char *problem_name_template
     ){
-    coco_problem_t *inner_problem = coco_problem_bbob_allocator_t(
+    coco_problem_t *inner_problem = coco_problem_bbob_allocator(
       function, 
       dimension, 
       instance, 
@@ -207,10 +212,77 @@ coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy(
 }
 
 /**
+  * @brief Evaluates the coco problem noisy function
+  * works as a wrapper around the function type coco_problem_f_evaluate
+  * @param noise_model Noise model used to evaluate the function (additive or multiplicative)
+  * @param noise_sampler Noise sampler used to compute the noise values
+  * @param coco_f_evaluator Function evaluator used to compute the deterministic function value
+  * This new function signature is needed for the objective functions
+  * that need the conditioning variable as argument for allocating the 
+  * coco_problem_t
+ */
+coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_schaffers(
+        coco_problem_bbob_schaffers_allocator_t coco_problem_bbob_allocator,
+        const size_t function, 
+        const size_t dimension, 
+        const size_t instance, 
+        const long rseed,
+        const double conditioning, 
+        const char *problem_id_template, 
+        const char *problem_name_template
+    ){
+    coco_problem_t *inner_problem = coco_problem_bbob_allocator(
+      function, 
+      dimension, 
+      instance, 
+      rseed,
+      conditioning, 
+      problem_id_template, 
+      problem_name_template
+    );
+    coco_noisy_problem_t *problem = coco_problem_allocate_f_wrap_noisy(inner_problem);
+    return problem;
+}
+
+
+/**
+  * @brief Evaluates the coco problem noisy function
+  * works as a wrapper around the function type coco_problem_f_evaluate
+  * @param noise_model Noise model used to evaluate the function (additive or multiplicative)
+  * @param noise_sampler Noise sampler used to compute the noise values
+  * @param coco_f_evaluator Function evaluator used to compute the deterministic function value
+  * This new function signature is needed for the objective functions
+  * that need the conditioning variable as argument for allocating the 
+  * coco_problem_t
+ */
+coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_gallagher(
+        coco_problem_bbob_gallagher_allocator_t coco_problem_bbob_allocator,
+        const size_t function, 
+        const size_t dimension, 
+        const size_t instance, 
+        const long rseed,
+        const size_t n_peaks, 
+        const char *problem_id_template, 
+        const char *problem_name_template
+    ){
+    coco_problem_t *inner_problem = coco_problem_bbob_allocator(
+      function, 
+      dimension, 
+      instance, 
+      rseed,
+      n_peaks, 
+      problem_id_template, 
+      problem_name_template
+    );
+    coco_noisy_problem_t *problem = coco_problem_allocate_f_wrap_noisy(inner_problem);
+    return problem;
+}
+
+/**
  * @brief Allocates the gaussian noise model to the coco_noisy_problem instance
  */
 coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_gaussian(
-    const coco_problem_bbob_allocator_t *coco_problem_bbob_allocator_t,
+    coco_problem_bbob_allocator_t coco_problem_bbob_allocator,
     const size_t function, 
     const size_t dimension, 
     const size_t instance, 
@@ -218,10 +290,10 @@ coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_gaussian(
     const char *problem_id_template, 
     const char *problem_name_template, 
     const uint32_t random_seed, 
-    const double *distribution_theta,
+    double *distribution_theta
 
   ){
-  coco_noisy_problem_t problem = coco_problem_allocate_bbob_wrap_noisy(
+  coco_noisy_problem_t *problem = coco_problem_allocate_bbob_wrap_noisy(
     coco_problem_bbob_allocator, 
     function,
     dimension, 
@@ -234,13 +306,86 @@ coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_gaussian(
   problem -> noise_model -> distribution_theta = distribution_theta;
   problem -> noise_model -> noise_sampler = coco_problem_sample_gaussian_noise;
   problem -> noise_model -> noise_model_evaluator = coco_problem_evaluate_multiplicative_noise_model;
+  return problem;
 }
 
 /**
  * @brief Allocates the gaussian noise model to the coco_noisy_problem instance
+  * This new function signature is needed for the objective functions
+  * that need the conditioning variable as argument for allocating the 
+  * coco_problem_t
+ */
+coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_gaussian_schaffers(
+    coco_problem_bbob_schaffers_allocator_t coco_problem_bbob_allocator,
+    const size_t function, 
+    const size_t dimension, 
+    const size_t instance, 
+    const long rseed,
+    const double conditioning,
+    const char *problem_id_template, 
+    const char *problem_name_template, 
+    const uint32_t random_seed, 
+    double *distribution_theta
+
+  ){
+  coco_noisy_problem_t *problem = coco_problem_allocate_bbob_wrap_noisy_schaffers(
+    coco_problem_bbob_allocator, 
+    function,
+    dimension, 
+    instance,
+    rseed,
+    conditioning, 
+    problem_id_template, 
+    problem_name_template 
+  );
+  problem -> noise_model -> random_seed = random_seed;
+  problem -> noise_model -> distribution_theta = distribution_theta;
+  problem -> noise_model -> noise_sampler = coco_problem_sample_gaussian_noise;
+  problem -> noise_model -> noise_model_evaluator = coco_problem_evaluate_multiplicative_noise_model;
+  return problem;
+}
+
+/**
+ * @brief Allocates the gaussian noise model to the coco_noisy_problem instance
+  * This new function signature is needed for the objective functions
+  * that need the conditioning variable as argument for allocating the 
+  * coco_problem_t
+ */
+coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_gaussian_gallagher(
+    coco_problem_bbob_gallagher_allocator_t coco_problem_bbob_allocator,
+    const size_t function, 
+    const size_t dimension, 
+    const size_t instance, 
+    const long rseed,
+    const size_t n_peaks,
+    const char *problem_id_template, 
+    const char *problem_name_template, 
+    const uint32_t random_seed, 
+    double *distribution_theta
+
+  ){
+  coco_noisy_problem_t *problem = coco_problem_allocate_bbob_wrap_noisy_gallagher(
+    coco_problem_bbob_allocator, 
+    function,
+    dimension, 
+    instance,
+    rseed,
+    n_peaks, 
+    problem_id_template, 
+    problem_name_template 
+  );
+  problem -> noise_model -> random_seed = random_seed;
+  problem -> noise_model -> distribution_theta = distribution_theta;
+  problem -> noise_model -> noise_sampler = coco_problem_sample_gaussian_noise;
+  problem -> noise_model -> noise_model_evaluator = coco_problem_evaluate_multiplicative_noise_model;
+  return problem;
+}
+
+/**
+ * @brief Allocates the uniform noise model to the coco_noisy_problem instance
  */
 coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_uniform(
-    const coco_problem_bbob_allocator_t *coco_problem_bbob_allocator_t,
+    const coco_problem_bbob_allocator_t coco_problem_bbob_allocator,
     const size_t function, 
     const size_t dimension, 
     const size_t instance, 
@@ -248,10 +393,10 @@ coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_uniform(
     const char *problem_id_template, 
     const char *problem_name_template, 
     const uint32_t random_seed, 
-    const double *distribution_theta,
+    double *distribution_theta
 
   ){
-  coco_noisy_problem_t problem = coco_problem_allocate_bbob_wrap_noisy(
+  coco_noisy_problem_t *problem = coco_problem_allocate_bbob_wrap_noisy(
     coco_problem_bbob_allocator, 
     function,
     dimension, 
@@ -264,13 +409,86 @@ coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_uniform(
   problem -> noise_model -> distribution_theta = distribution_theta;
   problem -> noise_model -> noise_sampler = coco_problem_sample_uniform_noise;
   problem -> noise_model -> noise_model_evaluator = coco_problem_evaluate_multiplicative_noise_model;
+  return problem;
 }
 
 /**
- * @brief Allocates the gaussian noise model to the coco_noisy_problem instance
+ * @brief Allocates the uniform noise model to the coco_noisy_problem instance
+  * This new function signature is needed for the objective functions
+  * that need the conditioning variable as argument for allocating the 
+  * coco_problem_t 
  */
-void coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_cauchy(
-    const coco_problem_bbob_allocator_t *coco_problem_bbob_allocator_t,
+coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_uniform_schaffers(
+    const coco_problem_bbob_schaffers_allocator_t coco_problem_bbob_allocator,
+    const size_t function, 
+    const size_t dimension, 
+    const size_t instance, 
+    const long rseed,
+    const double conditioning, 
+    const char *problem_id_template, 
+    const char *problem_name_template, 
+    const uint32_t random_seed, 
+    double *distribution_theta
+
+  ){
+  coco_noisy_problem_t *problem = coco_problem_allocate_bbob_wrap_noisy_schaffers(
+    coco_problem_bbob_allocator, 
+    function,
+    dimension, 
+    instance,
+    rseed,
+    conditioning,
+    problem_id_template, 
+    problem_name_template 
+  );
+  problem -> noise_model -> random_seed = random_seed;
+  problem -> noise_model -> distribution_theta = distribution_theta;
+  problem -> noise_model -> noise_sampler = coco_problem_sample_uniform_noise;
+  problem -> noise_model -> noise_model_evaluator = coco_problem_evaluate_multiplicative_noise_model;
+  return problem;
+}
+
+/**
+ * @brief Allocates the uniform noise model to the coco_noisy_problem instance
+  * This new function signature is needed for the objective functions
+  * that need the conditioning variable as argument for allocating the 
+  * coco_problem_t 
+ */
+coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_uniform_gallagher(
+    const coco_problem_bbob_gallagher_allocator_t coco_problem_bbob_allocator,
+    const size_t function, 
+    const size_t dimension, 
+    const size_t instance, 
+    const long rseed,
+    const size_t n_peaks, 
+    const char *problem_id_template, 
+    const char *problem_name_template, 
+    const uint32_t random_seed, 
+    double *distribution_theta
+
+  ){
+  coco_noisy_problem_t *problem = coco_problem_allocate_bbob_wrap_noisy_gallagher(
+    coco_problem_bbob_allocator, 
+    function,
+    dimension, 
+    instance,
+    rseed,
+    n_peaks,
+    problem_id_template, 
+    problem_name_template 
+  );
+  problem -> noise_model -> random_seed = random_seed;
+  problem -> noise_model -> distribution_theta = distribution_theta;
+  problem -> noise_model -> noise_sampler = coco_problem_sample_uniform_noise;
+  problem -> noise_model -> noise_model_evaluator = coco_problem_evaluate_multiplicative_noise_model;
+  return problem;
+}
+
+/**
+ * @brief Allocates the cauchy noise model to the coco_noisy_problem instance
+ */
+coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_cauchy(
+    const coco_problem_bbob_allocator_t coco_problem_bbob_allocator,
     const size_t function, 
     const size_t dimension, 
     const size_t instance, 
@@ -278,9 +496,9 @@ void coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_cauchy(
     const char *problem_id_template, 
     const char *problem_name_template, 
     const uint32_t random_seed, 
-    const double *distribution_theta,
+    double *distribution_theta
   ){
-  coco_noisy_problem_t problem = coco_problem_allocate_bbob_wrap_noisy(
+  coco_noisy_problem_t *problem = coco_problem_allocate_bbob_wrap_noisy(
     coco_problem_bbob_allocator, 
     function,
     dimension, 
@@ -293,13 +511,77 @@ void coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_cauchy(
   problem -> noise_model -> distribution_theta = distribution_theta;
   problem -> noise_model -> noise_sampler = coco_problem_sample_cauchy_noise;
   problem -> noise_model -> noise_model_evaluator = coco_problem_evaluate_additive_noise_model;
+  return problem;
 }
 
 /**
-  * @brief Sets the noisy problem id from its inner problem id, noise sampler and theta distribution
+ * @brief Allocates the cauchy noise model to the coco_noisy_problem instance
+ * This new function signature is needed for the objective functions
+  * that need the conditioning variable as argument for allocating the 
+  * coco_problem_t 
  */
-void coco_problem_get_noisy_problem_id_from_problem_id(coco_problem_t inner_problem, coco_noisy_problem_t problem){
-  ;
+coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_cauchy_schaffers(
+    const coco_problem_bbob_schaffers_allocator_t coco_problem_bbob_allocator,
+    const size_t function, 
+    const size_t dimension, 
+    const size_t instance, 
+    const long rseed,
+    const double conditioning, 
+    const char *problem_id_template, 
+    const char *problem_name_template, 
+    const uint32_t random_seed, 
+    double *distribution_theta
+  ){
+  coco_noisy_problem_t *problem = coco_problem_allocate_bbob_wrap_noisy_schaffers(
+    coco_problem_bbob_allocator, 
+    function,
+    dimension, 
+    instance,
+    rseed,
+    conditioning, 
+    problem_id_template, 
+    problem_name_template 
+  );
+  problem -> noise_model -> random_seed = random_seed;
+  problem -> noise_model -> distribution_theta = distribution_theta;
+  problem -> noise_model -> noise_sampler = coco_problem_sample_cauchy_noise;
+  problem -> noise_model -> noise_model_evaluator = coco_problem_evaluate_additive_noise_model;
+  return problem;
+}
+
+/**
+ * @brief Allocates the cauchy noise model to the coco_noisy_problem instance
+ * This new function signature is needed for the objective functions
+  * that need the conditioning variable as argument for allocating the 
+  * coco_problem_t 
+ */
+coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy_cauchy_gallagher(
+    const coco_problem_bbob_gallagher_allocator_t coco_problem_bbob_allocator,
+    const size_t function, 
+    const size_t dimension, 
+    const size_t instance, 
+    const long rseed,
+    const size_t n_peaks, 
+    const char *problem_id_template, 
+    const char *problem_name_template, 
+    const uint32_t random_seed, 
+    double *distribution_theta
+  ){
+  coco_noisy_problem_t *problem = coco_problem_allocate_bbob_wrap_noisy_gallagher(
+    coco_problem_bbob_allocator, 
+    function,
+    dimension, 
+    instance,
+    rseed,
+    n_peaks, 
+    problem_id_template, 
+    problem_name_template 
+  );
+  problem -> noise_model -> random_seed = random_seed;
+  problem -> noise_model -> distribution_theta = distribution_theta;
+  problem -> noise_model -> noise_sampler = coco_problem_sample_cauchy_noise;
+  problem -> noise_model -> noise_model_evaluator = coco_problem_evaluate_additive_noise_model;
+  return problem;
 }
 /**@}*/
 
