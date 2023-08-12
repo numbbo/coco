@@ -3088,12 +3088,12 @@ static const char __pyx_k_with_name[] = "\" with name \"";
 static const char __pyx_k_Suite_free[] = "Suite.free";
 static const char __pyx_k_ValueError[] = "ValueError";
 static const char __pyx_k_bbob_biobj[] = "bbob-biobj";
-static const char __pyx_k_bbob_noisy[] = "bbob-noisy";
 static const char __pyx_k_constraint[] = " constraint";
 static const char __pyx_k_dimensions[] = "dimensions";
 static const char __pyx_k_evaluation[] = "evaluation";
 static const char __pyx_k_function_2[] = "_function";
 static const char __pyx_k_instance_2[] = "_instance";
+static const char __pyx_k_noisy_bbob[] = "noisy-bbob";
 static const char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
 static const char __pyx_k_suite_name[] = "suite_name";
 static const char __pyx_k_ImportError[] = "ImportError";
@@ -3465,7 +3465,6 @@ typedef struct {
   PyObject *__pyx_kp_u_bbob_constrained_no_disguise;
   PyObject *__pyx_kp_u_bbob_largescale;
   PyObject *__pyx_kp_u_bbob_mixint;
-  PyObject *__pyx_kp_u_bbob_noisy;
   PyObject *__pyx_n_s_best_parameter;
   PyObject *__pyx_n_u_bi;
   PyObject *__pyx_kp_u_cannot_deduce_function_id_from_s;
@@ -3563,6 +3562,7 @@ typedef struct {
   PyObject *__pyx_n_s_name_2;
   PyObject *__pyx_n_s_next_problem;
   PyObject *__pyx_kp_s_no_default___reduce___due_to_non;
+  PyObject *__pyx_kp_u_noisy_bbob;
   PyObject *__pyx_kp_u_not_match_the_number_of_objectiv;
   PyObject *__pyx_kp_u_not_match_the_problem_dimension;
   PyObject *__pyx_n_s_np;
@@ -3866,7 +3866,6 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_kp_u_bbob_constrained_no_disguise);
   Py_CLEAR(clear_module_state->__pyx_kp_u_bbob_largescale);
   Py_CLEAR(clear_module_state->__pyx_kp_u_bbob_mixint);
-  Py_CLEAR(clear_module_state->__pyx_kp_u_bbob_noisy);
   Py_CLEAR(clear_module_state->__pyx_n_s_best_parameter);
   Py_CLEAR(clear_module_state->__pyx_n_u_bi);
   Py_CLEAR(clear_module_state->__pyx_kp_u_cannot_deduce_function_id_from_s);
@@ -3964,6 +3963,7 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_name_2);
   Py_CLEAR(clear_module_state->__pyx_n_s_next_problem);
   Py_CLEAR(clear_module_state->__pyx_kp_s_no_default___reduce___due_to_non);
+  Py_CLEAR(clear_module_state->__pyx_kp_u_noisy_bbob);
   Py_CLEAR(clear_module_state->__pyx_kp_u_not_match_the_number_of_objectiv);
   Py_CLEAR(clear_module_state->__pyx_kp_u_not_match_the_problem_dimension);
   Py_CLEAR(clear_module_state->__pyx_n_s_np);
@@ -4245,7 +4245,6 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_kp_u_bbob_constrained_no_disguise);
   Py_VISIT(traverse_module_state->__pyx_kp_u_bbob_largescale);
   Py_VISIT(traverse_module_state->__pyx_kp_u_bbob_mixint);
-  Py_VISIT(traverse_module_state->__pyx_kp_u_bbob_noisy);
   Py_VISIT(traverse_module_state->__pyx_n_s_best_parameter);
   Py_VISIT(traverse_module_state->__pyx_n_u_bi);
   Py_VISIT(traverse_module_state->__pyx_kp_u_cannot_deduce_function_id_from_s);
@@ -4343,6 +4342,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_name_2);
   Py_VISIT(traverse_module_state->__pyx_n_s_next_problem);
   Py_VISIT(traverse_module_state->__pyx_kp_s_no_default___reduce___due_to_non);
+  Py_VISIT(traverse_module_state->__pyx_kp_u_noisy_bbob);
   Py_VISIT(traverse_module_state->__pyx_kp_u_not_match_the_number_of_objectiv);
   Py_VISIT(traverse_module_state->__pyx_kp_u_not_match_the_problem_dimension);
   Py_VISIT(traverse_module_state->__pyx_n_s_np);
@@ -4652,7 +4652,6 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_kp_u_bbob_constrained_no_disguise __pyx_mstate_global->__pyx_kp_u_bbob_constrained_no_disguise
 #define __pyx_kp_u_bbob_largescale __pyx_mstate_global->__pyx_kp_u_bbob_largescale
 #define __pyx_kp_u_bbob_mixint __pyx_mstate_global->__pyx_kp_u_bbob_mixint
-#define __pyx_kp_u_bbob_noisy __pyx_mstate_global->__pyx_kp_u_bbob_noisy
 #define __pyx_n_s_best_parameter __pyx_mstate_global->__pyx_n_s_best_parameter
 #define __pyx_n_u_bi __pyx_mstate_global->__pyx_n_u_bi
 #define __pyx_kp_u_cannot_deduce_function_id_from_s __pyx_mstate_global->__pyx_kp_u_cannot_deduce_function_id_from_s
@@ -4750,6 +4749,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_name_2 __pyx_mstate_global->__pyx_n_s_name_2
 #define __pyx_n_s_next_problem __pyx_mstate_global->__pyx_n_s_next_problem
 #define __pyx_kp_s_no_default___reduce___due_to_non __pyx_mstate_global->__pyx_kp_s_no_default___reduce___due_to_non
+#define __pyx_kp_u_noisy_bbob __pyx_mstate_global->__pyx_kp_u_noisy_bbob
 #define __pyx_kp_u_not_match_the_number_of_objectiv __pyx_mstate_global->__pyx_kp_u_not_match_the_number_of_objectiv
 #define __pyx_kp_u_not_match_the_problem_dimension __pyx_mstate_global->__pyx_kp_u_not_match_the_problem_dimension
 #define __pyx_n_s_np __pyx_mstate_global->__pyx_n_s_np
@@ -20849,7 +20849,6 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_kp_u_bbob_constrained_no_disguise, __pyx_k_bbob_constrained_no_disguise, sizeof(__pyx_k_bbob_constrained_no_disguise), 0, 1, 0, 0},
     {&__pyx_kp_u_bbob_largescale, __pyx_k_bbob_largescale, sizeof(__pyx_k_bbob_largescale), 0, 1, 0, 0},
     {&__pyx_kp_u_bbob_mixint, __pyx_k_bbob_mixint, sizeof(__pyx_k_bbob_mixint), 0, 1, 0, 0},
-    {&__pyx_kp_u_bbob_noisy, __pyx_k_bbob_noisy, sizeof(__pyx_k_bbob_noisy), 0, 1, 0, 0},
     {&__pyx_n_s_best_parameter, __pyx_k_best_parameter, sizeof(__pyx_k_best_parameter), 0, 0, 1, 1},
     {&__pyx_n_u_bi, __pyx_k_bi, sizeof(__pyx_k_bi), 0, 1, 0, 1},
     {&__pyx_kp_u_cannot_deduce_function_id_from_s, __pyx_k_cannot_deduce_function_id_from_s, sizeof(__pyx_k_cannot_deduce_function_id_from_s), 0, 1, 0, 0},
@@ -20947,6 +20946,7 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_name_2, __pyx_k_name_2, sizeof(__pyx_k_name_2), 0, 0, 1, 1},
     {&__pyx_n_s_next_problem, __pyx_k_next_problem, sizeof(__pyx_k_next_problem), 0, 0, 1, 1},
     {&__pyx_kp_s_no_default___reduce___due_to_non, __pyx_k_no_default___reduce___due_to_non, sizeof(__pyx_k_no_default___reduce___due_to_non), 0, 0, 1, 0},
+    {&__pyx_kp_u_noisy_bbob, __pyx_k_noisy_bbob, sizeof(__pyx_k_noisy_bbob), 0, 1, 0, 0},
     {&__pyx_kp_u_not_match_the_number_of_objectiv, __pyx_k_not_match_the_number_of_objectiv, sizeof(__pyx_k_not_match_the_number_of_objectiv), 0, 1, 0, 0},
     {&__pyx_kp_u_not_match_the_problem_dimension, __pyx_k_not_match_the_problem_dimension, sizeof(__pyx_k_not_match_the_problem_dimension), 0, 1, 0, 0},
     {&__pyx_n_s_np, __pyx_k_np, sizeof(__pyx_k_np), 0, 0, 1, 1},
@@ -22122,14 +22122,14 @@ if (!__Pyx_RefNanny) {
   __Pyx_INCREF(__pyx_kp_u_bbob_biobj_mixint);
   __Pyx_GIVEREF(__pyx_kp_u_bbob_biobj_mixint);
   PyList_SET_ITEM(__pyx_t_3, 6, __pyx_kp_u_bbob_biobj_mixint);
-  __Pyx_INCREF(__pyx_kp_u_bbob_noisy);
-  __Pyx_GIVEREF(__pyx_kp_u_bbob_noisy);
-  PyList_SET_ITEM(__pyx_t_3, 7, __pyx_kp_u_bbob_noisy);
+  __Pyx_INCREF(__pyx_kp_u_noisy_bbob);
+  __Pyx_GIVEREF(__pyx_kp_u_noisy_bbob);
+  PyList_SET_ITEM(__pyx_t_3, 7, __pyx_kp_u_noisy_bbob);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_known_suite_names, __pyx_t_3) < 0) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
   /* "cython/interface.pyx":17
- *                      "bbob-noisy"
+ *                      "noisy-bbob"
  *                      ]
  * _known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext",             # <<<<<<<<<<<<<<
  *                       "bbob-constrained",
@@ -22164,9 +22164,9 @@ if (!__Pyx_RefNanny) {
   __Pyx_INCREF(__pyx_kp_u_bbob_biobj_mixint);
   __Pyx_GIVEREF(__pyx_kp_u_bbob_biobj_mixint);
   PyList_SET_ITEM(__pyx_t_3, 8, __pyx_kp_u_bbob_biobj_mixint);
-  __Pyx_INCREF(__pyx_kp_u_bbob_noisy);
-  __Pyx_GIVEREF(__pyx_kp_u_bbob_noisy);
-  PyList_SET_ITEM(__pyx_t_3, 9, __pyx_kp_u_bbob_noisy);
+  __Pyx_INCREF(__pyx_kp_u_noisy_bbob);
+  __Pyx_GIVEREF(__pyx_kp_u_noisy_bbob);
+  PyList_SET_ITEM(__pyx_t_3, 9, __pyx_kp_u_noisy_bbob);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_known_suite_names_2, __pyx_t_3) < 0) __PYX_ERR(0, 17, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 

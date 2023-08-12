@@ -32,7 +32,7 @@ static coco_suite_t *suite_bbob_noisy_initialize(void) {
   const size_t num_dimensions = sizeof(dimensions) / sizeof(dimensions[0]);
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob-noisy", 30, num_dimensions, dimensions, "year: 0000");
+  suite = coco_suite_allocate("noisy-bbob", 30, num_dimensions, dimensions, "year: 0");
 
   return suite;
 }
@@ -43,14 +43,8 @@ static coco_suite_t *suite_bbob_noisy_initialize(void) {
  * @brief Sets the instances associated with years for the bbob suite.
  */
 static const char *suite_bbob_noisy_get_instances_by_year(const int year) {
-
-  if (year >= 2023) {
-    return "1-5,101-110";
-  }
-  else {
-    coco_error("suite_bbob_get_instances_by_year(): year %d not defined for suite_bbob", year);
-    return NULL;
-  }
+  assert(year != NAN);
+  return "1-5,1-5,1-5";
 }
 
 
@@ -59,10 +53,10 @@ static const char *suite_bbob_noisy_get_instances_by_year(const int year) {
  *
  * Useful for other suites as well (see for example suite_biobj.c).
  */
-static coco_noisy_problem_t *coco_get_bbob_noisy_problem(const size_t function,
+static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
                                              const size_t dimension,
                                              const size_t instance) {
-  coco_noisy_problem_t *problem = NULL;
+  coco_problem_t *problem = NULL;
 
   const char *problem_id_template = "bbob_noisy_f%03lu_i%02lu_d%02lu";
   const char *problem_name_template = "BBOB-NOISY suite problem f%lu instance %lu in %luD";
@@ -329,7 +323,7 @@ static coco_noisy_problem_t *coco_get_bbob_noisy_problem(const size_t function,
   } else if (function == 18){
     double distribution_theta_arr[]= {1.0, 0.2}; 
     double *distribution_theta = &distribution_theta_arr[0]; 
-    problem = coco_problem_allocate_bbob_wrap_noisy_uniform(
+    problem = coco_problem_allocate_bbob_wrap_noisy_cauchy(
         f_ellipsoid_bbob_problem_allocate, 
         function, 
         dimension, 
@@ -549,12 +543,12 @@ static coco_noisy_problem_t *coco_get_bbob_noisy_problem(const size_t function,
  * @param instance_idx Index of the instance (starting from 0).
  * @return The problem that corresponds to the given parameters.
  */
-static coco_noisy_problem_t *suite_bbob_noisy_get_problem( coco_suite_t *suite,
+static coco_problem_t *suite_bbob_noisy_get_problem( coco_suite_t *suite,
                                               const size_t function_idx,
                                               const size_t dimension_idx,
                                               const size_t instance_idx) {
 
-  coco_noisy_problem_t *problem = NULL;
+  coco_problem_t *problem = NULL;
 
   const size_t function = suite->functions[function_idx];
   const size_t dimension = suite->dimensions[dimension_idx];
@@ -562,8 +556,8 @@ static coco_noisy_problem_t *suite_bbob_noisy_get_problem( coco_suite_t *suite,
 
   problem = coco_get_bbob_noisy_problem(function, dimension, instance);
 
-  problem -> inner_problem -> suite_dep_function = function;
-  problem -> inner_problem -> suite_dep_instance = instance;
-  problem -> inner_problem -> suite_dep_index = coco_suite_encode_problem_index(suite, function_idx, dimension_idx, instance_idx);
+  problem -> suite_dep_function = function;
+  problem -> suite_dep_instance = instance;
+  problem -> suite_dep_index = coco_suite_encode_problem_index(suite, function_idx, dimension_idx, instance_idx);
   return problem;
 }

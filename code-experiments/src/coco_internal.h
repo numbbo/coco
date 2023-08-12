@@ -126,6 +126,11 @@ struct coco_problem_s {
   coco_evaluate_function_t evaluate_gradient;         /**< @brief  The function for evaluating the constraints. */
   coco_recommend_function_t recommend_solution;       /**< @brief  The function for recommending a solution. */
   coco_problem_free_function_t problem_free_function; /**< @brief  The function for freeing this problem. */
+  coco_evaluate_function_t evaluate_noisy_function;   /**< @brief  The function for evaluating noisy objectives*/
+
+  coco_noise_model_t *noise_model;     /**< @brief The  noise model for noisy problems*/
+  
+  double last_noise_value;             /**< @brief For noisy problems, the last value sampled according to the noise model */
 
   size_t number_of_variables;          /**< @brief Number of variables expected by the function, i.e.
                                        problem dimension */
@@ -245,17 +250,7 @@ static void bbob_evaluate_gradient(coco_problem_t *problem, const double *x, dou
 /**
  * @brief The COCO problem noise sampler function type 
  */
-typedef void (*coco_problem_noise_sampler_t)(coco_noisy_problem_t *problem, double fvalue);
-
-/**
- * @brief The COCO problem noise sampler function type 
- */
-typedef void (*coco_problem_evaluate_noise_model_t)(coco_noisy_problem_t *problem, double *y);
-
-/**
- * @brief The COCO problem noise sampler function type 
- */
-typedef void (*coco_problem_evaluate_noisy_function_t)(coco_noisy_problem_t *problem, const double *x, double *y);
+typedef void (*coco_problem_evaluate_noise_model_t)(coco_problem_t *problem, double *y);
 
 /**
  * @brief The COCO noise model structure
@@ -263,25 +258,12 @@ typedef void (*coco_problem_evaluate_noisy_function_t)(coco_noisy_problem_t *pro
  */
 struct coco_noise_model_s{
   
-  coco_problem_noise_sampler_t noise_sampler;         /**< @brief The function defining the noise model*/
+  coco_problem_evaluate_noise_model_t noise_sampler;         /**< @brief The function defining the noise model*/
   coco_problem_evaluate_noise_model_t noise_model_evaluator;    /**< @brief The function for sampling from the target distribution*/
 
   uint32_t random_seed;                               /**< @brief Random seed for noisy problems.*/
   double *distribution_theta;                         /**< @brief Parameters of the distribution from which the noise is drawn*/
 
-};
-
-/**
- * @brief The noisy COCO problem noisy problem structure
- * Wraps a noisy probkem around a inner one 
- */
-struct coco_noisy_problem_s{
-  coco_problem_t *inner_problem;                      /**@brief Pointer to the inner problem*/
-  coco_problem_evaluate_noisy_function_t evaluate_noisy_function;   /**< @brief  The function for evaluating the noisy problem. */
-  coco_noise_model_t *noise_model;
-  double last_noise_value;                            /**< @brief Last noise value in the case of noisy problems.
-                                                       * Needed to compute the correct gradient for noisy problems.
-                                                       * It assumes that the gradient will be computed after each function evaluation*/
 };
 
 /**@}*/
