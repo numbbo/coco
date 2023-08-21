@@ -110,7 +110,7 @@ def coco_optimize(fun, budget=MAXEVALS):
 # run 
 def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=number_of_batches):
     print("Benchmarking solver %s, %s" % (str(solver), time.asctime(), ))
-    t0 = time.process_time())
+    t0 = time.process_time()
     if 11 < 3:
         # simple Pythonic use case, never leaves a problem unfree()ed, ctrl-C "safe"
         print('Pythonic usecase ...'); sys.stdout.flush()
