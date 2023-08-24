@@ -51,7 +51,7 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
     suite = suite_bbob_mixint_initialize(suite_name);
   } else if (strcmp(suite_name, "bbob-biobj-mixint") == 0) {
     suite = suite_biobj_mixint_initialize();
-  } else if (strcmp(suite_name, "noisy-bbob") == 0) {
+  } else if (strcmp(suite_name, "bbob-noisy") == 0) {
     suite = suite_bbob_noisy_initialize();
   }
   else {
@@ -82,7 +82,7 @@ static const char *coco_suite_get_instances_by_year(const coco_suite_t *suite, c
     year_string = suite_bbob_mixint_get_instances_by_year(year);
   } else if (strcmp(suite->suite_name, "bbob-biobj-mixint") == 0) {
     year_string = suite_biobj_mixint_get_instances_by_year(year);
-  } else if (strcmp(suite->suite_name, "noisy-bbob") == 0) {
+  } else if (strcmp(suite->suite_name, "bbob-noisy") == 0) {
     year_string = suite_bbob_noisy_get_instances_by_year(year);
   } else {
     coco_error("coco_suite_get_instances_by_year(): suite '%s' has no years defined", suite->suite_name);
@@ -127,7 +127,7 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
     problem = suite_bbob_mixint_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-biobj-mixint") == 0) {
     problem = suite_biobj_mixint_get_problem(suite, function_idx, dimension_idx, instance_idx);
-  } else if (strcmp(suite->suite_name, "noisy-bbob") == 0) {
+  } else if (strcmp(suite->suite_name, "bbob-noisy") == 0) {
     problem = suite_bbob_noisy_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else {
     coco_error("coco_suite_get_problem_from_indices(): unknown problem suite");

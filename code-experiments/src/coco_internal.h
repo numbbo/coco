@@ -126,7 +126,7 @@ struct coco_problem_s {
   coco_evaluate_function_t evaluate_gradient;         /**< @brief  The function for evaluating the constraints. */
   coco_recommend_function_t recommend_solution;       /**< @brief  The function for recommending a solution. */
   coco_problem_free_function_t problem_free_function; /**< @brief  The function for freeing this problem. */
-  coco_evaluate_function_t evaluate_noisy_function;   /**< @brief  The function for evaluating noisy objectives*/
+  coco_evaluate_function_t placeholder_evaluate_function;   /**< @brief  The function for evaluating noisy objectives*/
 
   coco_noise_model_t *noise_model;     /**< @brief The  noise model for noisy problems*/
   

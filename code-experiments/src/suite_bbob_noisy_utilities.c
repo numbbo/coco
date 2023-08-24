@@ -7,6 +7,7 @@
 #include "coco.h"
 #include "coco_random.c"
 #include "coco_problem.c"
+#include "suite_bbob_legacy_code.c"
 
 /***********************************************************************************************************/
 
@@ -43,6 +44,7 @@ double coco_problem_get_last_noise_value(const coco_problem_t *problem){
  */
 /**@{*/
 void coco_problem_sample_gaussian_noise(coco_problem_t * problem, double *y){
+  int test_against_bbob2009 = 1;
   double fvalue = *(y);
   assert(fvalue != NAN);
   uint32_t random_seed = coco_problem_get_random_seed(problem);
@@ -50,7 +52,15 @@ void coco_problem_sample_gaussian_noise(coco_problem_t * problem, double *y){
   assert(random_seed != NAN);
   double scale = *(distribution_theta);
   coco_random_state_t * coco_state = coco_random_new(random_seed);
-  double gaussian_noise = coco_random_normal(coco_state);
+  double gaussian_noise;
+  if (test_against_bbob2009 != 1){
+    gaussian_noise = coco_random_normal(coco_state);
+  }
+  else{
+    double gaussian_noise_ptr[1] = {0.0};
+    bbob2009_gauss(&gaussian_noise_ptr[0], 1, 30); 
+    gaussian_noise = gaussian_noise_ptr[0];
+  }
   gaussian_noise = exp(scale * gaussian_noise);
   problem -> last_noise_value = gaussian_noise;
 }
@@ -59,6 +69,7 @@ void coco_problem_sample_gaussian_noise(coco_problem_t * problem, double *y){
  * @brief Samples uniform noise for a noisy problem
  */
 void coco_problem_sample_uniform_noise(coco_problem_t * problem, double *y){
+  int test_against_bbob2009 = 1;
   double fvalue = *(y);
   assert(fvalue != NAN);
   uint32_t random_seed = coco_problem_get_random_seed(problem);
@@ -68,8 +79,17 @@ void coco_problem_sample_uniform_noise(coco_problem_t * problem, double *y){
   double beta = *(distribution_theta++);
   coco_random_state_t * coco_state1 = coco_random_new(random_seed);
   coco_random_state_t * coco_state2 = coco_random_new(random_seed);
-  double uniform_noise_term1 = coco_random_uniform(coco_state1);
-  double uniform_noise_term2 = coco_random_uniform(coco_state2);
+  double uniform_noise_term1, uniform_noise_term2;
+  if (test_against_bbob2009 != 1){
+    uniform_noise_term1 = coco_random_uniform(coco_state1);
+    uniform_noise_term2 = coco_random_uniform(coco_state2);
+  }
+  else{
+    double noise_vector[2] = {0.0};
+    bbob2009_unif(&noise_vector[0], 2, 30);
+    uniform_noise_term1 = noise_vector[0];
+    uniform_noise_term2 = noise_vector[1];
+  }
   double uniform_noise_factor = pow(uniform_noise_term1, beta);
   double scaling_factor = pow(10, 9)/(fvalue + 10e-99);
   scaling_factor = pow(scaling_factor, alpha * uniform_noise_term2);
@@ -82,6 +102,7 @@ void coco_problem_sample_uniform_noise(coco_problem_t * problem, double *y){
  * @brief Samples cauchy noise for a noisy problem
  */
 void coco_problem_sample_cauchy_noise(coco_problem_t * problem, double *y){
+  int test_against_bbob2009 = 1;
   double fvalue = *(y);
   assert(fvalue != NAN);
   uint32_t random_seed = coco_problem_get_random_seed(problem);
@@ -92,9 +113,20 @@ void coco_problem_sample_cauchy_noise(coco_problem_t * problem, double *y){
   coco_random_state_t * coco_state1 = coco_random_new(random_seed);
   coco_random_state_t * coco_state2 = coco_random_new(random_seed); 
   coco_random_state_t * coco_state3 = coco_random_new(random_seed);
-  double uniform_indicator = coco_random_uniform(coco_state1);
-  double numerator_normal_variate = coco_random_normal(coco_state2);
-  double denominator_normal_variate = coco_random_normal(coco_state3);
+  double uniform_indicator, numerator_normal_variate, denominator_normal_variate;
+  if(test_against_bbob2009 != 1){
+    uniform_indicator = coco_random_uniform(coco_state1);
+    numerator_normal_variate = coco_random_normal(coco_state2);
+    denominator_normal_variate = coco_random_normal(coco_state3);
+  }
+  else{
+    double noise_vector_unif[1] = {0.0};
+    double noise_vector_normal[2] = {0.0};
+    bbob2009_unif(&noise_vector_unif[0], 1, 30);
+    bbob2009_gauss(&noise_vector_normal[0], 2, 30);
+    numerator_normal_variate = noise_vector_normal[0];
+    denominator_normal_variate = noise_vector_normal[1];
+  }
   denominator_normal_variate = fabs(denominator_normal_variate);
   double cauchy_noise = numerator_normal_variate / (denominator_normal_variate + 10e-99);
   cauchy_noise = uniform_indicator < p ?  1000 + cauchy_noise : 1000;
@@ -163,7 +195,7 @@ void coco_problem_f_evaluate_wrap_noisy(
     assert(problem -> noise_model != NULL);
     assert(problem -> noise_model -> noise_sampler != NULL);
     assert(problem -> noise_model -> noise_model_evaluator != NULL);
-    problem -> evaluate_function(problem, x, y);
+    problem -> placeholder_evaluate_function(problem, x, y);
     problem -> noise_model -> noise_sampler(problem, y);
     problem -> noise_model -> noise_model_evaluator(problem, y);
 }
@@ -196,7 +228,8 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_gaussian(
   problem -> noise_model -> distribution_theta = distribution_theta;
   problem -> noise_model -> noise_sampler = coco_problem_sample_gaussian_noise;
   problem -> noise_model -> noise_model_evaluator = coco_problem_evaluate_multiplicative_noise_model;
-  problem -> evaluate_noisy_function = coco_problem_f_evaluate_wrap_noisy;
+  problem -> placeholder_evaluate_function = problem -> evaluate_function;
+  problem -> evaluate_function = coco_problem_f_evaluate_wrap_noisy;
   return problem;
 }
 
@@ -233,7 +266,8 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_gaussian_schaffers(
   problem -> noise_model -> distribution_theta = distribution_theta;
   problem -> noise_model -> noise_sampler = coco_problem_sample_gaussian_noise;
   problem -> noise_model -> noise_model_evaluator = coco_problem_evaluate_multiplicative_noise_model;
-  problem -> evaluate_noisy_function = coco_problem_f_evaluate_wrap_noisy;
+  problem -> placeholder_evaluate_function = problem -> evaluate_function;
+  problem -> evaluate_function = coco_problem_f_evaluate_wrap_noisy;
   return problem;
 }
 
@@ -270,7 +304,8 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_gaussian_gallagher(
   problem -> noise_model -> distribution_theta = distribution_theta;
   problem -> noise_model -> noise_sampler = coco_problem_sample_gaussian_noise;
   problem -> noise_model -> noise_model_evaluator = coco_problem_evaluate_multiplicative_noise_model;
-  problem -> evaluate_noisy_function = coco_problem_f_evaluate_wrap_noisy;
+  problem -> placeholder_evaluate_function = problem -> evaluate_function;
+  problem -> evaluate_function = coco_problem_f_evaluate_wrap_noisy;
   return problem;
 }
 
@@ -302,7 +337,8 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_uniform(
   problem -> noise_model -> distribution_theta = distribution_theta;
   problem -> noise_model -> noise_sampler = coco_problem_sample_uniform_noise;
   problem -> noise_model -> noise_model_evaluator = coco_problem_evaluate_multiplicative_noise_model;
-  problem -> evaluate_noisy_function = coco_problem_f_evaluate_wrap_noisy;
+  problem -> placeholder_evaluate_function = problem -> evaluate_function;
+  problem -> evaluate_function = coco_problem_f_evaluate_wrap_noisy;
   return problem;
 }
 
@@ -339,7 +375,8 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_uniform_schaffers(
   problem -> noise_model -> distribution_theta = distribution_theta;
   problem -> noise_model -> noise_sampler = coco_problem_sample_uniform_noise;
   problem -> noise_model -> noise_model_evaluator = coco_problem_evaluate_multiplicative_noise_model;
-  problem -> evaluate_noisy_function = coco_problem_f_evaluate_wrap_noisy;
+  problem -> placeholder_evaluate_function = problem -> evaluate_function;
+  problem -> evaluate_function = coco_problem_f_evaluate_wrap_noisy;
   return problem;
 }
 
@@ -376,7 +413,8 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_uniform_gallagher(
   problem -> noise_model -> distribution_theta = distribution_theta;
   problem -> noise_model -> noise_sampler = coco_problem_sample_uniform_noise;
   problem -> noise_model -> noise_model_evaluator = coco_problem_evaluate_multiplicative_noise_model;
-  problem -> evaluate_noisy_function = coco_problem_f_evaluate_wrap_noisy;
+  problem -> placeholder_evaluate_function = problem -> evaluate_function;
+  problem -> evaluate_function = coco_problem_f_evaluate_wrap_noisy;
   return problem;
 }
 
@@ -407,7 +445,8 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_cauchy(
   problem -> noise_model -> distribution_theta = distribution_theta;
   problem -> noise_model -> noise_sampler = coco_problem_sample_cauchy_noise;
   problem -> noise_model -> noise_model_evaluator = coco_problem_evaluate_additive_noise_model;
-  problem -> evaluate_noisy_function = coco_problem_f_evaluate_wrap_noisy;
+  problem -> placeholder_evaluate_function = problem -> evaluate_function;
+  problem -> evaluate_function = coco_problem_f_evaluate_wrap_noisy;
   return problem;
 }
 
@@ -443,7 +482,8 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_cauchy_schaffers(
   problem -> noise_model -> distribution_theta = distribution_theta;
   problem -> noise_model -> noise_sampler = coco_problem_sample_cauchy_noise;
   problem -> noise_model -> noise_model_evaluator = coco_problem_evaluate_additive_noise_model;
-  problem -> evaluate_noisy_function = coco_problem_f_evaluate_wrap_noisy;
+  problem -> placeholder_evaluate_function = problem -> evaluate_function;
+  problem -> evaluate_function = coco_problem_f_evaluate_wrap_noisy;
   return problem;
 }
 
@@ -479,7 +519,8 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_cauchy_gallagher(
   problem -> noise_model -> distribution_theta = distribution_theta;
   problem -> noise_model -> noise_sampler = coco_problem_sample_cauchy_noise;
   problem -> noise_model -> noise_model_evaluator = coco_problem_evaluate_additive_noise_model;
-  problem -> evaluate_noisy_function = coco_problem_f_evaluate_wrap_noisy;
+  problem -> placeholder_evaluate_function = problem -> evaluate_function;
+  problem -> evaluate_function = coco_problem_f_evaluate_wrap_noisy;
   return problem;
 }
 /**@}*/
