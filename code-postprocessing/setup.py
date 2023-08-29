@@ -7,7 +7,8 @@ Prepare distribution::
 
     outcomment (activate) install requirements below (in this file)
     python setup.py check
-    python setup.py sdist bdist_wheel --universal > dist_call_output.txt ; less dist_call_output.txt  # bdist_wininst
+    python -m build > dist_call_output.txt ; less dist_call_output.txt  # see https://blog.ganssle.io/articles/2021/10/setup-py-deprecated.html#summary
+    # was: python setup.py sdist bdist_wheel --universal > dist_call_output.txt ; less dist_call_output.txt  # bdist_wininst
 
 Check distribution and project description::
 
@@ -20,7 +21,7 @@ Finally upload the distribution::
 
 and (possibly) tag the version::
 
-    git tag -a cocopp-2.3.x.xx -m "cocopp-2.3.x.xx uploaded to PyPI"
+    git tag -a cocopp-2.6.x.xx -m "cocopp-2.6.x.xx uploaded to PyPI"
 
 """
 from __future__ import absolute_import

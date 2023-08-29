@@ -39,6 +39,20 @@ pub fn set_log_level(level: LogLevel) {
 /// A COCO suite
 pub struct Suite {
     inner: *mut coco_suite_t,
+    name: CString,
+    instance: CString,
+    options: CString,
+}
+
+impl Clone for Suite {
+    fn clone(&self) -> Self {
+        Suite::new_raw(
+            self.name.clone(),
+            self.instance.clone(),
+            self.options.clone(),
+        )
+        .unwrap()
+    }
 }
 
 unsafe impl Send for Suite {}
@@ -94,13 +108,22 @@ impl Suite {
         let instance = CString::new(instance).unwrap();
         let options = CString::new(options).unwrap();
 
+        Self::new_raw(name, instance, options)
+    }
+
+    fn new_raw(name: CString, instance: CString, options: CString) -> Option<Suite> {
         let inner =
             unsafe { coco_sys::coco_suite(name.as_ptr(), instance.as_ptr(), options.as_ptr()) };
 
         if inner.is_null() {
             None
         } else {
-            Some(Suite { inner })
+            Some(Suite {
+                inner,
+                name,
+                instance,
+                options,
+            })
         }
     }
 
@@ -135,14 +158,16 @@ impl Suite {
 
         Some(Problem {
             inner,
-            function: function as usize,
-            dimension: dimension as usize,
-            instance: instance as usize,
+            function_idx: function as usize,
+            dimension_idx: dimension as usize,
+            instance_idx: instance as usize,
             _phantom: PhantomData,
         })
     }
 
     /// Returns the problem for the given function, dimension and instance.
+    ///
+    /// **Important:** This is different from [[Suite::problem_by_function_dimension_instance_index]].
     ///
     /// While a suite can contain multiple problems with equal function, dimension and instance, this
     /// function always returns the first problem in the suite with the given function, dimension and instance
@@ -168,9 +193,40 @@ impl Suite {
 
         Some(Problem {
             inner: problem,
-            function,
-            dimension,
-            instance,
+            function_idx: function,
+            dimension_idx: dimension,
+            instance_idx: instance,
+            _phantom: PhantomData,
+        })
+    }
+
+    /// Returns the problem for the given function, dimension and instance index.
+    pub fn problem_by_function_dimension_instance_index(
+        &mut self,
+        function_idx: usize,
+        dimension_idx: usize,
+        instance_idx: usize,
+    ) -> Option<Problem> {
+        let problem_index = unsafe {
+            coco_sys::coco_suite_encode_problem_index(
+                self.inner,
+                function_idx.try_into().unwrap(),
+                dimension_idx.try_into().unwrap(),
+                instance_idx.try_into().unwrap(),
+            )
+        };
+
+        let problem = unsafe { coco_sys::coco_suite_get_problem(self.inner, problem_index) };
+
+        if problem.is_null() {
+            return None;
+        }
+
+        Some(Problem {
+            inner: problem,
+            function_idx,
+            dimension_idx,
+            instance_idx,
             _phantom: PhantomData,
         })
     }
@@ -199,9 +255,9 @@ impl Drop for Suite {
 /// and [Suite::problem_by_function_dimension_instance].
 pub struct Problem<'suite> {
     inner: *mut coco_problem_t,
-    function: usize,
-    instance: usize,
-    dimension: usize,
+    function_idx: usize,
+    instance_idx: usize,
+    dimension_idx: usize,
     _phantom: PhantomData<&'suite Suite>,
 }
 
@@ -234,17 +290,17 @@ impl Problem<'_> {
 
     /// Returns the index of the problem.
     pub fn function_index(&self) -> usize {
-        self.function
+        self.function_idx
     }
 
     /// Returns the dimension index of the problem.
     pub fn dimension_index(&self) -> usize {
-        self.dimension
+        self.dimension_idx
     }
 
     /// Returns the instance of the problem.
     pub fn instance_index(&self) -> usize {
-        self.instance
+        self.instance_idx
     }
 
     /// Evaluates the problem at `x` and returns the result in `y`.
@@ -276,6 +332,19 @@ impl Problem<'_> {
     /// Returns true if a previous evaluation hit the target value.
     pub fn final_target_hit(&self) -> bool {
         unsafe { coco_sys::coco_problem_final_target_hit(self.inner) == 1 }
+    }
+
+    /// Returns the optimal function value + delta of the problem
+    pub fn final_target_value(&self) -> f64 {
+        unsafe { coco_sys::coco_problem_get_final_target_fvalue1(self.inner) }
+    }
+
+    /// Returns the optimal function value of the problem
+    ///
+    /// To check whether the target has been reached use [[Problem::final_target_value]]
+    /// or [[Problem::final_target_hit]] instead.
+    pub fn best_value(&self) -> f64 {
+        unsafe { coco_sys::coco_problem_get_best_value(self.inner) }
     }
 
     /// Returns the dimension of the problem.
