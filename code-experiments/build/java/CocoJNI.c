@@ -242,6 +242,32 @@ JNIEXPORT jlong JNICALL Java_CocoJNI_cocoSuiteGetProblem
 
 /*
  * Class:     CocoJNI
+ * Method:    cocoSuiteGetProblemByFuncDimInst
+ * Signature: (JJJJ)J
+ */
+JNIEXPORT jlong JNICALL Java_CocoJNI_cocoSuiteGetProblemByFuncDimInst
+(JNIEnv *jenv, jclass interface_cls, jlong jsuite_pointer, jlong jfunction, jlong jdimension, jlong jinstance) {
+
+  coco_problem_t *problem = NULL;
+  coco_suite_t *suite = NULL;
+
+  /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
+  if (interface_cls == NULL) {
+    jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoSuiteGetProblemByFuncDimInst\n");
+  }
+
+  suite = (coco_suite_t *) jsuite_pointer;
+  problem = coco_suite_get_problem_by_function_dimension_instance(suite, jfunction, jdimension, jinstance);
+
+  if (problem == NULL)
+    return 0;
+
+  return (jlong) problem;
+}
+
+/*
+ * Class:     CocoJNI
  * Method:    cocoEvaluateFunction
  * Signature: (J[D)[D
  */
