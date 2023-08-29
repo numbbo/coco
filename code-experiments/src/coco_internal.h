@@ -146,6 +146,8 @@ struct coco_problem_s {
   
   double last_noise_value;             /**< @brief For noisy problems, the last value sampled according to the noise model */
 
+  double condition;                    /**< @brief Condition of the problem*/
+
   size_t number_of_variables;          /**< @brief Number of variables expected by the function, i.e.
                                        problem dimension */
   size_t number_of_objectives;         /**< @brief Number of objectives. */

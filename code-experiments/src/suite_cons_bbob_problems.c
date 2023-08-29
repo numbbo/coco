@@ -261,9 +261,10 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
   for (i = 0; i < dimension; ++i)
     all_zeros[i] = 0.0;
      
+  double condition = 1.0e6;
   /* Create the objective function */
   problem = f_ellipsoid_cons_bbob_problem_allocate(function, dimension, 
-      instance, rseed, problem_id_template, problem_name_template);
+      instance, rseed, condition, problem_id_template, problem_name_template);
 
   bbob_evaluate_gradient(problem, all_zeros, feasible_direction);
   feasible_direction_set_length(feasible_direction, xopt, dimension, rseed);
@@ -343,10 +344,11 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
  
   for (i = 0; i < dimension; ++i)
     all_zeros[i] = 0.0;
-	 
+	
+  double condition = 1.0e6;
   /* Create the objective function */
   problem = f_ellipsoid_rotated_cons_bbob_problem_allocate(function, dimension, 
-      instance, rseed, problem_id_template, problem_name_template);
+      instance, rseed, condition, problem_id_template, problem_name_template);
       
   bbob_evaluate_gradient(problem, all_zeros, feasible_direction);
   feasible_direction_set_length(feasible_direction, xopt, dimension, rseed);

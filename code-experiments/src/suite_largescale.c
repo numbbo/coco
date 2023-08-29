@@ -77,8 +77,9 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
     problem = f_sphere_bbob_problem_allocate(function, dimension, instance, rseed,
                                              problem_id_template, problem_name_template);
   } else if (function == 2) {
+    double condition = 1.0e6;
     problem = f_ellipsoid_bbob_problem_allocate(function, dimension, instance, rseed,
-                                                problem_id_template, problem_name_template);
+                                                condition, problem_id_template, problem_name_template);
   } else if (function == 3) {
     problem = f_rastrigin_bbob_problem_allocate(function, dimension, instance, rseed,
                                                 problem_id_template, problem_name_template);
@@ -101,8 +102,9 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
     problem = f_rosenbrock_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
                                                                problem_id_template, problem_name_template);
   } else if (function == 10) {
+    double condition = 1.0e6;
     problem = f_ellipsoid_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
-                                                              problem_id_template, problem_name_template);
+                                                              condition, problem_id_template, problem_name_template);
   } else if (function == 11) {
     problem = f_discus_generalized_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
                                                                        problem_id_template, problem_name_template);
@@ -128,8 +130,9 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
     problem = f_schaffers_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed_17, 1000,
                                                               problem_id_template, problem_name_template);
   } else if (function == 19) {
+    double facftrue = 10.0;
     problem = f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_allocate(function, dimension, instance, rseed,
-                                                                             problem_id_template, problem_name_template);
+                                                                             facftrue, problem_id_template, problem_name_template);
   } else if (function == 20) {
     problem = f_schwefel_generalized_bbob_problem_allocate(function, dimension, instance, rseed,
                                                            problem_id_template, problem_name_template);

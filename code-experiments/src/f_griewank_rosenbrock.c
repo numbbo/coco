@@ -21,7 +21,7 @@
 /**
  * @brief Implements the Griewank-Rosenbrock function without connections to any COCO structures.
  */
-static double f_griewank_rosenbrock_raw(const double *x, const size_t number_of_variables) {
+static double f_griewank_rosenbrock_raw(const double *x, const size_t number_of_variables, double facftrue) {
 
   size_t i = 0;
   double tmp = 0;
@@ -38,7 +38,7 @@ static double f_griewank_rosenbrock_raw(const double *x, const size_t number_of_
     tmp = 100.0 * c1 * c1 + c2 * c2;
     result += tmp / 4000. - cos(tmp);
   }
-  result = 10. + 10. * result / (double) (number_of_variables - 1);
+  result = facftrue + facftrue * result / (double) (number_of_variables - 1);
 
   return result;
 }
@@ -48,7 +48,8 @@ static double f_griewank_rosenbrock_raw(const double *x, const size_t number_of_
  */
 static void f_griewank_rosenbrock_evaluate(coco_problem_t *problem, const double *x, double *y) {
   assert(problem->number_of_objectives == 1);
-  y[0] = f_griewank_rosenbrock_raw(x, problem->number_of_variables);
+  double facftrue = problem -> condition;
+  y[0] = f_griewank_rosenbrock_raw(x, problem->number_of_variables, facftrue);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
@@ -73,6 +74,7 @@ static coco_problem_t *f_griewank_rosenbrock_bbob_problem_allocate(const size_t 
                                                                    const size_t dimension,
                                                                    const size_t instance,
                                                                    const long rseed,
+                                                                   const double facftrue,
                                                                    const char *problem_id_template,
                                                                    const char *problem_name_template) {
   double fopt;
@@ -100,6 +102,7 @@ static coco_problem_t *f_griewank_rosenbrock_bbob_problem_allocate(const size_t 
   }
 
   problem = f_griewank_rosenbrock_allocate(dimension);
+  problem -> condition = facftrue;
   problem = transform_obj_shift(problem, fopt);
   problem = transform_vars_shift(problem, shift, 0);
   bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
@@ -134,6 +137,7 @@ static coco_problem_t *f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_all
                                                                                       const size_t dimension,
                                                                                       const size_t instance,
                                                                                       const long rseed,
+                                                                                      const double facftrue,
                                                                                       const char *problem_id_template,
                                                                                       const char *problem_name_template) {
   double fopt;
@@ -174,6 +178,7 @@ static coco_problem_t *f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_all
   coco_compute_truncated_uniform_swap_permutation(P2, rseed + 3000000, dimension, nb_swaps, swap_range);
   
   problem = f_griewank_rosenbrock_allocate(dimension);
+  problem -> condition = facftrue;
   problem = transform_vars_shift(problem, shift, 0);
   problem = transform_vars_scale(problem, scales);
   problem = transform_vars_permutation(problem, P2, dimension);
