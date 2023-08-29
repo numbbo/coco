@@ -175,6 +175,7 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem -> noise_model = noise_model;
   problem -> placeholder_evaluate_function = NULL;
   problem -> last_noise_value = 0.0;
+  problem -> condition = 0.0;
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = number_of_objectives;
   problem->number_of_constraints = number_of_constraints;
@@ -428,6 +429,29 @@ size_t coco_problem_get_evaluations(const coco_problem_t *problem) {
 size_t coco_problem_get_evaluations_constraints(const coco_problem_t *problem) {
   assert(problem != NULL);
   return problem->evaluations_constraints;
+}
+
+size_t coco_problem_get_random_seed(const coco_problem_t *problem){
+  assert(problem != NULL);
+  assert(problem -> noise_model -> random_seed != NAN); /**<@ warning: comparison between pointer and integer>*/
+  return (size_t) problem ->  noise_model -> random_seed;
+}
+
+double *coco_problem_get_distribution_theta(const coco_problem_t *problem){
+  assert(problem != NULL);
+  assert(problem -> noise_model -> distribution_theta != NULL);
+  return problem -> noise_model -> distribution_theta;
+} 
+
+double coco_problem_get_last_noise_value(const coco_problem_t *problem){
+  assert(problem != NULL);
+  assert(problem -> last_noise_value != NAN);
+  return problem -> last_noise_value;
+}
+
+void coco_problem_set_random_seed(coco_problem_t *problem, uint32_t random_seed){
+  assert(random_seed != NAN);
+  problem -> noise_model -> random_seed = random_seed;
 }
 
 /**
