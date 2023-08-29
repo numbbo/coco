@@ -98,7 +98,7 @@ public class Problem {
 		return this.upper_bounds[index];
 	}
 	
-	public int getNumberOfIntegerVariabls() {
+	public int getNumberOfIntegerVariables() {
 		return this.number_of_integer_variables;
 	}
 
