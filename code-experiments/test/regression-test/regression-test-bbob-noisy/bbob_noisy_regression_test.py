@@ -74,46 +74,21 @@ def regression_test_a_suite(suite_name, filename):
             y_hat = problem(x) 
             try:
                 assert is_equal(ftrue, y_hat), f_id + " failed the test: fval (legacy) = %f is different from y_hat (current) = %f, difference: %f" % (ftrue, y_hat, ftrue - y_hat)
-                print(f"{f_id} passed the test") 
                 passed_test_counter += 1
             except AssertionError as error:
                 #print(problem.name,"computed f(x) =", y_hat, "expected f(x) = ", f_val)
                 print(error)
                 failed_test_counter += 1
                 mse += (y_hat - ftrue)**2 
-    if failed_test_counter > 0:
-        print("{} assertions failed, {} tests passed, MSE {}".format(failed_test_counter, passed_test_counter, mse/evals))
+    
     if verbose:
         print("done in %.1fs" % (time.process_time() - t0))
+    if failed_test_counter > 0:
+        print("{} assertions failed, {} tests passed, MSE {}".format(failed_test_counter, passed_test_counter, mse/evals))
+    if failed_test_counter == 0:
+        print("All tests passed, execution terminating with exit code {}".format(failed_test_counter))
 
         sys.stdout.flush()
-    # f_id = "f101_i01_d02"
-
-    # f_evals = legacy_results[f_id]
-    # function_id = re.findall(".*f1(\d{2})", f_id)[0];   function_id = int(function_id)
-    # instance_id = re.findall(".*i(\d*)", f_id)[0];      instance_id = int(instance_id)
-    # dimension = re.findall(".*d(\d*)", f_id)[0];        dimension = int(dimension)
-    # #print("testing {} data points".format(len(f_evals)))
-    # for x, f in f_evals.items():
-    #     fval = f["fvalue"]
-    #     ftrue = f["ftrue"]
-    #     evals += 1
-    #     problem = suite.get_problem_by_function_dimension_instance(function_id, dimension, instance_id)
-    #     y_hat = problem(x) 
-    #     print("x {}, fval {}, y_hat {}".format(x, ftrue, y_hat))
-    #     try:
-    #         assert is_equal(ftrue, y_hat)
-    #         #print("Test Passed") 
-    #         passed_test_counter += 1
-    #     except AssertionError:
-    #         #print(problem.name,"computed f(x) =", y_hat, "expected f(x) = ", f_val)
-    #         failed_test_counter += 1
-    #         mse += (y_hat - ftrue)**2 
-    # if failed_test_counter > 0:
-    #     raise AssertionError("{} assertions failed, {} tests passed, MSE {}".format(failed_test_counter, passed_test_counter, mse/evals))
-    # if verbose:
-    #     print("done in %.1fs" % (time.process_time() - t0))
-
 
 if __name__ == "__main__":
     try:

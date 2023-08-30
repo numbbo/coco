@@ -20,9 +20,8 @@
 /**
  * @brief Implements the ellipsoid function without connections to any COCO structures.
  */
-static double f_ellipsoid_raw(const double *x, const size_t number_of_variables) {
+static double f_ellipsoid_raw(const double *x, const size_t number_of_variables, double condition) {
 
-  static const double condition = 1.0e6;
   size_t i = 0;
   double result;
     
@@ -43,7 +42,7 @@ static double f_ellipsoid_raw(const double *x, const size_t number_of_variables)
  */
 static void f_ellipsoid_evaluate(coco_problem_t *problem, const double *x, double *y) {
   assert(problem->number_of_objectives == 1);
-  y[0] = f_ellipsoid_raw(x, problem->number_of_variables);
+  y[0] = f_ellipsoid_raw(x, problem->number_of_variables, problem -> condition);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
@@ -54,13 +53,12 @@ static void f_ellipsoid_evaluate_gradient(coco_problem_t *problem,
                                           const double *x, 
                                           double *y) {
 
-  static const double condition = 1.0e6;
   double exponent;
   size_t i = 0;
-  
+
   for (i = 0; i < problem->number_of_variables; ++i) {
     exponent = 1.0 * (double) (long) i / ((double) (long) problem->number_of_variables - 1.0);
-    y[i] = 2.0*pow(condition, exponent) * x[i];
+    y[i] = 2.0*pow(problem -> condition, exponent) * x[i];
   }
  
 }
@@ -87,6 +85,7 @@ static coco_problem_t *f_ellipsoid_bbob_problem_allocate(const size_t function,
                                                          const size_t dimension,
                                                          const size_t instance,
                                                          const long rseed,
+                                                         const double conditioning,
                                                          const char *problem_id_template,
                                                          const char *problem_name_template) {
   double *xopt, fopt;
@@ -97,6 +96,7 @@ static coco_problem_t *f_ellipsoid_bbob_problem_allocate(const size_t function,
   bbob2009_compute_xopt(xopt, rseed, dimension);
 
   problem = f_ellipsoid_allocate(dimension);
+  problem -> condition = conditioning;
   problem = transform_vars_oscillate(problem);
   problem = transform_vars_shift(problem, xopt, 0);
 
@@ -121,6 +121,7 @@ static coco_problem_t *f_ellipsoid_rotated_bbob_problem_allocate(const size_t fu
                                                                  const size_t dimension,
                                                                  const size_t instance,
                                                                  const long rseed,
+                                                                 const double conditioning,
                                                                  const char *problem_id_template,
                                                                  const char *problem_name_template) {
   double *xopt, fopt;
@@ -140,6 +141,7 @@ static coco_problem_t *f_ellipsoid_rotated_bbob_problem_allocate(const size_t fu
   bbob2009_free_matrix(rot1, dimension);
 
   problem = f_ellipsoid_allocate(dimension);
+  problem -> condition = conditioning;
   problem = transform_vars_oscillate(problem);
   problem = transform_vars_affine(problem, M, b, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
@@ -162,6 +164,7 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
                                                                        const size_t dimension,
                                                                        const size_t instance,
                                                                        const long rseed,
+                                                                       const double conditioning,
                                                                        const char *problem_id_template,
                                                                        const char *problem_name_template) {
   double *xopt, fopt;
@@ -193,6 +196,7 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   coco_compute_truncated_uniform_swap_permutation(P2, rseed + 3000000, dimension, nb_swaps, swap_range);
 
   problem = f_ellipsoid_allocate(dimension);
+  problem -> condition = conditioning;
   problem = transform_vars_oscillate(problem);
   problem = transform_vars_permutation(problem, P2, dimension);
   problem = transform_vars_blockrotation(problem, B_copy, dimension, block_sizes, nb_blocks);
@@ -222,6 +226,7 @@ static coco_problem_t *f_ellipsoid_cons_bbob_problem_allocate(const size_t funct
                                                          const size_t dimension,
                                                          const size_t instance,
                                                          const long rseed,
+                                                         const double conditioning, 
                                                          const char *problem_id_template,
                                                          const char *problem_name_template) {
   double *xopt, fopt;
@@ -232,6 +237,7 @@ static coco_problem_t *f_ellipsoid_cons_bbob_problem_allocate(const size_t funct
   bbob2009_compute_xopt(xopt, rseed, dimension);
 
   problem = f_ellipsoid_allocate(dimension);
+  problem -> condition = conditioning;
   /* TODO (NH): fopt -= problem->evaluate(all_zeros(dimension)) */
   problem = transform_vars_shift(problem, xopt, 0);
   problem = transform_obj_shift(problem, fopt);
@@ -252,6 +258,7 @@ static coco_problem_t *f_ellipsoid_rotated_cons_bbob_problem_allocate(const size
                                                                  const size_t dimension,
                                                                  const size_t instance,
                                                                  const long rseed,
+                                                                 const double conditioning,
                                                                  const char *problem_id_template,
                                                                  const char *problem_name_template) {
   double *xopt, fopt;
@@ -271,6 +278,7 @@ static coco_problem_t *f_ellipsoid_rotated_cons_bbob_problem_allocate(const size
   bbob2009_free_matrix(rot1, dimension);
 
   problem = f_ellipsoid_allocate(dimension);
+  problem -> condition = conditioning;
   problem = transform_vars_affine(problem, M, b, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
   problem = transform_obj_shift(problem, fopt);

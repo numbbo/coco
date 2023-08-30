@@ -132,7 +132,7 @@ void coco_problem_sample_uniform_noise(coco_problem_t * problem, double *y){
  * @brief Samples cauchy noise for a noisy problem
  */
 void coco_problem_sample_cauchy_noise(coco_problem_t * problem, double *y){
-  int verbose = 0;
+  int verbose = 1;
   int test_against_bbob2009 = 1;
   double fvalue = *(y);
   assert(fvalue != NAN);
@@ -287,8 +287,8 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_gaussian(
   * that need the conditioning variable as argument for allocating the 
   * coco_problem_t
  */
-coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_gaussian_schaffers(
-    coco_problem_bbob_schaffers_allocator_t coco_problem_bbob_allocator,
+coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_gaussian_conditioned(
+    coco_problem_bbob_conditioned_allocator_t coco_problem_bbob_allocator,
     const size_t function, 
     const size_t dimension, 
     const size_t instance, 
@@ -396,8 +396,8 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_uniform(
   * that need the conditioning variable as argument for allocating the 
   * coco_problem_t 
  */
-coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_uniform_schaffers(
-    const coco_problem_bbob_schaffers_allocator_t coco_problem_bbob_allocator,
+coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_uniform_conditioned(
+    const coco_problem_bbob_conditioned_allocator_t coco_problem_bbob_allocator,
     const size_t function, 
     const size_t dimension, 
     const size_t instance, 
@@ -504,8 +504,8 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_cauchy(
   * that need the conditioning variable as argument for allocating the 
   * coco_problem_t 
  */
-coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_cauchy_schaffers(
-    const coco_problem_bbob_schaffers_allocator_t coco_problem_bbob_allocator,
+coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_cauchy_conditioned(
+    const coco_problem_bbob_conditioned_allocator_t coco_problem_bbob_allocator,
     const size_t function, 
     const size_t dimension, 
     const size_t instance, 

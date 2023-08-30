@@ -30,6 +30,8 @@ code-experiments/test/integration-test/test_instance_extraction
 code-experiments/test/regression-test/data/
 code-experiments/test/regression-test/regression-test-bbob-noisy/data/*.txt
 code-experiments/test/regression-test/regression-test-bbob-noisy/data_legacy/*.json
+code-experiments/test/regression-test/regression-test-bbob-noisy/results/
+
 
 code-postprocessing/build/
 code-postprocessing/dist/

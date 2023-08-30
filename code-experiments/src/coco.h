@@ -192,7 +192,7 @@ typedef coco_problem_t *(*coco_problem_bbob_allocator_t)(
  * This is a template for functions that perform the allocation of the objective function 
  * given the number of dimensions of the problem
  */
-typedef coco_problem_t *(*coco_problem_bbob_schaffers_allocator_t)(
+typedef coco_problem_t *(*coco_problem_bbob_conditioned_allocator_t)(
   const size_t function, 
   const size_t dimension, 
   const size_t instance, 
@@ -614,8 +614,8 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy(
   * that need the conditioning variable as argument for allocating the 
   * coco_problem_t
  */
-coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_schaffers(
-  coco_problem_bbob_schaffers_allocator_t coco_problem_bbob_allocator,
+coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_conditioned(
+  coco_problem_bbob_conditioned_allocator_t coco_problem_bbob_allocator,
   const size_t function, 
   const size_t dimension, 
   const size_t instance, 
@@ -664,8 +664,8 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_gaussian(
  * that need the conditioning variable as argument for allocating the 
  * coco_problem_t
  */
-coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_gaussian_schaffers(
-  coco_problem_bbob_schaffers_allocator_t coco_problem_bbob_allocator,
+coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_gaussian_conditioned(
+  coco_problem_bbob_conditioned_allocator_t coco_problem_bbob_allocator,
   const size_t function, 
   const size_t dimension, 
   const size_t instance, 
@@ -717,8 +717,8 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_uniform(
  * that need the conditioning variable as argument for allocating the 
  * coco_problem_t 
  */
-coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_uniform_schaffers(
-  const coco_problem_bbob_schaffers_allocator_t coco_problem_bbob_allocator,
+coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_uniform_conditioned(
+  const coco_problem_bbob_conditioned_allocator_t coco_problem_bbob_allocator,
   const size_t function, 
   const size_t dimension, 
   const size_t instance, 
@@ -770,8 +770,8 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_cauchy(
  * that need the conditioning variable as argument for allocating the 
  * coco_problem_t  
  */
-coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_cauchy_schaffers(
-  const coco_problem_bbob_schaffers_allocator_t coco_problem_bbob_allocator,
+coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_cauchy_conditioned(
+  const coco_problem_bbob_conditioned_allocator_t coco_problem_bbob_allocator,
   const size_t function, 
   const size_t dimension, 
   const size_t instance, 

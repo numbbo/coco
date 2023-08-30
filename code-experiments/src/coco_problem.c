@@ -166,6 +166,7 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem -> noise_model = noise_model;
   problem -> placeholder_evaluate_function = NULL;
   problem -> last_noise_value = 0.0;
+  problem -> condition = 0.0;
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = number_of_objectives;
   problem->number_of_constraints = number_of_constraints;
