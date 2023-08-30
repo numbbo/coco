@@ -45,7 +45,7 @@ double coco_problem_get_last_noise_value(const coco_problem_t *problem){
 /**@{*/
 void coco_problem_sample_gaussian_noise(coco_problem_t * problem, double *y){
   int test_against_bbob2009 = 1;
-  int verbose = 0;
+  int verbose = 1;
   double fvalue = *(y);
   assert(fvalue != NAN);
   uint32_t random_seed = coco_problem_get_random_seed(problem);
@@ -83,7 +83,7 @@ void coco_problem_sample_gaussian_noise(coco_problem_t * problem, double *y){
  * @brief Samples uniform noise for a noisy problem
  */
 void coco_problem_sample_uniform_noise(coco_problem_t * problem, double *y){
-  int verbose = 0;
+  int verbose = 1;
   int test_against_bbob2009 = 1;
   double fvalue = *(y);
   assert(fvalue != NAN);
@@ -95,7 +95,7 @@ void coco_problem_sample_uniform_noise(coco_problem_t * problem, double *y){
   coco_random_state_t * coco_state1 = coco_random_new(random_seed);
   coco_random_state_t * coco_state2 = coco_random_new(random_seed);
   double uniform_noise_term1, uniform_noise_term2;
-  if (verbose > 0){
+  if (verbose > 1){
     printf("\n-------------------------------------------------------------------\n");
     printf("\ncoco_problem_sample_gaussian_noise\n");
     printf("\nalpha: %f\n", alpha);
