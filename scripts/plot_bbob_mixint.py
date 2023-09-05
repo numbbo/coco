@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 import os
+from plot_bbob import best_parameter
 
 
 def plot_all_combinations(dim=5, inst=1):
@@ -97,7 +98,7 @@ def plot_each_variable(dim=5, inst=1, save_plots=True):
         fig, axes = plt.subplots(2, 2, figsize=(6.4 * 2 * scale, 4.8 * 2 * scale))
         for x_i, ax in enumerate(axes.flatten()):
             problem = suite.get_problem_by_function_dimension_instance(func, dim, inst)
-            x = [1, 3, 7, 15, 0]
+            x = best_parameter(problem)
             x_values = np.arange(2 ** (x_i + 1))
             f_list = []
             for v in x_values:
@@ -107,6 +108,8 @@ def plot_each_variable(dim=5, inst=1, save_plots=True):
                     f_list.append({f'x{x_i + 1}': v, 'x5': x5_i, 'f': problem(x)})
             df = pd.DataFrame(f_list)
             sns.lineplot(data=df, x='x5', y='f', hue=f'x{x_i + 1}', ax=ax, palette='plasma')
+            ax.scatter(best_parameter(problem)[-1], problem(best_parameter(problem)), marker='o', color='k', zorder=2)
+            ax.set_ylabel('f', rotation=0, labelpad=10)
 
         plt.tight_layout()
         if save_plots:
