@@ -281,9 +281,7 @@ typedef void (*coco_problem_evaluate_noise_model_t)(coco_problem_t *problem, dou
 struct coco_noise_model_s{
   
   coco_problem_evaluate_noise_model_t noise_sampler;         /**< @brief The function defining the noise model*/
-  coco_problem_evaluate_noise_model_t noise_model_evaluator;    /**< @brief The function for sampling from the target distribution*/
 
-  uint32_t random_seed;                               /**< @brief Random seed for noisy problems.*/
   double *distribution_theta;                         /**< @brief Parameters of the distribution from which the noise is drawn*/
 
 };
