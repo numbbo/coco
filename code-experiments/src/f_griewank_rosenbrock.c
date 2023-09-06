@@ -137,7 +137,7 @@ static coco_problem_t *f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_all
                                                                                       const size_t dimension,
                                                                                       const size_t instance,
                                                                                       const long rseed,
-                                                                                      const long facftrue,
+                                                                                      const double facftrue,
                                                                                       const char *problem_id_template,
                                                                                       const char *problem_name_template) {
   double fopt;

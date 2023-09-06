@@ -539,7 +539,7 @@ double coco_random_normal(coco_random_state_t *state);
 /**
  * @brief Returns the problem's random seed
  */
-uint32_t coco_problem_get_random_seed(const coco_problem_t *problem);
+size_t coco_problem_get_random_seed(const coco_problem_t *problem);
 
 /**
  * @brief Returns the parameters of the noise distribution 

@@ -64,7 +64,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
                                              const size_t instance) {
   coco_problem_t *problem = NULL;
 
-  const int verbose = 3;
+  const int verbose = 0;
   const char *problem_id_template = "bbob_noisy_f%lu_i%02lu_d%02lu";
   const char *problem_name_template = "BBOB-NOISY suite problem f%lu instance %lu in %luD";
 
@@ -83,17 +83,9 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
   const size_t function_idx = function + 100;
 
   if (function_idx == 101){
-    double distribution_theta_arr[1] = {0.1};
-    double *distribution_theta = &distribution_theta_arr[0];
+    double *distribution_theta = coco_allocate_vector((const size_t) 1);
+    distribution_theta[0] = 0.01;
     rseed = rseed_1;
-    if (verbose == 3){ 
-      printf("\n-------------------------------------------------------------------\n");
-      printf("\ncoco_get_bbob_noisy_problem\n");
-      printf("\ndistribution_theta_arr[0]: %f\n", distribution_theta_arr[0]);
-      printf("\n*distribution_theta: %f\n", *distribution_theta); 
-      printf("\ndistribution_theta: %p\n", (void*) &distribution_theta);
-      printf("\n-------------------------------------------------------------------\n");
-    }
     problem = coco_problem_allocate_bbob_wrap_noisy_gaussian(
         f_sphere_bbob_problem_allocate, 
         function_idx, 
@@ -105,18 +97,13 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         coco_seed, 
         distribution_theta
     );
-    if (verbose == 3){
-      printf("\n-------------------------------------------------------------------\n");
-      printf("\nAfter calling coco_problem_allocate_bbob_wrap_noisy_gaussian\n");
-      printf("\nproblem->noise_model->distribution_theta: %p\n", (void*) &problem->noise_model->distribution_theta);
-      printf("\n*(problem->noise_model->distribution_theta): %f\n", *(problem->noise_model->distribution_theta));
-    }
   } else if (function_idx ==  102){
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
     double alpha, beta;
     alpha = 0.01 * (0.49 + 1 / (double) dimension);
     beta = 0.01;
-    double distribution_theta_arr[2] = {alpha, beta};
-    double *distribution_theta = &distribution_theta_arr[0];
+    distribution_theta[0] = alpha;
+    distribution_theta[1] = beta;
     rseed = rseed_1;
     problem = coco_problem_allocate_bbob_wrap_noisy_uniform(
         f_sphere_bbob_problem_allocate, 
@@ -130,8 +117,9 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  103){
-    double distribution_theta_arr[2] = {0.01, 0.05}; 
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
+    distribution_theta[0] = 0.01;
+    distribution_theta[1] = 0.05;
     rseed = rseed_1;
     problem = coco_problem_allocate_bbob_wrap_noisy_cauchy(
         f_sphere_bbob_problem_allocate, 
@@ -145,8 +133,8 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  104){
-    double distribution_theta_arr[1] = {0.01}; 
-    double *distribution_theta = &distribution_theta_arr[0];
+    double *distribution_theta = coco_allocate_vector((const size_t) 1);
+    distribution_theta[0] = 0.01; 
     rseed = rseed_8;
     problem = coco_problem_allocate_bbob_wrap_noisy_gaussian(
         f_rosenbrock_bbob_problem_allocate, 
@@ -160,11 +148,12 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  105){
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
     double alpha, beta;
     alpha = 0.01 * (0.49 + 1 / (double) dimension);
     beta = 0.01;
-    double distribution_theta_arr[2] = {alpha, beta};
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    distribution_theta[0] = alpha;
+    distribution_theta[1] = beta;
     rseed = rseed_8;
     problem = coco_problem_allocate_bbob_wrap_noisy_uniform(
         f_rosenbrock_bbob_problem_allocate, 
@@ -178,8 +167,9 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  106){
-    double distribution_theta_arr[2] = {0.01, 0.05}; 
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
+    distribution_theta[0] = 0.01; 
+    distribution_theta[1] = 0.05; 
     rseed = rseed_8;
     problem = coco_problem_allocate_bbob_wrap_noisy_cauchy(
         f_rosenbrock_bbob_problem_allocate, 
@@ -193,8 +183,8 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  107){
-    double distribution_theta_arr[1] = {1.0}; 
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    double *distribution_theta = coco_allocate_vector((const size_t) 1);
+    distribution_theta[0] = 1.0; 
     rseed = rseed_1;
     problem = coco_problem_allocate_bbob_wrap_noisy_gaussian(
         f_sphere_bbob_problem_allocate, 
@@ -208,11 +198,12 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  108){
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
     double alpha, beta;
     alpha = 0.49 + 1.0 / (double) dimension;
     beta = 1.0;
-    double distribution_theta_arr[2] = {alpha, beta};
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    distribution_theta[0] = alpha;
+    distribution_theta[1] = beta;
     rseed = rseed_1;
     problem = coco_problem_allocate_bbob_wrap_noisy_uniform(
         f_sphere_bbob_problem_allocate, 
@@ -226,8 +217,9 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  109){
-    double distribution_theta_arr[2] = {1.0, 0.2}; 
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
+    distribution_theta[0] = 1.0;
+    distribution_theta[1] = 0.2;
     rseed = rseed_1;
     problem = coco_problem_allocate_bbob_wrap_noisy_cauchy(
         f_sphere_bbob_problem_allocate, 
@@ -241,8 +233,8 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  110){
-    double distribution_theta_arr[1]= {1.0}; 
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    double *distribution_theta = coco_allocate_vector((const size_t) 1);
+    distribution_theta[0] = 1.0; 
     rseed = rseed_8;
     problem = coco_problem_allocate_bbob_wrap_noisy_gaussian(
         f_rosenbrock_bbob_problem_allocate, 
@@ -256,11 +248,12 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  111){
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
     double alpha, beta;
     alpha = 0.49 + 1.0 / (double) dimension;
     beta = 1.0;
-    double distribution_theta_arr[2] = {alpha, beta};
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    distribution_theta[0] = alpha;
+    distribution_theta[1] = beta;
     rseed = rseed_8;
     problem = coco_problem_allocate_bbob_wrap_noisy_uniform(
         f_rosenbrock_bbob_problem_allocate, 
@@ -274,8 +267,9 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  112){
-    double distribution_theta_arr[2]= {1.0, 0.2}; 
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
+    distribution_theta[0]= 1.0;
+    distribution_theta[1]= 0.2;
     rseed = rseed_8;
     problem = coco_problem_allocate_bbob_wrap_noisy_cauchy(
         f_rosenbrock_bbob_problem_allocate, 
@@ -289,8 +283,8 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  113){
-    double distribution_theta_arr[2] = {1.0}; 
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    double *distribution_theta = coco_allocate_vector((const size_t) 1);
+    distribution_theta[0] = 1.0; 
     rseed = rseed_7;
     problem = coco_problem_allocate_bbob_wrap_noisy_gaussian(
         f_step_ellipsoid_bbob_problem_allocate, 
@@ -304,11 +298,12 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  114){
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
     double alpha, beta;
     alpha = 0.49 + 1.0 / (double) dimension;
     beta = 1.0;
-    double distribution_theta_arr[2] = {alpha, beta};
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    distribution_theta[0] = alpha;
+    distribution_theta[1] = beta;
     rseed = rseed_7;
     problem = coco_problem_allocate_bbob_wrap_noisy_uniform(
         f_step_ellipsoid_bbob_problem_allocate, 
@@ -322,8 +317,9 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  115){
-    double distribution_theta_arr[2]= {1.0, 0.2}; 
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
+    distribution_theta[0] = 1.0; 
+    distribution_theta[1]= 0.2; 
     rseed = rseed_7;
     problem = coco_problem_allocate_bbob_wrap_noisy_cauchy(
         f_step_ellipsoid_bbob_problem_allocate, 
@@ -337,18 +333,10 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  116){
-    double distribution_theta_arr[1] = {1.0}; 
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    double *distribution_theta = coco_allocate_vector((const size_t) 1);
+    distribution_theta[0] = 1.0; 
     rseed = rseed_10;
     double condition = 1.0e4;
-    if (verbose == 3){
-      printf("\n-------------------------------------------------------------------\n");
-      printf("\ncoco_get_bbob_noisy_problem\n");
-      printf("\ndistribution_theta_arr[0]: %f\n", distribution_theta_arr[0]);
-      printf("\n*distribution_theta: %f\n", *distribution_theta); 
-      printf("\ndistribution_theta: %p\n", (void*) &distribution_theta);
-      printf("\n-------------------------------------------------------------------\n");
-    }
     problem = coco_problem_allocate_bbob_wrap_noisy_gaussian_conditioned(
         f_ellipsoid_rotated_bbob_problem_allocate, 
         function_idx, 
@@ -361,28 +349,15 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         coco_seed, 
         distribution_theta
     );
-    if (verbose == 3){
-      printf("\n-------------------------------------------------------------------\n");
-      printf("\nAfter calling coco_problem_allocate_bbob_wrap_noisy_gaussian\n");
-      printf("\nproblem->noise_model->distribution_theta: %p\n", (void*) &problem->noise_model->distribution_theta);
-      printf("\n*(problem->noise_model->distribution_theta): %f\n", *(problem->noise_model->distribution_theta));
-    }
   } else if (function_idx ==  117){
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
     double alpha, beta;
     alpha = 0.49 + 1.0 / (double) dimension;
     beta = 1.0;
-    double distribution_theta_arr[2] = {alpha, beta}; 
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    distribution_theta[0] = alpha; 
+    distribution_theta[1] = beta; 
     rseed = rseed_10;
     double condition = 1.0e4;
-    if (verbose == 3){
-      printf("\n-------------------------------------------------------------------\n");
-      printf("\ncoco_get_bbob_noisy_problem\n");
-      printf("\ndistribution_theta_arr[0]: %f\n", distribution_theta_arr[0]);
-      printf("\n*distribution_theta: %f\n", *distribution_theta); 
-      printf("\ndistribution_theta: %p\n", (void*) &distribution_theta);
-      printf("\n-------------------------------------------------------------------\n");
-    }
     problem = coco_problem_allocate_bbob_wrap_noisy_uniform_conditioned(
         f_ellipsoid_rotated_bbob_problem_allocate, 
         function_idx, 
@@ -395,26 +370,12 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         coco_seed, 
         distribution_theta
     );
-    if (verbose == 3){
-      printf("\n-------------------------------------------------------------------\n");
-      printf("\nAfter calling coco_problem_allocate_bbob_wrap_noisy_gaussian\n");
-      printf("\nproblem->noise_model->distribution_theta: %p\n", (void*) &problem->noise_model->distribution_theta);
-      printf("\n*(problem->noise_model->distribution_theta): %f\n", *(problem->noise_model->distribution_theta));
-      printf("\n*(problem->noise_model->distribution_theta++): %f\n", *(problem->noise_model->distribution_theta++));
-    }
   } else if (function_idx ==  118){
-    double distribution_theta_arr[2]= {1.0, 0.2}; 
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
+    distribution_theta[0]= 1.0; 
+    distribution_theta[1]= 0.2; 
     rseed = rseed_10;
     double condition = 1.0e4;
-    if (verbose == 3){
-      printf("\n-------------------------------------------------------------------\n");
-      printf("\ncoco_get_bbob_noisy_problem\n");
-      printf("\ndistribution_theta_arr[0]: %f\n", distribution_theta_arr[0]);
-      printf("\n*distribution_theta: %f\n", *distribution_theta); 
-      printf("\ndistribution_theta: %p\n", (void*) &distribution_theta);
-      printf("\n-------------------------------------------------------------------\n");
-    }
     problem = coco_problem_allocate_bbob_wrap_noisy_cauchy_conditioned(
         f_ellipsoid_rotated_bbob_problem_allocate, 
         function_idx, 
@@ -427,16 +388,9 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         coco_seed, 
         distribution_theta
     );
-    if (verbose == 3){
-      printf("\n-------------------------------------------------------------------\n");
-      printf("\nAfter calling coco_problem_allocate_bbob_wrap_noisy_gaussian\n");
-      printf("\nproblem->noise_model->distribution_theta: %p\n", (void*) &problem->noise_model->distribution_theta);
-      printf("\n*(problem->noise_model->distribution_theta): %f\n", *(problem->noise_model->distribution_theta));
-      printf("\n*(problem->noise_model->distribution_theta++): %f\n", *(problem->noise_model->distribution_theta++));
-    }
   } else if (function_idx ==  119){
-    double distribution_theta_arr[1] = {1.0}; 
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    double *distribution_theta = coco_allocate_vector((const size_t) 1);
+    distribution_theta[0] = 1.0; 
     rseed = rseed_14;
     problem = coco_problem_allocate_bbob_wrap_noisy_gaussian(
         f_different_powers_bbob_problem_allocate, 
@@ -450,11 +404,12 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  120){
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
     double alpha, beta;
     alpha = 0.49 + 1.0 / (double) dimension;
     beta = 1.0;
-    double distribution_theta_arr[2] = {alpha, beta}; 
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    distribution_theta[0] = alpha; 
+    distribution_theta[1] = beta; 
     rseed = rseed_14;
     problem = coco_problem_allocate_bbob_wrap_noisy_uniform(
         f_different_powers_bbob_problem_allocate, 
@@ -468,8 +423,9 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  121){
-    double distribution_theta_arr[2]= {1.0, 0.2}; 
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
+    distribution_theta[0]= 1.0; 
+    distribution_theta[1]= 0.2; 
     rseed = rseed_14;
     problem = coco_problem_allocate_bbob_wrap_noisy_cauchy(
         f_different_powers_bbob_problem_allocate, 
@@ -483,8 +439,8 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  122){
-    double distribution_theta_arr[1]= {1.0}; 
-    double *distribution_theta = &distribution_theta_arr[0];
+    double *distribution_theta = coco_allocate_vector((const size_t) 1);
+    distribution_theta[0]= 1.0; 
     double conditioning = 10; 
     rseed = rseed_17;
     problem = coco_problem_allocate_bbob_wrap_noisy_gaussian_conditioned(
@@ -500,11 +456,12 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  123){
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
     double alpha, beta;
     alpha = 0.49 + 1.0 / (double) dimension;
     beta = 1.0;
-    double distribution_theta_arr[2] = {alpha, beta}; 
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    distribution_theta[0] = alpha; 
+    distribution_theta[1] = beta; 
     double conditioning = 10;
     rseed = rseed_17;
     problem = coco_problem_allocate_bbob_wrap_noisy_uniform_conditioned(
@@ -520,8 +477,9 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  124){
-    double distribution_theta_arr[2] = {1.0, 0.2}; 
-    double *distribution_theta = &distribution_theta_arr[0];
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
+    distribution_theta[0] = 1.0; 
+    distribution_theta[1] = 0.2; 
     double conditioning = 10; 
     rseed = rseed_17;
     problem = coco_problem_allocate_bbob_wrap_noisy_cauchy_conditioned(
@@ -537,17 +495,9 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  125){
-    double distribution_theta_arr[1]= {1.0}; 
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    double *distribution_theta = coco_allocate_vector((const size_t) 1);
+    distribution_theta[0]= 1.0; 
     rseed = rseed_19;
-    if (verbose == 3){
-      printf("\n-------------------------------------------------------------------\n");
-      printf("\ncoco_get_bbob_noisy_problem\n");
-      printf("\ndistribution_theta_arr[0]: %f\n", distribution_theta_arr[0]);
-      printf("\n*distribution_theta: %f\n", *distribution_theta); 
-      printf("\ndistribution_theta: %p\n", (void*) &distribution_theta);
-      printf("\n-------------------------------------------------------------------\n");
-    }
     double facftrue = 1.0;
     problem = coco_problem_allocate_bbob_wrap_noisy_gaussian_conditioned(
         f_griewank_rosenbrock_bbob_problem_allocate, 
@@ -561,28 +511,15 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         coco_seed, 
         distribution_theta
     );
-    if (verbose == 3){
-      printf("\n-------------------------------------------------------------------\n");
-      printf("\nAfter calling coco_problem_allocate_bbob_wrap_noisy_gaussian\n");
-      printf("\nproblem->noise_model->distribution_theta: %p\n", (void*) &problem->noise_model->distribution_theta);
-      printf("\n*(problem->noise_model->distribution_theta): %f\n", *(problem->noise_model->distribution_theta));
-    }
   } else if (function_idx ==  126){
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
     double alpha, beta;
     alpha = 0.49 + 1.0 / (double) dimension;
     beta = 1.0;
-    double distribution_theta_arr[2] = {alpha, beta}; 
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    distribution_theta[0] = alpha; 
+    distribution_theta[1] = beta; 
     rseed = rseed_19;
     double facftrue = 1.0;
-    if (verbose == 3){
-      printf("\n-------------------------------------------------------------------\n");
-      printf("\ncoco_get_bbob_noisy_problem\n");
-      printf("\ndistribution_theta_arr[0]: %f\n", distribution_theta_arr[0]);
-      printf("\n*distribution_theta: %f\n", *distribution_theta); 
-      printf("\ndistribution_theta: %p\n", (void*) &distribution_theta);
-      printf("\n-------------------------------------------------------------------\n");
-    }
     problem = coco_problem_allocate_bbob_wrap_noisy_uniform_conditioned(
         f_griewank_rosenbrock_bbob_problem_allocate, 
         function_idx, 
@@ -595,25 +532,11 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         coco_seed, 
         distribution_theta
     );
-    if (verbose == 3){
-      printf("\n-------------------------------------------------------------------\n");
-      printf("\nAfter calling coco_problem_allocate_bbob_wrap_noisy_gaussian\n");
-      printf("\nproblem->noise_model->distribution_theta: %p\n", (void*) &problem->noise_model->distribution_theta);
-      printf("\n*(problem->noise_model->distribution_theta): %f\n", *(problem->noise_model->distribution_theta));
-      printf("\n*(problem->noise_model->distribution_theta++): %f\n", *(problem->noise_model->distribution_theta++));
-    }
   } else if (function_idx ==  127){
-    double distribution_theta_arr[2] = {1.0, 0.2}; 
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
+    distribution_theta[0] = 1.0; 
+    distribution_theta[1] = 0.2; 
     rseed = rseed_19;
-    if (verbose == 3){
-      printf("\n-------------------------------------------------------------------\n");
-      printf("\ncoco_get_bbob_noisy_problem\n");
-      printf("\ndistribution_theta_arr[0]: %f\n", distribution_theta_arr[0]);
-      printf("\n*distribution_theta: %f\n", *distribution_theta); 
-      printf("\ndistribution_theta: %p\n", (void*) &distribution_theta);
-      printf("\n-------------------------------------------------------------------\n");
-    }
     double facftrue = 1.0;
     problem = coco_problem_allocate_bbob_wrap_noisy_cauchy_conditioned(
         f_griewank_rosenbrock_bbob_problem_allocate, 
@@ -627,16 +550,9 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         coco_seed, 
         distribution_theta
     );
-    if (verbose == 3){
-      printf("\n-------------------------------------------------------------------\n");
-      printf("\nAfter calling coco_problem_allocate_bbob_wrap_noisy_gaussian\n");
-      printf("\nproblem->noise_model->distribution_theta: %p\n", (void*) &problem->noise_model->distribution_theta);
-      printf("\n*(problem->noise_model->distribution_theta): %f\n", *(problem->noise_model->distribution_theta));
-      printf("\n*(problem->noise_model->distribution_theta++): %f\n", *(problem->noise_model->distribution_theta++));
-    }
   } else if (function_idx ==  128){
-    double distribution_theta_arr[1]= {1.0};
-    double *distribution_theta = &distribution_theta_arr[0];
+    double *distribution_theta = coco_allocate_vector((const size_t) 1);
+    distribution_theta[0]= 1.0;
     size_t n_peaks = 101; 
     rseed = rseed_21;
     problem = coco_problem_allocate_bbob_wrap_noisy_gaussian_gallagher(
@@ -652,11 +568,12 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  129){
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
     double alpha, beta;
     alpha = 0.49 + 1.0 / (double) dimension;
     beta = 1.0;
-    double distribution_theta_arr[2] = {alpha, beta}; 
-    double *distribution_theta = &distribution_theta_arr[0]; 
+    distribution_theta[0] = alpha; 
+    distribution_theta[1] = beta; 
     size_t n_peaks = 101;
     rseed = rseed_21;
     problem = coco_problem_allocate_bbob_wrap_noisy_uniform_gallagher(
@@ -672,8 +589,9 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
         distribution_theta
     );
   } else if (function_idx ==  130){
-    double distribution_theta_arr[2] = {1.0, 0.2}; 
-    double *distribution_theta = &distribution_theta_arr[0];
+    double *distribution_theta = coco_allocate_vector((const size_t) 2);
+    distribution_theta[0] = 1.0; 
+    distribution_theta[1] = 0.2; 
     size_t n_peaks = 101; 
     rseed = rseed_21;
     problem = coco_problem_allocate_bbob_wrap_noisy_cauchy_gallagher(

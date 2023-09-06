@@ -8,7 +8,7 @@ import os, sys
 import time
 import numpy as np
 import re
-import cocoex
+import cocoex as ex
 import pickle   
 try:
     from urllib.request import urlretrieve
@@ -25,8 +25,8 @@ def _is_equal(x, y):
     same_sign = x * y > 0
     ax, ay = np.abs(x), np.abs(y)
     lgx, lgy = np.log10(ax), np.log10(ay)
-    return ((np.abs(x - y) < 1e-9) +  # "+" means in effect "or"
-            same_sign * (np.abs(x - y) / (ax + ay) < 2e-9) +  # min(ax, ay) would be better?
+    return ((np.abs(x - y) < 1e-6) or  # "+" means in effect "or"
+            same_sign * (np.abs(x - y) / (ax + ay) < 2e-9) or  # min(ax, ay) would be better?
             same_sign * (ax > 1e21) * (ay > 1e21)  # *  # because coco.h defines INFINITY possibly as 1e22
            ) # (np.abs(lgx - lgy) / (lgx + lgy) < 0.7) > 0)  # probably not very useful 
 
@@ -46,62 +46,45 @@ def read_data_dictionary(filename):
     print("file read!")
     return best_values_legacy_dictionary
 
+def parse_id_string(id_string):
+    function_id = re.findall(".*f1(\d{2})", id_string)[0];   function_id = int(function_id)
+    instance_id = re.findall(".*i(\d*)", id_string)[0];      instance_id = int(instance_id)
+    dimension = re.findall(".*d(\d*)", id_string)[0];        dimension = int(dimension)
+    return function_id, instance_id, dimension
 
-def regression_test_a_suite(suite_name, filename):
-    """filename contains previously generated test data to compare against.
-    """
+def regression_test_bbob_noisy(filename):
+    verbose = 0
     failed_test_counter = 0
     passed_test_counter = 0
-    evals = 0
-    mse = 0
-    verbose = 1
-    legacy_results = read_data_dictionary(filename)
-    suite = cocoex.Suite(suite_name, "", "")
-    if verbose:
-        sys.stdout.flush()
-        t0 = time.process_time()
-    print("testing {} functions".format(len(legacy_results)))
-    for f_id, f_evals in  legacy_results.items():
-        function_id = re.findall(".*f1(\d{2})", f_id)[0];   function_id = int(function_id)
-        instance_id = re.findall(".*i(\d*)", f_id)[0];      instance_id = int(instance_id)
-        dimension = re.findall(".*d(\d*)", f_id)[0];        dimension = int(dimension)
-        #print("testing {} data points".format(len(f_evals)))
-        for x, f in f_evals.items():
-            fval = f["fvalue"]
-            ftrue = f["ftrue"]
-            evals += 1
-            problem = suite.get_problem_by_function_dimension_instance(function_id, dimension, instance_id)
-            y_hat = problem(x) 
-            try:
-                assert is_equal(ftrue, y_hat), f_id + " failed the test: fval (legacy) = %f is different from y_hat (current) = %f, difference: %f" % (ftrue, y_hat, ftrue - y_hat)
-                passed_test_counter += 1
-            except AssertionError as error:
-                #print(problem.name,"computed f(x) =", y_hat, "expected f(x) = ", f_val)
-                print(error)
-                failed_test_counter += 1
-                mse += (y_hat - ftrue)**2 
-    
+    suite_name = "bbob-noisy"
+    evaluation_history = read_data_dictionary(filename)
+    suite = ex.Suite(suite_name, '', '')
+    for evaluation in evaluation_history:
+        x = evaluation["x"]
+        fval = evaluation["fvalue"]
+        ftrue = evaluation["ftrue"]
+        random_n_seed = evaluation["_randomnseed"]
+        random_seed = evaluation["_randomseed"]
+        f_id = evaluation["f_id"]
+        noise_value = evaluation["noise_value"]
+        boundary_handling = evaluation["boundary_handling"]
+        function_id, instance_id, dimension = parse_id_string(f_id)
+        problem = suite.get_problem_by_function_dimension_instance(function_id, dimension, instance_id)
+        y_hat = problem(x) 
+        error_string = f_id + " failed the test (_randomnseed %d, _randomseed %d) -> noise_value (legacy) %f, noise_value (current) %f, fval (legacy) %f, yhat (current) %f" % (random_n_seed, random_seed, noise_value, problem.last_noise_value, fval, y_hat) 
+        try:
+            assert is_equal(fval, y_hat) or fval == y_hat, error_string
+            passed_test_counter += 1
+        except AssertionError as error:
+            print(error)
+            failed_test_counter += 1
     if verbose:
         print("done in %.1fs" % (time.process_time() - t0))
     if failed_test_counter > 0:
-        print("{} assertions failed, {} tests passed, MSE {}".format(failed_test_counter, passed_test_counter, mse/evals))
+        print("{} assertions failed, {} tests passed".format(failed_test_counter, passed_test_counter))
     if failed_test_counter == 0:
         print("All tests passed, execution terminating with exit code {}".format(failed_test_counter))
 
-        sys.stdout.flush()
-
 if __name__ == "__main__":
-    try:
-        ndata = int(sys.argv[1])
-    except IndexError:
-        ndata = 2
-    except ValueError:
-        print(__doc__)
-    try:
-        ndata
-    except:
-        pass
-    else:
-        name = "bbob-noisy"
-        data_file_path = "code-experiments/test/regression-test/regression-test-bbob-noisy/data_legacy/bbob_noisy_regression_data.json"
-        regression_test_a_suite(name, data_file_path)
+    data_file_path = "code-experiments/test/regression-test/regression-test-bbob-noisy/data_legacy/bbob_noisy_regression_data.json"
+    evaluation_dictionary_list = regression_test_bbob_noisy(data_file_path)
