@@ -71,8 +71,7 @@ cdef extern from "coco.h":
     # double coco_problem_get_final_target_fvalue1(const coco_problem_t *problem)
     size_t coco_problem_get_evaluations(const coco_problem_t *problem)
     size_t coco_problem_get_evaluations_constraints(const coco_problem_t *problem)
-    double coco_problem_get_last_noise_value(const coco_problem_t *problem)
-    size_t coco_problem_get_random_seed(const coco_problem_t *problem)
+    void coco_reset_seeds()
     double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem)
     int coco_problem_final_target_hit(const coco_problem_t *problem)
     void bbob_problem_best_parameter_print(const coco_problem_t *problem)
@@ -126,7 +125,7 @@ cdef class Suite:
         cdef coco_suite_t* suite
         cdef coco_problem_t* p
         cdef bytes _old_level
-
+        coco_reset_seeds()
         if self.initialized:
             self.reset()
         self._ids = []
@@ -757,12 +756,6 @@ cdef class Problem:
     @property
     def evaluations(self):
         return coco_problem_get_evaluations(self.problem)
-    @property
-    def last_noise_value(self):
-        return coco_problem_get_last_noise_value(self.problem)
-    @property
-    def random_seed(self):
-        return coco_problem_get_random_seed(self.problem)
     @property
     def evaluations_constraints(self):
         return coco_problem_get_evaluations_constraints(self.problem)
