@@ -71,7 +71,6 @@ cdef extern from "coco.h":
     # double coco_problem_get_final_target_fvalue1(const coco_problem_t *problem)
     size_t coco_problem_get_evaluations(const coco_problem_t *problem)
     size_t coco_problem_get_evaluations_constraints(const coco_problem_t *problem)
-    double coco_problem_get_last_noise_value(const coco_problem_t *problem)
     void reset_seeds()
     double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem)
     int coco_problem_final_target_hit(const coco_problem_t *problem)
@@ -749,10 +748,6 @@ cdef class Problem:
     @property
     def evaluations(self):
         return coco_problem_get_evaluations(self.problem)
-    @property
-    def last_noise_value(self):
-        return coco_problem_get_last_noise_value(self.problem)
-    @property
     def evaluations_constraints(self):
         return coco_problem_get_evaluations_constraints(self.problem)
     @property

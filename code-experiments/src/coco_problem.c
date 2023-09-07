@@ -425,12 +425,6 @@ double *coco_problem_get_distribution_theta(const coco_problem_t *problem){
   return problem -> noise_model -> distribution_theta;
 } 
 
-double coco_problem_get_last_noise_value(const coco_problem_t *problem){
-  assert(problem != NULL);
-  assert(problem -> last_noise_value != NAN);
-  return problem -> last_noise_value;
-}
-
 /**
  * @brief Returns 1 if the best parameter is not (close to) zero and 0 otherwise.
  */
