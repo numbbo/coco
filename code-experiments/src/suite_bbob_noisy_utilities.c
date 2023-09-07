@@ -139,17 +139,14 @@ void coco_problem_f_evaluate_wrap_noisy(
         const double *x, 
         double *y
     ){
-    int test_noise_free_values = 0;
     double fopt = *(problem -> best_value);
     assert(problem -> evaluate_function != NULL);
     assert(problem -> noise_model != NULL);
     assert(problem -> noise_model -> noise_sampler != NULL);
     problem -> placeholder_evaluate_function(problem, x, y);
-    if (test_noise_free_values == 0){
-      *(y) = *(y) - fopt;
-      problem -> noise_model -> noise_sampler(problem, y);
-      *(y) = *(y) + fopt;
-    }
+    *(y) = *(y) - fopt;
+    problem -> noise_model -> noise_sampler(problem, y);
+    *(y) = *(y) + fopt;
 }
 
 /**

@@ -64,7 +64,6 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
                                              const size_t instance) {
   coco_problem_t *problem = NULL;
 
-  const int verbose = 0;
   const char *problem_id_template = "bbob_noisy_f%lu_i%02lu_d%02lu";
   const char *problem_name_template = "BBOB-NOISY suite problem f%lu instance %lu in %luD";
 
@@ -609,20 +608,6 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     coco_error("coco_get_bbob_noisy_problem(): cannot retrieve problem f%lu instance %lu in %luD",
     		(unsigned long) function_idx, (unsigned long) instance, (unsigned long) dimension);
     return NULL; /* Never reached */
-  }
-  if (verbose == 1){    
-    printf("\nf%lu_i%02lu_d%02lu, optimal_f_value: %f \n", function_idx, instance, dimension , problem -> best_value[0]);
-    printf("x: {\n");
-    for(size_t dim = 0; dim < problem -> number_of_variables - 1; dim ++){
-        printf("\t%f, \n", *(problem -> best_parameter + dim));
-        
-    }
-    printf("\t%f\n", *(problem -> best_parameter + problem -> number_of_variables - 1));
-    printf("}");
-  }
-  if (verbose == 2) {
-    printf("f%lu_i%02lu_d%02lu, rseed: %lu \n", function_idx, instance, dimension , rseed);
-
   }
   return problem;
 }
