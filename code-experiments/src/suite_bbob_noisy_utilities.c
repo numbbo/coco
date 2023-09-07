@@ -52,16 +52,6 @@ double coco_sample_uniform_noise(void){
 
 /***********************************************************************************************************/
 
-void coco_problem_set_random_seeds(coco_problem_t * problem){
-  assert(_RANDNSEED != NAN);
-  assert(_RANDSEED != NAN);
-  assert(problem -> noise_model != NULL);
-  problem -> noise_model -> random_seed = (uint32_t) _RANDSEED;
-  problem -> noise_model -> random_n_seed = (uint32_t) _RANDNSEED;
-}
-
-/***********************************************************************************************************/
-
 /**
  * @name Methods regarding the noisy COCO samplers
  */
@@ -190,7 +180,6 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy(
   problem -> noise_model -> noise_sampler = noise_model;
   problem -> placeholder_evaluate_function = problem -> evaluate_function;
   problem -> evaluate_function = coco_problem_f_evaluate_wrap_noisy;
-  coco_problem_set_random_seeds(problem);
   return problem;
 }
 
@@ -227,7 +216,6 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_conditioned(
   problem -> noise_model -> noise_sampler = noise_model;
   problem -> placeholder_evaluate_function = problem -> evaluate_function;
   problem -> evaluate_function = coco_problem_f_evaluate_wrap_noisy;
-  coco_problem_set_random_seeds(problem);
   return problem;
 }
 
@@ -264,6 +252,5 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_gallagher(
   problem -> noise_model -> noise_sampler = noise_model;
   problem -> placeholder_evaluate_function = problem -> evaluate_function;
   problem -> evaluate_function = coco_problem_f_evaluate_wrap_noisy;
-  coco_problem_set_random_seeds(problem);
   return problem;
 }
