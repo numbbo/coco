@@ -262,7 +262,8 @@ struct coco_noise_model_s{
   
   coco_problem_evaluate_noise_model_t noise_sampler;         /**< @brief The function defining the noise model*/
 
-  uint32_t random_seed;                               /**< @brief Random seed for noisy problems.*/
+  uint32_t random_seed;                               /**< @brief Random seed for sampling uniform noise.*/
+  uint32_t random_n_seed;                               /**< @brief Random seed for gaussian noise.*/
   double *distribution_theta;                         /**< @brief Parameters of the distribution from which the noise is drawn*/
 
 };

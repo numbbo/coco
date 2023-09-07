@@ -421,8 +421,14 @@ size_t coco_problem_get_evaluations_constraints(const coco_problem_t *problem) {
 
 size_t coco_problem_get_random_seed(const coco_problem_t *problem){
   assert(problem != NULL);
-  assert(problem -> noise_model -> random_seed != NAN); /**<@ warning: comparison between pointer and integer>*/
+  assert(problem -> noise_model -> random_seed != NAN);
   return (size_t) problem ->  noise_model -> random_seed;
+}
+
+size_t coco_problem_get_random_n_seed(const coco_problem_t *problem){
+  assert(problem != NULL);
+  assert(problem -> noise_model -> random_n_seed != NAN);
+  return (size_t) problem ->  noise_model -> random_n_seed;
 }
 
 double *coco_problem_get_distribution_theta(const coco_problem_t *problem){

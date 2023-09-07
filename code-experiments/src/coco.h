@@ -537,34 +537,24 @@ double coco_random_normal(coco_random_state_t *state);
 /**@{*/
 
 /**
- * @brief Returns the problem's random seed
+ * @brief Resets seeds
  */
-size_t coco_problem_get_random_seed(const coco_problem_t *problem);
-
-/**
- * @brief Returns the parameters of the noise distribution 
- */
-double *coco_problem_get_theta_distribution(const coco_problem_t *problem);
-
-/**
- * @brief Returns the problem's last noise value
- */
-double coco_problem_get_last_noise_value(const coco_problem_t *problem);
+void reset_seeds(void);
 
 /**
  * @brief Samples gaussian variate for noisy function
  */
-void coco_problem_sample_gaussian_noise(coco_problem_t * problem, double * y);
+void coco_problem_gaussian_noise_model(coco_problem_t * problem, double * y);
 
 /**
  * @brief Samples gaussian variate for noisy function
  */
-void coco_problem_sample_uniform_noise(coco_problem_t * problem, double * y);
+void coco_problem_uniform_noise_model(coco_problem_t * problem, double * y);
 
 /**
  * @brief Samples Cauchy variate for noisy function
  */
-void coco_problem_sample_cauchy_noise(coco_problem_t * problem, double * y);
+void coco_problem_cauchy_noise_model(coco_problem_t * problem, double * y);
 
 /**
   * @brief Evaluates the coco problem noisy function

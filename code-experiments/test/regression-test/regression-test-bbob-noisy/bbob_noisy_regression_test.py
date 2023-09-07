@@ -75,6 +75,7 @@ def regression_test_bbob_noisy(filename):
         try:
             assert is_equal(fval, y_hat) or fval == y_hat, error_string
             passed_test_counter += 1
+            print(f_id + "  passed the test ", ("y_hat: %f" % (y_hat)))
         except AssertionError as error:
             print(error)
             failed_test_counter += 1
