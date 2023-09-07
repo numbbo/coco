@@ -748,6 +748,7 @@ cdef class Problem:
     @property
     def evaluations(self):
         return coco_problem_get_evaluations(self.problem)
+    @property
     def evaluations_constraints(self):
         return coco_problem_get_evaluations_constraints(self.problem)
     @property
