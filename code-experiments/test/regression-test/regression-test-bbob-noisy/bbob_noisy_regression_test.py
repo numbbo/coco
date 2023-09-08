@@ -71,7 +71,7 @@ def regression_test_bbob_noisy(filename):
         function_id, instance_id, dimension = parse_id_string(f_id)
         problem = suite.get_problem_by_function_dimension_instance(function_id, dimension, instance_id)
         y_hat = problem(x) 
-        error_string = f_id + " failed the test (_randomnseed %d, _randomseed %d) -> noise_value (legacy) %f, noise_value (current) %f, fval (legacy) %f, yhat (current) %f" % (random_n_seed, random_seed, noise_value, problem.last_noise_value, fval, y_hat) 
+        error_string = f_id + " failed the test -> fval (legacy) %f, yhat (current) %f" % (fval, y_hat) 
         try:
             assert is_equal(fval, y_hat) or fval == y_hat, error_string
             passed_test_counter += 1
