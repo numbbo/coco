@@ -127,6 +127,20 @@ impl Suite {
         }
     }
 
+    pub fn function_from_function_index(&self, function_idx: usize) -> usize {
+        unsafe { coco_sys::coco_suite_get_function_from_function_index(self.inner, function_idx) }
+    }
+
+    pub fn dimension_from_dimension_index(&self, dimension_idx: usize) -> usize {
+        unsafe {
+            coco_sys::coco_suite_get_dimension_from_dimension_index(self.inner, dimension_idx)
+        }
+    }
+
+    pub fn instance_from_instance_index(&self, instance_idx: usize) -> usize {
+        unsafe { coco_sys::coco_suite_get_instance_from_instance_index(self.inner, instance_idx) }
+    }
+
     /// Returns the next problem or `None` when the suite completed.
     pub fn next_problem<'s>(&'s mut self, observer: Option<&mut Observer>) -> Option<Problem<'s>> {
         let observer = observer.map(|o| o.inner).unwrap_or(ptr::null_mut());
