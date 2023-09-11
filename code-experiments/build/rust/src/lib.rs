@@ -179,6 +179,38 @@ impl Suite {
         })
     }
 
+    pub fn problem(&mut self, problem_idx: usize) -> Option<Problem> {
+        let inner = unsafe { coco_sys::coco_suite_get_problem(self.inner, problem_idx) };
+
+        if inner.is_null() {
+            return None;
+        }
+
+        let mut function = 0;
+        let mut dimension = 0;
+        let mut instance = 0;
+
+        unsafe {
+            let suite_index = coco_sys::coco_problem_get_suite_dep_index(inner);
+
+            coco_sys::coco_suite_decode_problem_index(
+                self.inner,
+                suite_index,
+                &mut function,
+                &mut dimension,
+                &mut instance,
+            );
+        }
+
+        Some(Problem {
+            inner,
+            function_idx: function as usize,
+            dimension_idx: dimension as usize,
+            instance_idx: instance as usize,
+            _phantom: PhantomData,
+        })
+    }
+
     /// Returns the problem for the given function, dimension and instance.
     ///
     /// **Important:** This is different from [[Suite::problem_by_function_dimension_instance_index]].
