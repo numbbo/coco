@@ -6,35 +6,8 @@ use std::{
     ptr,
 };
 
-pub enum LogLevel {
-    Error,
-    Warning,
-    Info,
-    Debug,
-}
-impl Default for LogLevel {
-    fn default() -> Self {
-        LogLevel::Info
-    }
-}
-impl LogLevel {
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            LogLevel::Error => "error",
-            LogLevel::Warning => "warning",
-            LogLevel::Info => "info",
-            LogLevel::Debug => "debug",
-        }
-    }
-}
-
-/// Sets COCO's log level.
-pub fn set_log_level(level: LogLevel) {
-    let level = CString::new(level.as_str()).unwrap();
-    unsafe {
-        coco_sys::coco_set_log_level(level.as_ptr());
-    }
-}
+mod log_level;
+pub use log_level::LogLevel;
 
 /// A COCO suite
 pub struct Suite {
