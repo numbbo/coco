@@ -11,9 +11,9 @@ fn main() {
     LogLevel::Info.set();
 
     example_experiment(
-        suite::SuiteName::Bbob,
+        suite::Name::Bbob,
         "",
-        observer::ObserverName::Bbob,
+        observer::Name::Bbob,
         "result_folder: RS_on_bbob",
         random_generator,
     );
@@ -22,9 +22,9 @@ fn main() {
 }
 
 fn example_experiment(
-    suite_name: suite::SuiteName,
+    suite_name: suite::Name,
     suite_options: &str,
-    observer_name: observer::ObserverName,
+    observer_name: observer::Name,
     observer_options: &str,
     random_generator: &mut RandomState,
 ) {

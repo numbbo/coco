@@ -1,29 +1,31 @@
 use coco_sys::coco_observer_t;
 use std::ffi::{CStr, CString};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Name {
+    Bbob,
+    BbobBiobj,
+    Toy,
+    None,
+}
+
+impl Name {
+    fn as_str(&self) -> &'static str {
+        match self {
+            Name::Bbob => "bbob",
+            Name::BbobBiobj => "bbob-biobj",
+            Name::Toy => "toy",
+            Name::None => "no-observer",
+        }
+    }
+}
+
 /// An observer to log results in COCO's data format.
 ///
 /// Can be provided to [Suite::next_problem] and it will
 /// automatically be attached to the returned problem.
 pub struct Observer {
     pub(crate) inner: *mut coco_observer_t,
-}
-
-pub enum ObserverName {
-    Bbob,
-    BbobBiobj,
-    Toy,
-    None,
-}
-impl ObserverName {
-    fn as_str(&self) -> &'static str {
-        match self {
-            ObserverName::Bbob => "bbob",
-            ObserverName::BbobBiobj => "bbob-biobj",
-            ObserverName::Toy => "toy",
-            ObserverName::None => "no-observer",
-        }
-    }
 }
 
 impl Observer {
@@ -59,7 +61,7 @@ impl Observer {
     /// of digits to be printed after the decimal point. The default value is 3.
     /// - "log_discrete_as_int: VALUE" determines whether the values of integer variables (in mixed-integer problems)
     /// are logged as integers (1) or not (0 - in this case they are logged as doubles). The default value is 0.
-    pub fn new(name: ObserverName, options: &str) -> Option<Observer> {
+    pub fn new(name: Name, options: &str) -> Option<Observer> {
         let name = CString::new(name.as_str()).unwrap();
         let options = CString::new(options).unwrap();
 

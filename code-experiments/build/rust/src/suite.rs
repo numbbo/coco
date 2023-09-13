@@ -3,6 +3,33 @@ use std::{ffi::CString, marker::PhantomData, ptr};
 
 use crate::{observer::Observer, problem::Problem};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Name {
+    Bbob,
+    BbobBiobj,
+    BbobBiobjExt,
+    BbobLargescale,
+    BbobConstrained,
+    BbobMixint,
+    BbobBiobjMixint,
+    Toy,
+}
+
+impl Name {
+    fn as_str(&self) -> &'static str {
+        match self {
+            Name::Bbob => "bbob",
+            Name::BbobBiobj => "bbob-biobj",
+            Name::BbobBiobjExt => "bbob-biobj-ext",
+            Name::BbobLargescale => "bbob-largescale",
+            Name::BbobConstrained => "bbob-constrained",
+            Name::BbobMixint => "bbob-mixint",
+            Name::BbobBiobjMixint => "bbob-biobj-mixint",
+            Name::Toy => "toy",
+        }
+    }
+}
+
 /// A COCO suite
 pub struct Suite {
     pub(crate) inner: *mut coco_suite_t,
@@ -23,31 +50,6 @@ impl Clone for Suite {
 }
 
 unsafe impl Send for Suite {}
-
-pub enum SuiteName {
-    Bbob,
-    BbobBiobj,
-    BbobBiobjExt,
-    BbobLargescale,
-    BbobConstrained,
-    BbobMixint,
-    BbobBiobjMixint,
-    Toy,
-}
-impl SuiteName {
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            SuiteName::Bbob => "bbob",
-            SuiteName::BbobBiobj => "bbob-biobj",
-            SuiteName::BbobBiobjExt => "bbob-biobj-ext",
-            SuiteName::BbobLargescale => "bbob-largescale",
-            SuiteName::BbobConstrained => "bbob-constrained",
-            SuiteName::BbobMixint => "bbob-mixint",
-            SuiteName::BbobBiobjMixint => "bbob-biobj-mixint",
-            SuiteName::Toy => "toy",
-        }
-    }
-}
 
 impl Suite {
     /// Instantiates the specified COCO suite.
@@ -70,7 +72,7 @@ impl Suite {
     /// in the suite, and
     /// - "instance_indices: VALUES", where VALUES is a list or a range of instance indices (starting from 1) to keep
     /// in the suite.
-    pub fn new(name: SuiteName, instance: &str, options: &str) -> Option<Suite> {
+    pub fn new(name: Name, instance: &str, options: &str) -> Option<Suite> {
         let name = CString::new(name.as_str()).unwrap();
         let instance = CString::new(instance).unwrap();
         let options = CString::new(options).unwrap();
