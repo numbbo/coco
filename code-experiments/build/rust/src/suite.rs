@@ -4,7 +4,7 @@ use std::{ffi::CString, ptr};
 use crate::{observer::Observer, problem::Problem};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct ProblemIdx(usize);
+pub struct ProblemIdx(pub(crate) usize);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct FunctionIdx(usize);

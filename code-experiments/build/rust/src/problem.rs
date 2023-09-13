@@ -1,7 +1,10 @@
 use coco_sys::coco_problem_t;
 use std::{ffi::CStr, marker::PhantomData, ops::RangeInclusive};
 
-use crate::suite::Suite;
+use crate::{
+    suite::{self, Suite},
+    Observer,
+};
 
 /// A specific problem instance.
 ///
@@ -48,6 +51,38 @@ impl Problem<'_> {
         }
     }
 
+    /// Returns the type of the problem.
+    pub fn typ(&self) -> &str {
+        unsafe {
+            CStr::from_ptr(coco_sys::coco_problem_get_type(self.inner))
+                .to_str()
+                .unwrap()
+        }
+    }
+
+    /// Adds an observer to the given problem.
+    pub fn add_observer(&mut self, observer: &Observer) {
+        // The Python bindings also mutate the problem instead of returning a new one.
+        self.inner = unsafe { coco_sys::coco_problem_add_observer(self.inner, observer.inner) };
+
+        assert!(!self.inner.is_null())
+    }
+
+    /// Removes an observer to the given problem.
+    pub fn remove_observer(&mut self, observer: &Observer) {
+        // The Python bindings also mutate the problem instead of returning a new one.
+        self.inner = unsafe { coco_sys::coco_problem_remove_observer(self.inner, observer.inner) };
+
+        assert!(!self.inner.is_null())
+    }
+
+    /// Returns the problem index of the problem in its current suite.
+    pub fn suite_index(&self) -> suite::ProblemIdx {
+        let idx = unsafe { coco_sys::coco_problem_get_suite_dep_index(self.inner) };
+
+        suite::ProblemIdx(idx)
+    }
+
     /// Evaluates the problem at `x` and returns the result in `y`.
     ///
     /// The length of `x` must match [Problem::dimension] and the
@@ -90,6 +125,11 @@ impl Problem<'_> {
     /// or [[Problem::final_target_hit]] instead.
     pub fn best_value(&self) -> f64 {
         unsafe { coco_sys::coco_problem_get_best_value(self.inner) }
+    }
+
+    /// Returns the best observed value for the first objective.
+    pub fn best_observed_value(&self) -> f64 {
+        unsafe { coco_sys::coco_problem_get_best_observed_fvalue1(self.inner) }
     }
 
     /// Returns the dimension of the problem.
