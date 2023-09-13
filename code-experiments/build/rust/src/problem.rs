@@ -179,7 +179,6 @@ impl Problem<'_> {
             let largest = coco_sys::coco_problem_get_largest_values_of_interest(self.inner);
 
             (0..dimension)
-                .into_iter()
                 .map(|i| (*smallest.offset(i))..=(*largest.offset(i)))
                 .collect()
         }
