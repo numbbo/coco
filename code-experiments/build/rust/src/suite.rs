@@ -5,19 +5,19 @@ use crate::{observer::Observer, problem::Problem};
 
 /// Index of a [`Problem`] in a [`Suite`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct ProblemIdx(pub(crate) usize);
+pub struct ProblemIdx(pub usize);
 
 /// Index of a function in a [`Suite`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct FunctionIdx(usize);
+pub struct FunctionIdx(pub usize);
 
 /// Index of an instance in a [`Suite`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct InstanceIdx(usize);
+pub struct InstanceIdx(pub usize);
 
 /// Index of a dimension in a [`Suite`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct DimensionIdx(usize);
+pub struct DimensionIdx(pub usize);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Name {
