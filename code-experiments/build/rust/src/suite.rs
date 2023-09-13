@@ -150,8 +150,6 @@ impl Suite {
 
     /// Returns the problem for the given function, dimension and instance.
     ///
-    /// **Important:** This is different from [[Suite::problem_by_function_dimension_instance_index]].
-    ///
     /// While a suite can contain multiple problems with equal function, dimension and instance, this
     /// function always returns the first problem in the suite with the given function, dimension and instance
     /// values. If the given values don't correspond to a problem, the function returns `None`.
@@ -169,31 +167,6 @@ impl Suite {
                 instance as usize,
             )
         };
-
-        if inner.is_null() {
-            return None;
-        }
-
-        Some(Problem::new(inner, self))
-    }
-
-    /// Returns the problem for the given function, dimension and instance index.
-    pub fn problem_by_function_dimension_instance_index(
-        &mut self,
-        function_idx: FunctionIdx,
-        dimension_idx: DimensionIdx,
-        instance_idx: InstanceIdx,
-    ) -> Option<Problem> {
-        let problem_index = unsafe {
-            coco_sys::coco_suite_encode_problem_index(
-                self.inner,
-                function_idx.0,
-                dimension_idx.0,
-                instance_idx.0,
-            )
-        };
-
-        let inner = unsafe { coco_sys::coco_suite_get_problem(self.inner, problem_index) };
 
         if inner.is_null() {
             return None;
