@@ -4,6 +4,18 @@ use std::{ffi::CString, ptr};
 use crate::{observer::Observer, problem::Problem};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ProblemIdx(usize);
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct FunctionIdx(usize);
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct InstanceIdx(usize);
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct DimensionIdx(usize);
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Name {
     Bbob,
     BbobBiobj,
@@ -96,18 +108,18 @@ impl Suite {
         }
     }
 
-    pub fn function_from_function_index(&self, function_idx: usize) -> usize {
-        unsafe { coco_sys::coco_suite_get_function_from_function_index(self.inner, function_idx) }
+    pub fn function_from_function_index(&self, function_idx: FunctionIdx) -> usize {
+        unsafe { coco_sys::coco_suite_get_function_from_function_index(self.inner, function_idx.0) }
     }
 
-    pub fn dimension_from_dimension_index(&self, dimension_idx: usize) -> usize {
+    pub fn dimension_from_dimension_index(&self, dimension_idx: DimensionIdx) -> usize {
         unsafe {
-            coco_sys::coco_suite_get_dimension_from_dimension_index(self.inner, dimension_idx)
+            coco_sys::coco_suite_get_dimension_from_dimension_index(self.inner, dimension_idx.0)
         }
     }
 
-    pub fn instance_from_instance_index(&self, instance_idx: usize) -> usize {
-        unsafe { coco_sys::coco_suite_get_instance_from_instance_index(self.inner, instance_idx) }
+    pub fn instance_from_instance_index(&self, instance_idx: InstanceIdx) -> usize {
+        unsafe { coco_sys::coco_suite_get_instance_from_instance_index(self.inner, instance_idx.0) }
     }
 
     /// Returns the next problem or `None` when the suite completed.
@@ -126,8 +138,8 @@ impl Suite {
         Some(Problem::new(inner, self))
     }
 
-    pub fn problem(&mut self, problem_idx: usize) -> Option<Problem> {
-        let inner = unsafe { coco_sys::coco_suite_get_problem(self.inner, problem_idx) };
+    pub fn problem(&mut self, problem_idx: ProblemIdx) -> Option<Problem> {
+        let inner = unsafe { coco_sys::coco_suite_get_problem(self.inner, problem_idx.0) };
 
         if inner.is_null() {
             return None;
@@ -168,16 +180,16 @@ impl Suite {
     /// Returns the problem for the given function, dimension and instance index.
     pub fn problem_by_function_dimension_instance_index(
         &mut self,
-        function_idx: usize,
-        dimension_idx: usize,
-        instance_idx: usize,
+        function_idx: FunctionIdx,
+        dimension_idx: DimensionIdx,
+        instance_idx: InstanceIdx,
     ) -> Option<Problem> {
         let problem_index = unsafe {
             coco_sys::coco_suite_encode_problem_index(
                 self.inner,
-                function_idx.try_into().unwrap(),
-                dimension_idx.try_into().unwrap(),
-                instance_idx.try_into().unwrap(),
+                function_idx.0,
+                dimension_idx.0,
+                instance_idx.0,
             )
         };
 
