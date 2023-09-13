@@ -9,13 +9,19 @@ use crate::suite::Suite;
 /// and [Suite::problem_by_function_dimension_instance].
 pub struct Problem<'suite> {
     pub(crate) inner: *mut coco_problem_t,
-    pub(crate) function_idx: usize,
-    pub(crate) instance_idx: usize,
-    pub(crate) dimension_idx: usize,
-    pub(crate) _phantom: PhantomData<&'suite Suite>,
+    _phantom: PhantomData<&'suite Suite>,
 }
 
 unsafe impl Send for Problem<'_> {}
+
+impl<'suite> Problem<'suite> {
+    pub(crate) fn new(inner: *mut coco_problem_t, _suite: &'suite Suite) -> Self {
+        Problem {
+            inner,
+            _phantom: PhantomData,
+        }
+    }
+}
 
 impl Problem<'_> {
     /// Returns the ID of the problem.
@@ -40,21 +46,6 @@ impl Problem<'_> {
                 .to_str()
                 .unwrap()
         }
-    }
-
-    /// Returns the index of the problem.
-    pub fn function_index(&self) -> usize {
-        self.function_idx
-    }
-
-    /// Returns the dimension index of the problem.
-    pub fn dimension_index(&self) -> usize {
-        self.dimension_idx
-    }
-
-    /// Returns the instance of the problem.
-    pub fn instance_index(&self) -> usize {
-        self.instance_idx
     }
 
     /// Evaluates the problem at `x` and returns the result in `y`.
