@@ -3,15 +3,19 @@ use std::{ffi::CString, ptr};
 
 use crate::{observer::Observer, problem::Problem};
 
+/// Index of a [`Problem`] in a [`Suite`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ProblemIdx(pub(crate) usize);
 
+/// Index of a function in a [`Suite`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct FunctionIdx(usize);
 
+/// Index of an instance in a [`Suite`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct InstanceIdx(usize);
 
+/// Index of a dimension in a [`Suite`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct DimensionIdx(usize);
 
@@ -108,16 +112,19 @@ impl Suite {
         }
     }
 
+    /// Returns the function number in the suite in position function_idx (counting from 0).
     pub fn function_from_function_index(&self, function_idx: FunctionIdx) -> usize {
         unsafe { coco_sys::coco_suite_get_function_from_function_index(self.inner, function_idx.0) }
     }
 
+    /// Returns the dimension number in the suite in position dimension_idx (counting from 0).
     pub fn dimension_from_dimension_index(&self, dimension_idx: DimensionIdx) -> usize {
         unsafe {
             coco_sys::coco_suite_get_dimension_from_dimension_index(self.inner, dimension_idx.0)
         }
     }
 
+    /// Returns the instance number in the suite in position instance_idx (counting from 0).
     pub fn instance_from_instance_index(&self, instance_idx: InstanceIdx) -> usize {
         unsafe { coco_sys::coco_suite_get_instance_from_instance_index(self.inner, instance_idx.0) }
     }
@@ -138,6 +145,7 @@ impl Suite {
         Some(Problem::new(inner, self))
     }
 
+    /// Returns the problem of the suite defined by problem_idx.
     pub fn problem(&mut self, problem_idx: ProblemIdx) -> Option<Problem> {
         let inner = unsafe { coco_sys::coco_suite_get_problem(self.inner, problem_idx.0) };
 
