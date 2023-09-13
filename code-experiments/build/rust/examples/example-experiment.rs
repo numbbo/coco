@@ -53,7 +53,7 @@ fn my_random_search(problem: &mut Problem, max_budget: usize, random_generator: 
     let number_of_objectives = problem.number_of_objectives();
     let numver_of_constraints = problem.number_of_constraints();
     let number_of_integer_variables = problem.number_of_integer_variables();
-    let bounds = problem.get_ranges_of_interest();
+    let bounds = problem.ranges_of_interest();
 
     let x = &mut vec![0.0; dimension];
     let y = &mut vec![0.0; number_of_objectives];

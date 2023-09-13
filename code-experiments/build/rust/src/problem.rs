@@ -172,7 +172,7 @@ impl Problem<'_> {
     }
 
     /// Returns the upper and lover bounds of the problem.
-    pub fn get_ranges_of_interest(&self) -> Vec<RangeInclusive<f64>> {
+    pub fn ranges_of_interest(&self) -> Vec<RangeInclusive<f64>> {
         let dimension = self.dimension() as isize;
         unsafe {
             let smallest = coco_sys::coco_problem_get_smallest_values_of_interest(self.inner);
