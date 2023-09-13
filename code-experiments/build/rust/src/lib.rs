@@ -1,3 +1,7 @@
+#![deny(missing_docs)]
+
+//! Rust bindings for the Numerical Black-Box Optimization Benchmarking Framework.
+
 use std::ffi::CStr;
 
 mod log_level;

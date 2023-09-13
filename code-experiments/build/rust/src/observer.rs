@@ -1,11 +1,20 @@
+//! COCO observer.
+
 use coco_sys::coco_observer_t;
 use std::ffi::{CStr, CString};
 
+/// Observers provided by COCO.
+///
+/// The observer name should match the [`suite::Name`](crate::suite::Name).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Name {
+    /// Observer for the BBOB suite.
     Bbob,
+    /// Observer for the BBOB Bi-Objective suite.
     BbobBiobj,
+    /// Observer for the toy suite.
     Toy,
+    /// Dont use any observer.
     None,
 }
 
@@ -22,7 +31,7 @@ impl Name {
 
 /// An observer to log results in COCO's data format.
 ///
-/// Can be provided to [Suite::next_problem] and it will
+/// Can be provided to [`Suite::next_problem`](crate::Suite::next_problem) and it will
 /// automatically be attached to the returned problem.
 pub struct Observer {
     pub(crate) inner: *mut coco_observer_t,

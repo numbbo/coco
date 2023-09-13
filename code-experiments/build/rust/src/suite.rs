@@ -1,3 +1,5 @@
+//! COCO benchmark suite.
+
 use coco_sys::coco_suite_t;
 use std::{ffi::CString, ptr};
 
@@ -19,15 +21,24 @@ pub struct InstanceIdx(pub usize);
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct DimensionIdx(pub usize);
 
+/// Suites provided by COCO.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Name {
+    /// The standard bbob test suite.
     Bbob,
+    /// The bi-objective test suite.
     BbobBiobj,
+    /// The extended bi-objective test suite.
     BbobBiobjExt,
+    /// The large scale test suite.
     BbobLargescale,
+    /// The constrained test suite.
     BbobConstrained,
+    /// The mixed-integer test suite.
     BbobMixint,
+    /// The bi-objective mixed-integer test suite.
     BbobBiobjMixint,
+    /// The toy test suite.
     Toy,
 }
 

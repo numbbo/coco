@@ -1,3 +1,5 @@
+//! COCO problem instance.
+
 use coco_sys::coco_problem_t;
 use std::{ffi::CStr, marker::PhantomData, ops::RangeInclusive};
 

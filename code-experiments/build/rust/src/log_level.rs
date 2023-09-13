@@ -1,10 +1,15 @@
 use std::ffi::CStr;
 
+/// COCO's log levels.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LogLevel {
+    /// Log only errors.
     Error,
+    /// Log only warnings and errors.
     Warning,
+    /// Log everything except debug messages.
     Info,
+    /// Log everyhting.
     Debug,
 }
 
