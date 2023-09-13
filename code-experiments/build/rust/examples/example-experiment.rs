@@ -1,4 +1,4 @@
-use coco_rs::{LogLevel, Observer, ObserverName, Problem, RandomState, Suite, SuiteName};
+use coco_rs::{observer, suite, LogLevel, Observer, Problem, RandomState, Suite};
 
 const BUDGET_MULTIPLIER: usize = 10;
 const INDEPENDENT_RESTARTS: u64 = 1e5 as u64;
@@ -8,12 +8,12 @@ fn main() {
     let random_generator = &mut RandomState::new(RANDOM_SEED);
     println!("Running the example experiment... (might take time, be patient)");
 
-    coco_rs::set_log_level(LogLevel::Info);
+    LogLevel::Info.set();
 
     example_experiment(
-        SuiteName::Bbob,
+        suite::SuiteName::Bbob,
         "",
-        ObserverName::Bbob,
+        observer::ObserverName::Bbob,
         "result_folder: RS_on_bbob",
         random_generator,
     );
@@ -22,9 +22,9 @@ fn main() {
 }
 
 fn example_experiment(
-    suite_name: SuiteName,
+    suite_name: suite::SuiteName,
     suite_options: &str,
-    observer_name: ObserverName,
+    observer_name: observer::ObserverName,
     observer_options: &str,
     random_generator: &mut RandomState,
 ) {
