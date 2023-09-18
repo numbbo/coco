@@ -174,8 +174,7 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->problem_free_function = NULL;
   problem -> noise_model = noise_model;
   problem -> placeholder_evaluate_function = NULL;
-  problem -> last_noise_value = 0.0;
-  problem -> condition = 0.0;
+
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = number_of_objectives;
   problem->number_of_constraints = number_of_constraints;
@@ -334,11 +333,10 @@ void coco_problem_free(coco_problem_t *problem) {
     problem->best_value = NULL;
     problem->nadir_value = NULL;
     problem->suite = NULL;
-    problem->data = NULL;
     problem->initial_solution = NULL;
     coco_free_memory(problem);
   }
-}
+} 
 
 /***********************************************************************************************************/
 
@@ -483,6 +481,15 @@ double coco_problem_get_best_value(const coco_problem_t *problem) {
   assert(problem != NULL);
   assert(problem->best_value != NULL);
   return problem->best_value[0];
+}
+
+/**
+ * @brief Returns the optimal decision vector of the problem
+ */
+double * coco_problem_get_best_parameter(const coco_problem_t *problem){
+  assert(problem != NULL);
+  assert(problem->best_value != NULL);
+  return problem->best_parameter;
 }
 
 /**

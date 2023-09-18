@@ -122,6 +122,60 @@ typedef enum {
 } coco_log_level_type_e;
 
 /***********************************************************************************************************/
+/**
+ * @name Structures representing the additional arguments to be passed to the functions
+ */
+/**{@*/
+
+/**
+ * @brief The extra argument to be passed to the step ellipsoid function
+ * only penalty scale, because in the legacy code is different 
+ * between the noisy and the noise free implementations 
+ */
+typedef struct{
+  double penalty_scale;
+} f_step_ellipsoid_args_t;
+
+/**
+ * @brief The extra argument to be passed to the step ellipsoid function
+ * only conditioning, because in the legacy code is different 
+ * between the noisy and the noise free implementations 
+ */
+typedef struct{
+  double conditioning;
+} f_ellipsoid_args_t;
+
+/**
+ * @brief The extra argument to be passed to the step ellipsoid function
+ * conditioning and penalty scale, because in the legacy code were different 
+ * between the noisy and the noise free implementations 
+ */
+typedef struct{
+  double conditioning;
+  double penalty_scale;
+} f_schaffers_args_t;
+
+/**
+ * @brief The extra argument to be passed to the step ellipsoid function
+ * facftrue, because in the legacy code is different 
+ * between the noisy and the noise free implementations 
+ */
+typedef struct{
+  double facftrue;
+}f_griewank_rosenbrock_args_t;
+
+/**
+ * @brief The extra argument to be passed to the step ellipsoid function
+ * facftrue, because in the legacy code is different 
+ * between the noisy and the noise free implementations 
+ */
+typedef struct{
+  size_t number_of_peaks;
+  double penalty_scale;
+}f_gallagher_args_t;
+/**@}*/
+
+/***********************************************************************************************************/
 
 /** @brief Structure containing a COCO problem. */
 struct coco_problem_s;
@@ -197,32 +251,16 @@ typedef coco_problem_t *(*coco_problem_bbob_allocator_t)(
  * This is a template for functions that perform the allocation of the objective function 
  * given the number of dimensions of the problem
  */
-typedef coco_problem_t *(*coco_problem_bbob_conditioned_allocator_t)(
+typedef coco_problem_t *(*coco_problem_bbob_allocator_args_t)(
   const size_t function, 
   const size_t dimension, 
   const size_t instance, 
   const long rseed,
-  const double conditioning, 
+  const void *args, 
   const char *problem_id_template, 
   const char *problem_name_template);
-
-/**
- * @brief The allocate objective function type 
- * This is a template for functions that perform the allocation of the objective function 
- * given the number of dimensions of the problem
- */
-typedef coco_problem_t *(*coco_problem_bbob_gallagher_allocator_t)(
-  const size_t function, 
-  const size_t dimension, 
-  const size_t instance, 
-  const long rseed,
-  const size_t n_peaks, 
-  const char *problem_id_template, 
-  const char *problem_name_template);
-/**@}*/
 
 /***********************************************************************************************************/
-
 /**
  * @name Methods regarding COCO suite
  */
@@ -454,6 +492,17 @@ size_t coco_problem_get_number_of_constraints(const coco_problem_t *problem);
  * @brief Returns the number of objective function evaluations done on the problem.
  */
 size_t coco_problem_get_evaluations(const coco_problem_t *problem);
+
+
+/**
+ * @brief Returns the optimal function value of the problem
+ */
+double coco_problem_get_best_value(const coco_problem_t *problem);
+
+/**
+ * @brief Returns the optimal decision vector of the problem
+ */
+double * coco_problem_get_best_parameter(const coco_problem_t *problem);
 
 /**
  * @brief Returns the number of constraint function evaluations done on the problem.

@@ -237,6 +237,7 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
   suite->functions = coco_allocate_vector_size_t(suite->number_of_functions);
   for (i = 0; i < suite->number_of_functions; i++) {
     suite->functions[i] = i + 1;
+    if (strcmp(suite->suite_name, "bbob-noisy") == 0) suite->functions[i] = suite->functions[i] + 100;
   }
 
   assert(strlen(default_instances) > 0);
@@ -906,7 +907,6 @@ size_t coco_suite_encode_problem_index(const coco_suite_t *suite,
 
   return instance_idx + (function_idx * suite->number_of_instances) +
       (dimension_idx * suite->number_of_instances * suite->number_of_functions);
-
 }
 
 /**
