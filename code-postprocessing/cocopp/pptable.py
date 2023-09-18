@@ -101,18 +101,15 @@ def get_table_caption():
         """)
 
     table_caption = None
-    if testbedsettings.current_testbed.name in ['bbob', 'bbob-noisy', 'bbob-biobj']:
+    if (testbedsettings.current_testbed.reference_algorithm_filename == '' or
+            testbedsettings.current_testbed.reference_algorithm_filename is None):
+        # all testbeds without provided reference algorithm
+        table_caption = table_caption_no_reference_algorithm
+    else:
         if genericsettings.runlength_based_targets:
             table_caption = table_caption_start + table_caption_rlbased + table_caption_rest
         else:
             table_caption = table_caption_start + table_caption_fixedtargets + table_caption_rest
-    elif testbedsettings.current_testbed.name in ['bbob-biobj-ext', 'bbob-constrained',
-                                                  'bbob-largescale', 'bbob-mixint',
-                                                  'bbob-biobj-mixint']:
-        # all testbeds without provided reference algorithm
-        table_caption = table_caption_no_reference_algorithm
-    else:
-        warnings.warn("Current settings do not support pptable caption.")
 
     return captions.replace(table_caption)
         

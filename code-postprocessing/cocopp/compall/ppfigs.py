@@ -74,22 +74,15 @@ def prepare_scaling_figure_caption():
     scaling_figure_caption_fixed = scaling_figure_caption_start_fixed + scaling_figure_caption_end
     scaling_figure_caption_rlbased = scaling_figure_caption_start_rlbased + scaling_figure_caption_end
 
-    if testbedsettings.current_testbed.name in [testbedsettings.suite_name_bi_ext,
-                                                testbedsettings.suite_name_cons,
-                                                testbedsettings.suite_name_ls,
-                                                testbedsettings.suite_name_mixint,
-                                                testbedsettings.suite_name_bi_mixint]:
+    if (testbedsettings.current_testbed.reference_algorithm_filename == '' or
+            testbedsettings.current_testbed.reference_algorithm_filename is None):
         # NOTE: no runlength-based targets supported yet
         figure_caption = scaling_figure_caption_fixed
-    elif testbedsettings.current_testbed.name in [testbedsettings.suite_name_single,
-                                                  testbedsettings.suite_name_single_noisy,
-                                                  testbedsettings.suite_name_bi]:
+    else:
         if genericsettings.runlength_based_targets:
             figure_caption = scaling_figure_caption_rlbased
         else:
             figure_caption = scaling_figure_caption_fixed
-    else:
-        warnings.warn("Current settings do not support ppfigdim caption.")
 
     return figure_caption
 
@@ -134,22 +127,15 @@ def prepare_ecdfs_figure_caption():
                 r"$\{0.5, \dots, 50\}$. "
                 )
 
-    if testbed.name in [testbedsettings.suite_name_bi_ext,
-                        testbedsettings.suite_name_cons,
-                        testbedsettings.suite_name_ls,
-                        testbedsettings.suite_name_mixint,
-                        testbedsettings.suite_name_bi_mixint]:
+    if (testbed.reference_algorithm_filename == '' or
+            testbed.reference_algorithm_filename is None):
         # NOTE: no runlength-based targets supported yet
         figure_caption = ecdfs_figure_caption_standard
-    elif testbed.name in [testbedsettings.suite_name_single,
-                          testbedsettings.suite_name_single_noisy,
-                          testbedsettings.suite_name_bi]:
+    else:
         if genericsettings.runlength_based_targets:
             figure_caption = ecdfs_figure_caption_rlbased + refalgtext
         else:
             figure_caption = ecdfs_figure_caption_standard + refalgtext
-    else:
-        warnings.warn("Current settings do not support ppfigdim caption.")
 
     return figure_caption
 

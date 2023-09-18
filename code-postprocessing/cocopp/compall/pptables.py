@@ -65,30 +65,21 @@ def get_table_caption():
                 (r"""A ${}$ signifies the number of trials that were worse than the ERT of !!THE-REF-ALG!! """
                  r"""shown only when less than 10 percent were worse and the ERT was better."""
                  .format(significance_vs_ref_symbol)
-                    if not (testbedsettings.current_testbed.name in (testbedsettings.suite_name_bi_ext,
-                                                                     testbedsettings.suite_name_ls,
-                                                                     testbedsettings.suite_name_mixint,
-                                                                     testbedsettings.suite_name_bi_mixint))
-                           else "") + r"""Best results are printed in bold.
+                    if not (testbedsettings.current_testbed.reference_algorithm_filename == '' or
+                            testbedsettings.current_testbed.reference_algorithm_filename is None)
+                 else "") + r"""Best results are printed in bold.
         """)
 
     table_caption = None
-    if testbedsettings.current_testbed.name in [testbedsettings.suite_name_bi_ext,
-                                                testbedsettings.suite_name_cons,
-                                                testbedsettings.suite_name_ls,
-                                                testbedsettings.suite_name_mixint,
-                                                testbedsettings.suite_name_bi_mixint]:
+    if (testbedsettings.current_testbed.reference_algorithm_filename == '' or
+            testbedsettings.current_testbed.reference_algorithm_filename is None):
         # NOTE: no runlength-based targets supported yet
         table_caption = table_caption_one_noreference + table_caption_rest
-    elif testbedsettings.current_testbed.name in [testbedsettings.suite_name_single,
-                                                  testbedsettings.suite_name_single_noisy,
-                                                  testbedsettings.suite_name_bi]:
+    else:
         if genericsettings.runlength_based_targets:
             table_caption = table_caption_one + table_caption_two2 + table_caption_rest
         else:
             table_caption = table_caption_one + table_caption_two1 + table_caption_rest
-    else:
-        warnings.warn("Current settings do not support pptables caption.")
 
     return captions.replace(table_caption)
 

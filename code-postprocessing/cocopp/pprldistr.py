@@ -165,22 +165,15 @@ def caption_single():
          where !!DF!! and \textsf{Df} denote the difference to the optimal function value. 
          !!LIGHT-BROWN-LINES!!""")
 
-    if testbedsettings.current_testbed.name in [testbedsettings.suite_name_single,
-                                                testbedsettings.default_testbed_single_noisy,
-                                                testbedsettings.suite_name_bi]:
+    if (testbedsettings.current_testbed.reference_algorithm_filename == '' or
+            testbedsettings.current_testbed.reference_algorithm_filename is None):
+        # no best algorithm defined yet:
+        figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
+    else:
         if genericsettings.runlength_based_targets:
             figure_caption = caption_part_one + caption_left_rlbased_targets + caption_right
         else:
             figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
-    elif testbedsettings.current_testbed.name in [testbedsettings.suite_name_bi_ext,
-                                                  testbedsettings.suite_name_cons,
-                                                  testbedsettings.suite_name_ls,
-                                                  testbedsettings.suite_name_mixint,
-                                                  testbedsettings.suite_name_bi_mixint]:
-        # no best algorithm defined yet:
-        figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
-    else:
-        warnings.warn("Current settings do not support pprldistr caption.")
 
     return captions.replace(figure_caption)
 
@@ -253,22 +246,15 @@ def caption_two():
                            + symbAlgorithmB
                            + caption_two_rlbased_targets_part3)
 
-    if testbedsettings.current_testbed.name in [testbedsettings.suite_name_bi_ext,
-                                                testbedsettings.suite_name_cons,
-                                                testbedsettings.suite_name_ls,
-                                                testbedsettings.suite_name_mixint,
-                                                testbedsettings.suite_name_bi_mixint]:
+    if (testbedsettings.current_testbed.reference_algorithm_filename == '' or
+            testbedsettings.current_testbed.reference_algorithm_filename is None):
         # NOTE: no runlength-based targets supported yet
         figure_caption = caption_two_fixed
-    elif testbedsettings.current_testbed.name in [testbedsettings.suite_name_single,
-                                                  testbedsettings.suite_name_single_noisy,
-                                                  testbedsettings.suite_name_bi]:
+    else:
         if genericsettings.runlength_based_targets:
             figure_caption = caption_two_rlbased
         else:
             figure_caption = caption_two_fixed
-    else:
-        warnings.warn("Current settings do not support pprldistr caption.")
 
     figure_caption = captions.replace(figure_caption)
 

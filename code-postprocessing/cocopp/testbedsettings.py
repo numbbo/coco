@@ -19,12 +19,13 @@ scenario_constrainedfixed = 'constrainedfixed'
 scenario_largescalefixed = 'largescalefixed'
 scenario_mixintfixed = 'mixintfixed'
 scenario_biobjmixintfixed = 'biobjmixintfixed'
+scenario_sboxcostfixed = 'sboxcostfixed'
 
 all_scenarios = [scenario_rlbased, scenario_fixed,
                  scenario_biobjfixed, scenario_biobjrlbased,
                  scenario_biobjextfixed, scenario_constrainedfixed,
                  scenario_largescalefixed, scenario_mixintfixed,
-                 scenario_biobjmixintfixed]
+                 scenario_biobjmixintfixed, scenario_sboxcostfixed]
 
 suite_name_single = 'bbob'        # TODO: This looks like a superfluous alias for GECCOBBOBTestbed.settings['name']
 suite_name_single_noisy = 'bbob-noisy'  # Shouldn't suite names better be defined in the classes which defined/describe
@@ -64,6 +65,8 @@ suite_to_testbed = {
     'bbob-mixint': default_testbed_mixint,
     'bbob-biobj-mixint': 'GECCOBBOBBiObjMixintTestbed',
     'bbob-JOINED-bbob-largescale': 'BBOBLargeScaleJOINEDTestbed',
+    'sbox-cost': 'SBOXCOSTTestbed',
+    'bbob-JOINED-sbox-cost': 'SboxCostJOINEDTestbed'
 }
 
 
@@ -253,9 +256,9 @@ class Testbed(object):
         else:
             return "# f-evals"
 
+
 class GECCOBBOBTestbed(Testbed):
-    """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015,
-       and 2016.
+    """Testbed of 24 noiseless functions used in the GECCO BBOB workshops since 2009.
     """
 
     shortinfo_filename = 'bbob-benchmarkshortinfos.txt'
@@ -353,6 +356,7 @@ class GECCOBBOBTestbed(Testbed):
         # find out whether we have to do something:
         bbob_detected = False
         bbob_largescale_detected = False
+        sboxcost_detected = False
         for ds in dsl:
             detected_suite = ds.suite_name
             if detected_suite == 'bbob':
@@ -361,6 +365,8 @@ class GECCOBBOBTestbed(Testbed):
                 bbob_largescale_detected = True
             elif detected_suite == 'bbob-JOINED-bbob-largescale':
                 continue
+            elif detected_suite == 'sbox-cost':
+                scenario_sboxcostfixed = True
             else:
                 raise ValueError("Data from %s suite is not "
                                  "compatible with other data from "
@@ -372,10 +378,53 @@ class GECCOBBOBTestbed(Testbed):
             for ds in dsl:
                 ds.suite = 'bbob-largescale'  # to be available via ds.suite_name
             # make sure that the right testbed is loaded:
+        elif bbob_detected and sboxcost_detected:
+            for ds in dsl:
+                ds.suite = 'bbob-JOINED-sboxcost'
 
         return dsl
 
 
+
+class SBOXCOSTTestbed(GECCOBBOBTestbed):
+    """Testbed of box-constrained versions of the bbob functions.
+    """
+
+    def __init__(self, targetValues):
+
+        if 11 < 3:
+            # override settings if needed...
+            # self.reference_algorithm_filename = 'best09-16-bbob.tar.gz'
+            # self.reference_algorithm_displayname = 'best 2009--16'  # TODO: should be read in from data set in reference_algorithm_filename
+            # self.reference_algorithm_filename = 'data/RANDOMSEARCH'
+            # self.reference_algorithm_displayname = "RANDOMSEARCH"  # TODO: should be read in from data set in reference_algorithm_filename
+            # self.settings.short_names = get_short_names(self.shortinfo_filename)
+            self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
+
+        for key, val in GECCOBBOBTestbed.settings.items():
+            setattr(self, key, val)
+
+        self.name = 'sbox-cost'
+        self.reference_algorithm_filename = ''   # no reference algorithm for now
+        self.reference_algorithm_displayname = ''
+        scenario = scenario_sboxcostfixed
+
+        # self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
+
+        # set targets according to targetValues class (possibly all changed
+        # in config:
+        self.instantiate_attributes(targetValues)
+
+
+class SboxCostJOINEDTestbed(SBOXCOSTTestbed):
+    def __init__(self, targetValues):
+        for key, val in GECCOBBOBTestbed.settings.items():
+            setattr(self, key, val)
+        self.name = 'bbob and sbox-cost'
+        self.instantiate_attributes(targetValues)
+        self.reference_algorithm_filename = ''  # no reference algorithm for now
+        self.reference_algorithm_displayname = ''
+        scenario = scenario_sboxcostfixed
 
 
 

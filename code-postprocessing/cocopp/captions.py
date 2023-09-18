@@ -132,7 +132,9 @@ def get_light_brown_line_text(testbedname):
         return r"""Light brown lines in the background show ECDFs for the most difficult target of all
             algorithms benchmarked during BBOB-2009."""
     elif (testbedname in [testbedsettings.suite_name_ls,
-                          testbedsettings.suite_name_mixint]):
+                          testbedsettings.suite_name_mixint,
+                          'sbox-cost',
+                          'bbob-JOINED-sbox-cost']):
         return ""
     else:
         warnings.warn("Current testbed not supported for this caption text.")
