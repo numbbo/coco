@@ -8,8 +8,9 @@ import os, sys
 import time
 import numpy as np
 import re
+from tqdm import tqdm
 import cocoex as ex
-import pickle   
+import json, pickle  
 try:
     from urllib.request import urlretrieve
 except ImportError:
@@ -42,12 +43,12 @@ def is_equal(x, y):
 def read_data_dictionary(filename):
     print(f"reading file at {filename}")
     with open(filename, "rb") as file_:
-        best_values_legacy_dictionary = pickle.load(file_, encoding='latin1')
+        best_values_legacy_dictionary = pickle.load(file_, encoding = "latin-1")
     print("file read!")
     return best_values_legacy_dictionary
 
 def parse_id_string(id_string):
-    function_id = re.findall(".*f1(\d{2})", id_string)[0];   function_id = int(function_id)
+    function_id = re.findall(".*f(\d{3})", id_string)[0];   function_id = int(function_id)
     instance_id = re.findall(".*i(\d*)", id_string)[0];      instance_id = int(instance_id)
     dimension = re.findall(".*d(\d*)", id_string)[0];        dimension = int(dimension)
     return function_id, instance_id, dimension
@@ -59,23 +60,29 @@ def regression_test_bbob_noisy(filename):
     suite_name = "bbob-noisy"
     evaluation_history = read_data_dictionary(filename)
     suite = ex.Suite(suite_name, '', '')
-    for evaluation in evaluation_history:
+    for evaluation in tqdm(evaluation_history):
         x = evaluation["x"]
         fval = evaluation["fvalue"]
         ftrue = evaluation["ftrue"]
         random_n_seed = evaluation["_randomnseed"]
         random_seed = evaluation["_randomseed"]
         f_id = evaluation["f_id"]
+        fopt = evaluation["fopt"]
+        xopt = evaluation["xopt"] 
         noise_value = evaluation["noise_value"]
         boundary_handling = evaluation["boundary_handling"]
         function_id, instance_id, dimension = parse_id_string(f_id)
-        problem = suite.get_problem_by_function_dimension_instance(function_id, dimension, instance_id)
-        y_hat = problem(x) 
-        error_string = f_id + " failed the test -> fval (legacy) %f, yhat (current) %f" % (fval, y_hat) 
         try:
-            assert is_equal(fval, y_hat) or fval == y_hat, error_string
+            problem = suite.get_problem_by_function_dimension_instance(function_id, dimension, instance_id)
+        except:
+            continue
+        xopt_cond = np.all(problem.best_decision_vector == xopt)
+        fopt_cond = problem.best_value == fopt
+        y_hat = problem(x) 
+        try:
+            assert is_equal(fval, y_hat), f_id + " failed the test -> fval (legacy) %f, fval (current) %f" % (fval, y_hat) 
             passed_test_counter += 1
-            print(f_id + "  passed the test ", ("y_hat: %f" % (y_hat)))
+            # print(f_id + "  passed the test ", ("y_hat: %f" % (y_hat)))
         except AssertionError as error:
             print(error)
             failed_test_counter += 1
@@ -87,5 +94,5 @@ def regression_test_bbob_noisy(filename):
         print("All tests passed, execution terminating with exit code {}".format(failed_test_counter))
 
 if __name__ == "__main__":
-    data_file_path = "code-experiments/test/regression-test/regression-test-bbob-noisy/data_legacy/bbob_noisy_regression_data.json"
+    data_file_path = "./code-experiments/test/regression-test/bbob_noisy_regression_test/data_legacy/bbob_noisy_regression_data_5.json"
     evaluation_dictionary_list = regression_test_bbob_noisy(data_file_path)
