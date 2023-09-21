@@ -1,6 +1,6 @@
 [package]
 name = "coco-rs"
-version = "0.6.0"
+version = "0.7.0"
 license = "MIT OR Apache-2.0"
 authors = ["Leopold Luley"]
 description = "Rust bindings for COCO benchmarking framework"
