@@ -188,6 +188,29 @@ JNIEXPORT void JNICALL Java_CocoJNI_cocoFinalizeSuite
 
 /*
  * Class:     CocoJNI
+ * Method:    cocoSuiteGetNumberOfProblems
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_CocoJNI_cocoSuiteGetNumberOfProblems
+(JNIEnv *jenv, jclass interface_cls, jlong jsuite_pointer) {
+
+  coco_suite_t *suite = NULL;
+  jlong jresult;
+
+  /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
+  if (interface_cls == NULL) {
+    jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoSuiteGetNumberOfProblems\n");
+  }
+
+  suite = (coco_suite_t *) jsuite_pointer;
+  jresult = (jlong) coco_suite_get_number_of_problems(suite);
+
+  return jresult;
+}
+
+/*
+ * Class:     CocoJNI
  * Method:    cocoSuiteGetNextProblem
  * Signature: (JJ)J
  */
@@ -233,6 +256,32 @@ JNIEXPORT jlong JNICALL Java_CocoJNI_cocoSuiteGetProblem
 
   suite = (coco_suite_t *) jsuite_pointer;
   problem = coco_suite_get_problem(suite, jproblem_index);
+
+  if (problem == NULL)
+    return 0;
+
+  return (jlong) problem;
+}
+
+/*
+ * Class:     CocoJNI
+ * Method:    cocoSuiteGetProblemByFuncDimInst
+ * Signature: (JJJJ)J
+ */
+JNIEXPORT jlong JNICALL Java_CocoJNI_cocoSuiteGetProblemByFuncDimInst
+(JNIEnv *jenv, jclass interface_cls, jlong jsuite_pointer, jlong jfunction, jlong jdimension, jlong jinstance) {
+
+  coco_problem_t *problem = NULL;
+  coco_suite_t *suite = NULL;
+
+  /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
+  if (interface_cls == NULL) {
+    jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoSuiteGetProblemByFuncDimInst\n");
+  }
+
+  suite = (coco_suite_t *) jsuite_pointer;
+  problem = coco_suite_get_problem_by_function_dimension_instance(suite, jfunction, jdimension, jinstance);
 
   if (problem == NULL)
     return 0;

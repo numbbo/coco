@@ -20,10 +20,12 @@ public class CocoJNI {
 	// Suite
 	public static native long cocoGetSuite(String suiteName, String suiteInstance, String suiteOptions);
 	public static native void cocoFinalizeSuite(long suitePointer);
+	public static native long cocoSuiteGetNumberOfProblems(long suitePointer);
 
 	// Problem
 	public static native long cocoSuiteGetNextProblem(long suitePointer, long observerPointer);
 	public static native long cocoSuiteGetProblem(long suitePointer, long problemIndex);
+	public static native long cocoSuiteGetProblemByFuncDimInst(long suitePointer, long function, long dimension, long instance);
 
 	// Functions
 	public static native double[] cocoEvaluateFunction(long problemPointer, double[] x);

@@ -139,7 +139,7 @@ public class ExampleExperiment {
 							       PROBLEM.getNumberOfConstraints(),
 							       PROBLEM.getSmallestValuesOfInterest(),
 							       PROBLEM.getLargestValuesOfInterest(),
-							       PROBLEM.getNumberOfIntegerVariabls(),
+							       PROBLEM.getNumberOfIntegerVariables(),
 							       evaluationsRemaining,
 							       randomGenerator);
 
