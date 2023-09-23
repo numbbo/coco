@@ -82,7 +82,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
 
   if (function_idx == 101){
     double *distribution_theta = coco_allocate_vector((const size_t) 1);
-    distribution_theta[0] = 0.01;
+    coco_gaussian_noise_model_allocate_params(distribution_theta, (const size_t) 0);
     rseed = rseed_1;
     problem = coco_problem_allocate_bbob_wrap_noisy(
         f_sphere_bbob_problem_allocate, 
@@ -97,11 +97,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  102){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    double alpha, beta;
-    alpha = 0.01 * (0.49 + 1 / (double) dimension);
-    beta = 0.01;
-    distribution_theta[0] = alpha;
-    distribution_theta[1] = beta;
+    coco_uniform_noise_model_allocate_params(distribution_theta, (const size_t) 0, dimension);
     rseed = rseed_1;
     problem = coco_problem_allocate_bbob_wrap_noisy(
         f_sphere_bbob_problem_allocate, 
@@ -116,8 +112,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  103){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    distribution_theta[0] = 0.01;
-    distribution_theta[1] = 0.05;
+    coco_cauchy_noise_model_allocate_params(distribution_theta, (const size_t) 0);
     rseed = rseed_1;
     problem = coco_problem_allocate_bbob_wrap_noisy(
         f_sphere_bbob_problem_allocate, 
@@ -132,7 +127,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  104){
     double *distribution_theta = coco_allocate_vector((const size_t) 1);
-    distribution_theta[0] = 0.01; 
+    coco_gaussian_noise_model_allocate_params(distribution_theta, (const size_t) 0); 
     rseed = rseed_8;
     problem = coco_problem_allocate_bbob_wrap_noisy(
         f_rosenbrock_bbob_problem_allocate, 
@@ -147,11 +142,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  105){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    double alpha, beta;
-    alpha = 0.01 * (0.49 + 1 / (double) dimension);
-    beta = 0.01;
-    distribution_theta[0] = alpha;
-    distribution_theta[1] = beta;
+    coco_uniform_noise_model_allocate_params(distribution_theta, (const size_t) 0, dimension);
     rseed = rseed_8;
     problem = coco_problem_allocate_bbob_wrap_noisy(
         f_rosenbrock_bbob_problem_allocate, 
@@ -166,8 +157,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  106){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    distribution_theta[0] = 0.01; 
-    distribution_theta[1] = 0.05; 
+    coco_cauchy_noise_model_allocate_params(distribution_theta, (const size_t) 0);
     rseed = rseed_8;
     problem = coco_problem_allocate_bbob_wrap_noisy(
         f_rosenbrock_bbob_problem_allocate, 
@@ -182,7 +172,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  107){
     double *distribution_theta = coco_allocate_vector((const size_t) 1);
-    distribution_theta[0] = 1.0; 
+    coco_gaussian_noise_model_allocate_params(distribution_theta, (const size_t) 1);
     rseed = rseed_1;
     problem = coco_problem_allocate_bbob_wrap_noisy(
         f_sphere_bbob_problem_allocate, 
@@ -197,11 +187,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  108){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    double alpha, beta;
-    alpha = 0.49 + 1.0 / (double) dimension;
-    beta = 1.0;
-    distribution_theta[0] = alpha;
-    distribution_theta[1] = beta;
+    coco_uniform_noise_model_allocate_params(distribution_theta, (const size_t) 1, dimension);
     rseed = rseed_1;
     problem = coco_problem_allocate_bbob_wrap_noisy(
         f_sphere_bbob_problem_allocate, 
@@ -216,8 +202,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  109){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    distribution_theta[0] = 1.0;
-    distribution_theta[1] = 0.2;
+    coco_cauchy_noise_model_allocate_params(distribution_theta, (const size_t) 1);
     rseed = rseed_1;
     problem = coco_problem_allocate_bbob_wrap_noisy(
         f_sphere_bbob_problem_allocate, 
@@ -232,7 +217,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  110){
     double *distribution_theta = coco_allocate_vector((const size_t) 1);
-    distribution_theta[0] = 1.0; 
+    coco_gaussian_noise_model_allocate_params(distribution_theta, (const size_t) 1); 
     rseed = rseed_8;
     problem = coco_problem_allocate_bbob_wrap_noisy(
         f_rosenbrock_bbob_problem_allocate, 
@@ -247,11 +232,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  111){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    double alpha, beta;
-    alpha = 0.49 + 1.0 / (double) dimension;
-    beta = 1.0;
-    distribution_theta[0] = alpha;
-    distribution_theta[1] = beta;
+    coco_uniform_noise_model_allocate_params(distribution_theta, (const size_t) 1, dimension);
     rseed = rseed_8;
     problem = coco_problem_allocate_bbob_wrap_noisy(
         f_rosenbrock_bbob_problem_allocate, 
@@ -266,8 +247,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  112){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    distribution_theta[0]= 1.0;
-    distribution_theta[1]= 0.2;
+    coco_cauchy_noise_model_allocate_params(distribution_theta, (const size_t) 1);
     rseed = rseed_8;
     problem = coco_problem_allocate_bbob_wrap_noisy(
         f_rosenbrock_bbob_problem_allocate, 
@@ -282,7 +262,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  113){
     double *distribution_theta = coco_allocate_vector((const size_t) 1);
-    distribution_theta[0] = 1.0; 
+    coco_gaussian_noise_model_allocate_params(distribution_theta, (const size_t) 1);
     rseed = rseed_7;
     problem = coco_problem_allocate_bbob_wrap_noisy(
         f_step_ellipsoid_bbob_problem_allocate, 
@@ -297,11 +277,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  114){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    double alpha, beta;
-    alpha = 0.49 + 1.0 / (double) dimension;
-    beta = 1.0;
-    distribution_theta[0] = alpha;
-    distribution_theta[1] = beta;
+    coco_uniform_noise_model_allocate_params(distribution_theta, (const size_t) 1, dimension);
     rseed = rseed_7;
     problem = coco_problem_allocate_bbob_wrap_noisy(
         f_step_ellipsoid_bbob_problem_allocate, 
@@ -316,8 +292,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  115){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    distribution_theta[0] = 1.0; 
-    distribution_theta[1]= 0.2; 
+    coco_cauchy_noise_model_allocate_params(distribution_theta, (const size_t) 1);
     rseed = rseed_7;
     problem = coco_problem_allocate_bbob_wrap_noisy(
         f_step_ellipsoid_bbob_problem_allocate, 
@@ -332,7 +307,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  116){
     double *distribution_theta = coco_allocate_vector((const size_t) 1);
-    distribution_theta[0] = 1.0; 
+    coco_gaussian_noise_model_allocate_params(distribution_theta, (const size_t) 1); 
     rseed = rseed_10;
     double condition = 1.0e4;
     problem = coco_problem_allocate_bbob_wrap_noisy_conditioned(
@@ -349,11 +324,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  117){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    double alpha, beta;
-    alpha = 0.49 + 1.0 / (double) dimension;
-    beta = 1.0;
-    distribution_theta[0] = alpha; 
-    distribution_theta[1] = beta; 
+    coco_uniform_noise_model_allocate_params(distribution_theta, (const size_t) 1, dimension); 
     rseed = rseed_10;
     double condition = 1.0e4;
     problem = coco_problem_allocate_bbob_wrap_noisy_conditioned(
@@ -370,8 +341,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  118){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    distribution_theta[0]= 1.0; 
-    distribution_theta[1]= 0.2; 
+    coco_cauchy_noise_model_allocate_params(distribution_theta, (const size_t) 1);
     rseed = rseed_10;
     double condition = 1.0e4;
     problem = coco_problem_allocate_bbob_wrap_noisy_conditioned(
@@ -388,7 +358,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  119){
     double *distribution_theta = coco_allocate_vector((const size_t) 1);
-    distribution_theta[0] = 1.0; 
+    coco_gaussian_noise_model_allocate_params(distribution_theta, (const size_t) 1);
     rseed = rseed_14;
     problem = coco_problem_allocate_bbob_wrap_noisy(
         f_different_powers_bbob_problem_allocate, 
@@ -403,11 +373,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  120){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    double alpha, beta;
-    alpha = 0.49 + 1.0 / (double) dimension;
-    beta = 1.0;
-    distribution_theta[0] = alpha; 
-    distribution_theta[1] = beta; 
+    coco_uniform_noise_model_allocate_params(distribution_theta, (const size_t) 1, dimension);
     rseed = rseed_14;
     problem = coco_problem_allocate_bbob_wrap_noisy(
         f_different_powers_bbob_problem_allocate, 
@@ -422,8 +388,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  121){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    distribution_theta[0]= 1.0; 
-    distribution_theta[1]= 0.2; 
+    coco_cauchy_noise_model_allocate_params(distribution_theta, (const size_t) 1);
     rseed = rseed_14;
     problem = coco_problem_allocate_bbob_wrap_noisy(
         f_different_powers_bbob_problem_allocate, 
@@ -438,7 +403,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  122){
     double *distribution_theta = coco_allocate_vector((const size_t) 1);
-    distribution_theta[0]= 1.0; 
+    coco_gaussian_noise_model_allocate_params(distribution_theta, (const size_t) 1);
     double conditioning = 10; 
     rseed = rseed_17;
     problem = coco_problem_allocate_bbob_wrap_noisy_conditioned(
@@ -455,11 +420,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  123){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    double alpha, beta;
-    alpha = 0.49 + 1.0 / (double) dimension;
-    beta = 1.0;
-    distribution_theta[0] = alpha; 
-    distribution_theta[1] = beta; 
+    coco_uniform_noise_model_allocate_params(distribution_theta, (const size_t) 1, dimension);
     double conditioning = 10;
     rseed = rseed_17;
     problem = coco_problem_allocate_bbob_wrap_noisy_conditioned(
@@ -476,8 +437,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  124){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    distribution_theta[0] = 1.0; 
-    distribution_theta[1] = 0.2; 
+    coco_cauchy_noise_model_allocate_params(distribution_theta, (const size_t) 1);
     double conditioning = 10; 
     rseed = rseed_17;
     problem = coco_problem_allocate_bbob_wrap_noisy_conditioned(
@@ -494,7 +454,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  125){
     double *distribution_theta = coco_allocate_vector((const size_t) 1);
-    distribution_theta[0]= 1.0; 
+    coco_gaussian_noise_model_allocate_params(distribution_theta, (const size_t) 1);
     rseed = rseed_19;
     double facftrue = 1.0;
     problem = coco_problem_allocate_bbob_wrap_noisy_conditioned(
@@ -511,11 +471,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  126){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    double alpha, beta;
-    alpha = 0.49 + 1.0 / (double) dimension;
-    beta = 1.0;
-    distribution_theta[0] = alpha; 
-    distribution_theta[1] = beta; 
+    coco_uniform_noise_model_allocate_params(distribution_theta, (const size_t) 1, dimension);
     rseed = rseed_19;
     double facftrue = 1.0;
     problem = coco_problem_allocate_bbob_wrap_noisy_conditioned(
@@ -532,8 +488,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  127){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    distribution_theta[0] = 1.0; 
-    distribution_theta[1] = 0.2; 
+    coco_cauchy_noise_model_allocate_params(distribution_theta, (const size_t) 1);
     rseed = rseed_19;
     double facftrue = 1.0;
     problem = coco_problem_allocate_bbob_wrap_noisy_conditioned(
@@ -550,7 +505,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  128){
     double *distribution_theta = coco_allocate_vector((const size_t) 1);
-    distribution_theta[0]= 1.0;
+    coco_gaussian_noise_model_allocate_params(distribution_theta, (const size_t) 1);
     size_t n_peaks = 101; 
     rseed = rseed_21;
     problem = coco_problem_allocate_bbob_wrap_noisy_gallagher(
@@ -567,11 +522,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  129){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    double alpha, beta;
-    alpha = 0.49 + 1.0 / (double) dimension;
-    beta = 1.0;
-    distribution_theta[0] = alpha; 
-    distribution_theta[1] = beta; 
+    coco_uniform_noise_model_allocate_params(distribution_theta, (const size_t) 1, dimension);
     size_t n_peaks = 101;
     rseed = rseed_21;
     problem = coco_problem_allocate_bbob_wrap_noisy_gallagher(
@@ -588,8 +539,7 @@ static coco_problem_t *coco_get_bbob_noisy_problem(const size_t function,
     );
   } else if (function_idx ==  130){
     double *distribution_theta = coco_allocate_vector((const size_t) 2);
-    distribution_theta[0] = 1.0; 
-    distribution_theta[1] = 0.2; 
+    coco_cauchy_noise_model_allocate_params(distribution_theta, (const size_t) 1);
     size_t n_peaks = 101; 
     rseed = rseed_21;
     problem = coco_problem_allocate_bbob_wrap_noisy_gallagher(

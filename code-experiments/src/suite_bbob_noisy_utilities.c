@@ -294,3 +294,61 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_gallagher(
   problem -> evaluate_function = coco_problem_f_evaluate_wrap_noisy;
   return problem;
 }
+/**@}*/
+
+/***********************************************************************************************************/
+
+/**
+ * @name Methods allocating the parameter of the noise model distribution
+ */
+
+/**
+ * @brief Allocates the parameters of the gaussian noise model given the level of severeness of the noise
+ */
+void coco_gaussian_noise_model_allocate_params(double *distribution_theta, const size_t severeness){
+  assert(severeness == 0 || severeness == 1);
+  double sigma;
+  if(severeness == 0){
+    sigma = 0.01;
+  }
+  if(severeness == 1){
+    sigma = 1.0;
+  }
+  distribution_theta[0] = sigma;
+}
+
+/**
+  * @brief Allocates the parameter of the uniform noise model given the level of severeness of the noise
+  */
+void coco_uniform_noise_model_allocate_params(double *distribution_theta, const size_t severeness, size_t dimension){
+  assert(severeness == 0 || severeness == 1);
+  double alpha, beta;
+  if(severeness == 0){
+    alpha = 0.01 * (0.49 + 1 / (double) dimension);
+    beta = 0.01;
+  }
+  if(severeness == 1){
+    alpha = 0.49 + 1.0 / (double) dimension;
+    beta = 1.0;
+  }
+  distribution_theta[0] = alpha;
+  distribution_theta[1] = beta;
+}
+
+/**
+  * @brief Allocates the parameter of the cauchy noise model given the level of severeness of the noise
+  */
+void coco_cauchy_noise_model_allocate_params(double *distribution_theta, const size_t severeness){
+  assert(severeness == 0 || severeness == 1);
+  double alpha, p;
+  if(severeness == 0){
+    alpha = 0.01;
+    p = 0.05;
+  }
+  if(severeness == 1){
+    alpha = 1.0; 
+    p = 0.2; 
+  }
+  distribution_theta[0] = alpha;
+  distribution_theta[1] = p;
+}
