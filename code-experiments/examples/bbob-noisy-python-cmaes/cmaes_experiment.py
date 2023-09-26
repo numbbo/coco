@@ -33,29 +33,6 @@ try: import cocopp  # post-processing module
 except: pass
 
 
-class CMADataStore(object):
-
-    """
-    `CMADataStore`:
-        The class needed for storing the data relative to a benchmarking experiment
-
-    Attributes:
-        timings -> defaultdictionary containing a map from the problem dimensions to the list of all the timings of the benchmarking experiment on that dimension
-        evolution_strategies -> defaultdictionary containing a map from the problem indexes to the list of all the evolution strategies generated on that problem
-
-    """
-    def __init__(self) -> None:
-        self._timings = defaultdict(list)
-        self._evolution_strategies = defaultdict(list)
-
-    @property 
-    def timings(self) -> defaultdict[list]:
-        return self._timings
-    
-    @property
-    def evolution_strategies(self) -> defaultdict[list]:
-        return self._evolution_strategies
-
 class _CMAExperiment(object):
     """
     `CMAExperiment`:
@@ -77,7 +54,6 @@ class _CMAExperiment(object):
             problem: cocoex.Problem, 
             observer: cocoex.Observer, 
             printer: cocoex.utilities.MiniPrint, 
-            data_store: CMADataStore, 
             budget_multiplier: int,
             sigma0: float = 1.
         ) -> None:
@@ -89,7 +65,6 @@ class _CMAExperiment(object):
         self.problem = problem
         self.observer = observer
         self.printer = printer 
-        self.data_store = data_store
         self.budget_multiplier = budget_multiplier
         self._sigma0 = sigma0
         self._restarts = -1
@@ -174,10 +149,7 @@ class _CMAExperiment(object):
         while self.evalsleft > 0 and not self.final_target_hit:
             self._restarts += 1
             xopt, es = self.solver(self.problem, self.initial_solution, self.sigma0, {'maxfevals': self.evalsleft, 'verbose':-9}, restarts = 9)
-            self.data_store.evolution_strategies[self.idx].append(es)
         
-        self.data_store.timings[self.dimension].append((time.time() - time1) / self.evaluations
-            if self.evaluations else 0)
         self.printer(self.problem, restarted = self._restarts, final=self.idx == len(self.suite) - 1)
 
 class CMABenchmark(object):
@@ -199,7 +171,6 @@ class CMABenchmark(object):
             suite: cocoex.Suite, 
             observer: cocoex.Observer, 
             printer: cocoex.utilities.MiniPrint, 
-            data_store: CMADataStore, 
             budget_multiplier: int
         ) -> None:
         """
@@ -209,7 +180,6 @@ class CMABenchmark(object):
         self.suite = suite 
         self.observer = observer 
         self.printer = printer
-        self.data_store = data_store
         self.budget_multiplier = budget_multiplier
     
     @staticmethod
@@ -232,7 +202,13 @@ class CMABenchmark(object):
             os.environ[name] = nt
         disp and print("setting mkl threads num to", nt)
 
-    def __len__(self) -> None:
+    def free(self) -> None:
+        """
+        Frees the underlying suite object
+        """
+        self.suite.free()
+
+    def __len__(self) -> int:
         """
         Returns the number of problems in the suite to be benchmarked
         """
@@ -241,26 +217,34 @@ class CMABenchmark(object):
     def __getitem__(
             self, 
             idx: int
-        ) -> _CMAExperiment:
+        ) -> _CMAExperiment | None:
         """
-        Gets the idx-th problem in the suite and initializes a `CMAExperiment` object oer it
+        Gets the idx-th problem in the suite and initializes a `CMAExperiment` object over it
         """
-        problem = suite[idx]
-        return _CMAExperiment(self.solver, self.suite, problem, self.observer, self.printer, self.data_store, self.budget_multiplier)
-    
+        experiment = None
+        if idx < len(self):
+            problem = suite.get_problem(idx) 
+            experiment = _CMAExperiment(self.solver, self.suite, problem, self.observer, self.printer, self.budget_multiplier)
+        return experiment
+
     def __call__(self, **kwargs) -> None:
         """
         Iterates over the suite, initializing and calling a `CMAExperiment` object at each iteration
         """
         self.__set_num_threads(**kwargs)
-        for idx in range(self.__len__()):
-            experiment = self.__getitem__(idx)
-            experiment()
-            experiment.free()
+        for experiment in self:
+            if experiment is not None:
+                experiment()
+                experiment.free()
+            else:
+                print("Experiment is None, skipping")
+                break
+        return None
+            
 
 if __name__ == "__main__":
     
-    suite_name = "bbob-noisy"
+    suite_name = "bbob"
     suite_year_option = ""
     suite_filter_options = ""
 
@@ -269,13 +253,13 @@ if __name__ == "__main__":
     suite = cocoex.Suite(suite_name, suite_year_option, suite_filter_options)
     observer = cocoex.Observer(suite_name, "result_folder: " + output_folder)
     printer = cocoex.utilities.MiniPrint()
-    data_store = CMADataStore()
     budget_multiplier = 2
-    solver = cma.fmin2
+    solver = cma.fmin_lq_surr2
 
 
-    benchmark = CMABenchmark(solver, suite, observer, printer, data_store, budget_multiplier)
+    benchmark = CMABenchmark(solver, suite, observer, printer, budget_multiplier)
     benchmark()
+    benchmark.free()
 
     # Probably should log the CMADataStore to some files
 
