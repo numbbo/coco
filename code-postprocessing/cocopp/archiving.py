@@ -1307,6 +1307,8 @@ class OfficialArchives(object):
             (self._base + 'bbob-biobj', COCOBBOBBiobjDataArchive),
             (self._base + 'bbob-largescale', None),  # TODO: introduce a new class
             (self._base + 'bbob-mixint', None),  # TODO: introduce a new class
+            (self._base + 'bbob-constrained', None),  # TODO: introduce a new class
+            (self._base + 'sbox-cost', None),  # TODO: introduce a new class
             (self._base + 'test', None),  # None resolves to COCODataArchive
         ]
 
