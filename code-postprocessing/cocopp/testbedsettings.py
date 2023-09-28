@@ -35,6 +35,7 @@ suite_name_cons = 'bbob-constrained'
 suite_name_ls = 'bbob-largescale'
 suite_name_mixint = 'bbob-mixint'
 suite_name_bi_mixint = 'bbob-biobj-mixint'
+suite_name_sboxcost = 'sbox-cost'
 
 default_suite_single = 'bbob'
 default_suite_single_noisy = 'bbob-noisy'
