@@ -183,16 +183,24 @@ The experiments were performed with COCO \cite{hansen2020cocoplat}, version
 \change{\version}, the plots were produced with version \change{\version}.
 
 The \textbf{expected runtime (ERT)}, used in the figures and tables,
-depends on a given target value, $\fgtarget=\fopt+\Dfg$, and is
-computed over all relevant trials as the sum of function and constraint
-evaluations executed during each trial while the best value of $TODO{ftodo}$
-did not reach \fgtarget, summed over all trials and divided by the
+depends on a given target value, $\fgtarget=\fopt+\Dfg$, and the merit
+function
+
+$$
+\tilde{f}(x) := \max(f_{\text{opt}}, f(x))
++ \sum_{k=0}^{m} \max(0, g_k(x))
+$$
+with $\fopt = f(x_{\text{opt}})$ (and $\min{\tilde{f}} = \fopt$).
+The ERT is computed over all relevant trials as the sum of
+function and constraint evaluations executed during each trial
+while the best value of the merit function stays above \fgtarget,
+summed over all trials and divided by the
 number of trials that actually reached \fgtarget\
 \cite{dufosse2022constrained,hansen2012exp,price1997dev}. 
 \textbf{Statistical significance} is tested with the rank-sum test for a given
-target $\Delta\fgtarget$ using, for each trial,
+target $\fgtarget$ using, for each trial,
 either the number of needed function and constraints evaluations to reach
-$\Delta\fgtarget$ (inverted and multiplied by $-1$), or, if the target
+$\fgtarget$ (inverted and multiplied by $-1$), or, if the target
 was not reached, the best $\Dfg$-value achieved, measured only up to
 the smallest number of overall (function $+$ constraints) evaluations for any
 unsuccessful trial under consideration.
