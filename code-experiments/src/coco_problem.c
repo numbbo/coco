@@ -474,6 +474,15 @@ double coco_problem_get_best_value(const coco_problem_t *problem) {
 }
 
 /**
+ * @brief Returns the optimal decision vector of the problem
+ */
+double * coco_problem_get_best_parameter(const coco_problem_t *problem){
+  assert(problem != NULL);
+  assert(problem->best_value != NULL);
+  return problem->best_parameter;
+}
+
+/**
  * @note This function breaks the black-box property: the returned  value is not
  * meant to be used by the optimization algorithm.
  */

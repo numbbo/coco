@@ -445,6 +445,17 @@ size_t coco_problem_get_number_of_constraints(const coco_problem_t *problem);
  */
 size_t coco_problem_get_evaluations(const coco_problem_t *problem);
 
+
+/**
+ * @brief Returns the optimal function value of the problem
+ */
+double coco_problem_get_best_value(const coco_problem_t *problem);
+
+/**
+ * @brief Returns the optimal decision vector of the problem
+ */
+double * coco_problem_get_best_parameter(const coco_problem_t *problem);
+
 /**
  * @brief Returns the number of constraint function evaluations done on the problem.
  */
