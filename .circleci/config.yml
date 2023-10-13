@@ -39,8 +39,9 @@ jobs:
       - run:
           name: Create Python 3.10 environment
           command: |          
-            bash -lic "conda create -n py310 -y python=3.10"
-            bash -lic "conda activate py310"
+            source ~/miniconda3/etc/profile.d/conda.sh
+            conda create -n py310 -y python=3.10
+            conda activate py310
       - run:
           name: Install pip with apt-get
           command: apt-get install -y python3-pip
