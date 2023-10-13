@@ -39,6 +39,7 @@ jobs:
       - run:
           name: Create Python 3.10 environment
           command: |          
+            bash 
             conda create -n py310 -y python=3.10
             conda activate py310
       - run:
