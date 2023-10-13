@@ -48,7 +48,7 @@ jobs:
           name: Install python packages with pip
           command: apt-get install -y python3-matplotlib python3-numpy 
                         python3-setuptools python3-six python3-scipy 
-                        python3-pytest python3-cython
+                        python3-pytest cython3
       - run:
           name: Create symbolic link to python binaries
           command: ln -s /usr/bin/python3 /usr/bin/python
