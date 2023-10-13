@@ -89,7 +89,7 @@ jobs:
       - run:
           name: Install jdk for java tests
           command: |
-            apt-get install -y openjdk-11-jdk
+            apt-get install -y openjdk-17-jdk
             updatedb
       - run:
           name: Run coco java tests
