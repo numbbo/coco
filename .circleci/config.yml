@@ -24,6 +24,9 @@ jobs:
           name: Set time zone
           command: ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime
       - run:
+          name: Install conda
+          command: apt-get install -y conda
+      - run:
           name: Install python-dev with apt-get
           command: DEBIAN_FRONTEND=noninteractive apt-get install -y libpython3-dev
       - run:
