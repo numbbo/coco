@@ -25,7 +25,7 @@ jobs:
           command: ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime
       - run:
           name: Install python-dev with apt-get (python 3.11 not working with cython)
-          command: DEBIAN_FRONTEND=noninteractive apt-get install -y libpython3-dev=3.10
+          command: DEBIAN_FRONTEND=noninteractive apt-get install -y libpython3-dev=3.12
       - run:
           name: Install pip with apt-get
           command: apt-get install -y python3-pip
