@@ -66,20 +66,30 @@ jobs:
             python do.py run-python install-user
       - run:
           name: Install coco post-processing
-          command: python do.py install-postprocessing install-user
+          command: |
+            source ~/miniconda3/etc/profile.d/conda.sh
+            conda activate py310
+            python do.py install-postprocessing install-user
       - run:
           name: Run the example experiment
           command: |
+            source ~/miniconda3/etc/profile.d/conda.sh
+            conda activate py310
             cd ~/coco/code-experiments/build/python
             python example_experiment.py bbob
       - run:
           name: Post-process the results
           command: |
+            source ~/miniconda3/etc/profile.d/conda.sh
+            conda activate py310
             cd ~/coco/code-experiments/build/python
             python -m cocopp -o ./postproc ./exdata
       - run:
           name: Run coco Python 3 tests
-          command: python do.py test-python
+          command: |
+            source ~/miniconda3/etc/profile.d/conda.sh
+            conda activate py310
+            python do.py test-python
           no_output_timeout: 1800
       - run:
           name: Install plocate
@@ -93,7 +103,10 @@ jobs:
 #            updatedb
       - run:
           name: Run coco octave tests
-          command: python do.py test-octave
+          command: |
+            source ~/miniconda3/etc/profile.d/conda.sh
+            conda activate py310
+            python do.py test-octave
           no_output_timeout: 1800
       - run:
           name: Install jdk for java tests
@@ -102,37 +115,59 @@ jobs:
             updatedb
       - run:
           name: Run coco java tests
-          command: python do.py test-java
+          command: |
+            source ~/miniconda3/etc/profile.d/conda.sh
+            conda activate py310
+            python do.py test-java
           no_output_timeout: 1800
       - run:
           name: Run coco pre-processing tests
-          command: python do.py test-preprocessing install-user
+          command: |
+            source ~/miniconda3/etc/profile.d/conda.sh
+            conda activate py310
+            python do.py test-preprocessing install-user
           no_output_timeout: 1800
       - run:
           name: Run coco post-processing tests
-          command: python do.py test-postprocessing install-user
+          command: |
+            source ~/miniconda3/etc/profile.d/conda.sh
+            conda activate py310
+            python do.py test-postprocessing install-user
           no_output_timeout: 5400
       - run:
           name: Run coco C
-          command: python do.py run-c
+          command: |
+            source ~/miniconda3/etc/profile.d/conda.sh
+            conda activate py310
+            python do.py run-c
       - run:
           name: Run coco C tests
-          command: python do.py test-c
+          command: |
+            source ~/miniconda3/etc/profile.d/conda.sh
+            conda activate py310
+            python do.py test-c
           no_output_timeout: 1800
       - run:
           name: Run coco Rust
           command: |
+            source ~/miniconda3/etc/profile.d/conda.sh
+            conda activate py310
             export PATH=~/.cargo/bin:$PATH
             python do.py run-rust
       - run:
           name: Run coco Rust tests
           command: |
+            source ~/miniconda3/etc/profile.d/conda.sh
+            conda activate py310
             export PATH=~/.cargo/bin:$PATH
             python do.py test-rust
           no_output_timeout: 1800
       - run:
           name: Run regression test
-          command: python do.py test-suites
+          command: |
+            source ~/miniconda3/etc/profile.d/conda.sh
+            conda activate py310
+            python do.py test-suites
           no_output_timeout: 1800
 
 
