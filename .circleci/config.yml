@@ -61,6 +61,7 @@ jobs:
       - run:
           name: Install coco python
           command: |
+            source ~/miniconda3/etc/profile.d/conda.sh
             conda activate py310
             python do.py run-python install-user
       - run:
