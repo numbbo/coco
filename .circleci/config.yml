@@ -62,7 +62,9 @@ jobs:
 #          command: apt-get install -y python3-tk
       - run:
           name: Install python packages with conda
-          command: conda install -y matplotlib numpy setuptools six scipy pytest cython
+          command: |          
+            source ~/miniconda3/etc/profile.d/conda.sh
+            conda install -y matplotlib numpy setuptools six scipy pytest cython
       - run:
           name: Create symbolic link to python binaries
           command: ln -s /usr/bin/python3 /usr/bin/python
