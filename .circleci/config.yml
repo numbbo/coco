@@ -24,6 +24,9 @@ jobs:
           name: Set time zone
           command: ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime
       - run:
+          name: Install python-dev with apt-get
+          command: DEBIAN_FRONTEND=noninteractive apt-get install -y libpython3-dev
+      - run:
           name: Install conda
           command: |
             apt-get install -y wget
@@ -32,16 +35,10 @@ jobs:
             bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
             rm -rf ~/miniconda3/miniconda.sh
       - run:
-          name: Install python-dev with apt-get
-          command: DEBIAN_FRONTEND=noninteractive apt-get install -y libpython3-dev
-      - run:
           name: Create Python 3.10 environment
           command: |          
-            apt-get install -y virtualenv
-            mkdir ~/python-environments && cd ~/python-environments
-            virtualenv py310 --python=python3.10
-            source py310/bin/activate
-            cd
+            conda create -n py310 -y python=3.10
+            conda activate py310
       - run:
           name: Install pip with apt-get
           command: apt-get install -y python3-pip
