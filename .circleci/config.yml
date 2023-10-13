@@ -62,27 +62,24 @@ jobs:
 #          name: Install tkinter with apt-get
 #          command: apt-get install -y python3-tk
       - run:
-          name: Create symbolic link to python binaries
-          command: ln -s /usr/bin/python3 /usr/bin/python
-      - run:
           name: Install coco python
-          command: python3 do.py run-python install-user
+          command: python do.py run-python install-user
       - run:
           name: Install coco post-processing
-          command: python3 do.py install-postprocessing install-user
+          command: python do.py install-postprocessing install-user
       - run:
           name: Run the example experiment
           command: |
             cd ~/coco/code-experiments/build/python
-            python3 example_experiment.py bbob
+            python example_experiment.py bbob
       - run:
           name: Post-process the results
           command: |
             cd ~/coco/code-experiments/build/python
-            python3 -m cocopp -o ./postproc ./exdata
+            python -m cocopp -o ./postproc ./exdata
       - run:
           name: Run coco Python 3 tests
-          command: python3 do.py test-python
+          command: python do.py test-python
           no_output_timeout: 1800
       - run:
           name: Install plocate
@@ -96,7 +93,7 @@ jobs:
 #            updatedb
       - run:
           name: Run coco octave tests
-          command: python3 do.py test-octave
+          command: python do.py test-octave
           no_output_timeout: 1800
       - run:
           name: Install jdk for java tests
@@ -105,15 +102,15 @@ jobs:
             updatedb
       - run:
           name: Run coco java tests
-          command: python3 do.py test-java
+          command: python do.py test-java
           no_output_timeout: 1800
       - run:
           name: Run coco pre-processing tests
-          command: python3 do.py test-preprocessing install-user
+          command: python do.py test-preprocessing install-user
           no_output_timeout: 1800
       - run:
           name: Run coco post-processing tests
-          command: python3 do.py test-postprocessing install-user
+          command: python do.py test-postprocessing install-user
           no_output_timeout: 5400
       - run:
           name: Run coco C
