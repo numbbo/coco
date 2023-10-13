@@ -29,7 +29,7 @@ jobs:
       - run:
           name: Create Python 3.10 environment
           command: |          
-            apt-get install virtualenv
+            apt-get install -y virtualenv
             mkdir ~/python-environments && cd ~/python-environments
             virtualenv py310 --python=python3.10
             source py310/bin/activate
