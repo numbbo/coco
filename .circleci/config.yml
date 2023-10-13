@@ -72,16 +72,16 @@ jobs:
           name: Run coco Python 3 tests
           command: python3 do.py test-python
           no_output_timeout: 1800
-      - run:
-          name: Install mlocate
-          command: |
-            apt-get install -y mlocate
-            updatedb
+#      - run:
+#          name: Install mlocate
+#          command: |
+#            apt-get install -y mlocate
+#            updatedb
       - run:
           name: Install octave for octave tests
           command: |
             DEBIAN_FRONTEND=noninteractive apt-get install -y liboctave-dev
-            updatedb
+#            updatedb
       - run:
           name: Run coco octave tests
           command: python3 do.py test-octave
@@ -90,7 +90,7 @@ jobs:
           name: Install jdk for java tests
           command: |
             apt-get install -y openjdk-11-jdk
-            updatedb
+#            updatedb
       - run:
           name: Run coco octave tests
           command: python3 do.py test-java
