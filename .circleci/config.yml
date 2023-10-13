@@ -44,9 +44,6 @@ jobs:
             conda activate py310
             conda install -y matplotlib numpy setuptools six scipy pytest cython
       - run:
-          name: Install pip with apt-get
-          command: apt-get install -y python3-pip
-      - run:
           name: Install build-essential with apt-get
           command: apt-get install -y build-essential
       - run:
@@ -63,7 +60,9 @@ jobs:
 #          command: apt-get install -y python3-tk
       - run:
           name: Install coco python
-          command: python do.py run-python install-user
+          command: |
+            conda activate py310
+            python do.py run-python install-user
       - run:
           name: Install coco post-processing
           command: python do.py install-postprocessing install-user
