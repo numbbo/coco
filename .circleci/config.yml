@@ -39,9 +39,8 @@ jobs:
       - run:
           name: Create Python 3.10 environment
           command: |          
-            bash 
-            conda create -n py310 -y python=3.10
-            conda activate py310
+            bash -lic "conda create -n py310 -y python=3.10"
+            bash -lic "conda activate py310"
       - run:
           name: Install pip with apt-get
           command: apt-get install -y python3-pip
@@ -61,10 +60,8 @@ jobs:
 #          name: Install tkinter with apt-get
 #          command: apt-get install -y python3-tk
       - run:
-          name: Install python packages with apt-get
-          command: apt-get install -y python3-matplotlib python3-numpy 
-                        python3-setuptools python3-six python3-scipy 
-                        python3-pytest cython3
+          name: Install python packages with conda
+          command: conda install -y matplotlib numpy setuptools six scipy pytest cython
       - run:
           name: Create symbolic link to python binaries
           command: ln -s /usr/bin/python3 /usr/bin/python
