@@ -25,8 +25,10 @@ jobs:
           command: ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime
       - run:
           name: Install python-dev with apt-get
-          command: |
-            DEBIAN_FRONTEND=noninteractive apt-get install -y libpython3-dev
+          command: DEBIAN_FRONTEND=noninteractive apt-get install -y libpython3-dev
+      - run:
+          name: Create Python 3.10 environment
+          command: |          
             apt-get install virtualenv
             mkdir ~/python-environments && cd ~/python-environments
             virtualenv py310 --python=python3.10
