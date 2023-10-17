@@ -128,12 +128,8 @@ struct coco_problem_s {
   coco_problem_free_function_t problem_free_function; /**< @brief  The function for freeing this problem. */
   coco_evaluate_function_t placeholder_evaluate_function;   /**< @brief  The function for evaluating noisy objectives*/
 
-  coco_noise_model_t *noise_model;     /**< @brief The  noise model for noisy problems*/
+  coco_noise_model_t *noise_model;     /** Lorenzo: < @brief The  noise model for noisy problems*/
   
-  double last_noise_value;             /**< @brief For noisy problems, the last value sampled according to the noise model */
-
-  double condition;                    /**< @brief Condition of the problem*/
-
   size_t number_of_variables;          /**< @brief Number of variables expected by the function, i.e.
                                        problem dimension */
   size_t number_of_objectives;         /**< @brief Number of objectives. */

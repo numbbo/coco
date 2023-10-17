@@ -165,8 +165,7 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->problem_free_function = NULL;
   problem -> noise_model = noise_model;
   problem -> placeholder_evaluate_function = NULL;
-  problem -> last_noise_value = 0.0;
-  problem -> condition = 0.0;
+
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = number_of_objectives;
   problem->number_of_constraints = number_of_constraints;
@@ -322,10 +321,24 @@ void coco_problem_free(coco_problem_t *problem) {
     problem->best_value = NULL;
     problem->nadir_value = NULL;
     problem->suite = NULL;
-    problem->data = NULL;
     problem->initial_solution = NULL;
     coco_free_memory(problem);
   }
+}
+
+/**
+ * @brief Allocates function arguments structure
+ */
+static f_args_t *coco_problem_allocate_f_args(
+    f_args_t * args
+  ){
+  args = (f_args_t *) coco_allocate_memory(sizeof(*args));
+  args->f_ellipsoid_args = (f_ellipsoid_args_t *) coco_allocate_memory(sizeof(*(args->f_ellipsoid_args)));
+  args->f_step_ellipsoid_args = (f_step_ellipsoid_args_t *) coco_allocate_memory(sizeof(*(args->f_step_ellipsoid_args)));
+  args->f_schaffers_args = (f_schaffers_args_t *) coco_allocate_memory(sizeof(*(args->f_schaffers_args)));
+  args->f_griewank_rosenbrock_args = (f_griewank_rosenbrock_args_t *) coco_allocate_memory(sizeof(*(args->f_griewank_rosenbrock_args)));
+  args->f_gallagher_args = (f_gallagher_args_t *) coco_allocate_memory(sizeof(*(args->f_gallagher_args)));
+  return args;
 }
 
 /***********************************************************************************************************/

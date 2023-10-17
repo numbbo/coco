@@ -56,7 +56,7 @@ static coco_problem_t *suite_toy_get_problem(coco_suite_t *suite,
   if (function == 1) {
     problem = f_sphere_allocate(dimension);
   } else if (function == 2) {
-    problem = f_ellipsoid_allocate(dimension);
+    problem = f_ellipsoid_allocate(dimension, 1.0e6);
   } else if (function == 3) {
     problem = f_rastrigin_allocate(dimension);
   } else if (function == 4) {
