@@ -144,8 +144,7 @@ static coco_problem_t *f_step_ellipsoid_bbob_problem_allocate(const size_t funct
   data->xopt = coco_allocate_vector(dimension);
   data->rot1 = bbob2009_allocate_matrix(dimension, dimension);
   data->rot2 = bbob2009_allocate_matrix(dimension, dimension);
-  double penalty_scale = args->f_step_ellipsoid_args->penalty_scale;/*
-  printf("f_step_ellipsoid.c:penalty_scale=%f\n", penalty_scale);*/
+  double penalty_scale = args->f_step_ellipsoid_args->penalty_scale;
   data->fopt = bbob2009_compute_fopt(function, instance);
   data->penalty_scale = penalty_scale;
   bbob2009_compute_xopt(data->xopt, rseed, dimension);

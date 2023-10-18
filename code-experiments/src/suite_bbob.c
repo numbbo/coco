@@ -105,10 +105,7 @@ static coco_problem_t *coco_get_bbob_problem(const size_t function,
   args->f_step_ellipsoid_args->penalty_scale = 1.0;
   args->f_griewank_rosenbrock_args ->facftrue = 10.0;
   args->f_gallagher_args->penalty_scale = 1.0;
-/*
-  printf("\n\nsuite_bbob.c:args->f_ellipsoid_args->conditioning=%f\n",args->f_ellipsoid_args->conditioning );
-  printf("suite_bbob.c:args->f_step_ellipsoid_args->penalty_scale=%f\n", args->f_step_ellipsoid_args->penalty_scale);
-*/
+  
   const char *problem_id_template = "bbob_f%03lu_i%02lu_d%02lu";
   const char *problem_name_template = "BBOB suite problem f%lu instance %lu in %luD";
 

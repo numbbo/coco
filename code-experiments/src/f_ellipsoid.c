@@ -138,8 +138,7 @@ static coco_problem_t *f_ellipsoid_rotated_bbob_problem_allocate(const size_t fu
   double *b = coco_allocate_vector(dimension);
   double **rot1;
 
-  double conditioning = args -> f_ellipsoid_args -> conditioning;/*
-  printf("f_ellipsoid.c:conditioning=%f\n", conditioning);*/
+  double conditioning = args -> f_ellipsoid_args -> conditioning;
   xopt = coco_allocate_vector(dimension);
   bbob2009_compute_xopt(xopt, rseed, dimension);
   fopt = bbob2009_compute_fopt(function, instance);
