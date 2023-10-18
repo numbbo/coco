@@ -94,5 +94,5 @@ def regression_test_bbob_noisy(filename):
         print("All tests passed, execution terminating with exit code {}".format(failed_test_counter))
 
 if __name__ == "__main__":
-    data_file_path = "./code-experiments/test/regression-test/bbob_noisy_regression_test/data_legacy/bbob_noisy_regression_data_10.json"
+    data_file_path = "./code-experiments/test/regression-test/bbob_noisy_regression_test/data_legacy/bbob_noisy_regression_data_5.json"
     evaluation_dictionary_list = regression_test_bbob_noisy(data_file_path)

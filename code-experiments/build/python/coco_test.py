@@ -60,10 +60,9 @@ def process_test_cases(fd, suite_name, test_vectors):
         y = problem(test_vector[:problem.number_of_variables])
         if not about_equal(y, expected_y, 4e-6):
             number_of_failures += 1
-            if number_of_failures < 100:
-                print("%8i %8i FAILED expected=%.8e observed=%.8e" % (problem_index, test_vector_id, expected_y, y))
-            elif number_of_failures == 100:
-                print("... further failed tests suppressed ...")
+            print(f"{problem.id}:{test_vector_id} FAILED expected={expected_y} observed={y}")
+            #elif number_of_failures == 100:
+            #    print("... further failed tests suppressed ...")
     print("%i of %i tests passed (failure rate %.2f%%)" % (number_of_testcases - number_of_failures, number_of_testcases, (100.0 * number_of_failures) / number_of_testcases))
     if number_of_failures > 0:
         sys.exit(-1)

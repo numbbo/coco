@@ -28,7 +28,8 @@ code-experiments/test/integration-test/test_biobj
 code-experiments/test/integration-test/test_coco
 code-experiments/test/integration-test/test_instance_extraction
 code-experiments/test/regression-test/data/*
-code-experiments/test/regression-test/bbob_noisy_regression_test/data_legacy/
+code-experiments/test/regression-test/bbob_noisy_regression_test/data_legacy/*.json
+code-experiments/test/regression-test/bbob_noisy_regression_test/results
 
 code-postprocessing/build/
 code-postprocessing/dist/
