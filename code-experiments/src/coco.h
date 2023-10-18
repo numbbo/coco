@@ -168,14 +168,6 @@ typedef struct{
   size_t number_of_peaks;
   double penalty_scale;
 }f_gallagher_args_t;
-
-typedef struct {
-  f_step_ellipsoid_args_t *f_step_ellipsoid_args;
-  f_ellipsoid_args_t *f_ellipsoid_args;
-  f_schaffers_args_t *f_schaffers_args;
-  f_griewank_rosenbrock_args_t *f_griewank_rosenbrock_args;
-  f_gallagher_args_t *f_gallagher_args;
-} f_args_t;
 /**@}*/
 
 /***********************************************************************************************************/
@@ -259,7 +251,7 @@ typedef coco_problem_t *(*coco_problem_bbob_allocator_args_t)(
   const size_t dimension, 
   const size_t instance, 
   const long rseed,
-  const f_args_t *args, 
+  const void *args, 
   const char *problem_id_template, 
   const char *problem_name_template);
 

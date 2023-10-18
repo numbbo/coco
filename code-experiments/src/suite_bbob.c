@@ -98,13 +98,6 @@ static coco_problem_t *coco_get_bbob_problem(const size_t function,
                                              const size_t dimension,
                                              const size_t instance) {
   coco_problem_t *problem = NULL;
-  f_args_t *args = NULL;
-  args = coco_problem_allocate_f_args(args);
-
-  args->f_ellipsoid_args->conditioning = 1.0e6;
-  args->f_step_ellipsoid_args->penalty_scale = 1.0;
-  args->f_griewank_rosenbrock_args ->facftrue = 10.0;
-  args->f_gallagher_args->penalty_scale = 1.0;
   
   const char *problem_id_template = "bbob_f%03lu_i%02lu_d%02lu";
   const char *problem_name_template = "BBOB suite problem f%lu instance %lu in %luD";
@@ -132,7 +125,9 @@ static coco_problem_t *coco_get_bbob_problem(const size_t function,
     problem = f_attractive_sector_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);
   } else if (function == 7) {
-    problem = f_step_ellipsoid_bbob_problem_allocate(function, dimension, instance, rseed, args,
+    f_step_ellipsoid_args_t args;
+    args.penalty_scale = 1.0;
+    problem = f_step_ellipsoid_bbob_problem_allocate(function, dimension, instance, rseed, &args,
         problem_id_template, problem_name_template);
   } else if (function == 8) {
     problem = f_rosenbrock_bbob_problem_allocate(function, dimension, instance, rseed,
@@ -141,7 +136,9 @@ static coco_problem_t *coco_get_bbob_problem(const size_t function,
     problem = f_rosenbrock_rotated_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);
   } else if (function == 10) {
-    problem = f_ellipsoid_rotated_bbob_problem_allocate(function, dimension, instance, rseed, args,
+    f_ellipsoid_args_t args;
+    args.conditioning = 1.0e6;
+    problem = f_ellipsoid_rotated_bbob_problem_allocate(function, dimension, instance, rseed, &args,
         problem_id_template, problem_name_template);
   } else if (function == 11) {
     problem = f_discus_bbob_problem_allocate(function, dimension, instance, rseed,
@@ -162,28 +159,36 @@ static coco_problem_t *coco_get_bbob_problem(const size_t function,
     problem = f_weierstrass_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);
   } else if (function == 17) {
-    args->f_schaffers_args->conditioning = 10.0;
-    args->f_schaffers_args->penalty_scale = 10.0;
-    problem = f_schaffers_bbob_problem_allocate(function, dimension, instance, rseed, args,
+    f_schaffers_args_t args;
+    args.conditioning = 10.0;
+    args.penalty_scale = 10.0;
+    problem = f_schaffers_bbob_problem_allocate(function, dimension, instance, rseed, &args,
         problem_id_template, problem_name_template);
   } else if (function == 18) {
-    args->f_schaffers_args->conditioning = 1000.0;
-    args->f_schaffers_args->penalty_scale = 10.0;
-    problem = f_schaffers_bbob_problem_allocate(function, dimension, instance, rseed_17, args,
+    f_schaffers_args_t args;
+    args.conditioning = 1000.0;
+    args.penalty_scale = 10.0;
+    problem = f_schaffers_bbob_problem_allocate(function, dimension, instance, rseed_17, &args,
         problem_id_template, problem_name_template);
   } else if (function == 19) {
-    problem = f_griewank_rosenbrock_bbob_problem_allocate(function, dimension, instance, rseed, args,
+    f_griewank_rosenbrock_args_t args;
+    args.facftrue = 10.0; 
+    problem = f_griewank_rosenbrock_bbob_problem_allocate(function, dimension, instance, rseed, &args,
         problem_id_template, problem_name_template);
   } else if (function == 20) {
     problem = f_schwefel_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);
   } else if (function == 21) {
-    args->f_gallagher_args->number_of_peaks = (size_t) 101;
-    problem = f_gallagher_bbob_problem_allocate(function, dimension, instance, rseed, args,
+    f_gallagher_args_t args;
+    args.number_of_peaks = (size_t) 101;
+    args.penalty_scale = 1.0;
+    problem = f_gallagher_bbob_problem_allocate(function, dimension, instance, rseed, &args,
         problem_id_template, problem_name_template);
   } else if (function == 22) {
-    args->f_gallagher_args->number_of_peaks = (size_t) 21;
-    problem = f_gallagher_bbob_problem_allocate(function, dimension, instance, rseed, args,
+    f_gallagher_args_t args;
+    args.number_of_peaks = (size_t) 21;
+    args.penalty_scale = 1.0;
+    problem = f_gallagher_bbob_problem_allocate(function, dimension, instance, rseed, &args,
         problem_id_template, problem_name_template);
   } else if (function == 23) {
     problem = f_katsuura_bbob_problem_allocate(function, dimension, instance, rseed,

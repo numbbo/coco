@@ -85,7 +85,7 @@ static coco_problem_t *f_schaffers_bbob_problem_allocate(const size_t function,
                                                          const size_t dimension,
                                                          const size_t instance,
                                                          const long rseed,
-                                                         const f_args_t *args,
+                                                         const void *args,
                                                          const char *problem_id_template,
                                                          const char *problem_name_template) {
   double *xopt, fopt;
@@ -95,10 +95,13 @@ static coco_problem_t *f_schaffers_bbob_problem_allocate(const size_t function,
   double *b = coco_allocate_vector(dimension);
   double *current_row, **rot1, **rot2;
 
+  f_schaffers_args_t *f_schaffers_args;
+  f_schaffers_args = ((f_schaffers_args_t *) args);
   f_schaffers_data_t *data;
   data = (f_schaffers_data_t *) coco_allocate_memory(sizeof(*data));
-  data->conditioning = args->f_schaffers_args->conditioning;
-  data->penalty_scale = args->f_schaffers_args->penalty_scale;
+
+  data->conditioning = f_schaffers_args->conditioning;
+  data->penalty_scale = f_schaffers_args->penalty_scale;
 
   xopt = coco_allocate_vector(dimension);
   fopt = bbob2009_compute_fopt(function, instance);

@@ -128,7 +128,7 @@ static coco_problem_t *f_step_ellipsoid_bbob_problem_allocate(const size_t funct
                                                               const size_t dimension,
                                                               const size_t instance,
                                                               const long rseed,
-                                                              const f_args_t *args,
+                                                              const void *args,
                                                               const char *problem_id_template,
                                                               const char *problem_name_template) {
   
@@ -144,7 +144,11 @@ static coco_problem_t *f_step_ellipsoid_bbob_problem_allocate(const size_t funct
   data->xopt = coco_allocate_vector(dimension);
   data->rot1 = bbob2009_allocate_matrix(dimension, dimension);
   data->rot2 = bbob2009_allocate_matrix(dimension, dimension);
-  double penalty_scale = args->f_step_ellipsoid_args->penalty_scale;
+
+  f_step_ellipsoid_args_t *f_step_ellipsoid_args;
+  f_step_ellipsoid_args = ((f_step_ellipsoid_args_t *) args);
+
+  double penalty_scale = f_step_ellipsoid_args->penalty_scale;
   data->fopt = bbob2009_compute_fopt(function, instance);
   data->penalty_scale = penalty_scale;
   bbob2009_compute_xopt(data->xopt, rseed, dimension);

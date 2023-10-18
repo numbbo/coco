@@ -128,17 +128,19 @@ static coco_problem_t *f_ellipsoid_rotated_bbob_problem_allocate(const size_t fu
                                                                  const size_t dimension,
                                                                  const size_t instance,
                                                                  const long rseed,
-                                                                 const f_args_t *args,
+                                                                 const void *args,
                                                                  const char *problem_id_template,
                                                                  const char *problem_name_template) {
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
   
+  f_ellipsoid_args_t *f_ellipsoid_args;
+  f_ellipsoid_args = ((f_ellipsoid_args_t *) args);
   double *M = coco_allocate_vector(dimension * dimension);
   double *b = coco_allocate_vector(dimension);
   double **rot1;
 
-  double conditioning = args -> f_ellipsoid_args -> conditioning;
+  double conditioning = f_ellipsoid_args -> conditioning;
   xopt = coco_allocate_vector(dimension);
   bbob2009_compute_xopt(xopt, rseed, dimension);
   fopt = bbob2009_compute_fopt(function, instance);

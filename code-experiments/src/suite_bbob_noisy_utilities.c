@@ -245,7 +245,7 @@ coco_problem_t *coco_problem_allocate_bbob_wrap_noisy_args(
     const size_t dimension, 
     const size_t instance, 
     const long rseed,
-    const f_args_t *args,
+    const void *args,
     const char *problem_id_template, 
     const char *problem_name_template, 
     double *distribution_theta

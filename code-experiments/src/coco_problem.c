@@ -324,22 +324,7 @@ void coco_problem_free(coco_problem_t *problem) {
     problem->initial_solution = NULL;
     coco_free_memory(problem);
   }
-}
-
-/**
- * @brief Allocates function arguments structure
- */
-static f_args_t *coco_problem_allocate_f_args(
-    f_args_t * args
-  ){
-  args = (f_args_t *) coco_allocate_memory(sizeof(*args));
-  args->f_ellipsoid_args = (f_ellipsoid_args_t *) coco_allocate_memory(sizeof(*(args->f_ellipsoid_args)));
-  args->f_step_ellipsoid_args = (f_step_ellipsoid_args_t *) coco_allocate_memory(sizeof(*(args->f_step_ellipsoid_args)));
-  args->f_schaffers_args = (f_schaffers_args_t *) coco_allocate_memory(sizeof(*(args->f_schaffers_args)));
-  args->f_griewank_rosenbrock_args = (f_griewank_rosenbrock_args_t *) coco_allocate_memory(sizeof(*(args->f_griewank_rosenbrock_args)));
-  args->f_gallagher_args = (f_gallagher_args_t *) coco_allocate_memory(sizeof(*(args->f_gallagher_args)));
-  return args;
-}
+} 
 
 /***********************************************************************************************************/
 

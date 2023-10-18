@@ -155,7 +155,7 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
                                                          const size_t dimension,
                                                          const size_t instance,
                                                          const long rseed,
-                                                         const f_args_t *args,
+                                                         const void *args,
                                                          const char *problem_id_template,
                                                          const char *problem_name_template) {
 
@@ -181,9 +181,11 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
   f_gallagher_permutation_t *rperm;
   double *random_numbers;
 
+  f_gallagher_args_t *f_gallagher_args;
+  f_gallagher_args = ((f_gallagher_args_t *) args);
 
-  size_t number_of_peaks = args->f_gallagher_args->number_of_peaks;
-  double penalty_scale = args->f_gallagher_args->penalty_scale;
+  size_t number_of_peaks = f_gallagher_args->number_of_peaks;
+  double penalty_scale = f_gallagher_args->penalty_scale;
   data = (f_gallagher_data_t *) coco_allocate_memory(sizeof(*data));
 
   /* Allocate temporary storage and space for the rotation matrices */

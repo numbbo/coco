@@ -85,7 +85,7 @@ static coco_problem_t *f_griewank_rosenbrock_bbob_problem_allocate(const size_t 
                                                                    const size_t dimension,
                                                                    const size_t instance,
                                                                    const long rseed,
-                                                                  const f_args_t *args,
+                                                                   const void *args,
                                                                    const char *problem_id_template,
                                                                    const char *problem_name_template) {
   double fopt;
@@ -112,7 +112,10 @@ static coco_problem_t *f_griewank_rosenbrock_bbob_problem_allocate(const size_t 
     }
   }
 
-  problem = f_griewank_rosenbrock_allocate(dimension, args->f_griewank_rosenbrock_args->facftrue);
+
+  f_griewank_rosenbrock_args_t *f_griewank_rosenbrock_args;
+  f_griewank_rosenbrock_args = ((f_griewank_rosenbrock_args_t *) args);
+  problem = f_griewank_rosenbrock_allocate(dimension, f_griewank_rosenbrock_args->facftrue);
   problem = transform_obj_shift(problem, fopt);
   problem = transform_vars_shift(problem, shift, 0);
   bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
@@ -147,7 +150,7 @@ static coco_problem_t *f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_all
                                                                                       const size_t dimension,
                                                                                       const size_t instance,
                                                                                       const long rseed,
-                                                                                      const f_args_t *args,
+                                                                                      const void *args,
                                                                                       const char *problem_id_template,
                                                                                       const char *problem_name_template) {
   double fopt;
@@ -187,7 +190,10 @@ static coco_problem_t *f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_all
   coco_compute_truncated_uniform_swap_permutation(P1, rseed + 2000000, dimension, nb_swaps, swap_range);
   coco_compute_truncated_uniform_swap_permutation(P2, rseed + 3000000, dimension, nb_swaps, swap_range);
   
-  problem = f_griewank_rosenbrock_allocate(dimension, args->f_griewank_rosenbrock_args->facftrue);
+  f_griewank_rosenbrock_args_t *f_griewank_rosenbrock_args;
+  f_griewank_rosenbrock_args = ((f_griewank_rosenbrock_args_t *) args);
+
+  problem = f_griewank_rosenbrock_allocate(dimension, f_griewank_rosenbrock_args->facftrue);
   problem = transform_vars_shift(problem, shift, 0);
   problem = transform_vars_scale(problem, scales);
   problem = transform_vars_permutation(problem, P2, dimension);
