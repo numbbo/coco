@@ -1,10 +1,12 @@
 % Returns a new COCO suite.
 %
-% Currently, four suites are supported:
+% Currently, six suites are supported:
 %
 %    "bbob" contains 24 single-objective functions in 6 dimensions (2, 3, 5, 10, 20, 40)
 %    "bbob-biobj" contains 55 bi-objective functions in 6 dimensions (2, 3, 5, 10, 20, 40)
 %    "bbob-largescale" contains 24 single-objective functions in 6 large dimensions (40, 80, 160, 320, 640, 1280)
+%    "bbob-mixint" contains 24 mixed-integer single-objective functions in 6 dimensions (2, 3, 5, 10, 20, 40)
+%    "bbob-biobj-mixint" contains 92 mixed-integer bi-objective functions in 6 dimensions (2, 3, 5, 10, 20, 40)
 %    "toy" contains 6 single-objective functions in 5 dimensions (2, 3, 5, 10, 20)
 %
 % Only the suite_name parameter needs to be non-empty. The suite_instance and
