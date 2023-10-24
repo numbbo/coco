@@ -58,6 +58,7 @@ cdef extern from "coco.h":
     coco_problem_t* coco_suite_get_next_problem(coco_suite_t*, coco_observer_t*)
     coco_problem_t* coco_suite_get_problem(coco_suite_t *, const size_t)
 
+    double coco_problem_get_last_noise_value(coco_problem_t *problem)
     size_t coco_problem_get_suite_dep_index(const coco_problem_t* problem)
     size_t coco_problem_get_dimension(const coco_problem_t *problem)
     size_t coco_problem_get_number_of_objectives(const coco_problem_t *problem)
@@ -706,6 +707,10 @@ cdef class Problem:
             return self.initial_solution + 1.0 * (rv_triangular - 1)
         return self.lower_bounds + rv_triangular * (
                                     self.upper_bounds - self.lower_bounds) / 2
+    @property
+    def last_noise_value(self):
+        """return last ftrue value"""
+        return coco_problem_get_last_noise_value(self.problem)
     @property
     def initial_solution(self):
         """return feasible initial solution"""
