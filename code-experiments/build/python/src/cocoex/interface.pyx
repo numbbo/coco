@@ -69,8 +69,6 @@ cdef extern from "coco.h":
     const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *problem)
     const double *coco_problem_get_largest_fvalues_of_interest(const coco_problem_t *problem)
     # double coco_problem_get_final_target_fvalue1(const coco_problem_t *problem)
-    double coco_problem_get_best_value(const coco_problem_t *problem)
-    double * coco_problem_get_best_parameter(const coco_problem_t *problem)
     size_t coco_problem_get_evaluations(const coco_problem_t *problem)
     size_t coco_problem_get_evaluations_constraints(const coco_problem_t *problem)
     void reset_seeds()
@@ -570,13 +568,6 @@ cdef class Problem:
         self._largest_fvalues_of_interest = None
         self.initialized = True
         return self
-        
-    cdef get_best_decision_vector(self):
-        cdef double * best_decision_vector = coco_problem_get_best_parameter(self.problem)
-        vector_list = []
-        for i in range(self.dimension):
-            vector_list.append(best_decision_vector[i])
-        return np.array(vector_list)
 
     def constraint(self, x):
         """see __init__.py"""
@@ -769,12 +760,6 @@ cdef class Problem:
     @property
     def evaluations_constraints(self):
         return coco_problem_get_evaluations_constraints(self.problem)
-    @property
-    def best_value(self):
-        return coco_problem_get_best_value(self.problem)
-    @property
-    def best_decision_vector(self):
-        return self.get_best_decision_vector()
     @property
     def final_target_hit(self):
         """return 1 if the final target is known and has been hit, 0 otherwise
