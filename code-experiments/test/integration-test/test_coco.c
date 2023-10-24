@@ -67,6 +67,9 @@ int main(int argc, char **argv) {
   FILE *testfile = NULL;
   coco_suite_t *suite;
 
+  /* Mute output that is not error */
+  coco_set_log_level("error");
+
   if (argc != 2) {
     usage(argv[0]);
     goto err;
