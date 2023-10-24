@@ -28,7 +28,8 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
                                          const size_t number_of_dimensions,
                                          const size_t *dimensions,
-                                         const char *default_instances);
+                                         const char *default_instances,
+                                         const int known_optima);
 
 /**
  * @brief Sets the dimensions and default instances for the bbob-biobj suites.
@@ -40,9 +41,9 @@ static coco_suite_t *suite_biobj_initialize(const char *suite_name) {
   const size_t num_dimensions = sizeof(dimensions) / sizeof(dimensions[0]);
 
   if (strcmp(suite_name, "bbob-biobj") == 0) {
-    suite = coco_suite_allocate("bbob-biobj", 55, num_dimensions, dimensions, "instances: 1-15");
+    suite = coco_suite_allocate("bbob-biobj", 55, num_dimensions, dimensions, "instances: 1-15", 1);
   } else if (strcmp(suite_name, "bbob-biobj-ext") == 0) {
-    suite = coco_suite_allocate("bbob-biobj-ext", 55+37, num_dimensions, dimensions, "instances: 1-15");
+    suite = coco_suite_allocate("bbob-biobj-ext", 55+37, num_dimensions, dimensions, "instances: 1-15", 1);
   } else {
     coco_error("suite_biobj_initialize(): unknown problem suite");
     return NULL;
@@ -94,6 +95,7 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
   problem->suite_dep_index = coco_suite_encode_problem_index(suite, function_idx, dimension_idx, instance_idx);
+  problem->is_opt_known = 1;
 
   return problem;
 }

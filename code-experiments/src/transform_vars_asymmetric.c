@@ -116,7 +116,10 @@ static void transform_vars_asymmetric_evaluate_function(coco_problem_t *problem,
  */
 static void transform_vars_asymmetric_evaluate_constraint(coco_problem_t *problem, 
                                                           const double *x, 
-                                                          double *y) {
+                                                          double *y,
+                                                          int update_counter) {
+  size_t i;
+  double exponent;
   transform_vars_asymmetric_data_t *data;
   coco_problem_t *inner_problem;
   
@@ -128,9 +131,21 @@ static void transform_vars_asymmetric_evaluate_constraint(coco_problem_t *proble
   data = (transform_vars_asymmetric_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
+  /* FIXME (OME): Old  pre-logger
   tasy(data, x, problem->number_of_variables);
 
   coco_evaluate_constraint(inner_problem, data->x, y);
+  */
+  for (i = 0; i < problem->number_of_variables; ++i) {
+    if (x[i] > 0.0) {
+      exponent = 1.0
+          + ((data->beta * (double) (long) i) / ((double) (long) problem->number_of_variables - 1.0)) * sqrt(x[i]);
+      data->x[i] = pow(x[i], exponent);
+    } else {
+      data->x[i] = x[i];
+    }
+  }
+  inner_problem->evaluate_constraint(inner_problem, data->x, y, update_counter);
 }
 
 static void transform_vars_asymmetric_free(void *thing) {

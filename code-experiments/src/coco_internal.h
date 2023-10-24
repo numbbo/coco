@@ -32,9 +32,16 @@ typedef void (*coco_problem_free_function_t)(coco_problem_t *problem);
  * @brief The evaluate function type.
  *
  * This is a template for functions that perform an evaluation of the problem (to evaluate the problem
- * function, the problems constraints etc.).
+ * function, the problems constraints (externally) etc.).
  */
 typedef void (*coco_evaluate_function_t)(coco_problem_t *problem, const double *x, double *y);
+
+/**
+ * @brief The evaluate function type with optional counter update.
+ *
+ * This is used to evaluate the problem constraints internally.
+ */
+typedef void (*coco_evaluate_c_function_t)(coco_problem_t *problem, const double *x, double *y, int update_counter);
 
 /**
  * @brief The recommend solutions function type.
@@ -42,6 +49,13 @@ typedef void (*coco_evaluate_function_t)(coco_problem_t *problem, const double *
  * This is a template for functions that log a recommended solution.
  */
 typedef void (*coco_recommend_function_t)(coco_problem_t *problem, const double *x);
+
+/**
+ * @brief The restart function type.
+ *
+ * This is a template for functions that signal an algorithm restart for the problem.
+ */
+typedef void (*coco_restart_function_t)(coco_problem_t *problem);
 
 /**
  * @brief The allocate logger function type.
@@ -122,7 +136,7 @@ typedef struct {
 struct coco_problem_s {
 
   coco_evaluate_function_t evaluate_function;         /**< @brief  The function for evaluating the problem. */
-  coco_evaluate_function_t evaluate_constraint;       /**< @brief  The function for evaluating the constraints. */
+  coco_evaluate_c_function_t evaluate_constraint;     /**< @brief  The function for evaluating the constraints. */
   coco_evaluate_function_t evaluate_gradient;         /**< @brief  The function for evaluating the constraints. */
   coco_recommend_function_t recommend_solution;       /**< @brief  The function for recommending a solution. */
   coco_problem_free_function_t problem_free_function; /**< @brief  The function for freeing this problem. */
@@ -138,7 +152,9 @@ struct coco_problem_s {
                                        before any continuous ones). */
 
   double *initial_solution;            /**< @brief Initial feasible solution. */
-  double *best_value;                  /**< @brief Optimal (smallest) function value */
+  int is_opt_known;                    /**< @brief Whether the optimal (best) value is actually known for this problem. */
+  double *best_value;                  /**< @brief Optimal (smallest) function value if known, otherwise a reference
+                                       valued defined in the problem construction. */
   double *nadir_value;                 /**< @brief The nadir point (defined when number_of_objectives > 1) */
   double *best_parameter;              /**< @brief Optimal decision vector (defined only when unique) */
 
@@ -166,7 +182,7 @@ struct coco_problem_s {
 
   void *data;                          /**< @brief Pointer to a data instance @see coco_problem_transformed_data_t */
   
-  void *versatile_data;                /* Wassim: *< @brief pointer to eventual additional data that need to be accessed all along the transforamtions*/
+  void *versatile_data;                /* Wassim: *< @brief pointer to eventual additional data that need to be accessed all along the transformations*/
 };
 
 /**
@@ -178,27 +194,29 @@ struct coco_problem_s {
  */
 struct coco_observer_s {
 
-  int is_active;             /**< @brief Whether the observer is active (the logger will log some output). */
-  char *observer_name;       /**< @brief Name of the observer for identification purposes. */
-  char *result_folder;       /**< @brief Name of the result folder. */
-  char *algorithm_name;      /**< @brief Name of the algorithm to be used in logger output. */
-  char *algorithm_info;      /**< @brief Additional information on the algorithm to be used in logger output. */
+  int is_active;                /**< @brief Whether the observer is active (the logger will log some output). */
+  char *observer_name;          /**< @brief Name of the observer for identification purposes. */
+  char *result_folder;          /**< @brief Name of the result folder. */
+  char *algorithm_name;         /**< @brief Name of the algorithm to be used in logger output. */
+  char *algorithm_info;         /**< @brief Additional information on the algorithm to be used in logger output. */
   size_t number_target_triggers;
-                             /**< @brief The number of targets between each 10**i and 10**(i+1). */
-  double target_precision;   /**< @brief The minimal precision used for targets. */
+                                /**< @brief The number of targets between each 10**i and 10**(i+1). */
+  double log_target_precision;  /**< @brief The minimal precision used for logarithmic targets. */
+  double lin_target_precision;  /**< @brief The minimal precision used for linear targets. */
   size_t number_evaluation_triggers;
-                             /**< @brief The number of triggers between each 10**i and 10**(i+1) evaluation number. */
+                                /**< @brief The number of triggers between each 10**i and 10**(i+1) evaluation number. */
   char *base_evaluation_triggers;
-                             /**< @brief The "base evaluations" used to evaluations that trigger logging. */
-  int precision_x;           /**< @brief Output precision for decision variables. */
-  int precision_f;           /**< @brief Output precision for function values. */
-  int precision_g;           /**< @brief Output precision for constraint values. */
-  int log_discrete_as_int;   /**< @brief Whether to output discrete variables in int or double format. */
-  void *data;                /**< @brief Void pointer that can be used to point to data specific to an observer. */
+                                /**< @brief The "base evaluations" used to evaluations that trigger logging. */
+  int precision_x;              /**< @brief Output precision for decision variables. */
+  int precision_f;              /**< @brief Output precision for function values. */
+  int precision_g;              /**< @brief Output precision for constraint values. */
+  int log_discrete_as_int;      /**< @brief Whether to output discrete variables in int or double format. */
+  void *data;                   /**< @brief Void pointer that can be used to point to data specific to an observer. */
 
   coco_data_free_function_t data_free_function;             /**< @brief  The function for freeing this observer. */
   coco_logger_allocate_function_t logger_allocate_function; /**< @brief  The function for allocating the logger. */
   coco_logger_free_function_t logger_free_function;         /**< @brief  The function for freeing the logger. */
+  coco_restart_function_t restart_function;                 /**< @brief  The function for signaling algorithm restart. */
 };
 
 /**
@@ -222,6 +240,8 @@ struct coco_suite_s {
   size_t number_of_instances;      /**< @brief Number of instances contained in the suite. */
   char *default_instances;         /**< @brief The instances contained in the suite by default. */
   size_t *instances;               /**< @brief The instances contained in the suite. */
+
+  int known_optima;                /**< @brief Whether the problems of the suite have known optimal values */
 
   coco_problem_t *current_problem; /**< @brief Pointer to the currently tackled problem. */
   long current_dimension_idx;      /**< @brief The dimension index of the currently tackled problem. */
