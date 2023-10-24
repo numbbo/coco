@@ -28,7 +28,7 @@ NUM_OF_INDEPENDENT_RESTARTS = 1e9; % max. number of independent algorithm
 %
 % bbob               24 unconstrained noiseless single-objective functions
 % bbob-biobj         55 unconstrained noiseless bi-objective functions
-% [bbob-biobj-ext     92 unconstrained noiseless bi-objective functions]
+% [bbob-biobj-ext*   92 unconstrained noiseless bi-objective functions]
 % bbob-largescale    24 unconstrained noiseless single-objective functions in large dimensions
 % bbob-constrained   48 constrained noiseless single-objective functions
 % bbob-mixint        24 unconstrained noiseless single-objective functions with mixed-integer variables
@@ -92,6 +92,9 @@ while true
     i = -1; % count number of independent restarts
     while (BUDGET_MULTIPLIER*dimension > (cocoProblemGetEvaluations(problem) + ...
                                           cocoProblemGetEvaluationsConstraints(problem)))
+        % signal that a restart took place
+        cocoObserverSignalRestart(observer, problem)
+
         i = i+1;
         if (i > 0)
             fprintf('INFO: algorithm restarted\n');
