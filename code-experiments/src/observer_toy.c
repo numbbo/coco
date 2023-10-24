@@ -75,6 +75,7 @@ static void observer_toy(coco_observer_t *observer, const char *options, coco_op
 
   observer->logger_allocate_function = logger_toy;
   observer->logger_free_function = logger_toy_free;
+  observer->restart_function = NULL;
   observer->data_free_function = observer_toy_free;
   observer->data = observer_data;
 }

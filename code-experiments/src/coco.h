@@ -83,6 +83,10 @@ typedef unsigned __int64 uint64_t;
 /** @brief Definition of isinf to be used only if undefined by the included headers */
 #define isinf(x) (0)
 #endif
+/* @brief The value that is logged instead of NAN */
+#define NAN_FOR_LOGGING 2e21
+/* @brief The value that is logged instead of INFINITY */
+#define INFINITY_FOR_LOGGING 3e21
 
 #ifdef __cplusplus
 extern "C" {
@@ -328,6 +332,11 @@ coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_obser
  * @brief Returns result folder name, where logger output is written. 
  */
 const char *coco_observer_get_result_folder(const coco_observer_t *observer);
+
+/**
+ * @brief Signals the restart of the algorithm
+ */
+void coco_observer_signal_restart(coco_observer_t *observer, coco_problem_t *problem);
 
 /**@}*/
 

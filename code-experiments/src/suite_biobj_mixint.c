@@ -17,7 +17,8 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
                                          const size_t number_of_dimensions,
                                          const size_t *dimensions,
-                                         const char *default_instances);
+                                         const char *default_instances,
+                                         const int known_optima);
 static void suite_biobj_new_inst_free(void *stuff);
 
 /**
@@ -29,7 +30,7 @@ static coco_suite_t *suite_biobj_mixint_initialize(void) {
   const size_t dimensions[] = { 5, 10, 20, 40, 80, 160 };
   const size_t num_dimensions = sizeof(dimensions) / sizeof(dimensions[0]);
 
-  suite = coco_suite_allocate("bbob-biobj-mixint", 92, num_dimensions, dimensions, "instances: 1-15");
+  suite = coco_suite_allocate("bbob-biobj-mixint", 92, num_dimensions, dimensions, "instances: 1-15", 0);
   suite->data_free_function = suite_biobj_new_inst_free;
 
   return suite;

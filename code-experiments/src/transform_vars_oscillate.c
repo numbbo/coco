@@ -111,7 +111,13 @@ static void transform_vars_oscillate_evaluate_function(coco_problem_t *problem, 
 /**
  * @brief Evaluates the transformed constraints.
  */
-static void transform_vars_oscillate_evaluate_constraint(coco_problem_t *problem, const double *x, double *y) {
+static void transform_vars_oscillate_evaluate_constraint(coco_problem_t *problem,
+                                                         const double *x,
+                                                         double *y,
+                                                         int update_counter) {
+  static const double alpha = 0.1;
+  double tmp, base, *oscillated_x;
+  size_t i;
   transform_vars_oscillate_data_t *data;
   coco_problem_t *inner_problem;
   
@@ -121,11 +127,23 @@ static void transform_vars_oscillate_evaluate_constraint(coco_problem_t *problem
   }
 
   data = (transform_vars_oscillate_data_t *) coco_problem_transformed_get_data(problem);
+  oscillated_x = data->oscillated_x; /* short cut to make code more readable */
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
-  tosz(data, x, problem->number_of_variables);
-
-  coco_evaluate_constraint(inner_problem, data->oscillated_x, y);
+  for (i = 0; i < problem->number_of_variables; ++i) {
+    if (x[i] > 0.0) {
+      tmp = log(x[i]) / alpha;
+      base = exp(tmp + 0.49 * (sin(tmp) + sin(0.79 * tmp)));
+      oscillated_x[i] = pow(base, alpha);
+    } else if (x[i] < 0.0) {
+      tmp = log(-x[i]) / alpha;
+      base = exp(tmp + 0.49 * (sin(0.55 * tmp) + sin(0.31 * tmp)));
+      oscillated_x[i] = -pow(base, alpha);
+    } else {
+      oscillated_x[i] = 0.0;
+    }
+  }
+  inner_problem->evaluate_constraint(inner_problem, oscillated_x, y, update_counter);
 }
 
 /**
