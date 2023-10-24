@@ -162,9 +162,7 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
                                              const size_t number_of_objectives,
                                              const size_t number_of_constraints) {
   coco_problem_t *problem;
-  coco_noise_model_t *noise_model;
   problem = (coco_problem_t *) coco_allocate_memory(sizeof(*problem));
-  noise_model = (coco_noise_model_t *) coco_allocate_memory(sizeof(*noise_model));
   /* Initialize fields to sane/safe defaults */
   problem->initial_solution = NULL;
   problem->evaluate_function = NULL;
@@ -172,8 +170,6 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->evaluate_gradient = NULL;
   problem->recommend_solution = NULL;
   problem->problem_free_function = NULL;
-  problem -> noise_model = noise_model;
-  problem -> placeholder_evaluate_function = NULL;
 
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = number_of_objectives;
@@ -325,8 +321,6 @@ void coco_problem_free(coco_problem_t *problem) {
       coco_free_memory(problem->data);
     if (problem->initial_solution != NULL)
       coco_free_memory(problem->initial_solution);
-    if (problem -> noise_model != NULL)
-      coco_free_memory(problem -> noise_model);
     problem->smallest_values_of_interest = NULL;
     problem->largest_values_of_interest = NULL;
     problem->best_parameter = NULL;
@@ -429,12 +423,6 @@ size_t coco_problem_get_evaluations_constraints(const coco_problem_t *problem) {
   return problem->evaluations_constraints;
 }
 
-double *coco_problem_get_distribution_theta(const coco_problem_t *problem){
-  assert(problem != NULL);
-  assert(problem -> noise_model -> distribution_theta != NULL);
-  return problem -> noise_model -> distribution_theta;
-} 
-
 /**
  * @brief Returns 1 if the best parameter is not (close to) zero and 0 otherwise.
  */
@@ -472,24 +460,6 @@ int coco_problem_final_target_hit(const coco_problem_t *problem) {
 double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem) {
   assert(problem != NULL);
   return problem->best_observed_fvalue[0];
-}
-
-/**
- * @brief Returns the optimal function value of the problem
- */
-double coco_problem_get_best_value(const coco_problem_t *problem) {
-  assert(problem != NULL);
-  assert(problem->best_value != NULL);
-  return problem->best_value[0];
-}
-
-/**
- * @brief Returns the optimal decision vector of the problem
- */
-double * coco_problem_get_best_parameter(const coco_problem_t *problem){
-  assert(problem != NULL);
-  assert(problem->best_value != NULL);
-  return problem->best_parameter;
 }
 
 /**

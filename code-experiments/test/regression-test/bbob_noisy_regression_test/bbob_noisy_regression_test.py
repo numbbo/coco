@@ -80,7 +80,7 @@ def regression_test_bbob_noisy(filename):
         fopt_cond = problem.best_value == fopt
         y_hat = problem(x) 
         try:
-            assert is_equal(fval, y_hat), f_id + " failed the test -> fval (legacy) %f, fval (current) %f" % (fval, y_hat) 
+            assert is_equal(fval, y_hat), f_id + f" failed the test -> fval (legacy) {fval}, fval (current) {y_hat}, noise_value (legacy) {noise_value}, noise_value (current) {problem.last_noise_value}"
             passed_test_counter += 1
             # print(f_id + "  passed the test ", ("y_hat: %f" % (y_hat)))
         except AssertionError as error:
@@ -94,5 +94,5 @@ def regression_test_bbob_noisy(filename):
         print("All tests passed, execution terminating with exit code {}".format(failed_test_counter))
 
 if __name__ == "__main__":
-    data_file_path = "./code-experiments/test/regression-test/bbob_noisy_regression_test/data_legacy/bbob_noisy_regression_data_5.json"
+    data_file_path = "./code-experiments/test/regression-test/bbob_noisy_regression_test/data_legacy/bbob_noisy_regression_data_10.json"
     evaluation_dictionary_list = regression_test_bbob_noisy(data_file_path)

@@ -241,43 +241,6 @@ struct coco_random_state_s;
  */
 typedef struct coco_random_state_s coco_random_state_t;
 
-
-/** @brief Structure containing the noise model*/
-struct coco_noise_model_s;
-
-/**
- * @brief The noisy COCO noise model type 
- * Wraps a noisy problem around a inner one 
- */
-typedef struct coco_noise_model_s coco_noise_model_t;
-
-/**
- * @brief The allocate objective function type 
- * This is a template for functions that perform the allocation of the objective function 
- * given the number of dimensions of the problem
- */
-typedef coco_problem_t *(*coco_problem_bbob_allocator_t)(
-  const size_t function, 
-  const size_t dimension, 
-  const size_t instance, 
-  const long rseed, 
-  const char *problem_id_template, 
-  const char *problem_name_template);
-
-/**
- * @brief The allocate objective function type 
- * This is a template for functions that perform the allocation of the objective function 
- * given the number of dimensions of the problem
- */
-typedef coco_problem_t *(*coco_problem_bbob_allocator_args_t)(
-  const size_t function, 
-  const size_t dimension, 
-  const size_t instance, 
-  const long rseed,
-  const void *args, 
-  const char *problem_id_template, 
-  const char *problem_name_template);
-
 /***********************************************************************************************************/
 /**
  * @name Methods regarding COCO suite
@@ -511,17 +474,6 @@ size_t coco_problem_get_number_of_constraints(const coco_problem_t *problem);
  */
 size_t coco_problem_get_evaluations(const coco_problem_t *problem);
 
-
-/**
- * @brief Returns the optimal function value of the problem
- */
-double coco_problem_get_best_value(const coco_problem_t *problem);
-
-/**
- * @brief Returns the optimal decision vector of the problem
- */
-double * coco_problem_get_best_parameter(const coco_problem_t *problem);
-
 /**
  * @brief Returns the number of constraint function evaluations done on the problem.
  */
@@ -618,26 +570,6 @@ double coco_random_normal(coco_random_state_t *state);
  */
 void coco_reset_seeds(void);
 
-/**
- * @brief Samples gaussian variate for noisy function
- */
-void coco_problem_gaussian_noise_model(coco_problem_t * problem, double * y);
-
-/**
- * @brief Samples gaussian variate for noisy function
- */
-void coco_problem_uniform_noise_model(coco_problem_t * problem, double * y);
-
-/**
- * @brief Samples Cauchy variate for noisy function
- */
-void coco_problem_cauchy_noise_model(coco_problem_t * problem, double * y);
-
-/**
-  * @brief Evaluates the coco problem noisy function
-  * works as a wrapper around the function type coco_problem_f_evaluate
- */
-void coco_problem_f_evaluate_wrap_noisy(coco_problem_t *problem, const double *x, double *y);
 /**@}*/
 
 /***********************************************************************************************************/
@@ -773,6 +705,7 @@ char *coco_strdupf(const char *str, ...);
 
 void bbob_problem_best_parameter_print(const coco_problem_t *problem);
 void bbob_biobj_problem_best_parameter_print(const coco_problem_t *problem);
+
 
 #ifdef __cplusplus
 }
