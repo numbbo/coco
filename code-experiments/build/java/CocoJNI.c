@@ -139,6 +139,30 @@ JNIEXPORT void JNICALL Java_CocoJNI_cocoFinalizeObserver
 
 /*
  * Class:     CocoJNI
+ * Method:    Java_CocoJNI_cocoObserverSignalRestart
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_CocoJNI_cocoObserverSignalRestart
+(JNIEnv *jenv, jclass interface_cls, jlong jobserver_pointer, jlong jproblem_pointer) {
+
+  coco_observer_t *observer = NULL;
+  coco_problem_t *problem = NULL;
+
+  /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
+  if (interface_cls == NULL) {
+    jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in Java_CocoJNI_cocoObserverSignalRestart\n");
+  }
+
+  observer = (coco_observer_t *) jobserver_pointer;
+  problem = (coco_problem_t *) jproblem_pointer;
+
+  coco_observer_signal_restart(observer, problem);
+
+}
+
+/*
+ * Class:     CocoJNI
  * Method:    cocoGetSuite
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)J
  */
@@ -364,6 +388,35 @@ JNIEXPORT jdoubleArray JNICALL Java_CocoJNI_cocoEvaluateConstraint
   (*jenv)->ReleaseDoubleArrayElements(jenv, jx, x, JNI_ABORT);
   return jy;
 }
+
+/*
+ * Class:     CocoJNI
+ * Method:    cocoRecommendSolution
+ * Signature: (J[D)V
+ */
+JNIEXPORT void JNICALL Java_CocoJNI_cocoRecommendSolution
+(JNIEnv *jenv, jclass interface_cls, jlong jproblem_pointer, jdoubleArray jx) {
+
+  coco_problem_t *problem = NULL;
+  double *x = NULL;
+
+  /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
+  if (interface_cls == NULL) {
+    jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoRecommendSolution\n");
+  }
+
+  problem = (coco_problem_t *) jproblem_pointer;
+
+  /* Call coco_evaluate_constraint */
+  x = (*jenv)->GetDoubleArrayElements(jenv, jx, NULL);
+  coco_recommend_solution(problem, x);
+
+  /* Free resources */
+  (*jenv)->ReleaseDoubleArrayElements(jenv, jx, x, JNI_ABORT);
+  return;
+}
+
 
 /*
  * Class:     CocoJNI
