@@ -117,6 +117,9 @@ void multiple_observers(void) {
 
 int main( int argc, char *argv[] )  {
 
+  /* Mute output that is not error */
+  coco_set_log_level("error");
+
   if ((argc == 2) && (strcmp(argv[1], "leak_check") == 0)) {
     valgrind_test();
     run_once("produce_all_data: 1");

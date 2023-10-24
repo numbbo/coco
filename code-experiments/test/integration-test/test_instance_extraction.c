@@ -34,6 +34,9 @@ int test_instance_extraction(char *suite_name) {
 
 int main(void) {
 
+  /* Mute output that is not error */
+  coco_set_log_level("error");
+
   if (test_instance_extraction("bbob") != 0)
     return 1;
 
