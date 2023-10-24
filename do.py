@@ -266,7 +266,7 @@ To fix an access rights issue, you may try the following:
 """.format("\n".join(formatted_message)))
     return True
 
-def install_postprocessing(package_install_option = []):
+def install_postprocessing(package_install_option=[]):
     ''' Installs the COCO postprocessing as python module. '''
     global RELEASE
 # code-postprocessing/setup.py now takes care of itself actively
@@ -327,7 +327,7 @@ def build_python(package_install_option=[]):
     # os.environ.pop('USE_CYTHON')
 
 
-def run_python(test=False, package_install_option = []):
+def run_python(test=False, package_install_option=[]):
     """ Builds and installs the Python module `cocoex` and runs the
     `example_experiment.py` as a simple test case. If `test` is True,
     it runs, in addition, the tests in `coco_test.py`."""
@@ -420,7 +420,7 @@ def build_matlab():
     write_file(git_revision(), "code-experiments/build/matlab/REVISION")
     write_file(git_version(), "code-experiments/build/matlab/VERSION")
     run('code-experiments/build/matlab',
-        ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'],
+        ['matlab', '-nodesktop', '-nosplash', '-r', 'setup, exit'],
         verbose=_verbosity)
 
 
@@ -435,7 +435,7 @@ def run_matlab():
     wait_for_compilation_to_finish('./code-experiments/build/matlab/cocoCall')
     # run after compilation finished
     run('code-experiments/build/matlab',
-        ['matlab', '-nodisplay', '-nosplash', '-r', 'exampleexperiment, exit'],
+        ['matlab', '-nodesktop', '-nosplash', '-r', 'exampleexperiment, exit'],
         verbose=_verbosity)
 
 
@@ -482,7 +482,7 @@ def build_matlab_sms():
     write_file(git_version(), join(destination_folder, "VERSION"))
     copy_file('code-experiments/build/matlab/cocoCall.c', join(destination_folder, 'cocoCall.c'))
     # compile
-    run(destination_folder, ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
+    run(destination_folder, ['matlab', '-nodesktop', '-nosplash', '-r', 'setup, exit'])
 
 
 def run_matlab_sms():
@@ -496,7 +496,7 @@ def run_matlab_sms():
     wait_for_compilation_to_finish('./code-experiments/examples/bbob-biobj-matlab-smsemoa/paretofront')
     # run after compilation finished
     run('code-experiments/examples/bbob-biobj-matlab-smsemoa',
-        ['matlab', '-nodisplay', '-nosplash', '-r', 'run_smsemoa_on_bbob_biobj, exit'],
+        ['matlab', '-nodesktop', '-nosplash', '-r', 'run_smsemoa_on_bbob_biobj, exit'],
         verbose=_verbosity)
 
 
@@ -733,7 +733,7 @@ def test_java():
     build_java()
     try:
         run('code-experiments/build/java',
-            ['java', '-Djava.library.path=.', 'ExampleExperiment'],
+            ['java', '-classpath', '.', '-Djava.library.path=.', 'ExampleExperiment'],
             verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
@@ -799,7 +799,7 @@ def test_rust():
 ################################################################################
 ## Post processing
 def test_postprocessing(all_tests=False, package_install_option=[]):
-    install_postprocessing(package_install_option = package_install_option)
+    install_postprocessing(package_install_option=package_install_option)
     try:
         if all_tests:
             # run example experiment to have a recent data set to postprocess:
@@ -843,21 +843,21 @@ for ee.suite_name, ee.observer_options['result_folder'] in [
             shutil.rmtree('code-experiments/build/python/exdata/RS-' + s,
                           ignore_errors=True)
 
-def verify_postprocessing(package_install_option = []):
-    install_postprocessing(package_install_option = package_install_option)
+def verify_postprocessing(package_install_option=[]):
+    install_postprocessing(package_install_option=package_install_option)
     # This is not affected by the _verbosity value. Verbose should always be True.
     python('code-postprocessing/cocopp', ['preparehtml.py', '-v'], verbose=True)
 
 
 ################################################################################
 ## Pre-processing
-def install_preprocessing(package_install_option = []):
+def install_preprocessing(package_install_option=[]):
     global RELEASE
     install_postprocessing(package_install_option=package_install_option)
     expand_file(join('code-preprocessing/archive-update', 'setup.py.in'),
                 join('code-preprocessing/archive-update', 'setup.py'),
                 {'COCO_VERSION': git_version(pep440=True)})
-    build_python(package_install_option = package_install_option)
+    build_python(package_install_option=package_install_option)
     amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_c.c'],
                'code-preprocessing/archive-update/interface/coco.c', RELEASE,
                {"COCO_VERSION": git_version(pep440=True)})
@@ -868,18 +868,18 @@ def install_preprocessing(package_install_option = []):
            verbose=_verbosity, custom_exception_handler=install_error)
 
 
-def test_preprocessing(package_install_option = []):
-    install_preprocessing(package_install_option = package_install_option)
+def test_preprocessing(package_install_option=[]):
+    install_preprocessing(package_install_option=package_install_option)
     python('code-preprocessing/archive-update', ['-m', 'pytest'], verbose=_verbosity)
     python('code-preprocessing/log-reconstruction', ['-m', 'pytest'], verbose=_verbosity)
 
 ################################################################################
 ## Global
-def build(package_install_option = []):
+def build(package_install_option=[]):
     builders = [
         build_c,
         # build_matlab,
-        build_python(package_install_option = package_install_option),
+        build_python(package_install_option=package_install_option),
         build_java,
         build_rust
     ]
@@ -895,14 +895,14 @@ def build(package_install_option = []):
             print("============")
 
 
-def run_all(package_install_option = []):
+def run_all(package_install_option=[]):
     run_c()
     run_java()
     run_python(package_install_option = package_install_option)
     run_rust()
 
 
-def test(package_install_option = []):
+def test():
     test_c()
     test_java()
     test_python(package_install_option = package_install_option)
@@ -1056,6 +1056,7 @@ def main(args):
     elif cmd == 'run': run_all(package_install_option = package_install_option)
     elif cmd == 'test': test(package_install_option = package_install_option)
     elif cmd == 'amalgamate-c': amalgamate_c()
+    elif cmd == 'test': test()
     elif cmd == 'build-c': build_c()
     elif cmd == 'build-java': build_java()
     elif cmd == 'prepare-build-rust': prepare_build_rust()
@@ -1064,8 +1065,8 @@ def main(args):
     elif cmd == 'build-matlab-sms': build_matlab_sms()
     elif cmd == 'build-octave': build_octave()
     elif cmd == 'build-octave-sms': build_octave_sms()
-    elif cmd == 'build-python': build_python(package_install_option = package_install_option)
-    elif cmd == 'install-postprocessing': install_postprocessing(package_install_option = package_install_option)
+    elif cmd == 'build-python': build_python(package_install_option=package_install_option)
+    elif cmd == 'install-postprocessing': install_postprocessing(package_install_option=package_install_option)
     elif cmd == 'run-c': run_c()
     elif cmd == 'run-java': run_java()
     elif cmd == 'run-rust': run_rust()
@@ -1073,7 +1074,7 @@ def main(args):
     elif cmd == 'run-matlab-sms': run_matlab_sms()
     elif cmd == 'run-octave': run_octave()
     elif cmd == 'run-octave-sms': run_octave_sms()
-    elif cmd == 'run-python': run_python(also_test_python, package_install_option = package_install_option)
+    elif cmd == 'run-python': run_python(also_test_python, package_install_option=package_install_option)
     elif cmd == 'quiet': quiet(args[1:])
     elif cmd == 'silent': silent(args[1:])
     elif cmd == 'verbose': verbose(args[1:])
@@ -1085,13 +1086,13 @@ def main(args):
     elif cmd == 'test-rust': test_rust()
     elif cmd == 'test-python': test_python()
     elif cmd == 'test-octave': test_octave()
-    elif cmd == 'test-postprocessing': test_postprocessing(all_tests = False, package_install_option = package_install_option)
-    elif cmd == 'test-postprocessing-all': test_postprocessing(all_tests = True, package_install_option = package_install_option)
+    elif cmd == 'test-postprocessing': test_postprocessing(all_tests=False, package_install_option=package_install_option)
+    elif cmd == 'test-postprocessing-all': test_postprocessing(all_tests=True, package_install_option=package_install_option)
     elif cmd == 'test-suites': test_suites(args[1:])
-    elif cmd == 'verify-postprocessing': verify_postprocessing(package_install_option = package_install_option)
+    elif cmd == 'verify-postprocessing': verify_postprocessing(package_install_option=package_install_option)
     elif cmd == 'leak-check': leak_check()
-    elif cmd == 'install-preprocessing': install_preprocessing(package_install_option = package_install_option)
-    elif cmd == 'test-preprocessing': test_preprocessing(package_install_option = package_install_option)
+    elif cmd == 'install-preprocessing': install_preprocessing(package_install_option=package_install_option)
+    elif cmd == 'test-preprocessing': test_preprocessing(package_install_option=package_install_option)
     else: help()
 
 
