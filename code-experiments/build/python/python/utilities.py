@@ -65,7 +65,7 @@ def args_to_dict(args, known_names, specials=None, split='=',
     def eval_value(value):
         try:
             return _ast.literal_eval(value)
-        except ValueError:
+        except:  # ValueError or SyntaxError or ??
             return value
     res = {}
     for arg in args:
