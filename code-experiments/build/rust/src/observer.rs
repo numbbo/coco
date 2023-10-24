@@ -3,6 +3,8 @@
 use coco_sys::coco_observer_t;
 use std::ffi::{CStr, CString};
 
+use crate::Problem;
+
 /// Observers provided by COCO.
 ///
 /// The observer name should match the [`suite::Name`](crate::suite::Name).
@@ -89,6 +91,13 @@ impl Observer {
             CStr::from_ptr(coco_sys::coco_observer_get_result_folder(self.inner))
                 .to_str()
                 .unwrap()
+        }
+    }
+
+    /// Signal an internal restart of the optimizer to the observer
+    pub fn signal_restart(&self, problem: &Problem) {
+        unsafe {
+                coco_sys::coco_observer_signal_restart(self.inner, problem.inner);
         }
     }
 }
