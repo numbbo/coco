@@ -65,6 +65,14 @@ public class Problem {
 		return CocoJNI.cocoEvaluateConstraint(this.pointer, x);
 	}
 
+	/**
+	 * Recommends solution x (the solution is logged, but its function values are not returned)
+	 * @param x
+	 */
+	public void recommendSolution(double[] x) {
+		CocoJNI.cocoRecommendSolution(this.pointer, x);
+	}
+
 	// Getters
 	public long getPointer() {
 		return this.pointer;
