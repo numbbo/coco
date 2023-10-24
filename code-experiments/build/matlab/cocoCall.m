@@ -14,10 +14,14 @@
 %       Evaluates the objective function at point x and saves the result in y. 
 %   * cocoEvaluateConstraint: problem, x, y 
 %       Evaluates the constraints at point x and saves the result in y. 
+%   * cocoRecommendSolution: problem, x
+%       Recommends solution x (logs the function values, but does not return them).
 %   * cocoObserver: observer_name, observer_options
 %       Returns a new COCO observer. 
 %   * cocoObserverFree: observer
 %       Frees the given observer.
+%   * cocoObserverSignalRestart: observer, problem
+%       Signals a restart by the algoirthm.
 %   * cocoProblemAddObserver: problem, observer
 %       Adds an observer to the given problem and returns the resulting problem.
 %   * cocoProblemFinalTargetHit: problem

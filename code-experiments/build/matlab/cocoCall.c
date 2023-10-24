@@ -81,6 +81,35 @@ void cocoEvaluateConstraint(int nlhs, mxArray *plhs[], int nrhs, const mxArray *
     coco_evaluate_constraint(problem, x, y);
 }
 
+void cocoRecommendSolution(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+    size_t *ref;
+    coco_problem_t *problem = NULL;
+    /* const char *class_name = NULL; */
+    double *x;
+
+    /* check for proper number of arguments */
+    if(nrhs!=2) {
+        mexErrMsgIdAndTxt("cocoRecommendSolution:nrhs","Two inputs required.");
+    }
+    /* get the problem */
+    ref = (size_t *) mxGetData(prhs[0]);
+    problem = (coco_problem_t *)(*ref);
+    /* make sure the second input argument is array of doubles */
+    if(!mxIsDouble(prhs[1])) {
+        mexErrMsgIdAndTxt("cocoRecommendSolution:notDoubleArray","Input x must be an array of doubles.");
+    }
+    /* test if input dimension is consistent with problem dimension */
+    if(!(mxGetN(prhs[1]) == 1 & mxGetM(prhs[1]) == coco_problem_get_dimension(problem))
+          & !(mxGetM(prhs[1]) == 1 & mxGetN(prhs[1]) == coco_problem_get_dimension(problem))) {
+        mexErrMsgIdAndTxt("cocoRecommendSolution:wrongDimension", "Input x does not comply with problem dimension.");
+    }
+    /* get the x vector */
+    x = mxGetPr(prhs[1]);
+    /* call coco_recommend_solution(...) */
+    coco_recommend_solution(problem, x);
+}
+
 void cocoObserver(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     char *observer_name;
@@ -118,6 +147,28 @@ void cocoObserverFree(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]
     observer = (coco_observer_t *)(*ref);
     /* call coco_observer_free() */
     coco_observer_free(observer);
+}
+
+void cocoObserverSignalRestart(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+    coco_problem_t *problem;
+    coco_observer_t *observer;
+    size_t *ref, *ref2;
+
+    /* check for proper number of arguments */
+    if(nrhs!=2) {
+        mexErrMsgIdAndTxt("cocoObserverSignalRestart:nrhs","Two inputs required.");
+    }
+
+    /* get the observer */
+    ref = (size_t *)mxGetData(prhs[0]);
+    observer = (coco_observer_t *)(*ref);
+    /* get the problem */
+    ref2 = (size_t *)mxGetData(prhs[1]);
+    problem = (coco_problem_t *)(*ref2);
+
+    /* call coco_observer_signal_restart() */
+    coco_observer_signal_restart(observer, problem);
 }
 
 void cocoProblemAddObserver(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
@@ -633,10 +684,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         cocoEvaluateFunction(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoevaluateconstraint") == 0) {
         cocoEvaluateConstraint(nlhs, plhs, nrhs-1, prhs+1);
+    } else if (strcmp(cocofunction, "cocorecommendsolution") == 0) {
+        cocoRecommendSolution(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoobserver") == 0) {
         cocoObserver(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoobserverfree") == 0) {
         cocoObserverFree(nlhs, plhs, nrhs-1, prhs+1);
+    } else if (strcmp(cocofunction, "cocoobserversignalrestart") == 0) {
+        cocoObserverSignalRestart(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemaddobserver") == 0) {
         cocoProblemAddObserver(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemfinaltargethit") == 0) {
