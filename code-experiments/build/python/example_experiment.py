@@ -113,7 +113,7 @@ def batch_loop(solver, suite, observer, budget,
             continue
         observer.observe(problem)
         short_info.print(problem) if verbose else None
-        runs = coco_optimize(solver, problem, budget * problem.dimension,
+        runs = coco_optimize(solver, problem, budget * problem.dimension, observer,
                              max_runs)
         if verbose:
             print_flush("!" if runs > 2 else ":" if runs > 1 else ".")
@@ -133,7 +133,7 @@ def batch_loop(solver, suite, observer, budget,
 #===============================================
 # interface: ADD AN OPTIMIZER BELOW
 #===============================================
-def coco_optimize(solver, fun, max_evals, max_runs=1e9):
+def coco_optimize(solver, fun, max_evals, observer, max_runs=1e9):
     """`fun` is a callable, to be optimized by `solver`.
 
     The `solver` is called repeatedly with different initial solutions
@@ -150,6 +150,8 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
               fun.evaluations)
 
     for restarts in range(int(max_runs)):
+        observer.signal_restart(fun)
+
         remaining_evals = max_evals - fun.evaluations - fun.evaluations_constraints
         x0 = center + (restarts > 0) * 0.8 * range_ * (
                 np.random.rand(fun.dimension) - 0.5)
