@@ -140,6 +140,7 @@ for batch_counter, problem in enumerate(suite):  # this loop may take hours or d
     # apply restarts
     irestart = -1
     while evalsleft() > 0 and not problem.final_target_hit:
+        observer.signal_restart(problem)
         irestart += 1
 
         # here we assume that `fmin` evaluates the final/returned solution

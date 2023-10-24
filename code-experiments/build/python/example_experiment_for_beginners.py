@@ -38,6 +38,7 @@ for problem in suite:  # this loop will take several minutes or longer
     # apply restarts while neither the problem is solved nor the budget is exhausted
     while (problem.evaluations < problem.dimension * budget_multiplier
            and not problem.final_target_hit):
+        observer.signal_restart(problem)
         fmin(problem, x0, disp=False)  # here we assume that `fmin` evaluates the final/returned solution
         x0 = problem.lower_bounds + ((rand(problem.dimension) + rand(problem.dimension)) *
                     (problem.upper_bounds - problem.lower_bounds) / 2)

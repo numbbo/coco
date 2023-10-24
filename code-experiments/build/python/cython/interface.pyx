@@ -39,6 +39,7 @@ cdef extern from "coco.h":
     coco_problem_t *coco_problem_add_observer(coco_problem_t *problem,
                                               coco_observer_t *observer)
     const char *coco_observer_get_result_folder(const coco_observer_t *observer)
+    void coco_observer_signal_restart(coco_observer_t *observer, coco_problem_t *problem)
 
     coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance,
                              const char *suite_options)
@@ -377,11 +378,11 @@ also report back a missing name to https://github.com/numbbo/coco/issues
         return list(self._names)
     @property
     def dimensions(self):
-        """list of problem dimensions occuring at least once in this `Suite`"""
+        """list of problem dimensions occurring at least once in this `Suite`"""
         return sorted(set(self._dimensions))
     @property
     def number_of_objectives(self):
-        """list of number of objectives occuring in this `Suite`"""
+        """list of number of objectives occurring in this `Suite`"""
         return sorted(set(self._number_of_objectives))
     @property
     def indices(self):
@@ -477,6 +478,11 @@ cdef class Observer:
         """
         problem.observe_with(self)
         return self
+
+    def signal_restart(self, problem: Problem):
+        """Signal a restart on `problem: Problem` by calling `coco_observer_signal_restart`.
+        """
+        coco_observer_signal_restart(self._observer, problem.problem)
 
     @property
     def name(self):
@@ -594,9 +600,8 @@ cdef class Problem:
         The recommendation replaces the last evaluation or recommendation
         for the assessment of the algorithm.
         """
-        raise NotImplementedError("has never been tested, incomment this to start testing")
         cdef np.ndarray[double, ndim=1, mode="c"] _x
-        x = np.array(x, copy=False, dtype=np.double, order='C')
+        x = np.array(arx, copy=False, dtype=np.double, order='C')
         if np.size(x) != self.number_of_variables:
             raise ValueError(
                 "Dimension, `np.size(x)==%d`, of input `x` does " % np.size(x) +
