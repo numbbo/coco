@@ -54,7 +54,7 @@ static void transform_vars_shift_evaluate_function(coco_problem_t *problem, cons
 /**
  * @brief Evaluates the transformed constraint function.
  */
-static void transform_vars_shift_evaluate_constraint(coco_problem_t *problem, const double *x, double *y) {
+static void transform_vars_shift_evaluate_constraint(coco_problem_t *problem, const double *x, double *y, int update_counter) {
   size_t i;
   transform_vars_shift_data_t *data;
   coco_problem_t *inner_problem;
@@ -70,7 +70,7 @@ static void transform_vars_shift_evaluate_constraint(coco_problem_t *problem, co
   for (i = 0; i < problem->number_of_variables; ++i) {
     data->shifted_x[i] = x[i] - data->offset[i];
   }
-  coco_evaluate_constraint(inner_problem, data->shifted_x, y);
+  inner_problem->evaluate_constraint(inner_problem, data->shifted_x, y, update_counter);
 }
 
 /**

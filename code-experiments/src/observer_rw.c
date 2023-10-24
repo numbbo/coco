@@ -49,9 +49,9 @@ static void logger_rw_free(void *logger);
  * - "low_dim_cons: VALUE" determines the value used to define "low_dim" for constraints. The default value
  * is 10.
  *
- * - "log_only_better: 0/1" determines whether all solutions are logged (0) or only the ones that are better
- * than previous ones (1). This is applicable only for the single-objective problems, where the default value
- * is 0. For multi-objective problems, all solutions are always logged.
+ * - "log_only_better: 0/1" determines whether all solutions are logged (0, default) or only the ones that
+ * are better than previous ones (1). This is applicable only for the single-objective problems, where the
+ * default value is 0. For multi-objective problems, all solutions are always logged.
  *
  * - "log_time: 0/1" determines whether the time needed to evaluate each solution is logged (0) or not (1).
  * The default value is 0.
@@ -103,6 +103,7 @@ static void observer_rw(coco_observer_t *observer, const char *options, coco_opt
 
   observer->logger_allocate_function = logger_rw;
   observer->logger_free_function = logger_rw_free;
+  observer->restart_function = NULL;
   observer->data_free_function = NULL;
   observer->data = observer_data;
 }

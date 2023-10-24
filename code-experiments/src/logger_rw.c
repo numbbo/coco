@@ -32,7 +32,8 @@
  */
 typedef struct {
   FILE *out_file;                /**< @brief File for logging. */
-  size_t number_of_evaluations;  /**< @brief The number of evaluations performed so far. */
+  size_t num_func_evaluations;   /**< @brief The number of function evaluations performed so far. */
+  size_t num_cons_evaluations;   /**< @brief The number of evaluations of constraints performed so far. */
 
   double best_value;             /**< @brief The best-so-far value. */
   double current_value;          /**< @brief The current value. */
@@ -70,15 +71,17 @@ static void logger_rw_evaluate(coco_problem_t *problem, const double *x, double 
 
   /* Evaluate the objective(s) */
   coco_evaluate_function(inner_problem, x, y);
-  logger->number_of_evaluations++;
+  logger->num_func_evaluations++;
+
   if (problem->number_of_objectives == 1)
     logger->current_value = y[0];
 
   /* Evaluate the constraints */
   if (problem->number_of_constraints > 0) {
     constraints = coco_allocate_vector(problem->number_of_constraints);
-    inner_problem->evaluate_constraint(inner_problem, x, constraints);
+    inner_problem->evaluate_constraint(inner_problem, x, constraints, 0);
   }
+  logger->num_cons_evaluations = problem->evaluations_constraints;
 
   /* Time the evaluations */
   if (logger->log_time)
@@ -87,22 +90,24 @@ static void logger_rw_evaluate(coco_problem_t *problem, const double *x, double 
   /* Log to the output file */
   if ((problem->number_of_objectives == 1) && (logger->current_value < logger->best_value))
     logger->best_value = logger->current_value;
-  else
+  else if (problem->number_of_objectives == 1)
     log_this_time = !logger->log_only_better;
-  if (log_this_time) {
-    fprintf(logger->out_file, "%lu\t", (unsigned long) logger->number_of_evaluations);
+  if ((logger->num_func_evaluations == 1) || log_this_time) {
+    fprintf(logger->out_file, "%lu\t", (unsigned long) logger->num_func_evaluations);
+    fprintf(logger->out_file, "%lu\t", (unsigned long) logger->num_cons_evaluations);
     for (i = 0; i < problem->number_of_objectives; i++)
-      fprintf(logger->out_file, "%.*e\t", logger->precision_f, y[i]);
+      fprintf(logger->out_file, "%+.*e\t", logger->precision_f, y[i]);
     if (logger->log_vars) {
       for (i = 0; i < problem->number_of_variables; i++) {
         if ((i < problem->number_of_integer_variables) && (logger->log_discrete_as_int))
-          fprintf(logger->out_file, " %d", coco_double_to_int(x[i]));
-        fprintf(logger->out_file, "%.*e\t", logger->precision_x, x[i]);
+          fprintf(logger->out_file, "%d\t", coco_double_to_int(x[i]));
+        else
+          fprintf(logger->out_file, "%+.*e\t", logger->precision_x, x[i]);
       }
     }
     if (logger->log_cons) {
       for (i = 0; i < problem->number_of_constraints; i++)
-        fprintf(logger->out_file, "%.*e\t", logger->precision_g, constraints[i]);
+        fprintf(logger->out_file, "%+.*e\t", logger->precision_g, constraints[i]);
     }
     /* Log time in seconds */
     if (logger->log_time)
@@ -113,6 +118,7 @@ static void logger_rw_evaluate(coco_problem_t *problem, const double *x, double 
 
   if (problem->number_of_constraints > 0)
     coco_free_memory(constraints);
+
 }
 
 /**
@@ -148,7 +154,8 @@ static coco_problem_t *logger_rw(coco_observer_t *observer, coco_problem_t *inne
   char *path_name, *file_name = NULL;
 
   logger_data = (logger_rw_data_t *) coco_allocate_memory(sizeof(*logger_data));
-  logger_data->number_of_evaluations = 0;
+  logger_data->num_func_evaluations = 0;
+  logger_data->num_cons_evaluations = 0;
 
   observer_data = (observer_rw_data_t *) observer->data;
   /* Copy values from the observes that you might need even if they do not exist any more */
@@ -199,7 +206,7 @@ static coco_problem_t *logger_rw(coco_observer_t *observer, coco_problem_t *inne
   fprintf(logger_data->out_file, "\n%% suite = '%s', problem_id = '%s', problem_name = '%s', coco_version = '%s'\n",
           coco_problem_get_suite(inner_problem)->suite_name, coco_problem_get_id(inner_problem),
           coco_problem_get_name(inner_problem), coco_version);
-  fprintf(logger_data->out_file, "%% evaluation | %lu objective",
+  fprintf(logger_data->out_file, "%% f-evaluations | g-evaluations | %lu objective",
       (unsigned long) inner_problem->number_of_objectives);
   if (inner_problem->number_of_objectives > 1)
     fprintf(logger_data->out_file, "s");
