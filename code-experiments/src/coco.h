@@ -446,17 +446,6 @@ size_t coco_problem_get_number_of_constraints(const coco_problem_t *problem);
  */
 size_t coco_problem_get_evaluations(const coco_problem_t *problem);
 
-
-/**
- * @brief Returns the optimal function value of the problem
- */
-double coco_problem_get_best_value(const coco_problem_t *problem);
-
-/**
- * @brief Returns the optimal decision vector of the problem
- */
-double * coco_problem_get_best_parameter(const coco_problem_t *problem);
-
 /**
  * @brief Returns the number of constraint function evaluations done on the problem.
  */
@@ -689,8 +678,6 @@ char *coco_strdupf(const char *str, ...);
 void bbob_problem_best_parameter_print(const coco_problem_t *problem);
 void bbob_biobj_problem_best_parameter_print(const coco_problem_t *problem);
 
-
-double coco_problem_get_last_noise_value(coco_problem_t *problem);
 
 #ifdef __cplusplus
 }
