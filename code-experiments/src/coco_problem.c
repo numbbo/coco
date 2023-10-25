@@ -9,6 +9,7 @@
 
 #include "coco_utilities.c"
 
+
 /***********************************************************************************************************/
 
 /**
@@ -626,18 +627,44 @@ void bbob_problem_best_parameter_print(const coco_problem_t *problem) {
   }
 }
 
+/* We need a forward declaration of this for `bbob_biobj_problem_best_parameter_print` */
+static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, double *y);
+
+
 void bbob_biobj_problem_best_parameter_print(const coco_problem_t *problem) {
   size_t i;
   FILE *file;
   coco_problem_t *problem1, *problem2;
+
+  /* THIS IS AN UGLY HACK!
+   *
+   * For a biobjective problem that has been wrapped with a logger, we cannot
+   * access the ->data member of the original problem. But we need access in
+   * order to access the underlying single objective functions.
+   *
+   * There's no easy way to check if a problem is wrapped by a logger, here we
+   * rely on checking if the ->evaluate_function is the logger one.
+   *
+   */
+  if (problem->evaluate_function == &logger_biobj_evaluate) {
+    coco_warning("I'm sorry, Dave. I’m afraid I can’t do that.");
+    /* In case this function was called previously, overwrite any results. */
+    file = fopen("._bbob_biobj_problem_best_parameter.txt", "w");
+    if (file != NULL) {
+      fclose(file);
+    }
+    return;
+  }
+
   assert(problem != NULL);
-  assert(problem->data != NULL);
   problem1 = ((coco_problem_stacked_data_t *) problem->data)->problem1;
-  problem2 = ((coco_problem_stacked_data_t *) problem->data)->problem2;
   assert(problem1 != NULL);
-  assert(problem2 != NULL);
   assert(problem1->best_parameter != NULL);
+
+  problem2 = ((coco_problem_stacked_data_t *) problem->data)->problem2;
+  assert(problem2 != NULL);
   assert(problem2->best_parameter != NULL);
+
   file = fopen("._bbob_biobj_problem_best_parameter.txt", "w");
   if (file != NULL) {
     for (i = 0; i < problem->number_of_variables; ++i)
