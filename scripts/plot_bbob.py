@@ -3,6 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
+COLORS_PLOTLY_BOLD = ['#7F3C8D', '#11A579', '#3969AC', '#F2B701', '#E73F74', '#80BA5A',
+                      '#E68310', '#008695', '#CF1C90', '#F97B72', '#A5AA99']
+COLORS_CATEGORICAL = [c for i, c in enumerate(COLORS_PLOTLY_BOLD) if i != 2]
+
 
 def best_parameter(problem):
     problem._best_parameter('print')
@@ -45,7 +49,7 @@ def get_diagonal_cuts(problem, num_intervals, best_param):
 
 
 def plot_all_views(func, dim, inst, N=51, plot_folder='plots_bbob', x_index=0, y_index=1,
-                   cmap='viridis', cmap_lines='Greys', save_plots=False):
+                   cmap='viridis', cmap_lines='Greys', save_plots=True):
     suite = cocoex.Suite("bbob", "", "")
     problem = suite.get_problem_by_function_dimension_instance(func, dim, inst)
     best_param = best_parameter(problem)
@@ -122,7 +126,7 @@ def plot_all_views(func, dim, inst, N=51, plot_folder='plots_bbob', x_index=0, y
     z_max = - np.inf
     for i in range(dim):
         x_i, z_i = get_cuts(problem, N, best_param, x_index=i)
-        ax.plot(x_i, z_i, label=f'x{i + 1}')
+        ax.plot(x_i, z_i, label=f'x{i + 1}', color=COLORS_CATEGORICAL[i])
         z_min = min(z_min, min(z_i))
         z_max = max(z_max, max(z_i))
     x, x_scaled, z = get_diagonal_cuts(problem, N, best_param)
@@ -187,6 +191,8 @@ def plot_all_functions(suite_name, dim, inst, N=101, plot_folder='plots_bbob', x
 
 
 if __name__ == '__main__':
+    plot_all_views(func=22, dim=5, inst=1)
+    exit(0)
     plot_all_functions(suite_name='bbob', dim=2, inst=1)
     plot_all_functions(suite_name='bbob-mixint', dim=5, inst=1, x_index=3, y_index=4)
     exit(0)
