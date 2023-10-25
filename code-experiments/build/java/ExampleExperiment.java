@@ -71,7 +71,7 @@ public class ExampleExperiment {
          *   bbob-biobj           55 unconstrained noiseless bi-objective functions
          *   [bbob-biobj-ext       92 unconstrained noiseless bi-objective functions]
          *   bbob-largescale      24 unconstrained noiseless single-objective functions in large dimension
-         *   [bbob-constrained*   48 constrained noiseless single-objective functions]
+         *   bbob-constrained     48 constrained noiseless single-objective functions
          *   bbob-mixint          24 unconstrained noiseless single-objective functions with mixed-integer variables
          *   bbob-biobj-mixint    92 unconstrained noiseless bi-objective functions with mixed-integer variables
          *
