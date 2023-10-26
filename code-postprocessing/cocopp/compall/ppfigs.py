@@ -66,7 +66,7 @@ def prepare_scaling_figure_caption():
         r"correspond to different algorithms given in the legend of #1. " +
         r"Light symbols give the maximum number of evaluations from the longest trial " +
         r"divided by dimension. " +
-        (r"Black stars (if present) indicate a statistically better result compared to all other algorithms " +
+        (r"Black stars (if present) indicate a better result compared to all other algorithms " +
          r"with $p<0.01$ and Bonferroni correction number of dimensions (six).  ")
         if show_significance else ''
     )
