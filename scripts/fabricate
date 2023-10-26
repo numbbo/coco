@@ -235,6 +235,8 @@ parser.add_argument("--skip-rust", action="store_true",
               help="Skip fabricating Rust cocoex code.")
 parser.add_argument("--skip-unit-tests", action="store_true",
               help="Skip fabricating C unit tests.")
+parser.add_argument("--skip-integration-tests", action="store_true",
+              help="Skip fabricating integration tests.")
 args = parser.parse_args()
     
 COCO_VERSION = git_version()
@@ -365,3 +367,9 @@ if not args.skip_unit_tests:
                "code-experiments/test/unit-test/coco.c", args.release)
     amalgamate('code-experiments/src/coco.h',
                "code-experiments/test/unit-test/coco.h", args.release)
+
+if not args.skip_integration_tests:
+    amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_c.c'],
+               "code-experiments/test/integration-test/coco.c", args.release)
+    amalgamate('code-experiments/src/coco.h',
+               "code-experiments/test/integration-test/coco.h", args.release)
