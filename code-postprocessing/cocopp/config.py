@@ -16,7 +16,7 @@ used by other modules, but does not modify settings of other modules.
 
 """
 
-import imp  # import default genericsettings
+import importlib
 import warnings
 import numpy as np
 from . import ppfigdim
@@ -31,9 +31,13 @@ if settings.test:
     np.seterr(all='raise')
 np.seterr(under='ignore')  # ignore underflow
 
-settings.default_settings = imp.load_module('_coco_default_settings',
-                                      *imp.find_module('genericsettings',
-                                                       __path__))
+
+# genericsettings needs a pristine copy of itself to compare
+# against so that it can output the changed settings.
+gs_spec = importlib.util.find_spec('cocopp.genericsettings')
+settings.default_settings = importlib.util.module_from_spec(gs_spec)
+gs_spec.loader.exec_module(gs)
+del gs_spec
 
 
 def config_target_values_setting(is_expensive, is_runlength_based):
