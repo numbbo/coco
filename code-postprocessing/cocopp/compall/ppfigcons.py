@@ -134,14 +134,14 @@ def prepare_ecdfs_figure_caption():
                  )
 
     ecdfs_figure_caption_standard = (
-                r"Bootstrapped empirical cumulative distribution of the number " +
+                r"!!BOOTSTRAPPED-BEGINNING!!mpirical cumulative distribution of the number " +
                 r"of %s divided by dimension " % testbedsettings.current_testbed.string_evals +
                 r"(%s/DIM) for $!!NUM-OF-TARGETS-IN-ECDF!!$ " % testbedsettings.current_testbed.string_evals_short +
                 r"targets with target precision in !!TARGET-RANGES-IN-ECDF!! " +
                 r"for all functions and subgroups in #1-D. "
                 )
     ecdfs_figure_caption_rlbased = (
-                r"Bootstrapped empirical cumulative distribution of the number " +
+                r"!!BOOTSTRAPPED-BEGINNING!!mpirical cumulative distribution of the number " +
                 r"of %s divided by dimension " % testbedsettings.current_testbed.string_evals +
                 r"(%s/DIM) for all functions and subgroups in #1-D. " % testbedsettings.current_testbed.string_evals_short +
                 r"The targets are chosen from !!TARGET-RANGES-IN-ECDF!! " +
@@ -169,7 +169,7 @@ def prepare_ecdfs_figure_caption():
     else:
         warnings.warn("Current settings do not support ppfigdim caption.")
 
-    return figure_caption
+    return captions.replace(figure_caption)
 
 
 def ecdfs_figure_caption(for_html=False, dimension=0):
@@ -187,7 +187,7 @@ def get_ecdfs_single_fcts_caption():
     ''' Returns figure caption for single function ECDF plots. '''
 
     if genericsettings.runlength_based_targets:
-        s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes in number
+        s = (r"""Empirical cumulative distribution of !!SIMULATED-BOOTSTRAP!! runtimes in number
              of %s divided by dimension (%s/DIM) for  
              targets in !!TARGET-RANGES-IN-ECDF!! that have just not
              been reached by !!THE-REF-ALG!!
@@ -198,7 +198,7 @@ def get_ecdfs_single_fcts_caption():
                 testbedsettings.current_testbed.string_evals_short)
              )
     else:
-        s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes in number
+        s = (r"""Empirical cumulative distribution of !!SIMULATED-BOOTSTRAP!! runtimes in number
              of %s divided by dimension (%s/DIM) for the 
              $!!NUM-OF-TARGETS-IN-ECDF!!$ targets !!TARGET-RANGES-IN-ECDF!!
              for functions $f_{#1}$ to $f_{#2}$ and all dimensions. """ % (
@@ -213,7 +213,7 @@ def get_ecdfs_all_groups_caption():
     ''' Returns figure caption for ECDF plots aggregating over function groups. '''
     
     if genericsettings.runlength_based_targets:
-        s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
+        s = (r"""Empirical cumulative distribution of !!SIMULATED-BOOTSTRAP!!
              runtimes, measured in number of %s 
              divided by dimension (%s/DIM) for all function groups and all 
              dimensions and for those targets in
@@ -227,7 +227,7 @@ def get_ecdfs_all_groups_caption():
                 testbedsettings.current_testbed.string_evals_short)
              )
     else:
-        s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
+        s = (r"""Empirical cumulative distribution of !!SIMULATED-BOOTSTRAP!!
              runtimes, measured in number of %s,
              divided by dimension (%s/DIM) for the $!!NUM-OF-TARGETS-IN-ECDF!!$ 
              targets !!TARGET-RANGES-IN-ECDF!! for all function groups and all 
@@ -244,7 +244,7 @@ def get_ecdfs_single_functions_single_dim_caption():
         showing the results of 2+ algorithms in a single dimension. '''
     
     if genericsettings.runlength_based_targets:
-        s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
+        s = (r"""Empirical cumulative distribution of !!SIMULATED-BOOTSTRAP!!
              runtimes, measured in number of %s 
              divided by dimension (%s/DIM) in 
              dimension #1 and for those targets in
@@ -256,7 +256,7 @@ def get_ecdfs_single_functions_single_dim_caption():
                 testbedsettings.current_testbed.string_evals_short)
              )
     else:
-        s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
+        s = (r"""Empirical cumulative distribution of !!SIMULATED-BOOTSTRAP!!
              runtimes, measured in number of %s,
              divided by dimension (%s/DIM) for the $!!NUM-OF-TARGETS-IN-ECDF!!$ 
              targets !!TARGET-RANGES-IN-ECDF!! in dimension #1.""" % (

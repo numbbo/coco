@@ -28,7 +28,7 @@ def get_table_caption():
         + r""") divided by the respective !!BEST-ERT!! (when finite) in
         #1.
         This \ERT\ ratio and, in braces as dispersion measure, the half difference between
-        10 and 90\%-tile of bootstrapped run lengths appear for each algorithm and 
+        10 and 90\%-tile of !!BOOTSTRAPPED!! run lengths appear for each algorithm and 
         """)
     table_caption_one_noreference = (r"""%
         Expected runtime (\ERT) to reach given targets, measured
@@ -36,7 +36,7 @@ def get_table_caption():
         + testbedsettings.current_testbed.string_evals
         + r""", in #1. For each function, the \ERT\ 
         and, in braces as dispersion measure, the half difference between 10 and 
-        90\%-tile of (bootstrapped) runtimes is shown for the different
+        90\%-tile of !!BOOTSTRAPPED!! runtimes is shown for the different
         target """
         + ("!!DF!!-" if not testbedsettings.current_testbed.has_constraints else "precision ")
         + r"""values as shown in the top row. 
