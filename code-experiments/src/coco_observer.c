@@ -608,12 +608,12 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     strcpy(algorithm_info, "");
   }
 
-  number_target_triggers = 10;
+  number_target_triggers = 100;
   if (coco_options_read_size_t(observer_options, "number_target_triggers", &number_target_triggers) != 0) {
     if (number_target_triggers == 0) {
       coco_warning("coco_observer(): Unsuitable observer option value (number_target_triggers: %lu) ignored",
           number_target_triggers);
-      number_target_triggers = 10;
+      number_target_triggers = 100;
     }
   }
 
