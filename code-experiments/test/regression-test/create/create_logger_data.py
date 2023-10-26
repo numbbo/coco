@@ -91,7 +91,7 @@ if __name__ == '__main__':
     # Experiments with a single observer
     cocoex.known_suite_names.append(b"bbob-constrained")
     suite_options_1 = 'dimensions: 5,40 function_indices: 9-20'
-    observer_options_1 = 'number_target_triggers: 1'
+    observer_options_1 = 'lin_target_precision: 10e6'
     settings = [
         dict(suite_name='bbob', suite_options=suite_options_1,
              observer_name='bbob', observer_options=observer_options_1,
