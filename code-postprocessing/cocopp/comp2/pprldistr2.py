@@ -146,16 +146,15 @@ def plotLogAbs(dsList0, dsList1, dim, targetValuesToReach):
             tmp0 = numpy.reshape(evals0[func][j], (len(evals0[func][j]), 1))
             try:
                 # outer product is difficult to control elementwise
-                if numpy.any(numpy.isinf(tmp1)) and numpy.any(numpy.isinf(tmp0)):
-                    warnings.filterwarnings('ignore', message=r"invalid value encountered in true_divide",
+                with warnings.catch_warnings():
+                    warnings.filterwarnings('ignore', message=r"invalid value encountered in",
                                             category=RuntimeWarning)
-                x.append((tmp1/tmp0).flatten())  # inf/inf results in nan
+                    x.append((tmp1/tmp0).flatten())  # inf/inf results in nan
             except FloatingPointError: 
                 if numpy.isfinite(tmp1).all() or numpy.isfinite(tmp1).all():
-                    raise          
+                    raise
                 #TODO: check division, check numpy.inf...
-            finally:
-                warnings.filterwarnings('default')                
+                warnings.warn("division failed with `FloatingPointError`")
 
         if isinstance(targetValuesToReach, pproc.RunlengthBasedTargetValues):
             label = '%s: %d/%d' % (targetValuesToReach.label(j), succ1[j], succ0[j])
