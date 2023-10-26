@@ -250,14 +250,17 @@ MATLAB_DISTFILE = DIST_DIR / f"cocoex-matlab-{COCO_VERSION}.zip"
 OCTAVE_DISTFILE = DIST_DIR / f"cocoex-octave-{COCO_VERSION}.zip"
 JAVA_DISTFILE = DIST_DIR / f"cocoex-java-{COCO_VERSION}.zip"
 RUST_DISTFILE = DIST_DIR / f"cocoex-rust-{COCO_VERSION}.zip"
+    
+write_version_to_c_header("code-experiments/src/coco_version.h", COCO_VERSION)
 
 if not args.skip_c:
     write_version_file("code-experiments/build/c/VERSION", COCO_VERSION)
-    write_version_to_c_header("code-experiments/src/coco_version.h", COCO_VERSION)
     amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_c.c'],
                C_DIR / 'coco.c',args.release)
     amalgamate('code-experiments/src/coco.h',
                C_DIR / 'coco.h',args.release)
+    copy_file('code-experiments/src/bbob2009_testcases.txt',
+              'code-experiments/build/c/')
     copy_file('code-experiments/build/c/coco.c',
               'code-experiments/examples/bbob2009-c-cmaes/coco.c')
     copy_file('code-experiments/build/c/coco.h',
