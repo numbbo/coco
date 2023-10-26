@@ -14,11 +14,10 @@ given.
 The median number of conducted function evaluations is given in
 *italics*, if no run reached 1e-7.
 #succ is the number of trials that reached the target precision 1e-8
-**Bold** entries are statistically significantly better (according to
-the rank-sum test) compared to the given reference algorithm, with
-p = 0.05 or p = 1e-k where k > 1 is the number following the
-\downarrow symbol, with Bonferroni correction by the number of
-functions.
+**Bold** entries are better than the given reference algorithm with
+a p-value of at least 0.05 or 1e-k where k is the number following the
+\downarrow symbol (computed in the rank-sum test with Bonferroni
+correction by the number of functions).
 
 """
 from __future__ import absolute_import, print_function
@@ -76,11 +75,11 @@ def get_table_caption():
     table_caption_rest = r"""%
         The median number of conducted evaluations is additionally given in 
         \textit{italics}, if the target in the last column was never reached. 
-        \textbf{Bold} entries are statistically significantly better (according to
-        the rank-sum test) compared to !!THE-REF-ALG!!, with
-        $p = 0.05$ or $p = 10^{-k}$ when the number $k > 1$ is following the
-        $\downarrow$ symbol, with Bonferroni correction by the number of
-        functions (!!TOTAL-NUM-OF-FUNCTIONS!!).
+        \textbf{Bold} entries are better than the reference algorithm
+        !!THE-REF-ALG!! with a $p$-value of at least $0.05$ or $10^{-k}$
+        where $k$ is the number following the $\downarrow$ symbol (computed
+        in the rank-sum test with Bonferroni correction by the number of
+        functions !!TOTAL-NUM-OF-FUNCTIONS!!).
         """
     table_caption_no_reference_algorithm = (r"""%
         Expected runtime (\ERT) to reach given targets, measured
