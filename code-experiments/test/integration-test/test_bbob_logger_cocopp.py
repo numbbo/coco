@@ -52,7 +52,7 @@ def setup_module(module):
         shutil.rmtree(exdata)
 
     suite_bbob = cocoex.Suite("bbob", "", "")
-    obs_old = cocoex.Observer("bbob", f"result_folder: bbob_old")
+    obs_old = cocoex.Observer("bbob-old", f"result_folder: bbob_old")
     module.OLD = run_experiment(suite_bbob, obs_old)
     
     obs_new = cocoex.Observer("bbob", f"result_folder: bbob_new")
@@ -60,9 +60,8 @@ def setup_module(module):
 
 
 def teardown_module(module):
-    if 1 < 0:
-        logger.info("Removing test data.")
-        shutil.rmtree("exdata/")
+    logger.info("Removing test data.")
+    shutil.rmtree("exdata/")
 
 
 def test_cocopp_load():
@@ -72,7 +71,7 @@ def test_cocopp_load():
         assert len(res) == 24 * 6 # 24 functions in 6 dimensions
         for ds in res:
             assert ds.suite_name == "bbob"
-            assert ds.logger == "bbob"
+            assert ds.logger == "bbob" or ds.logger == "bbob_old"
 
 
 def test_compare_results():
