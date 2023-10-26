@@ -42,14 +42,11 @@ typedef struct {
 /**
  * @brief The type for triggers based on either logarithmic or linear target values.
  *
- * When linear targets are used, the target values that trigger logging are at every
- * lin_precision * integer value everywhere but in the (-lin_precision, lin_precision) interval,
- * where the logging is triggered according to the logarithmic with log_precision (we assume that
- * log_precision < lin_precision).
+ * The linear targets are always used, while the logarithmic ones are used only on problems with known optima.
  */
 typedef struct {
 
-  int use_linear;
+  int use_log_targets;
   coco_observer_lin_targets_t *lin_targets;
   coco_observer_log_targets_t *log_targets;
 
@@ -98,7 +95,8 @@ typedef struct {
 /**
  * @brief Creates and returns a structure containing information on logarithmic targets.
  *
- * @param number_of_targets The number of targets between 10**i and 10**(i+1) for each i.
+ * @param number_of_targets The number of targets between 10**i and 10**(i+1) for each i. If 0, the 
+ * logarithmic targets will not be used. 
  * @param precision Minimal precision of interest.
  */
 static coco_observer_log_targets_t *coco_observer_log_targets(const size_t number_of_targets,
@@ -115,29 +113,34 @@ static coco_observer_log_targets_t *coco_observer_log_targets(const size_t numbe
 }
 
 /**
- * @brief Computes and returns whether the given value should trigger logging.
+ * @brief Checks whether the given value should trigger logging with logarithmic targets. 
+ * If so, the internal values are updated.
  */
 static int coco_observer_log_targets_trigger(coco_observer_log_targets_t *log_targets,
                                              const double given_value) {
 
   int activate_trigger = 0;
 
-  const double number_of_targets_double = (double) (long) log_targets->number_of_triggers;
+  double number_of_targets_double;
 
   double verified_value = 0;
   int current_exponent = 0;
   int adjusted_exponent = 0;
 
-  assert(log_targets != NULL);
+  if (log_targets == NULL) {
+    return 0;
+  }
+
+  number_of_targets_double = (double) (long) log_targets->number_of_triggers;
 
   /* The given_value is positive or zero */
   if (given_value >= 0) {
 
   	if (given_value == 0) {
   		/* If zero, use even smaller value than precision */
-		verified_value = log_targets->precision / 10.0;
-	} else if (given_value < log_targets->precision) {
-      /* If close to zero, use precision instead of the given_value*/
+		  verified_value = log_targets->precision / 10.0;
+	  } else if (given_value < log_targets->precision) {
+      /* If close to zero, use precision instead of the given_value */
       verified_value = log_targets->precision;
     } else {
       verified_value = given_value;
@@ -149,10 +152,10 @@ static int coco_observer_log_targets_trigger(coco_observer_log_targets_t *log_ta
       /* Update the target information */
       log_targets->exponent = current_exponent;
       if (given_value == 0)
-	log_targets->value = 0;
+	      log_targets->value = 0;
       else
-	log_targets->value = pow(10, (double) current_exponent / number_of_targets_double);
-      activate_trigger = 1;
+        log_targets->value = pow(10, (double) current_exponent / number_of_targets_double);
+            activate_trigger = 1;
     }
   }
   /* The given_value is negative, therefore adjustments need to be made */
@@ -201,7 +204,8 @@ static coco_observer_lin_targets_t *coco_observer_lin_targets(const double preci
 }
 
 /**
- * @brief Computes and returns whether the given value should trigger logging.
+ * @brief Checks whether the given value should trigger logging with linear targets. 
+ * If so, the internal values are updated.
  */
 static int coco_observer_lin_targets_trigger(coco_observer_lin_targets_t *lin_targets,
                                              const double given_value) {
@@ -221,8 +225,11 @@ static int coco_observer_lin_targets_trigger(coco_observer_lin_targets_t *lin_ta
 }
 
 /**
- * @brief Creates and returns a structure containing information on triggers based on either linear or
- * logarithmic target values
+ * @brief Creates and returns a structure containing information on triggers based on linear or
+ * logarithmic target values (or both).
+ * 
+ * If number_of_targets = 0, the logarithmic targets are not used. If not, they are used only if the suite
+ * has a known optimum. The linear targets are always used. 
  */
 static coco_observer_targets_t *coco_observer_targets(const int optima_known,
                                                       const double lin_precision,
@@ -230,16 +237,12 @@ static coco_observer_targets_t *coco_observer_targets(const int optima_known,
                                                       const double log_precision) {
   coco_observer_targets_t *targets = (coco_observer_targets_t *) coco_allocate_memory(
           sizeof(*targets));
-  if (log_precision > lin_precision)
-    coco_error("coco_observer_targets(): For logging with linear and logarithmic targets, the "
-        "precision of logarithmic targets (%f) needs to be lower than that of the linear targets (%f)",
-        log_precision, lin_precision);
-  targets->use_linear = !optima_known;
-  if (targets->use_linear)
-    targets->lin_targets = coco_observer_lin_targets(lin_precision);
+  targets->use_log_targets = (number_of_targets > 0) && optima_known;
+  targets->lin_targets = coco_observer_lin_targets(lin_precision);
+  if (targets->use_log_targets)
+    targets->log_targets = coco_observer_log_targets(number_of_targets, log_precision);
   else
-    targets->lin_targets = NULL;
-  targets->log_targets = coco_observer_log_targets(number_of_targets, log_precision);
+    targets->log_targets = NULL;
   return targets;
 }
 
@@ -249,19 +252,9 @@ static coco_observer_targets_t *coco_observer_targets(const int optima_known,
 static int coco_observer_targets_trigger(coco_observer_targets_t *targets,
                                          const double given_value) {
 
-  if ((!targets->use_linear) ||
-      ((given_value < targets->lin_targets->precision) &&
-          (given_value > - targets->lin_targets->precision))) {
-    /* Use the logarithmic trigger */
-    return coco_observer_log_targets_trigger(targets->log_targets, given_value);
-  } else {
-    /* Use the linear trigger */
-    /* Make sure that the linear target value is updated wrt the logarithmic one */
-    ((coco_observer_lin_targets_t *) targets->lin_targets)->value = coco_double_min(
-        ((coco_observer_log_targets_t *) targets->log_targets)->value,
-        ((coco_observer_lin_targets_t *) targets->lin_targets)->value);
-    return coco_observer_lin_targets_trigger(targets->lin_targets, given_value);
-  }
+  int log_trigger = coco_observer_log_targets_trigger(targets->log_targets, given_value);
+  int lin_trigger = coco_observer_lin_targets_trigger(targets->lin_targets, given_value);
+  return log_trigger || lin_trigger;
 
 }
 
@@ -272,14 +265,14 @@ static double coco_observer_targets_get_last_target(coco_observer_targets_t *tar
 
   double best_target, lin_target;
 
-  assert(targets->log_targets);
-  best_target = ((coco_observer_log_targets_t *) targets->log_targets)->value;
-  if (targets->use_linear) {
-    assert(targets->lin_targets);
-    lin_target = ((coco_observer_lin_targets_t *) targets->lin_targets)->value;
-    if (lin_target < best_target)
-      best_target = lin_target;
+  if (targets->use_log_targets) {
+    assert(targets->log_targets);
+    best_target = ((coco_observer_log_targets_t *) targets->log_targets)->value;
   }
+  assert(targets->lin_targets);
+  lin_target = ((coco_observer_lin_targets_t *) targets->lin_targets)->value;
+  if (lin_target < best_target)
+    best_target = lin_target;
   return best_target;
 
 }
@@ -290,9 +283,9 @@ static double coco_observer_targets_get_last_target(coco_observer_targets_t *tar
 static void coco_observer_targets_free(coco_observer_targets_t *targets) {
 
   assert(targets != NULL);
-  if (targets->use_linear)
-    coco_free_memory(targets->lin_targets);
-  coco_free_memory(targets->log_targets);
+  coco_free_memory(targets->lin_targets);
+  if (targets->use_log_targets)
+    coco_free_memory(targets->log_targets);
   coco_free_memory(targets);
 }
 
@@ -610,7 +603,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
 
   number_target_triggers = 100;
   if (coco_options_read_size_t(observer_options, "number_target_triggers", &number_target_triggers) != 0) {
-    if (number_target_triggers == 0) {
+    if (number_target_triggers < 0) {
       coco_warning("coco_observer(): Unsuitable observer option value (number_target_triggers: %lu) ignored",
           number_target_triggers);
       number_target_triggers = 100;
@@ -619,7 +612,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
 
   log_target_precision = 1e-8;
   if (coco_options_read_double(observer_options, "log_target_precision", &log_target_precision) != 0) {
-    if ((log_target_precision > 1) || (log_target_precision <= 0)) {
+    if (log_target_precision <= 0) {
       coco_warning("coco_observer(): Unsuitable observer option value (log_target_precision: %f) ignored",
           log_target_precision);
       log_target_precision = 1e-8;
