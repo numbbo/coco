@@ -20,7 +20,6 @@ Languages currently available to connect a solver to the benchmarks are
   - `Python`
   - `Rust`
 
-Code for others might be available in branched code.
 Contributions to link further languages (including a better
 example in `C++`) are more than welcome.
 
@@ -41,62 +40,46 @@ For more general information:
 
 
 # Requirements  <a name="Requirements"></a>
-1. For a machine running experiments 
-  - A `C` compiler, such as gcc
-  - Python >=3.7 with `setuptools` installed
-  - optional: `git`
-2. For a machine displaying data by running the post-processing
-  - Python 3 with `numpy`, `scipy`, `matplotlib`, and `six` installed.
-    We recommend installing the [Anaconda Python library](https://www.continuum.io/downloads)
 
-For Ubuntu 16.04+, all the requirements can be installed using the following command:
+The requirements vary depending on the lanuage used to run the experiments
 
-```
-apt-get install build-essential python-dev python-numpy python-matplotlib \
-                python-scipy python-six python-setuptools
-```
+## Running experiments
 
-For macOS, the `C` compiler comes with installing the Xcode command line tools like
+Depending on the language you use to implement your algorithm, the required dependencies differ.
+
+* **C**:  We provide cross-platform build files for both [CMake](https://cmake.org/) and [meson](https://mesonbuild.com/). 
+  Additionally you will need to bring a C compiler.
+* **Java**: You need a C compiler and any Java Development Kit (JDK), such that `javac` and `javah` are accessible (i.e. in the system path). Again we provide a [CMake](https://cmake.org) based build but it should be relatively straight forward to build the interface with any other build tool.
+* **MATLAB**: You need at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.md)
+* **Python**: We support Python 3.8 and newer. You can install the latest `cocoex` package from [PyPI](https://pypi.org/project/cocoex/) using pip by running `pip install cocoex`.
+  We have prebuilt binaries for Windows, Linux and MacOS. If there are no binaries for your platform, you will need a C compiler to install the package from PyPI.
+* **Octave**: Octave 4.0.0 or later. On operating systems other than Windows, earlier versions might work.
+  Under Linux the package `liboctave-dev` might be necessary. 
+* **Rust**: We provide the `coco-rs` crate on [crates.io](https://crates.io/crates/coco-rs). Just run `cargo add coco-rs@0.7.0` to add it to your Rust based experiment.
+
+### Additional hints
+
+#### MacOS
+
+For macOS, the C compiler comes with installing the Xcode command line tools like
 
 ```
 xcode-select install
 ```
 
-### Windows Specifics
+#### Windows
 Under Windows, two alternative compile toolchains can be used: 
 
-1. [Cygwin](https://www.cygwin.com/) which comes with gcc and make, available in 32- and 64-bit versions.  
-2. MinGW's gcc (http://www.mingw.org/ for 32-bit or https://mingw-w64.org for 64-bit machines). Make sure to update the Windows path to MinGW's make.exe and rename/link the gcc.exe to cc.exe.
+1. [Cygwin](https://www.cygwin.com/) which comes with gcc and make, available in 32- and 64-bit versions.
+1. MinGW's gcc (http://www.mingw.org/ for 32-bit or https://mingw-w64.org for 64-bit machines). Make sure to update the Windows path to MinGW's make.exe and rename/link the gcc.exe to cc.exe.
 
-For using `git` under Windows (optional), we recommend installing [TortoiseGit](https://tortoisegit.org/).
+## Analysing results
 
-### Programming Language Specifics  <a name="Language-Specifics"></a>
-_Additional_ requirements for running an algorithm in a specific language.
-
-* **C**: `make`, such as GNU make (when using [GNU make for Windows](http://gnuwin32.sourceforge.net/packages/make.htm), make sure that your ``CC`` environment variable is set to `gcc` by potentially typing `set CC=gcc` if you see an error). 
-* **Java**: `gcc` and any Java Development Kit (JDK), such that `javac` and `javah` are accessible 
-  (i.e. in the system path).
-* **Rust**: For details, take a look at the [Rust Readme](./code-experiments/build/rust/README.md)
-* **MATLAB**: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.md)
-* **Python on Windows with MinGW**: Python 2.7 and the Microsoft compiler package for Python 2.7 
-  containing VC9, available [here](https://www.microsoft.com/en-us/download/details.aspx?id=44266). 
-  These are necessary to build the C extensions for the Python `cocoex` module for Windows. 
-  The package contains 32-bit and 64-bit compilers and the Windows SDK headers.
-* **Python on Linux**: `python-dev` must be installed to compile/install the `cocoex` module.
-* **Octave**: Octave 4.0.0 or later. On operating systems other than Windows, earlier versions might work.
-  Under Linux the package `liboctave-dev` might be necessary. 
-
-### Guaranties (None)
-We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP,
-7, 10) in various combinations of 32-bit and 64-bit compilers, python versions
-etc. Naturally, we cannot guarantee that the framework runs on any combination
-of operating system and software installed. In case you experience some incompatibilies,
-check out the [_Known Issues / Trouble Shooting_ Section](#Known-Issues) below. 
-Otherwise we will be happy if you can document them in detail on the 
-[issue tracker](https://github.com/numbbo/coco/issues). 
+To analyse and a compare the results, we provide a separate Python package named [`cocopp`](https://pypi.org/project/cocopp/) that can be installed from PyPI.
+The package will automatically install all required dependencies.
 
 
-Getting Started <a name="Getting-Started"></a>
+# Getting Started <a name="Getting-Started"></a>
 ---------------
 0. Check out the [_Requirements_](#Requirements) above.
 
@@ -108,6 +91,7 @@ Getting Started <a name="Getting-Started"></a>
 
     As long as no experiments are meant to be run, the next points 2.-6. can be skipped and continue with points 7. and 8. below.
 
+1. If you want to run 
 1. **Download** the COCO framework code from github,
 
     - either by clicking the [Download ZIP button](https://github.com/numbbo/coco/archive/master.zip) 
@@ -165,7 +149,7 @@ Getting Started <a name="Getting-Started"></a>
   respectively). Output is automatically generated in the 
   specified data `result_folder`. By now, more suites might be available, see below. 
 
-6. <a name="Getting-Started-pp"></a>**Postprocess** the data from the results folder by
+6. **Postprocess** the data from the results folder by
   typing
 
     ```sh
@@ -335,215 +319,7 @@ our issue tracker at https://github.com/numbbo/coco/issues.
 * howtos contains a few text files with generic howtos.
 
 
-Known Issues / Trouble-Shooting <a name="Known-Issues"></a>
--------------------------------
-### Java
-#### `javah` call fails
-If you see something like this when running `python do.py run-java` or `build-java`
-under Linux
-```
-COPY    code-experiments/src/coco.h -> code-experiments/build/java/coco.h
-WRITE   code-experiments/build/java/REVISION
-WRITE   code-experiments/build/java/VERSION
-RUN     javac CocoJNI.java in code-experiments/build/java
-RUN     javah CocoJNI in code-experiments/build/java
-Traceback (most recent call last):
-  File "do.py", line 590, in <module>
-    main(sys.argv[1:])
-  File "do.py", line 563, in main
-    elif cmd == 'build-java': build_java()
-  File "do.py", line 437, in build_java
-    env = os.environ, universal_newlines = True)
-  File "/..../code-experiments/tools/cocoutils.py", line 34, in check_output
-    raise error
-subprocess.CalledProcessError: Command '['locate', 'jni.h']' returned non-zero exit status 1
-```
-it means `javah` is either not installed (see above) or cannot be found in the system
-path, see [this](http://stackoverflow.com/questions/13526701/javah-missing-after-jdk-install-linux)
-and possibly [this](https://github.com/numbbo/coco/issues/416) for a solution. 
-
-### Matlab
-
-#### Path to matlab
-If you see something like this when running `python do.py build-matlab`
-```
-AML	['code-experiments/src/coco_generics.c', 'code-experiments/src/coco_random.c', 'code-experiments/src/coco_suite.c', 'code-experiments/src/coco_suites.c', 'code-experiments/src/coco_observer.c', 'code-experiments/src/coco_runtime_c.c'] -> code-experiments/build/matlab/coco.c
-COPY	code-experiments/src/coco.h -> code-experiments/build/matlab/coco.h
-COPY	code-experiments/src/best_values_hyp.txt -> code-experiments/build/matlab/best_values_hyp.txt
-WRITE	code-experiments/build/matlab/REVISION
-WRITE	code-experiments/build/matlab/VERSION
-RUN	matlab -nodisplay -nosplash -r setup, exit in code-experiments/build/matlab
-Traceback (most recent call last):
-  File "do.py", line 447, in <module>
-    main(sys.argv[1:])
-  File "do.py", line 429, in main
-    elif cmd == 'build-matlab': build_matlab()
-  File "do.py", line 278, in build_matlab
-    run('code-experiments/build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
-  File "/Users/auger/workviasvn/newcoco/numbbo/code-experiments/tools/cocoutils.py", line 68, in run
-    universal_newlines=True)
-  File "//anaconda/lib/python2.7/subprocess.py", line 566, in check_output
-    process = Popen(stdout=PIPE, *popenargs, **kwargs)
-  File "//anaconda/lib/python2.7/subprocess.py", line 710, in __init__
-    errread, errwrite)
-  File "//anaconda/lib/python2.7/subprocess.py", line 1335, in _execute_child
-    raise child_exception
-OSError: [Errno 2] No such file or directory
-```
-it might be because your system does not know the `matlab` command. To fix this,
-you should edit the file `/etc/paths` and add the path to the `matlab` bin file 
-(Linux/Mac) or add the path to the folder where the `matlab.exe` lies to your 
-Windows path. For instance, the `etc/paths` should look like something like this
-```
-/usr/local/bin
-/usr/bin
-/bin
-/usr/sbin
-/sbin
-/Applications/MATLAB_R2012a.app/bin/
-```
-
-#### SMS-EMOA example does not compile under Mac 
-With the more complex SMS-EMOA example, the problem is related to the compilation
-of the external C++ hypervolume calculation in `hv.cpp`. 
-
-A fix for this issue consists in adding to the files `hv.cpp` and `paretofront.c`
-```
-#define char16_t UINT16_T
-```
-just before the line:
-```
-#include "mex.h"
-```
-
-#### Access to mex files denied
-If it happens that you get some `Access is denied` errors during
-`python do.py build-matlab` or `python do.py run-matlab` like this one
-```
-C:\Users\dimo\Desktop\numbbo-brockho>python do.py run-matlab
-Traceback (most recent call last):
-  File "do.py", line 649, in <module>
-    main(sys.argv[1:])
-  File "do.py", line 630, in main
-    elif cmd == 'run-matlab': run_matlab()
-  File "do.py", line 312, in run_matlab
-    os.remove( filename )
-WindowsError: [Error 5] Access is denied: 'code-experiments/build/matlab\\cocoEv
-aluateFunction.mexw32'
-```
-a reason can be that a previously opened Matlab window still has some
-file handles open. Simply close all Matlab windows (and all running Matlab
-processes if there is any) before to run the `do.py` command again.
-
-
-### Octave
-
-#### `octave-dev` under Linux
-When running 
-```
-  python do.py run-octave
-```
-or 
-```
-  python do.py build-octave
-```
-and seeing something like
-```
-   [...]
-   compiling cocoCall.c...error: mkoctfile: please install the Debian package "liboctave-dev" to get the mkoctfile command
-```
-then, unsurprisingly, installing `liboctave-dev` like
-```
-  sudo apt-get install liboctave-dev
-```
-should do the job. 
-
-
-### Python
-
-#### `setuptools` is not installed
-If you see something like this
-```
-$ python do.py run-python  # or build-python
-[...]
-PYTHON  setup.py install --user in code-experiments/build/python
-ERROR: return value=1
-Traceback (most recent call last):
- File "setup.py", line 8, in <module>
-   import setuptools
-ImportError: No module named setuptools
-
-Traceback (most recent call last):
- File "do.py", line 562, in <module>
-   main(sys.argv[1:])
- File "do.py", line 539, in main
-   elif cmd == 'build-python': build_python()
- File "do.py", line 203, in build_python
-   python('code-experiments/build/python', ['setup.py', 'install', '--user'])
- File "/vol2/twagner/numbbo/code-experiments/tools/cocoutils.py", line 92, in python
-   universal_newlines=True)
- File "/usr/local/lib/python2.7/subprocess.py", line 575, in check_output
-   raise CalledProcessError(retcode, cmd, output=output)
-subprocess.CalledProcessError: Command '['/usr/local/bin/python', 'setup.py', 'install', '--user']' returned non-zero exit status 1
-```
-then `setuptools` needs to be installed: 
-```
-    pip install setuptools
-```
-or `easy_install setuptools` should do the job. 
-
-#### Compilation During Install of `cocoex` Fails (under Linux) 
-If you see something like this:
-``` 
-$ python do.py run-python  # or build-python
-[...]
-cython/interface.c -o build/temp.linux-i686-2.6/cython/interface.o
-cython/interface.c:4:20: error: Python.h: file not found
-cython/interface.c:6:6: error: #error Python headers needed to compile C extensions, please install development version of Python.
-error: command 'gcc' failed with exit status 1
-```
-or
-```
-$ python do.py run-python  # or build-python
-[...]
-cython/interface.c -o build/temp.linux-x86_64-2.7/cython/interface.o
-cython/interface.c:4:20: fatal error: Python.h: No such file or directory
-#include "Python.h"
-^
-compilation terminated.
-error: command 'x86_64-linux-gnu-gcc' failed with exit status 1
-```
-Under Linux
-```
-  sudo apt-get install python-dev
-```
-should do the trick. 
-
-#### Module Update/Install Does Not Propagate
-We have observed a case where the update of the `cocoex` Python module seemed to have no 
-effect. In this case it has been successful to remove all previously installed versions, 
-see [here](https://github.com/numbbo/coco/issues/586) for a few more details. 
-
-
-#### Installing `cocoex` after migrating macOS to the ARM chipset (M1 or M2)
-Reinstall the Xcode command line tools with
-```
-xcode-select install
-```
-and uninstall previous versions of `cocoex`
-```
-pip uninstall cocoex
-```
-until the message
-```
-WARNING: Skipping cocoex as it is not installed.
-```
-appears. Then
-```
-python do.py run-python
-```
-in the coco home folder should do the job.
-
+# Known Issues / Trouble-Shooting <a name="Known-Issues"></a>
 
 ### Post-Processing
 
