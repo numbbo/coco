@@ -64,7 +64,7 @@ Depending on the language you use to implement your algorithm, the required depe
 For macOS, the C compiler comes with installing the Xcode command line tools like
 
 ```
-xcode-select install
+xcode-select --install
 ```
 
 #### Windows
