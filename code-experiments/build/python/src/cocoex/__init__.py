@@ -15,13 +15,14 @@ Help on class Suite...
 A more complete example use case can be found in the `example_experiment.py`
 file.
 """
-from . import interface as _interface
 from . import solvers
 from . import utilities
 from . import exceptions
-from .interface import Suite as _Suite 
 from .interface import Observer as _Observer
+from .interface import Problem as _Problem
+from .interface import Suite as _Suite 
 from .interface import known_suite_names
+from .interface import log_level
 from ._version import __version__ # noqa: F401
 
 
@@ -413,7 +414,7 @@ class Observer(_Observer):
         return super().result_folder
 
 # this definition is copy-edited from interface, solely to pass docstrings to pydoctor
-class Problem(_interface.Problem):
+class Problem(_Problem):
     """`Problem` instances are usually generated using class `Suite`.
     
     The main feature of a problem instance is that it is callable, returning the
@@ -606,14 +607,3 @@ class Problem(_interface.Problem):
         See also: ``repr(self)``
         """
         return str(self)
-
-def log_level(level=None):
-    """``log_level(level=None)`` return current log level and
-    set new log level if ``level is not None and level``.
-
-    :param level: must be 'error' or 'warning' or 'info' or 'debug', listed
-        with increasing verbosity, or '' which doesn't change anything.
-
-    """
-    return _interface.log_level(level)
-

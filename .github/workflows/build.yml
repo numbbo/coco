@@ -122,11 +122,14 @@ jobs:
       with:
         python-version: ${{matrix.version}}
     - name: Setup Python
-      run: python -m pip install --upgrade pip wheel
+      run: python -m pip install --upgrade pip wheel pytest
     - name: Install cocoex and cocopp
-      run: pip install --find-links wheels cocoex cocopp
+      run: python -m pip install --find-links wheels cocoex cocopp
+    - name: Run tests
+      working-directory: code-experiments/build/python/test
+      run: pytest .
     - name: Install scipy for example experiment
-      run: pip install scipy
+      run: python -m pip install scipy
     - name: Run example experiment
       run: python code-experiments/build/python/example/example_experiment2.py
   
