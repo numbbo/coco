@@ -132,7 +132,8 @@ def get_light_brown_line_text(testbedname):
     elif (testbedname in [testbedsettings.suite_name_single,
                           testbedsettings.suite_name_single_noisy]):
         return r"""Light brown lines in the background show ECDFs for the most difficult target of all
-            algorithms benchmarked during BBOB-2009."""
+            algorithms benchmarked during BBOB-2009."""  # hard-coded here as long as this 
+                                                         # is hard-coded also in the code
     elif (testbedname in [testbedsettings.suite_name_ls,
                           testbedsettings.suite_name_mixint,
                           'sbox-cost',
