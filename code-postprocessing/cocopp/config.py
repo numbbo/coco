@@ -35,9 +35,9 @@ np.seterr(under='ignore')  # ignore underflow
 # genericsettings needs a pristine copy of itself to compare
 # against so that it can output the changed settings.
 gs_spec = importlib.util.find_spec('cocopp.genericsettings')
-settings.default_settings = importlib.util.module_from_spec(gs_spec)
+gs = importlib.util.module_from_spec(gs_spec)
 gs_spec.loader.exec_module(gs)
-del gs_spec
+settings.default_settings = gs
 
 
 def config_target_values_setting(is_expensive, is_runlength_based):
