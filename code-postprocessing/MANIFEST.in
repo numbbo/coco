@@ -1,3 +1,4 @@
 include cocopp/js/*
 include cocopp/refalgs/*.tar.gz
 include cocopp/bbob-*infos.txt
+include cocopp/*.pickle.gz
