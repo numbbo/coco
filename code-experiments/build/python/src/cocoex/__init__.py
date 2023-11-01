@@ -15,14 +15,14 @@ Help on class Suite...
 A more complete example use case can be found in the `example_experiment.py`
 file.
 """
-from . import solvers
-from . import utilities
-from . import exceptions
+from . import solvers # noqa: F401
+from . import utilities # noqa: F401
+from . import exceptions # noqa: F401
 from .interface import Observer as _Observer
 from .interface import Problem as _Problem
 from .interface import Suite as _Suite 
 from .interface import known_suite_names
-from .interface import log_level
+from .interface import log_level # noqa: F401
 from ._version import __version__ # noqa: F401
 
 
