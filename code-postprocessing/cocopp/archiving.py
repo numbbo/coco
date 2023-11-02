@@ -88,7 +88,14 @@ coco_urls = ["https://coco.gforge.inria.fr/data-archive",  # original location
              "https://numbbo.github.io/data-archive/data-archive",  # new location
             ]
 coco_url = coco_urls[-1]  # may be reassigned if it doesn't work out
-cocopp_home = os.path.abspath(os.path.expanduser(os.path.join("~", ".cocopp")))
+
+# cocopp needs a directory where it can cache downloaded datasets.
+# 
+# We use `platformdirs` to find the users cache directory in a platform independent way
+# and create a subdirectory within for cocopp.
+
+import platformdirs
+cocopp_home = platformdirs.user_cache_dir("cocopp", ensure_exists=True)
 default_archive_location = os.path.join(cocopp_home, 'data-archives')
 default_definition_filename = 'coco_archive_definition.txt'
 cocopp_home_archives = default_archive_location
