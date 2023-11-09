@@ -13,12 +13,13 @@ known_suite_names = ["bbob",
                      "bbob-biobj", "bbob-biobj-ext",
                      "bbob-constrained",
                      "bbob-largescale",
-                     "bbob-mixint", "bbob-biobj-mixint"
+                     "bbob-mixint", "bbob-biobj-mixint",
+                     "bbob-noisy"
                      ]
 _known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext",
                       "bbob-constrained",
                       "bbob-constrained-active-only", "bbob-constrained-no-disguise",
-                      "bbob-largescale", "bbob-mixint", "bbob-biobj-mixint"]
+                      "bbob-largescale", "bbob-mixint", "bbob-biobj-mixint", "bbob-noisy"]
 
 __all__ = ['Observer', 'Problem', 'Suite', 'known_suite_names']
 
@@ -70,6 +71,7 @@ cdef extern from "coco.h":
     # double coco_problem_get_final_target_fvalue1(const coco_problem_t *problem)
     size_t coco_problem_get_evaluations(const coco_problem_t *problem)
     size_t coco_problem_get_evaluations_constraints(const coco_problem_t *problem)
+    void reset_seeds()
     double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem)
     int coco_problem_final_target_hit(const coco_problem_t *problem)
     void bbob_problem_best_parameter_print(const coco_problem_t *problem)
@@ -123,7 +125,7 @@ cdef class Suite:
         cdef coco_suite_t* suite
         cdef coco_problem_t* p
         cdef bytes _old_level
-
+        reset_seeds()   
         if self.initialized:
             self.reset()
         self._ids = []
@@ -566,6 +568,7 @@ cdef class Problem:
         self._largest_fvalues_of_interest = None
         self.initialized = True
         return self
+
     def constraint(self, x):
         """see __init__.py"""
         if self.number_of_constraints <= 0:

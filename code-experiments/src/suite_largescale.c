@@ -102,7 +102,7 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
                                                                problem_id_template, problem_name_template);
   } else if (function == 10) {
     problem = f_ellipsoid_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
-                                                              problem_id_template, problem_name_template);
+                                                               problem_id_template, problem_name_template);
   } else if (function == 11) {
     problem = f_discus_generalized_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
                                                                        problem_id_template, problem_name_template);
@@ -128,7 +128,9 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
     problem = f_schaffers_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed_17, 1000,
                                                               problem_id_template, problem_name_template);
   } else if (function == 19) {
-    problem = f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_allocate(function, dimension, instance, rseed,
+    f_griewank_rosenbrock_args_t args;
+    args.facftrue = 10.0;
+    problem = f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_allocate(function, dimension, instance, rseed, &args,
                                                                              problem_id_template, problem_name_template);
   } else if (function == 20) {
     problem = f_schwefel_generalized_bbob_problem_allocate(function, dimension, instance, rseed,
@@ -154,7 +156,6 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
   if (problem == NULL) {
     coco_error("coco_get_largescale_problem(): function f%lu not yet implemented  ", function);
   }
-  
   return problem;
 }
 

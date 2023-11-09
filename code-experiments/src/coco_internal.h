@@ -140,11 +140,13 @@ struct coco_problem_s {
   coco_evaluate_function_t evaluate_gradient;         /**< @brief  The function for evaluating the constraints. */
   coco_recommend_function_t recommend_solution;       /**< @brief  The function for recommending a solution. */
   coco_problem_free_function_t problem_free_function; /**< @brief  The function for freeing this problem. */
-
+  
   size_t number_of_variables;          /**< @brief Number of variables expected by the function, i.e.
                                        problem dimension */
   size_t number_of_objectives;         /**< @brief Number of objectives. */
   size_t number_of_constraints;        /**< @brief Number of constraints. */
+
+  double last_noise_value;
 
   double *smallest_values_of_interest; /**< @brief The lower bounds of the ROI in the decision space. */
   double *largest_values_of_interest;  /**< @brief The upper bounds of the ROI in the decision space. */
@@ -255,6 +257,8 @@ struct coco_suite_s {
 };
 
 static void bbob_evaluate_gradient(coco_problem_t *problem, const double *x, double *y);
+
+/***********************************************************************************************************/
 
 #ifdef __cplusplus
 }

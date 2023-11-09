@@ -712,6 +712,8 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     observer_biobj(observer, observer_options, &additional_option_keys);
   } else if (0 == strcmp(observer_name, "rw")) {
     observer_rw(observer, observer_options, &additional_option_keys);
+  } else if (0 == strcmp(observer_name, "bbob-noisy")) {
+    observer_bbob(observer, observer_options, &additional_option_keys);
   } else {
     coco_observer_free(observer);
     coco_warning("coco_observer(): Unknown observer %s!", observer_name);

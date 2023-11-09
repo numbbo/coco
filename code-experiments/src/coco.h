@@ -114,6 +114,60 @@ typedef enum {
 } coco_log_level_type_e;
 
 /***********************************************************************************************************/
+/**
+ * @name Structures representing the additional arguments to be passed to the functions
+ */
+/**{@*/
+
+/**
+ * @brief The extra argument to be passed to the step ellipsoid function
+ * only penalty scale, because in the legacy code is different 
+ * between the noisy and the noise free implementations 
+ */
+typedef struct{
+  double penalty_scale;
+} f_step_ellipsoid_args_t;
+
+/**
+ * @brief The extra argument to be passed to the step ellipsoid function
+ * only conditioning, because in the legacy code is different 
+ * between the noisy and the noise free implementations 
+ */
+typedef struct{
+  double conditioning;
+} f_ellipsoid_args_t;
+
+/**
+ * @brief The extra argument to be passed to the step ellipsoid function
+ * conditioning and penalty scale, because in the legacy code were different 
+ * between the noisy and the noise free implementations 
+ */
+typedef struct{
+  double conditioning;
+  double penalty_scale;
+} f_schaffers_args_t;
+
+/**
+ * @brief The extra argument to be passed to the step ellipsoid function
+ * facftrue, because in the legacy code is different 
+ * between the noisy and the noise free implementations 
+ */
+typedef struct{
+  double facftrue;
+}f_griewank_rosenbrock_args_t;
+
+/**
+ * @brief The extra argument to be passed to the step ellipsoid function
+ * facftrue, because in the legacy code is different 
+ * between the noisy and the noise free implementations 
+ */
+typedef struct{
+  size_t number_of_peaks;
+  double penalty_scale;
+}f_gallagher_args_t;
+/**@}*/
+
+/***********************************************************************************************************/
 
 /** @brief Structure containing a COCO problem. */
 struct coco_problem_s;
@@ -157,11 +211,11 @@ struct coco_random_state_s;
 /**
  * @brief The COCO random state type.
  *
- * See coco_random_state_s for more information on its fields. */
+ * See coco_random_state_s for more information on its fields. 
+ */
 typedef struct coco_random_state_s coco_random_state_t;
 
 /***********************************************************************************************************/
-
 /**
  * @name Methods regarding COCO suite
  */
@@ -481,6 +535,20 @@ double coco_random_normal(coco_random_state_t *state);
 /***********************************************************************************************************/
 
 /**
+ * @name Methods regarding noisy problems
+ */
+/**@{*/
+
+/**
+ * @brief Resets seeds
+ */
+void reset_seeds(void);
+
+/**@}*/
+
+/***********************************************************************************************************/
+
+/**
  * @name Methods managing memory
  */
 /**@{*/
@@ -611,6 +679,7 @@ char *coco_strdupf(const char *str, ...);
 
 void bbob_problem_best_parameter_print(const coco_problem_t *problem);
 void bbob_biobj_problem_best_parameter_print(const coco_problem_t *problem);
+
 
 #ifdef __cplusplus
 }

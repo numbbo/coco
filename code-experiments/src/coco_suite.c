@@ -15,6 +15,7 @@
 #include "coco_internal.h"
 #include "coco_utilities.c"
 
+#include "suite_bbob_noisy.c"
 #include "suite_bbob.c"
 #include "suite_bbob_mixint.c"
 #include "suite_biobj.c"
@@ -50,6 +51,8 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
     suite = suite_bbob_mixint_initialize(suite_name);
   } else if (strcmp(suite_name, "bbob-biobj-mixint") == 0) {
     suite = suite_biobj_mixint_initialize();
+  } else if (strcmp(suite_name, "bbob-noisy") == 0) {
+    suite = suite_bbob_noisy_initialize();
   }
   else {
     coco_error("coco_suite_intialize(): unknown problem suite");
@@ -66,7 +69,6 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
  */
 static const char *coco_suite_get_instances_by_year(const coco_suite_t *suite, const int year) {
   const char *year_string;
-
   if (strcmp(suite->suite_name, "bbob") == 0) {
     year_string = suite_bbob_get_instances_by_year(year);
   } else if ((strcmp(suite->suite_name, "bbob-biobj") == 0) ||
@@ -80,6 +82,8 @@ static const char *coco_suite_get_instances_by_year(const coco_suite_t *suite, c
     year_string = suite_bbob_mixint_get_instances_by_year(year);
   } else if (strcmp(suite->suite_name, "bbob-biobj-mixint") == 0) {
     year_string = suite_biobj_mixint_get_instances_by_year(year);
+  } else if (strcmp(suite->suite_name, "bbob-noisy") == 0) {
+    year_string = suite_bbob_noisy_get_instances_by_year(year);
   } else {
     coco_error("coco_suite_get_instances_by_year(): suite '%s' has no years defined", suite->suite_name);
     return NULL;
@@ -123,6 +127,8 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
     problem = suite_bbob_mixint_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-biobj-mixint") == 0) {
     problem = suite_biobj_mixint_get_problem(suite, function_idx, dimension_idx, instance_idx);
+  } else if (strcmp(suite->suite_name, "bbob-noisy") == 0) {
+    problem = suite_bbob_noisy_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else {
     coco_error("coco_suite_get_problem_from_indices(): unknown problem suite");
     return NULL;
@@ -231,6 +237,7 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
   suite->functions = coco_allocate_vector_size_t(suite->number_of_functions);
   for (i = 0; i < suite->number_of_functions; i++) {
     suite->functions[i] = i + 1;
+    if (strcmp(suite->suite_name, "bbob-noisy") == 0) suite->functions[i] = suite->functions[i] + 100;
   }
 
   assert(strlen(default_instances) > 0);
@@ -900,7 +907,6 @@ size_t coco_suite_encode_problem_index(const coco_suite_t *suite,
 
   return instance_idx + (function_idx * suite->number_of_instances) +
       (dimension_idx * suite->number_of_instances * suite->number_of_functions);
-
 }
 
 /**
