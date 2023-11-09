@@ -34,7 +34,7 @@ static coco_suite_t *suite_bbob_noisy_initialize(void) {
   const size_t num_dimensions = sizeof(dimensions) / sizeof(dimensions[0]);
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob-noisy", 30, num_dimensions, dimensions, "year:2009");
+  suite = coco_suite_allocate("bbob-noisy", 30, num_dimensions, dimensions, "year:2009", 1);
 
   return suite;
 }
