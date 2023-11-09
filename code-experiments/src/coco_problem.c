@@ -324,6 +324,7 @@ void coco_problem_free(coco_problem_t *problem) {
     problem->smallest_values_of_interest = NULL;
     problem->largest_values_of_interest = NULL;
     problem->best_parameter = NULL;
+    problem->data = NULL;
     problem->best_value = NULL;
     problem->nadir_value = NULL;
     problem->suite = NULL;
@@ -460,6 +461,15 @@ int coco_problem_final_target_hit(const coco_problem_t *problem) {
 double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem) {
   assert(problem != NULL);
   return problem->best_observed_fvalue[0];
+}
+
+/**
+ * @brief Returns the optimal function value of the problem
+ */
+double coco_problem_get_best_value(const coco_problem_t *problem) {
+  assert(problem != NULL);
+  assert(problem->best_value != NULL);
+  return problem->best_value[0];
 }
 
 /**
