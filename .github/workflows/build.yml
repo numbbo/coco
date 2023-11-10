@@ -6,11 +6,11 @@ on:
     branches: [ master, development ]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
 jobs:
-  build-source:
+  source-build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -24,15 +24,12 @@ jobs:
       run: python -m pip install --upgrade -r scripts/requirements.txt
     - name: Fabricate COCO
       run: python scripts/fabricate
-    - name: Configure unit test
+    - name: Run core unit tests
       working-directory: ${{github.workspace}}/code-experiments/test/unit-test/
-      run: cmake -B build .
-    - name: Build unit test
-      working-directory: ${{github.workspace}}/code-experiments/test/unit-test/
-      run: cmake --build build
-    - name: Run unit test
-      working-directory: ${{github.workspace}}/code-experiments/test/unit-test/
-      run: ctest --test-dir build
+      run: |
+        cmake -B build .
+        cmake --build build
+        ctest --test-dir build
     - name: Build cocoex Python package
       run: python -m build -s -o dist code-experiments/build/python
     - name: Build cocopp Python package
@@ -62,7 +59,7 @@ jobs:
       with:
         name: dist-rust
         path: dist/cocoex-rust-*.zip
-    - name: Archive cocoex Python source package
+    - name: Archive cocoex and cocopp Python source package
       uses: actions/upload-artifact@v3
       with:
         name: dist-python-sdist
@@ -70,44 +67,124 @@ jobs:
           dist/cocoex*.tar.gz
           dist/cocopp*.tar.gz
 
-  build-python-wheels:
-    needs: build-source
+  python-wheels-build-cocopp:
+    needs: source-build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{github.workspace}}
+    steps:
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+    - name: Download Python source package
+      uses: actions/download-artifact@v3
+      with:
+        name: dist-python-sdist
+    - name: Build cocopp wheel
+      shell: bash
+      run: python -m pip wheel -w dist/ cocopp-*.tar.gz
+    - name: Archive Python wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist-python-wheels
+        path: dist/cocopp*.whl
+
+  python-wheels-build-cocoex:
+    needs: source-build
+    # This strategy is taken straight from the numpy wheels.yaml CI job
+    # 
+    # Since we depend on numpy, there's no reason to try and build a binary cocoex wheel
+    # on platform that don't have a compiled numpy available.
+    strategy:
+      # Ensure that a wheel builder finishes even if another fails
+      fail-fast: false
+      matrix:
+        buildplat:
+          - [ubuntu-20.04, manylinux_x86_64]
+          - [ubuntu-20.04, musllinux_x86_64]
+          - [macos-12, macosx_x86_64]
+          - [windows-2019, win_amd64]
+          - [windows-2019, win32]
+        python: ["cp39", "cp310", "cp311", "cp312", "pp39"]
+        exclude:
+          # Don't build PyPy 32-bit windows
+          - buildplat: [windows-2019, win32]
+            python: "pp39"
+          - buildplat: [ ubuntu-20.04, musllinux_x86_64 ]
+            python: "pp39"
+    runs-on: ${{ matrix.buildplat[0] }}
+    defaults:
+      run:
+        working-directory: ${{github.workspace}}
+    steps:
+    - name: Setup MSVC (32-bit)
+      if: ${{ matrix.buildplat[1] == 'win32' }}
+      uses: bus1/cabuild/action/msdevshell@e22aba57d6e74891d059d66501b6b5aed8123c4d  # v1
+      with:
+        architecture: 'x86'
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+    - name: Download Python source package
+      uses: actions/download-artifact@v3
+      with:
+        name: dist-python-sdist
+    - name: Install cibuildwheel
+      run: python -m pip install cibuildwheel==2.16.2
+    - name: Build cocoex wheel
+      shell: bash
+      run: python -m cibuildwheel --output-dir dist/ cocoex-*.tar.gz
+      env:
+        CIBW_PRERELEASE_PYTHONS: True
+        CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
+    - name: Archive Python wheels
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist-python-wheels
+        path: dist/cocoex*.whl
+  
+  python-wheels-test:
+    needs: python-wheels-build-cocoex
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        version: ["3.8", "3.9", "3.10", "3.11"]
+        version: ["3.9", "3.10", "3.11", "3.12"]
     runs-on: ${{matrix.os}}
     defaults:
       run:
         working-directory: ${{github.workspace}}
     steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: dist-python-sdist
+        path: dist
+    - uses: actions/download-artifact@v3
+      with:
+        name: dist-python-wheels
+        path: wheels
     - uses: actions/setup-python@v4
       with:
         python-version: ${{matrix.version}}
-    - name: Download Python source package
-      uses: actions/download-artifact@v3
-      with:
-        name: dist-python-sdist
     - name: Setup Python
       run: python -m pip install --upgrade pip wheel
-    - name: Build cocoex wheel
+    - name: Install cocoex 
+      run: python -m pip install --find-links wheels/ cocoex
+    - name: Run cocoex test
       shell: bash
-      run: python -m pip wheel -w dist/ cocoex-*.tar.gz
-    - name: Build cocopp wheel
-      shell: bash
-      run: python -m pip wheel -w dist/ cocopp-*.tar.gz
-    - name: Archive Python package
-      uses: actions/upload-artifact@v3
-      with:
-        name: dist-python-wheels
-        path: dist/*.whl
+      run: |
+        tar xf dist/cocoex-*.tar.gz --strip-components=1
+        python -m pip install pytest pytest-cov
+        pytest --cov=cocoex test/
   
-  test-python-wheels:
-    needs: build-python-wheels
+  python-wheels-example:
+    needs: [python-wheels-build-cocoex, python-wheels-build-cocopp]
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        version: ["3.8", "3.9", "3.10", "3.11"]
+        version: ["3.9", "3.10", "3.11", "3.12"]
     runs-on: ${{matrix.os}}
     defaults:
       run:
@@ -124,14 +201,61 @@ jobs:
     - name: Setup Python
       run: python -m pip install --upgrade pip wheel
     - name: Install cocoex and cocopp
-      run: pip install --find-links wheels cocoex cocopp
+      run: python -m pip install --find-links wheels/ cocoex cocopp
     - name: Install scipy for example experiment
-      run: pip install scipy
+      run: python -m pip install scipy
     - name: Run example experiment
       run: python code-experiments/build/python/example/example_experiment2.py
+
+  python-lint:
+    needs: source-build
+    runs-on: "ubuntu-latest"
+    steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: dist-python-sdist
+        path: dist
+    - uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+    - name: Setup Python
+      run: python -m pip install --upgrade pip wheel
+    - name: Lint with Ruff
+      shell: bash
+      continue-on-error: true
+      run: |
+        pip install ruff
+        tar xf dist/cocoex-*.tar.gz --strip-components=1
+        ruff --output-format=github .
   
-  test-c:
-    needs: build-source
+  cocopp-example:
+    needs: python-wheels-build-cocopp
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        version: ["3.9", "3.10", "3.11", "3.12"] 
+    runs-on: ${{matrix.os}}
+    defaults:
+      run:
+        working-directory: ${{github.workspace}}
+    steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: dist-python-wheels
+        path: wheels
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{matrix.version}}
+    - name: Setup Python
+      run: python -m pip install --upgrade pip wheel
+    - name: Run BBOB postprocessing example
+      shell: bash
+      run: |
+        python -m pip install wheels/cocopp*.whl
+        python -m cocopp -v AMALGAM\! BIPOP-CMA-ES\!
+
+  c-test:
+    needs: source-build
     strategy:
       matrix:
         # FIXME: Currently fails on windows because of path issues.
@@ -159,14 +283,20 @@ jobs:
       if: failure()
       uses: actions/upload-artifact@v3
       with:
-        name: test-c-${{matrix.os}}
+        name: c-test-${{matrix.os}}
         path: |
             **/build/
   
-  test-java:
-    needs: build-source
-    # FIXME: Should also test on windows and macos
-    runs-on: ubuntu-latest
+  java-example:
+    needs: source-build
+    strategy:
+      matrix:
+        # FIXME: Currently fails on windows because of path issues.
+        # 
+        # Debug and add `windows-latest` back to list at some point.
+        os: [ubuntu-latest, macos-latest]
+        java: [11, 17, 21] 
+    runs-on: ${{matrix.os}}
     defaults:
       run:
         working-directory: ${{github.workspace}}
@@ -175,6 +305,11 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: dist-java
+    - name: Setup java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: ${{ matrix.java }}
     - name: Unpack
       run: unzip cocoex-java-*.zip
     - name: Build 
@@ -186,11 +321,11 @@ jobs:
     - name: Archive Java example experiment results
       uses: actions/upload-artifact@v3
       with:
-        name: exdata-java
+        name: java-example-${{matrix.os}}
         path: cocoex-java/exdata/*
 
-  test-octave:
-    needs: build-source
+  octave-example:
+    needs: source-build
     # FIXME: Should also test on windows and macos
     runs-on: ubuntu-latest
     defaults:
@@ -214,13 +349,16 @@ jobs:
     - name: Archive Octave example experiment results
       uses: actions/upload-artifact@v3
       with:
-        name: exdata-octave
+        name: octave-example
         path: cocoex-octave/exdata/*
   
-  test-rust:
-    needs: build-source
-    # FIXME: Should also test on windows and macos
-    runs-on: ubuntu-latest
+  rust-test:
+    if: false # Disabled since we don't have any tests yes
+    needs: source-build
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{matrix.os}}
     defaults:
       run:
         working-directory: ${{github.workspace}}
@@ -237,12 +375,32 @@ jobs:
     - name: Test 
       working-directory: ${{github.workspace}}/cocoex-rust/
       run: cargo test -r
-    - name: Experiment
+
+  rust-example:
+    needs: source-build
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{matrix.os}}
+    defaults:
+      run:
+        working-directory: ${{github.workspace}}
+    steps:
+    - name: Download Rust source package
+      uses: actions/download-artifact@v3
+      with:
+        name: dist-rust
+    - name: Unpack
+      run: unzip cocoex-rust-*.zip
+    - name: Build 
       working-directory: ${{github.workspace}}/cocoex-rust/
-      run: ./target/release/examples/example-experiment 
+      run: cargo build -r 
+    - name: Example Experiment
+      working-directory: ${{github.workspace}}/cocoex-rust/
+      run: cargo run --example example-experiment
     - name: Archive Rust example experiment results
       uses: actions/upload-artifact@v3
       with:
-        name: exdata-rust
+        name: rust-example-${{matrix.os}}
         path: cocoex-rust/exdata/*
 

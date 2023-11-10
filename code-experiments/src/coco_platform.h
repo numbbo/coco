@@ -22,7 +22,7 @@
 static const char *coco_path_separator = "\\";
 #define COCO_PATH_MAX MAX_PATH
 #define HAVE_GFA 1
-#elif defined(__gnu_linux__)
+#elif defined(__gnu_linux__) || defined(__linux__)
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <linux/limits.h>
