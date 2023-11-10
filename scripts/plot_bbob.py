@@ -5,7 +5,7 @@ import os
 
 COLORS_PLOTLY_BOLD = ['#7F3C8D', '#11A579', '#3969AC', '#F2B701', '#E73F74', '#80BA5A',
                       '#E68310', '#008695', '#CF1C90', '#F97B72', '#A5AA99']
-COLORS_CATEGORICAL = [c for i, c in enumerate(COLORS_PLOTLY_BOLD) if i != 2]
+COLORS_CATEGORICAL = [COLORS_PLOTLY_BOLD[i] for i in [0, 5, 3, 4, 2]]
 
 
 def best_parameter(problem):
@@ -48,7 +48,7 @@ def get_diagonal_cuts(problem, num_intervals, best_param):
     return x, x_scaled, z
 
 
-def plot_all_views(func, dim, inst, N=51, plot_folder='plots_bbob', x_index=0, y_index=1,
+def plot_all_views(func, dim, inst, N=501, plot_folder='plots_bbob', x_index=0, y_index=1,
                    cmap='viridis', cmap_lines='Greys', save_plots=True):
     suite = cocoex.Suite("bbob", "", "")
     problem = suite.get_problem_by_function_dimension_instance(func, dim, inst)
@@ -120,17 +120,21 @@ def plot_all_views(func, dim, inst, N=51, plot_folder='plots_bbob', x_index=0, y
             plt.show()
         plt.close()
 
-    # Cuts through the search space
-    fig, ax = plt.subplots(figsize=(6.4 * 0.75, 4.8 * 0.75))
+    # Cut through the search space and store the results
     z_min = np.inf
     z_max = - np.inf
-    for i in range(dim):
+    cuts_x = []
+    cuts_z = []
+    for i in range(min(dim, 5)):
         x_i, z_i = get_cuts(problem, N, best_param, x_index=i)
-        ax.plot(x_i, z_i, label=f'x{i + 1}', color=COLORS_CATEGORICAL[i])
+        cuts_x.append(x_i)
+        cuts_z.append(z_i)
         z_min = min(z_min, min(z_i))
         z_max = max(z_max, max(z_i))
     x, x_scaled, z = get_diagonal_cuts(problem, N, best_param)
-    ax.plot(x_scaled, z, label='ones', linestyle='dashed', color='gray')
+    cuts_x = np.array(cuts_x)
+    cuts_z = np.array(cuts_z)
+
     # Find where the diagonal cut exits the [-5, 5]^d range
     valid_idx = np.where((x >= -5) & (x <= 5))[0]
     x_low = x_scaled[valid_idx[0]]
@@ -139,13 +143,59 @@ def plot_all_views(func, dim, inst, N=51, plot_folder='plots_bbob', x_index=0, y
     z_high = z[valid_idx[-1]]
     z_min = min(z_min, z_low)
     z_max = max(z_max, z_high)
+    x_min = np.min(cuts_x)
+
+    # Plot 1: lin-lin axes
+    fig, ax = plt.subplots()
+    for i in range(min(dim, 5)):
+        ax.plot(cuts_x[i], cuts_z[i], label=f'x{i + 1}', color=COLORS_CATEGORICAL[i])
+    ax.plot(x_scaled, z, label='ones', linestyle='dashed', color='gray')
     ax.scatter([x_low, x_high], [z_low, z_high], marker='*', color='gray')
     ax.set_ylim([z_min - 0.02 * (z_max - z_min), z_max + 0.1 * (z_max - z_min)])
     ax.legend()
+    ax.grid(ls='dotted')
     plt.suptitle(problem_name)
     plt.tight_layout()
     if save_plots:
-        plt.savefig(f'{plot_folder}/bbob_f{func:02}_d{dim:02}_i{inst:02}_cuts.png')
+        plt.savefig(f'{plot_folder}/bbob_f{func:02}_d{dim:02}_i{inst:02}_cuts_lin_lin.png')
+    else:
+        plt.show()
+    plt.close()
+
+    # Plot 2: lin-log axes
+    fig, ax = plt.subplots()
+    for i in range(min(dim, 5)):
+        ax.semilogy(cuts_x[i], cuts_z[i] - z_min, label=f'x{i + 1}', color=COLORS_CATEGORICAL[i])
+    ax.semilogy(x_scaled, z - z_min, label='ones', linestyle='dashed', color='gray')
+    ax.scatter([x_low, x_high], [z_low - z_min, z_high - z_min], marker='*', color='gray')
+    ax.legend()
+    ax.grid(ls='dotted')
+    plt.suptitle(problem_name)
+    plt.tight_layout()
+    if save_plots:
+        plt.savefig(f'{plot_folder}/bbob_f{func:02}_d{dim:02}_i{inst:02}_cuts_lin_log.png')
+    else:
+        plt.show()
+    plt.close()
+
+    # Plot 3: log-log axes
+    fig, ax = plt.subplots()
+    for i in range(min(dim, 5)):
+        x_opt = cuts_x[i][np.argmin(cuts_z[i])]
+        ax.loglog(cuts_x[i][cuts_x[i] > x_opt] - x_opt, cuts_z[i][cuts_x[i] > x_opt] - z_min,
+                  label=f'x{i + 1}', color=COLORS_CATEGORICAL[i])
+        ax.loglog(x_opt - cuts_x[i][cuts_x[i] < x_opt], cuts_z[i][cuts_x[i] < x_opt] - z_min,
+                  label=u'\u2212' + f'x{i + 1}', color=COLORS_CATEGORICAL[i], linestyle='dotted')
+    ax.loglog(x_scaled[x_scaled > 0], z[x_scaled > 0] - z_min,
+              label='ones', linestyle='dashed', color='gray')
+    ax.loglog(- x_scaled[x_scaled < 0], z[x_scaled < 0] - z_min,
+              label=u'\u2212' + 'ones', linestyle='dotted', color='gray')
+    ax.legend()
+    ax.grid(ls='dotted')
+    plt.suptitle(problem_name)
+    plt.tight_layout()
+    if save_plots:
+        plt.savefig(f'{plot_folder}/bbob_f{func:02}_d{dim:02}_i{inst:02}_cuts_log_log.png')
     else:
         plt.show()
     plt.close()
@@ -191,7 +241,8 @@ def plot_all_functions(suite_name, dim, inst, N=101, plot_folder='plots_bbob', x
 
 
 if __name__ == '__main__':
-    plot_all_views(func=22, dim=5, inst=1)
+    plot_all_views(func=22, dim=5, inst=2)
+    plot_all_views(func=22, dim=5, inst=3)
     exit(0)
     plot_all_functions(suite_name='bbob', dim=2, inst=1)
     plot_all_functions(suite_name='bbob-mixint', dim=5, inst=1, x_index=3, y_index=4)
