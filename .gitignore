@@ -55,4 +55,7 @@ code-experiments/test/integration-test/test_instance_extraction
 code-postprocessing/build/
 code-postprocessing/cocopp/_version.py
 code-postprocessing/dist/
+code-postprocessing/ppdata/
+
 .version
+dist/
