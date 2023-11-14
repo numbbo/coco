@@ -114,3 +114,4 @@ static coco_problem_t *suite_biobj_ext_noisy_get_problem(coco_suite_t *suite,
     problem -> problem_free_function = coco_problem_stacked_free;
     return problem;
 }
+
