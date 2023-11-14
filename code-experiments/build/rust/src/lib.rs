@@ -21,7 +21,7 @@ pub use observer::Observer;
 
 /// COCO’s version.
 pub fn version() -> &'static str {
-    unsafe { CStr::from_ptr(coco_sys::coco_version.as_ptr()) }
+    unsafe { CStr::from_ptr(coco_sys::coco_version) }
         .to_str()
         .unwrap()
 }

@@ -369,12 +369,15 @@ class ShortInfo:
         self.evals_dimension = 0
         self.evals_by_dimension = {}
         self.runs_function = 0
+
     def print(self, problem, end="", **kwargs):
         print(self(problem), end=end, **kwargs)
         _sys.stdout.flush()
+
     def add_evals(self, evals, runs):
         self.evals_dimension += evals
         self.runs_function += runs
+
     def dimension_done(self):
         self.evals_by_dimension[self.d_current] = (_time.time() - self.t0_dimension) / self.evals_dimension
         s = '\n    %d-D done in %.1e seconds/evaluation' % (self.d_current, self.evals_by_dimension[self.d_current])
@@ -382,10 +385,12 @@ class ShortInfo:
         self.evals_dimension = 0
         self.t0_dimension = _time.time()
         return s
+
     def function_done(self):
         s = "(%d)" % self.runs_function + (2 - int(np.log10(self.runs_function))) * ' '
         self.runs_function = 0
         return s
+
     def __call__(self, problem):
         """uses `problem.id` and `problem.dimension` to decide what to print.
         """
@@ -409,6 +414,7 @@ class ShortInfo:
             self.f_current = f
         # print_flush(res)
         return res
+
     def print_timings(self):
         print("  dimension seconds/evaluations")
         print("  -----------------------------")
@@ -416,12 +422,13 @@ class ShortInfo:
             print("    %3d      %.1e " %
                   (dim, self.evals_by_dimension[dim]))
         print("  -----------------------------")
+
     @staticmethod
     def short_time_stap():
-        l = _time.asctime().split()
-        d = l[0]
-        d = l[1] + l[2]
-        h, m, s = l[3].split(':')
+        t = _time.asctime().split()
+        d = t[0]
+        d = t[1] + t[2]
+        h, m, s = t[3].split(':')
         return d + ' ' + h + 'h' + m + ':' + s
 
 

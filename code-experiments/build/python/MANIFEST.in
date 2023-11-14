@@ -1,3 +1,8 @@
-exclude src/cocoex/interface.c
+graft test
 include src/cocoex/coco.h
-include test/bbob2009*.txt
+# Don't include Cython generated files.
+exclude src/cocoex/interface.c
+exclude src/cocoex/function.c
+# Build artifacts not meant for source distribution
+global-exclude *.pyc
+global-exclude __pycache__

@@ -92,7 +92,15 @@ typedef unsigned __int64 uint64_t;
 extern "C" {
 #endif
 
-#include "coco_version.h"
+/**
+* @brief COCO's version.
+*
+* The version number is dervied from the latest tag in the
+* repository plus the number of commits after the tag.
+*/
+/**@{*/
+extern const char *coco_version;
+/**@}*/
 
 /***********************************************************************************************************/
 /**

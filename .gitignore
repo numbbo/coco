@@ -36,13 +36,14 @@ code-experiments/build/python/build/
 code-experiments/build/python/dist/
 code-experiments/build/python/src/cocoex/_version.py
 code-experiments/build/python/src/cocoex/interface.c
+code-experiments/build/python/src/cocoex/function.c
 code-experiments/build/rust/Cargo.lock
 code-experiments/build/rust/Cargo.toml
 code-experiments/build/rust/coco-sys/Cargo.toml
 code-experiments/build/rust/coco-sys/vendor/
 code-experiments/build/rust/target/
 code-experiments/examples/*/coco.[ch]
-code-experiments/src/coco_version.h
+code-experiments/src/coco_version.c
 code-experiments/test/**/coco.[ch]
 code-experiments/test/unit-test/build/
 code-experiments/test/unit-test/exdata/
@@ -64,6 +65,9 @@ code-experiments/test/regression-test/bbob_noisy_regression_test/results
 code-postprocessing/build/
 code-postprocessing/cocopp/_version.py
 code-postprocessing/dist/
+code-postprocessing/ppdata/
+
 .version
 
-data/*
+dist/
+

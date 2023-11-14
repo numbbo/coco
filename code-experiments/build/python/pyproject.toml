@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-  "setuptools>=61.0",
-  "cython ~= 0.29.33",
+  "setuptools >= 67.0",
+  "cython     ~= 3.0",
   "wheel",
   "numpy"
 ]
@@ -20,17 +20,17 @@ authors = [
 ]
 description = 'Benchmarking framework for all types of black-box optimization algorithms.'
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 license = {text = "BSD-3-Clause"}
 classifiers = [
   "Development Status :: 4 - Beta",
   "License :: OSI Approved :: BSD License",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: Implementation :: CPython",
 ]
 dependencies = [ 
@@ -42,7 +42,11 @@ dynamic = ["version"]
 version = {attr = "cocoex._version.__version__"}
 
 [tool.setuptools.packages.find]
-where = ["src"]  # list of folders that contain the packages (["."] by default)
+where = ["src"]
+
+[tool.pytest]
+log_cli = true
+addopts = "--doctest-modules"
 
 [project.urls]
 Homepage = "https://github.com/numbbo/coco"
