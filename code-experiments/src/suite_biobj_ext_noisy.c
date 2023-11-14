@@ -30,13 +30,6 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t *dimensions,
                                          const char *default_instances,
                                          const int known_optima);
-static void suite_biobj_ext_free(void *suite);
-
-static size_t suite_biobj_ext_noisy_get_new_instance(coco_suite_t *suite,
-                                           const size_t instance,
-                                           const size_t instance1,
-                                           const size_t num_bbob_functions,
-                                           const size_t *bbob_functions);
 /**
  * @brief Sets the dimensions and default instances for the bbob-biobj-ext suite.
  */
@@ -47,7 +40,7 @@ static coco_suite_t *suite_biobj_ext_noisy_initialize(void) {
   const size_t num_dimensions = sizeof(dimensions) / sizeof(dimensions[0]);
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob-biobj-ext-noisy", 55+37, num_dimensions, dimensions, "year: 2018", 1);
+  suite = coco_suite_allocate("bbob-biobj-ext-noisy", 55+37, num_dimensions, dimensions, "year: 2023", 1);
 
   return suite;
 }
@@ -57,7 +50,7 @@ static coco_suite_t *suite_biobj_ext_noisy_initialize(void) {
  */
 static const char *suite_biobj_ext_noisy_get_instances_by_year(const int year) {
 
-  if (year == 0000) { /* default/test case */
+  if (year <= 2023) { /* default/test case */
     return "1-10";
   }
   else {
