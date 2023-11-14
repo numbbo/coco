@@ -10,13 +10,13 @@ from .exceptions import InvalidProblemException, NoSuchProblemException, NoSuchS
 np.import_array()
 
 known_suite_names = ["bbob",
-                     "bbob-biobj", "bbob-biobj-ext",
+                     "bbob-biobj", "bbob-biobj-ext", "bbob-biobj-ext-noisy",
                      "bbob-constrained",
                      "bbob-largescale",
                      "bbob-mixint", "bbob-biobj-mixint",
                      "bbob-noisy"
                      ]
-_known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext",
+_known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-biobj-ext-noisy",
                       "bbob-constrained",
                       "bbob-constrained-active-only", "bbob-constrained-no-disguise",
                       "bbob-largescale", "bbob-mixint", "bbob-biobj-mixint", "bbob-noisy"]
