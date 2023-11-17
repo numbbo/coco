@@ -13,8 +13,7 @@
  a grid of `n \times n` points in objective space are provided.
  
  Prerequisite: the cocopp module of the COCO platform needs to be installed.
- Run therefore `python do.py install-postprocessing` once in the root folder
- of the github project before.
+ Run 'pip install cocopp'  to install the latest version from PyPI.
 
  based on code by Thanh-Do Tran 2012--2015
  adapted by Dimo Brockhoff 2016
