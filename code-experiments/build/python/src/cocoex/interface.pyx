@@ -656,13 +656,13 @@ cdef class Problem:
         return self(x) - self.final_target_fvalue1
 
     def initial_solution_proposal(self, restart_number=None):
-        """return feasible initial solution proposals.
+        """return initial solution proposals.
 
-        For unconstrained problems, the proposal is different for each
-        consecutive call without argument and for each `restart_number`
-        and may be different under repeated calls with the same
-        `restart_number`. ``self.initial_solution_proposal(0)`` is the
-        same as ``self.initial_solution``.
+        The proposal is different for each consecutive call without
+        argument and for each `restart_number` and may be different under
+        repeated calls with the same `restart_number`.
+        ``self.initial_solution_proposal(0)`` is the same as
+        ``self.initial_solution`` and is always feasible.
 
         Conceptual example::
 
@@ -672,12 +672,16 @@ cdef class Problem:
                 while problem.evaluations < budget and not problem.final_target_hit:
                     fmin(problem, problem.initial_solution_proposal())
 
-        Details: by default, the first proposal is the domain middle or
-        the (only) known feasible solution.
-        Subsequent proposals are coordinate-wise sampled as the sum
-        of two iid random variates uniformly distributed within the
-        domain boundaries. On the ``'bbob'`` suite their density is
-        0.2 * (x / 5 + 1) for x in [-5, 0] and
+        Details: by default, the first proposal is the domain middle or the
+        (only) known feasible solution. Subsequent proposals are
+        coordinate-wise sampled uniformly at random for discrete variables
+        and otherwise as the sum of two iid uniformly distributed random
+        variates, scaled to have positive density only within the domain
+        boundaries for unconstrained problems and around the feasible
+        initial solution +-1 for constrained problems.
+
+        On the ``'bbob'`` suite their density
+        is 0.2 * (x / 5 + 1) for x in [-5, 0] and
         0.2 * (1 - x / 5) for x in [0, 5] and zero otherwise.
 
         """
@@ -686,11 +690,18 @@ cdef class Problem:
             self._initial_solution_proposal_calls += 1  # count calls without explicit argument
         if restart_number <= 0:
             return self.initial_solution
-        rv_triangular = np.random.rand(self.dimension) + np.random.rand(self.dimension)
+        rv_triangular = np.random.rand(self.dimension) + np.random.rand(self.dimension)  # in [0, 2]
+        for i in range(self.number_of_integer_variables):
+            rv_triangular[i] = np.random.randint(self.lower_bounds[i], self.upper_bounds[i] + 1)
         if self.number_of_constraints > 0:
-            return self.initial_solution + 1.0 * (rv_triangular - 1)
-        return self.lower_bounds + rv_triangular * (
-                                    self.upper_bounds - self.lower_bounds) / 2
+            # returns self.initial_solution + rv_triangular - 1
+            rv_triangular[self._number_of_integer_variables:] += -1 + self.initial_solution[self._number_of_integer_variables:]
+        else:
+            # returns lb + rv * (ub - lb) / 2
+            rv_triangular[self._number_of_integer_variables:] *= (self.upper_bounds[self._number_of_integer_variables:] - 
+                                                                  self.lower_bounds[self._number_of_integer_variables:]) / 2
+            rv_triangular[self._number_of_integer_variables:] += self.lower_bounds[self._number_of_integer_variables:]
+        return rv_triangular
     @property
     def initial_solution(self):
         """return feasible initial solution"""
