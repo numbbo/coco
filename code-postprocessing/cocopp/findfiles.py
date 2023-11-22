@@ -120,7 +120,8 @@ def get_directory(directory, extract_files):
                         raise IOError(2, 'Some of the files cannot be extracted ' +
                                       'from "%s". The path is too long.' % directory)
 
-                    tar_file.extractall(dir_name)
+                    try: tar_file.extractall(dir_name, filter='data')
+                    except TypeError: tar_file.extractall(dir_name)  # Windows
                     # TarFile.open handles tar.gz/tgz
                     print('    archive extracted to folder', dir_name, '...')
             directory = dir_name
