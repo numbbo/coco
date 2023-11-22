@@ -17,6 +17,7 @@ def test_bbob():
             for instance in [0, 1, 10, 100, 1000]:
                 fn = BenchmarkFunction("bbob", fid, dimension, instance)
                 assert str(fn) == f"bbob_f{fid:03d}_i{instance:02d}_d{dimension:02d}"
+                assert fn(x0) >= fn.best_value()
 
 def test_list():
     fn = BenchmarkFunction("bbob", 1, 4, 1)
@@ -28,3 +29,5 @@ def test_multiple_parameters():
         X = np.random.uniform(-5, 5, size=(n, 4))
         y = fn(X)
         assert len(y) == n
+        assert np.all(y >= fn.best_value())
+
