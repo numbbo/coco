@@ -195,6 +195,24 @@ struct coco_suite_s;
  * See coco_suite_s for more information on its fields. */
 typedef struct coco_suite_s coco_suite_t;
 
+/** @brief Structure containing a COCO noisy problem. */
+struct coco_noisy_problem_s;
+
+/**
+ * @brief The COCO noisy problem type.
+ *
+ * See coco_noisy_problem_s for more information on its fields. */
+typedef struct coco_noisy_problem_s coco_noisy_problem_t;
+
+/** @brief Structure containing a COCO model. */
+struct coco_noise_model_s;
+
+/**
+ * @brief The COCO noise model type.
+ *
+ * See coco_noise_model for more information on its fields. */
+typedef struct coco_noise_model_s coco_noise_model_t;
+
 /** @brief Structure containing a COCO observer. */
 struct coco_observer_s;
 
@@ -550,7 +568,7 @@ double coco_random_normal(coco_random_state_t *state);
 /**
  * @brief Resets seeds
  */
-void reset_seeds(void);
+void coco_reset_seeds(void);
 
 /**@}*/
 
