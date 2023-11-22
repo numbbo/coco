@@ -168,7 +168,8 @@ def get_first_reference_values():
 
 def get_short_names(file_name):
     try:
-        info_list = open(os.path.join(os.path.dirname(__file__), file_name), 'r').read().split('\n')
+        with open(os.path.join(os.path.dirname(__file__), file_name), 'r') as f:
+            info_list = f.read().split('\n')
         info_dict = {}
         for line in info_list:
             if len(line) == 0 or line.startswith('%') or line.isspace():
@@ -202,8 +203,10 @@ class Testbed(object):
         if fun_number is None:
             return self.__doc__
 
-        for line in open(os.path.join(os.path.abspath(os.path.split(__file__)[0]),
-                                      self.info_filename)).readlines():
+        with open(os.path.join(os.path.abspath(os.path.split(__file__)[0]),
+                               self.info_filename)) as f:
+            lines = f.readlines()
+        for line in lines:
             if line.split():  # ie if not empty
                 try:  # empty lines are ignored
                     fun = int(line.split()[0])
