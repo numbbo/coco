@@ -260,7 +260,7 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
  
   for (i = 0; i < dimension; ++i)
     all_zeros[i] = 0.0;
-     
+
   /* Create the objective function */
   problem = f_ellipsoid_cons_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
@@ -343,7 +343,7 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
  
   for (i = 0; i < dimension; ++i)
     all_zeros[i] = 0.0;
-	 
+	
   /* Create the objective function */
   problem = f_ellipsoid_rotated_cons_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);

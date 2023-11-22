@@ -40,15 +40,18 @@ def generate_test_data_for_suite(suite_name, filename, solution_array=solution_a
     number of solutions of dimension `dimension`.
     """
     if os.path.exists(filename):
-        raise ValueError("file '" + filename + "' exists already")
+        print("Removing %s..." % (filename))
+        os.remove(filename)
+        print("%s removed" % (filename))
     suite = cocoex.Suite(suite_name, "year: 0000", "")
     xfc_dict = {}
     for i, f in enumerate(suite):
-        for x in solution_array(f.dimension):
-            res = (f(x) if f.number_of_objectives == 1 else list(f(x)),
+        for j, x in enumerate(solution_array(f.dimension)):
+            fval = f(x)
+            res = (fval if f.number_of_objectives == 1 else list(fval),
                    list(f.constraint(x) if f.number_of_constraints > 0 else []))
             if is_finite(res) and is_smaller_than(res, 1e22):
-                xfc_dict[i, tuple(x)] = res  # tuple, because keys must be immutable
+                xfc_dict[i, j, tuple(x)] = res  # tuple, because keys must be immutable
             else:
                 print("rejected: ", f.name, i, x, res)
 
@@ -68,7 +71,7 @@ if __name__ == "__main__":
         pass
     else:
         for name in suite_names:
-            filename = "regression_test_%ddata_for_suite_" %ndata + name + ".py"
+            filename = "./regression_test_%ddata_for_suite_" %ndata + name + ".py"
             try:
                 print('generating %s...' % filename, end='')
                 sys.stdout.flush()

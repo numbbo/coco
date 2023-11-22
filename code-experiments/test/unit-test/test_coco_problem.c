@@ -26,6 +26,19 @@ MU_TEST(test_coco_evaluate_function) {
   coco_free_memory(x);
   coco_free_memory(y);
 
+  suite = coco_suite("bbob-noisy", NULL, "dimensions: 2 instance_indices: 1");
+  x = coco_allocate_vector(2);
+  y = coco_allocate_vector(1);
+  while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL) {
+    x[0] = 0;
+    x[1] = NAN;
+    coco_evaluate_function(problem, x, y);
+    mu_check(coco_vector_contains_nan(y, 1));
+  }
+  coco_suite_free(suite);
+  coco_free_memory(x);
+  coco_free_memory(y);
+
   suite = coco_suite("bbob-biobj", NULL, "dimensions: 2 instance_indices: 1");
   x = coco_allocate_vector(2);
   y = coco_allocate_vector(2);

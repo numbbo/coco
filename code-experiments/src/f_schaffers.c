@@ -21,6 +21,14 @@
 #include "transform_obj_norm_by_dim.c"
 
 /**
+ * @brief Data type for the schaffers problem
+ */
+typedef struct{
+  double conditioning;
+  double penalty_scale;
+} f_schaffers_data_t;
+
+/**
  * @brief Implements the Schaffer's F7 function without connections to any COCO structures.
  */
 static double f_schaffers_raw(const double *x, const size_t number_of_variables) {
@@ -77,7 +85,7 @@ static coco_problem_t *f_schaffers_bbob_problem_allocate(const size_t function,
                                                          const size_t dimension,
                                                          const size_t instance,
                                                          const long rseed,
-                                                         const double conditioning,
+                                                         const void *args,
                                                          const char *problem_id_template,
                                                          const char *problem_name_template) {
   double *xopt, fopt;
@@ -87,7 +95,13 @@ static coco_problem_t *f_schaffers_bbob_problem_allocate(const size_t function,
   double *b = coco_allocate_vector(dimension);
   double *current_row, **rot1, **rot2;
 
-  const double penalty_factor = 10.0;
+  f_schaffers_args_t *f_schaffers_args;
+  f_schaffers_args = ((f_schaffers_args_t *) args);
+  f_schaffers_data_t *data;
+  data = (f_schaffers_data_t *) coco_allocate_memory(sizeof(*data));
+
+  data->conditioning = f_schaffers_args->conditioning;
+  data->penalty_scale = f_schaffers_args->penalty_scale;
 
   xopt = coco_allocate_vector(dimension);
   fopt = bbob2009_compute_fopt(function, instance);
@@ -102,7 +116,7 @@ static coco_problem_t *f_schaffers_bbob_problem_allocate(const size_t function,
     current_row = M + i * dimension;
     for (j = 0; j < dimension; ++j) {
       double exponent = 1.0 * (int) i / ((double) (long) dimension - 1.0);
-      current_row[j] = rot2[i][j] * pow(sqrt(conditioning), exponent);
+      current_row[j] = rot2[i][j] * pow(sqrt(data -> conditioning), exponent);
     }
   }
 
@@ -113,7 +127,7 @@ static coco_problem_t *f_schaffers_bbob_problem_allocate(const size_t function,
   bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
   problem = transform_vars_affine(problem, M, b, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
-  problem = transform_obj_penalize(problem, penalty_factor);
+  problem = transform_obj_penalize(problem, data->penalty_scale);
 
   bbob2009_free_matrix(rot1, dimension);
   bbob2009_free_matrix(rot2, dimension);

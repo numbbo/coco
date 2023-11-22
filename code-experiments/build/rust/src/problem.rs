@@ -126,8 +126,8 @@ impl Problem<'_> {
     /// To check whether the target has been reached use [[Problem::final_target_value]]
     /// or [[Problem::final_target_hit]] instead.
     pub fn best_value(&self) -> f64 {
-        unsafe { coco_sys::coco_problem_get_best_value(self.inner) }
-    }
+            unsafe { coco_sys::coco_problem_get_best_value(self.inner) }
+    } 
 
     /// Returns the best observed value for the first objective.
     pub fn best_observed_value(&self) -> f64 {

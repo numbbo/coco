@@ -10,6 +10,7 @@
  * TODO: It would be nice to have a generic step ellipsoid function to complement this one.
  */
 #include <assert.h>
+#include <stdio.h>
 
 #include "coco.h"
 #include "coco_problem.c"
@@ -30,14 +31,14 @@
  */
 typedef struct {
   double *x, *xx;
-  double *xopt, fopt;
+  double *xopt, fopt, penalty_scale;
   double **rot1, **rot2;
 } f_step_ellipsoid_data_t;
 
 /**
  * @brief Implements the step ellipsoid function without connections to any COCO structures.
  */
-static double f_step_ellipsoid_raw(const double *x, const size_t number_of_variables, f_step_ellipsoid_data_t *data) {
+static double f_step_ellipsoid_raw(const double *x, const size_t number_of_variables, const f_step_ellipsoid_data_t *data) {
   
   static const double condition = 100;
   static const double alpha = 10.0;
@@ -56,7 +57,7 @@ static double f_step_ellipsoid_raw(const double *x, const size_t number_of_varia
     if (tmp > 0.0)
       penalty += tmp * tmp;
   }
-  
+  penalty = penalty * (data -> penalty_scale);
   for (i = 0; i < number_of_variables; ++i) {
     double c1;
     data->x[i] = 0.0;
@@ -87,7 +88,6 @@ static double f_step_ellipsoid_raw(const double *x, const size_t number_of_varia
     double exponent;
     exponent = (double) (long) i / ((double) (long) number_of_variables - 1.0);
     result += pow(condition, exponent) * data->xx[i] * data->xx[i];
-    ;
   }
   result = 0.1 * coco_double_max(fabs(x1) * 1.0e-4, result) + penalty + data->fopt;
   
@@ -128,6 +128,7 @@ static coco_problem_t *f_step_ellipsoid_bbob_problem_allocate(const size_t funct
                                                               const size_t dimension,
                                                               const size_t instance,
                                                               const long rseed,
+                                                              const void *args,
                                                               const char *problem_id_template,
                                                               const char *problem_name_template) {
   
@@ -143,8 +144,13 @@ static coco_problem_t *f_step_ellipsoid_bbob_problem_allocate(const size_t funct
   data->xopt = coco_allocate_vector(dimension);
   data->rot1 = bbob2009_allocate_matrix(dimension, dimension);
   data->rot2 = bbob2009_allocate_matrix(dimension, dimension);
-  
+
+  f_step_ellipsoid_args_t *f_step_ellipsoid_args;
+  f_step_ellipsoid_args = ((f_step_ellipsoid_args_t *) args);
+
+  double penalty_scale = f_step_ellipsoid_args->penalty_scale;
   data->fopt = bbob2009_compute_fopt(function, instance);
+  data->penalty_scale = penalty_scale;
   bbob2009_compute_xopt(data->xopt, rseed, dimension);
   bbob2009_compute_rotation(data->rot1, rseed + 1000000, dimension);
   bbob2009_compute_rotation(data->rot2, rseed, dimension);
@@ -160,18 +166,12 @@ static coco_problem_t *f_step_ellipsoid_bbob_problem_allocate(const size_t funct
     problem->best_parameter[i] = data->xopt[i];
   }
   problem->best_value[0] = data->fopt;
-  
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
   coco_problem_set_type(problem, "2-moderate");
   
   return problem;
 }
-
-
-
-
-
 
 /**
  * @brief Implements the step ellipsoid function without connections to any COCO structures.
@@ -192,7 +192,6 @@ static double f_step_ellipsoid_core(const double *x, const size_t number_of_vari
   return result;
 }
 
-
 /**
  * @brief Uses the raw function to evaluate the ls COCO problem.
  */
@@ -212,8 +211,6 @@ static void f_step_ellipsoid_versatile_data_free(coco_problem_t *problem) {
   coco_problem_free(problem);
 }
 
-
-
 /**
  * @brief Allocates the basic step ellipsoid problem.
  * an additional coordinate is added that will contain the value of \hat{z}_1 but that is ignored by functions other that f_step_ellipsoid_core and transform_vars_round_step. The latter sets it.
@@ -232,8 +229,6 @@ static coco_problem_t *f_step_ellipsoid_allocate(const size_t number_of_variable
   f_step_ellipsoid_permblock_evaluate(problem, problem->best_parameter, problem->best_value);
   return problem;
 }
-
-
 
 /**
  * @brief Creates the BBOB permuted block-rotated step ellipsoid problem.

@@ -163,7 +163,6 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
                                              const size_t number_of_constraints) {
   coco_problem_t *problem;
   problem = (coco_problem_t *) coco_allocate_memory(sizeof(*problem));
-  
   /* Initialize fields to sane/safe defaults */
   problem->initial_solution = NULL;
   problem->evaluate_function = NULL;
@@ -171,6 +170,7 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->evaluate_gradient = NULL;
   problem->recommend_solution = NULL;
   problem->problem_free_function = NULL;
+
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = number_of_objectives;
   problem->number_of_constraints = number_of_constraints;
@@ -324,14 +324,14 @@ void coco_problem_free(coco_problem_t *problem) {
     problem->smallest_values_of_interest = NULL;
     problem->largest_values_of_interest = NULL;
     problem->best_parameter = NULL;
+    problem->data = NULL;
     problem->best_value = NULL;
     problem->nadir_value = NULL;
     problem->suite = NULL;
-    problem->data = NULL;
     problem->initial_solution = NULL;
     coco_free_memory(problem);
   }
-}
+} 
 
 /***********************************************************************************************************/
 
