@@ -3183,7 +3183,7 @@ def parseinfo(s):
     Keys should not use comma or quote characters.
 
     """
-    p = re.compile('\ *([^,=]+?)\ *=\ *(".+?"|\'.+?\'|[^,]+)\ *(?=,|$)')
+    p = re.compile(r'\ *([^,=]+?)\ *=\ *(".+?"|\'.+?\'|[^,]+)\ *(?=,|$)')
     res = []
     for elem0, elem1 in p.findall(s):
         if elem1.startswith('\'') and elem1.endswith('\''): # HACK
