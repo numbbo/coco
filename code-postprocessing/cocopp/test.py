@@ -250,18 +250,11 @@ def main(arguments):
 
     run_all_tests = 'all' in arguments
 
-    python = 'python -m ' # how to call python
-    for argument in arguments:
-        if 'python3' in argument:
-            python = 'python3 -m ' # how to call python
-            break
-    if len(sys.argv) > 1 and sys.argv[1] == 'wine':
-        python = 'C:\\Python26\\python.exe '  # works for wine
+    # Use the current Python version for all tests
+    python = sys.executable
+    print(f"INFO: Using {python} to run all tests.")
 
-    # old_data_path = ' ' + prepare_data(run_all_tests)
-
-
-    command = ' cocopp --no-svg --settings=grayscale '  # TODO: grayscale has to go
+    command = ' -m cocopp --no-svg --settings=grayscale '  # TODO: grayscale has to go
 
     #copy_latex_templates()
     #print('LaTeX templates copied.')
