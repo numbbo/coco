@@ -649,7 +649,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         pprldmany_target_values=
         np.append(np.append(10 ** np.arange(0, -5.1, -0.1), [0]), -10 ** np.arange(-5, -3.9, 0.2)),
         instances_are_uniform = False,
-        pprldmany_target_range_latex='$\{-10^{-4}, -10^{-4.2}, $ $-10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0\}$',
+        pprldmany_target_range_latex=r'$\{-10^{-4}, -10^{-4.2}, $ $-10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0\}$',
         ppscatter_target_values=np.array(list(np.logspace(-5, 1, 21)) + [inf_like]),  # 21 was 51
         rldValsOfInterest=(1e-1, 1e-2, 1e-3, 1e-4, 1e-5),
         ppfvdistr_min_target=1e-5,
