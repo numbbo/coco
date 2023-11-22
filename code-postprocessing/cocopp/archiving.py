@@ -729,31 +729,32 @@ class COCODataArchive(_td.StrList):
         """
         res = []
         args = _str_to_list(args)
-        nb_results = 0
-        for i, name in enumerate(args):
+        for name in args:
             name = name.strip()
             if os.path.exists(name):
                 res.append(name)
-            elif name.endswith('!'):  # take first match
-                res.append(self.get_first([name[:-1]], remote=remote))
-                if res and res[-1] is None:
-                    warnings.warn('"%s" seems not to be an existing file or '
-                                  'match any archived data' % name)
-                    raise ValueError('"%s" seems not to be an existing file or '
-                                  'match any archived data' % name)
-            elif name.endswith('*'):  # take all matches
-                res.extend(self.get_all(name[:-1], remote=remote))
-            elif '*' in name:  # use find which also handles regular expressions
-                res.extend(self.get(found, remote=remote)
-                           for found in self.find(name))
-            elif self.find(name):  # get will bail out if there is not exactly one match
-                res.append(self.get(name, remote=remote))
-            if len(res) <= nb_results:
-                warnings.warn('"%s" seems not to be an existing file or '
-                              'match any archived data' % name)
-                raise ValueError('"%s" seems not to be an existing file or '
-                              'match any archived data' % name)
-            nb_results = len(res)
+                continue
+            for try_ in range(2):
+                more = []
+                if name.endswith('!'):  # take first match
+                    more.append(self.get_first([name[:-1]], remote=remote))
+                elif name.endswith('*'):  # take all matches
+                    more.extend(self.get_all(name[:-1], remote=remote))
+                elif '*' in name:  # use find which also handles regular expressions
+                    more.extend(self.get(found, remote=remote)
+                                for found in self.find(name))
+                elif self.find(name):  # get will bail out if there is not exactly one match
+                    more.append(self.get(name, remote=remote))
+                if more and more[-1] is not None:
+                    break
+                if not remote or try_ > 0:
+                    raise ValueError('"%s" seems not to be an existing file or match any archived data'
+                                     % name)
+                warnings.warn('COCODataArchive failed to locate "%s".\n'
+                              'Will try again after updating from %s'
+                              % (name, self.remote_data_path))
+                self.update()
+            res.extend(more)
         if len(args) != len(set(args)):
             warnings.warn("Several data arguments point to the very same "
                           "location. This will likely lead to \n"
