@@ -550,7 +550,7 @@ double coco_random_normal(coco_random_state_t *state);
 /**
  * @brief Resets seeds
  */
-void reset_seeds(void);
+void coco_reset_seeds(void);
 
 /**@}*/
 
