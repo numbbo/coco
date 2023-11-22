@@ -22,7 +22,6 @@ cdef extern from 'coco.h':
 # add a declaration to the generated source files.
 cdef extern coco_problem_t *coco_get_bbob_problem(size_t function, size_t
                                                   dimension, size_t instance)
-cdef extern double coco_problem_get_best_value(coco_problem_t *p)
 
 
 cdef class BenchmarkFunction:
@@ -104,10 +103,6 @@ cdef class BenchmarkFunction:
     def __del__(self):
         if self._problem != NULL:
             coco_problem_free(self._problem)
-
-    def best_value(self):
-        """Return the best (lowest) possible function value"""
-        return coco_problem_get_best_value(self._problem)
 
     def __str__(self):
         return self.id
