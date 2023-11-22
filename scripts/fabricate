@@ -68,7 +68,7 @@ class Amalgator:
         with open(filename) as fd:
             line_number = 1
             if not self.release:
-                self.destination_fd.write("#line %i \"%s\"\n" % (line_number, filename))
+                self.destination_fd.write("#line %i \"%s\"\n" % (line_number, filename.name))
             for line in fd.readlines():
                 ## Is this an include statement?
                 matches = re.match("#include \"(.*)\"", line)
@@ -79,7 +79,7 @@ class Amalgator:
                         self.process_file(include_file)
                     if not self.release:
                         self.destination_fd.write("#line %i \"%s\"\n" % 
-                                                  (line_number + 1, filename))
+                                                  (line_number + 1, filename.name))
                 else:
                     self.destination_fd.write(line)
                 line_number += 1

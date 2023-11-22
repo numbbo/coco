@@ -256,6 +256,57 @@ struct coco_suite_s {
 
 static void bbob_evaluate_gradient(coco_problem_t *problem, const double *x, double *y);
 
+/***********************************************************************************************************/
+/**
+ * @name The structures and type definitions needed for performing experiments on noisy problems 
+*/
+/**{@*/
+
+/**
+ * @brief The coco evaluate noise model function type.
+ *
+ * This is a template for functions that perform the evaluation 
+ *  of the noise model (multiplicative or additive) on the objective function
+ */
+typedef void (*coco_problem_evaluate_noise_model_t)(const coco_noisy_problem_t *problem, double *y);
+
+/**
+ * @brief The noise sampler function type.
+ * This is a template for functions that perform the sampling  
+ * from the target distribution of the noise model 
+ */
+typedef void (*coco_problem_noise_sampler_t)(coco_noisy_problem_t * problem, const double fvalue);
+
+/**
+ * @brief The noisy COCO problem data type
+ * Wraps a noisy probkem around a inner one 
+ */
+struct coco_noisy_problem_s{
+  coco_problem_t *inner_problem;                      /**@brief Pointer to the inner problem*/
+  coco_evaluate_noise_model_t evaluate_noisy_function;   /**< @brief  The function for evaluating the noisy problem. */
+  coco_noise_model_t noise_model;
+  double last_noise_value;                            /**< @brief Last noise value in the case of noisy problems.
+                                                       * Needed to compute the correct gradient for noisy problems.
+                                                       * It assumes that the gradient will be computed after each function evaluation*/
+};
+
+/**
+ * @brief The COCO noise evaluator
+ * The structure containing information about the noise model applied to the problem
+*/
+struct coco_noise_model_s{
+  
+  coco_problem_noise_sampler_t noise_sampler;         /**< @brief The function defining the noise model*/
+  coco_problem_evaluate_noise_model_t noise_model_evaluator;    /**< @brief The function for sampling from the target distribution*/
+
+  uint32_t random_seed;                               /**< @brief Random seed for noisy problems.*/
+  double *distribution_theta;                         /**< @brief Parameters of the distribution from which the noise is drawn*/
+
+};
+/**@}*/
+
+/***********************************************************************************************************/
+
 #ifdef __cplusplus
 }
 #endif

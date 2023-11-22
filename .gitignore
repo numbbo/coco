@@ -7,6 +7,8 @@
 REVISION
 VERSION
 __pycache__
+*.egg-info/
+.vscode/*
 
 code-experiments/build/**/bbob2009_testcases.txt
 code-experiments/build/**/bbob2009_testcases2.txt

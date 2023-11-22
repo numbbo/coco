@@ -141,6 +141,24 @@ struct coco_suite_s;
  * See coco_suite_s for more information on its fields. */
 typedef struct coco_suite_s coco_suite_t;
 
+/** @brief Structure containing a COCO noisy problem. */
+struct coco_noisy_problem_s;
+
+/**
+ * @brief The COCO noisy problem type.
+ *
+ * See coco_noisy_problem_s for more information on its fields. */
+typedef struct coco_noisy_problem_s coco_noisy_problem_t;
+
+/** @brief Structure containing a COCO model. */
+struct coco_noise_model_s;
+
+/**
+ * @brief The COCO noise model type.
+ *
+ * See coco_noise_model for more information on its fields. */
+typedef struct coco_noise_model_s coco_noise_model_t;
+
 /** @brief Structure containing a COCO observer. */
 struct coco_observer_s;
 
@@ -484,6 +502,106 @@ double coco_random_uniform(coco_random_state_t *state);
  * @brief Generates an approximately normal random number.
  */
 double coco_random_normal(coco_random_state_t *state);
+/**@}*/
+
+/***********************************************************************************************************/
+
+/**
+ * @name Methods regarding noisy problems
+ */
+/**@{*/
+
+/**
+ * @brief The allocate objective function type 
+ * This is a template for functions that perform the allocation of the objective function 
+ * given the number of dimensions of the problem
+*/
+typedef coco_problem_t *(*coco_problem_bbob_allocator_t)(
+  const size_t function, 
+  const size_t dimension, 
+  const size_t instance, 
+  const long rseed, 
+  const char *problem_id_template, 
+  const char *problem_name_template);
+
+/**
+ * @brief Returns the problem's random seed
+ */
+uint32_t coco_problem_get_random_seed(const coco_noisy_problem_t *problem);
+
+/**
+ * @brief Returns the parameters of the noise distribution 
+ */
+double *coco_problem_get_theta_distribution(const coco_noisy_problem_t *problem);
+
+/**
+ * @brief Returns the problem's last noise value
+ */
+double coco_problem_get_last_noise_value(const coco_noisy_problem_t *problem);
+
+/**
+ * @brief Samples gaussian variate for noisy function
+ */
+void coco_problem_sample_gaussian_noise(coco_noisy_problem_t * problem, double fvalue);
+
+/**
+ * @brief Samples gaussian variate for noisy function
+ */
+void coco_problem_sample_uniform_noise(coco_noisy_problem_t * problem, double fvalue);
+
+/**
+ * @brief Samples Cauchy variate for noisy function
+ */
+void coco_problem_sample_cauchy_noise(coco_noisy_problem_t * problem, double fvalue);
+
+/**
+  * @brief Applies additive noise to the function
+  * Used to apply the additive noise model to the function value
+  * Should be used as a wrapper around f_<function_name>_evaluate
+ *//**@{*/
+
+void coco_problem_evaluate_additive_noise_model(const coco_noisy_problem_t *problem, const double * x, double * y);
+
+/**
+  * @brief Applies multiplicative noise to the function
+  * Used to apply the additive noise model to the function value
+  * Should be used as a wrapper around f_<function_name>_evaluate
+ */
+void coco_problem_evaluate_multiplicative_noise_model(const coco_noisy_problem_t *problem, const double * x, double * y);
+
+/**
+  * @brief Evaluates the coco problem noisy function
+  * works as a wrapper around the function type coco_problem_f_evaluate
+ */
+void coco_problem_f_evaluate_wrap_noisy(const coco_noisy_problem_t *problem, double *x, double *y);
+
+/**
+  * @brief Allocates the coco problem noisy function
+  * works as a wrapper around the function type coco_problem_allocate_f
+ */
+coco_noisy_problem_t *coco_problem_allocate_f_wrap_noisy(const coco_problem_t *inner_problem);
+
+/**
+  * @brief Allocates the coco problem noisy function
+  * works as a wrapper around the function type coco_problem_allocate_f
+ */
+coco_noisy_problem_t *coco_problem_allocate_bbob_wrap_noisy(
+        const coco_problem_bbob_allocator_t *coco_problem_bbob_allocator_t,
+        const size_t function, 
+        const size_t dimension, 
+        const size_t instance, 
+        const long rseed, 
+        const char *problem_id_template, 
+        const char *problem_name_template, 
+        const uint32_t random_seed, 
+        const double *distribution_theta,
+        const coco_problem_evaluate_noise_model_t *noise_model, 
+        const coco_problem_noise_sampler_t *noise_sampler);
+
+/**
+  * @brief Sets the noisy problem id from its inner problem id, noise sampler and theta distribution
+ */
+void coco_problem_get_noisy_problem_id_from_problem_id(coco_problem_t inner_problem, coco_noisy_problem_t problem);
 /**@}*/
 
 /***********************************************************************************************************/
