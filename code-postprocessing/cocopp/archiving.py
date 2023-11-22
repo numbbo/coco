@@ -746,6 +746,8 @@ class COCODataArchive(_td.StrList):
                 elif self.find(name):  # get will bail out if there is not exactly one match
                     more.append(self.get(name, remote=remote))
                 if more and more[-1] is not None:
+                    if try_ == 1:
+                        print('2nd try succeeded')
                     break
                 if not remote or try_ > 0:
                     raise ValueError('"%s" seems not to be an existing file or match any archived data'
