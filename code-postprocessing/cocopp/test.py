@@ -28,8 +28,8 @@ else:
 
 test_bibtex = False
 
-class InfolderGoneWithTheWind:
-    """``with InfolderGoneWithTheWind(): ...`` executes the block in a
+class InFolderGoneWithTheWind:
+    """``with InFolderGoneWithTheWind(): ...`` executes the block in a
 
     temporary folder under the current folder. The temporary folder is
     deleted on exiting the block.
@@ -51,19 +51,17 @@ class InfolderGoneWithTheWind:
     def __init__(self, prefix='_'):
         """no folder needs to be given"""
         self.prefix = prefix
+
     def __enter__(self):
-        self.root_dir = os.getcwd()
-        # self.target_dir = tempfile.mkdtemp(prefix=self.prefix, dir='.')
+        self.original_dir = os.getcwd()
         self.target_dir = tempfile.mkdtemp(prefix=self.prefix)
-        self._target_dir = self.target_dir
+        print(f"INFO: Using temp directory '{self.target_dir}'")
         os.chdir(self.target_dir)
+
     def __exit__(self, *args):
-        os.chdir(self.root_dir)
-        if self.target_dir == self._target_dir:
-            shutil.rmtree(self.target_dir)
-        else:
-            raise ValueError("inconsistent temporary folder name %s vs %s"
-                             % (self._target_dir, self.target_dir))
+        os.chdir(self.original_dir)
+        shutil.rmtree(self.target_dir)
+
 
 def depreciated_data_archive_get(substrs):
     """CAVEAT: this won't work anymore as the get_first method changed to
@@ -236,7 +234,7 @@ def tmp_test_constrained(python, command):
     t0 = time.time()
     data_path = archive.get("fmincon_consbbob")
     print(python + command + data_path)
-    with InfolderGoneWithTheWind():
+    with InFolderGoneWithTheWind():
         result = os.system(python + command + data_path)
     print('**  subtest 19 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one bbob-constrained algorithm.'
@@ -273,7 +271,7 @@ def main(arguments):
     data_path = data_archive_get('BFGS_ros_noiseless')
     print(python + command + # '--conv ' +
           data_path)
-    with InfolderGoneWithTheWind():
+    with InFolderGoneWithTheWind():
         result = os.system(python + command + # '--conv ' +
                            data_path)
     print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
@@ -283,7 +281,7 @@ def main(arguments):
     t0 = time.time()
     data_path = data_archive_get('RANDOMSEARCH-4_Auger_bbob-biobj.tgz')
     print(python + command + data_path)
-    with InfolderGoneWithTheWind():
+    with InFolderGoneWithTheWind():
         result = os.system(python + command + data_path)
     print('**  subtest 2 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one bi-objective algorithm.'
@@ -301,14 +299,14 @@ def main(arguments):
         t0 = time.time()
         print(time.asctime())
 
-        with InfolderGoneWithTheWind():
+        with InFolderGoneWithTheWind():
             result = os.system(python + command + data_paths)
         print('**  subtest 3 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on many algorithms.'
         #run_latex_template("templateBBOBmany.tex", run_all_tests)
 
         t0 = time.time()
-        with InfolderGoneWithTheWind():
+        with InFolderGoneWithTheWind():
             result = os.system(python + command + data_archive_get([
                                 'SMAC-BBOB_hutter_noiseless.tgz',
                                 'lmm-CMA-ES_auger_noiseless.tgz']))
@@ -317,7 +315,7 @@ def main(arguments):
         #run_latex_template("templateBBOBcmp.tex", run_all_tests)
 
         t0 = time.time()
-        with InfolderGoneWithTheWind():
+        with InFolderGoneWithTheWind():
             result = os.system(python + command + ' --include-single ' + data_archive_get([
                                 'DE-PSO_garcia-nieto_noiseless.tgz',
                                 'VNS_garcia-martinez_noiseless.tgz']))
@@ -326,7 +324,7 @@ def main(arguments):
         #run_latex_template("templateBBOBcmp.tex", run_all_tests)
 
         t0 = time.time()
-        with InfolderGoneWithTheWind():
+        with InFolderGoneWithTheWind():
             result = os.system(python + command + ' --expensive ' + data_archive_get(
                                 'VNS_garcia-martinez_noiseless.tgz'))
         print('**  subtest 6 finished in ', time.time() - t0, ' seconds')
@@ -334,7 +332,7 @@ def main(arguments):
         #run_latex_template("templateBBOBarticle.tex", run_all_tests)
 
         t0 = time.time()
-        with InfolderGoneWithTheWind():
+        with InFolderGoneWithTheWind():
             result = os.system(python + command + data_archive_get([
                                 'RANDOMSEARCH-4_Auger_bbob-biobj.tgz',
                                 'RANDOMSEARCH-100_Auger_bbob-biobj.tgz']))
@@ -347,7 +345,7 @@ def main(arguments):
         # but with a shorter file name from the biobj-test folder
         # to avoid problems with too long path names on the windows
         # Jenkins slave
-        with InfolderGoneWithTheWind():
+        with InFolderGoneWithTheWind():
             result = os.system(python + command + data_archive_get([
                                 'NSGA-II-MATLAB_Auger_bbob-biobj.tgz',
                                 'RANDOMSEARCH-4_Auger_bbob-biobj.tgz',
@@ -358,7 +356,7 @@ def main(arguments):
 
         # testing data from bbob-noisy suite:
         t0 = time.time()
-        with InfolderGoneWithTheWind():
+        with InFolderGoneWithTheWind():
             result = os.system(python + command + data_archive_get([
                                 'MCS_huyer_noisy.tgz',
                                 'BFGS_ros_noisy.tgz']))
@@ -369,14 +367,14 @@ def main(arguments):
         # testing data from recent runs:
         recent_data_path = os.path.abspath(join_path(os.path.dirname(__file__),
                                                      '../../code-experiments/build/python/exdata'))
-        with InfolderGoneWithTheWind():
+        with InFolderGoneWithTheWind():
             t0 = time.time()
             result = os.system(python + command +
                                join_path(recent_data_path, 'RS-bb'))
             print('**  subtest 10 finished in ', time.time() - t0, ' seconds')
             assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob`.'
 
-        with InfolderGoneWithTheWind():
+        with InFolderGoneWithTheWind():
             t0 = time.time()
             result = os.system(python + command +
                                join_path(recent_data_path, 'RS-bi'))
@@ -391,54 +389,54 @@ def main(arguments):
             # assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-constrained`.'
             # delete_files(all_files=True)
 
-        with InfolderGoneWithTheWind():
+        with InFolderGoneWithTheWind():
             t0 = time.time()
             result = os.system(python + command + data_archive_get(
                 'test/RS-4.zip'))
             print('**  subtest 13 finished in ', time.time() - t0, ' seconds')
             assert result == 0, 'Test failed: rungeneric on RS-4.zip.'
 
-        with InfolderGoneWithTheWind():
+        with InFolderGoneWithTheWind():
             t0 = time.time()
             result = os.system(python + command +
                                join_path(recent_data_path, 'RS-la'))
             print('**  subtest 14 finished in ', time.time() - t0, ' seconds')
             assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-largescale`.'
 
-        with InfolderGoneWithTheWind():
+        with InFolderGoneWithTheWind():
             t0 = time.time()
             result = os.system(python + command +
                                join_path(recent_data_path, 'RS-mi'))
             print('**  subtest 15 finished in ', time.time() - t0, ' seconds')
             assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-mixint`.'
 
-        with InfolderGoneWithTheWind():
+        with InFolderGoneWithTheWind():
             t0 = time.time()
             result = os.system(python + command +
                                join_path(recent_data_path, 'RS-bi-mi'))
             print('**  subtest 16 finished in ', time.time() - t0, ' seconds')
             assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-biobj-mixint`.'
 
-        with InfolderGoneWithTheWind():
+        with InFolderGoneWithTheWind():
             t0 = time.time()
             result = os.system(python + command +
                                'bbob/2009/BFGS! bbob-largescale/2019/LBFGS!')
             print('**  subtest 17 finished in ', time.time() - t0, ' seconds')
             assert result == 0, 'Test failed: rungeneric on data from `bbob` and `bbob-largescale` suite.'
 
-        with InfolderGoneWithTheWind():
+        with InFolderGoneWithTheWind():
             t0 = time.time()
             result = os.system(python + command + 'NSGA-II! 2019/IBEA!')
             print('**  subtest 18 finished in ', time.time() - t0, ' seconds')
             assert result == 0, 'Test failed: rungeneric on data from `bbob-biobj` and `bbob-biobj-ext` suite.'
 
-        with InfolderGoneWithTheWind():
+        with InFolderGoneWithTheWind():
             t0 = time.time()
             result = os.system("""python -c "import cocopp; cocopp.main('slsqp!'); cocopp.main('abc*')" """)
             print('**  subtest 19 finished in ', time.time() - t0, ' seconds')
             assert result == 0, 'Test failed: running postprocessing twice within same python session'
 
-        with InfolderGoneWithTheWind():
+        with InFolderGoneWithTheWind():
             t0 = time.time()
             result = os.system("""python -c "import cocopp; cocopp.main('constrained/2022/RandomSearch-5')" """)
             print('**  subtest 20 finished in ', time.time() - t0, ' seconds')
