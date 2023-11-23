@@ -98,6 +98,7 @@ Install the package from source
 pip uninstall -y cocoex
 pip install .
 ```
+Under macOS with an ARM processor it may be necessary to run `arch -arm64 pip install .` instead.
 
 Install and run `pytest`
 ```sh
