@@ -254,6 +254,66 @@ class AlgorithmList(list):
         return res
 
 
+class DataWithFewSuccesses:
+    """The `result` property is a `OrderedDict` with all ``(dimension, funcId)``-
+
+    tuples that have less than ``self.minsuccesses`` successes. These
+    tuples are the `dict` keys. The `dict` values are the respective
+    numbers for ``[successes, trials]``. The minimal number of desired
+    successes can be changed at any time by re-assigning the `minsuccesses`
+    attribute in which case the return value of `result` may change.
+    
+    Usage concept example::
+
+        >> run_more = DataWithFewSuccesses('folder_or_file_name_for_cocopp.load').result
+        >> for p in cocoex.Suite('bbob', '', ''):
+        ..     if (p.id_function, p.dimension) not in run_more:
+        ..         continue
+        ..     p.observe_with(...)
+        ..     # run solver on problem p
+        ..     [...]
+
+    """
+    @property
+    def result(self):
+        """depends on attributes `minsuccesses` and `successes`"""
+        return _OrderedDict(sorted(
+            ((ds.funcId, ds.dim), [s, len(ds.instancenumbers)])
+                for s, ds in zip(self.successes, self.dsl)
+                if s < self.minsuccesses))
+    def __init__(self, folder_name, minsuccesses=9, success_threshold=1e-8):
+        """`folder_name` can also be a filename or a `DataSetList`"""
+        self.minsuccesses = minsuccesses
+        self.success_threshold = success_threshold
+        if isinstance(folder_name, list):
+            self.dsl = folder_name
+        else:
+            import cocopp
+            cocopp.genericsettings.balance_instances = False
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                self.dsl = cocopp.load(folder_name)
+        self.trials = [len(ds.instancenumbers) for ds in self.dsl]
+        """number of trials in each data set, for the record only"""
+        self.successes = self.compute_successes().successes  # declarative assignment
+        """list of successful trials, depends on `success_threshold`.
+           Can be recomputed by calling `compute_successes`.
+           """
+    def compute_successes(self, success_threshold=None):
+        """Assign `successes` attribute as a `list` of number of successful trials
+
+        in the data sets of `self.dsl` and return `self`.
+        """
+        self.successes = [ds.detSuccesses([success_threshold if success_threshold is not None 
+                                           else self.success_threshold])[0] for ds in self.dsl]
+        return self
+    def print(self):
+        """return a `str` with the number of data sets with too few successes"""
+        return 'DataWithFewSuccesses: {}/{}'.format(len(self.result), len(self.dsl))
+    def __len__(self):
+        return len(self.result)
+
+
 def print_done(message='  done'):
     """prints a message with time stamp"""
     print(message, '(' + time.asctime() + ').')
