@@ -124,3 +124,4 @@ python -m pip uninstall -y cocopp
 cd code-postprocessing
 python -m pip install --editable .
 ```
+Running `python -m cocopp.test` may not work on this installation.
