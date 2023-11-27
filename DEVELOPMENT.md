@@ -113,12 +113,14 @@ Then, you can install the `cocopp` package using pip:
 
 ```sh
 python -m pip uninstall -y cocopp
-python -m pip install code-postprocessing
+cd code-postprocessing/
+python -m pip install .
 ```
 
 If you are working on `cocopp`, you can use an editable install and Python will pick up any changes you make without having to reinstall:
 
 ```sh
 python -m pip uninstall -y cocopp
-python -m pip install --editable code-postprocessing
+cd code-postprocessing
+python -m pip install --editable .
 ```
