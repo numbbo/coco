@@ -27,7 +27,6 @@ import gzip
 import warnings
 import numpy as np
 import tarfile
-import pkg_resources
 from six import advance_iterator
 
 from . import readalign, pproc
@@ -548,6 +547,7 @@ def custom_generate(args=algs2009, algId='bestCustomAlg', suite=None):
 
 
 def create_data_files(output_dir, result, suite):
+    from ._version import __version__ as coco_version
 
     if not suite:
         suite = result[list(result.keys())[0]].suite_name
@@ -626,7 +626,7 @@ def create_data_files(output_dir, result, suite):
             comment = 'Combination of ' + ', '.join(algorithms_used)
         else:
             comment = value.comment
-        comment += '; coco_version: ' + pkg_resources.require('cocopp')[0].version
+        comment += '; coco_version: ' + coco_version
 
         info_lines.insert(1, "%% %s; instance_numbers: %s" % (comment, instances_list))
 
