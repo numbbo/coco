@@ -16,7 +16,7 @@ The median number of conducted function evaluations is given in
 #succ is the number of trials that reached the target precision 1e-8
 **Bold** entries are better than the given reference algorithm with
 a p-value of at least 0.05 or 1e-k where k is the number following the
-\downarrow symbol (computed in the rank-sum test with Bonferroni
+down arrow (computed in the rank-sum test with Bonferroni
 correction by the number of functions).
 
 """
@@ -212,7 +212,7 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                 curline.append('/%d' % all_runs)
                 curlineHtml.append('<td>%d/%d</td>\n' % (successful_runs, all_runs))
 
-                curlineHtml = [i.replace('$\infty$', '&infin;') for i in curlineHtml]
+                curlineHtml = [i.replace(r'$\infty$', r'&infin;') for i in curlineHtml]
                 table.append(curline[:])
                 tableHtml.extend(curlineHtml[:])
                 tableHtml.append('</tr>\n')
@@ -395,7 +395,7 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                         tableentry += s
                     tableentryHtml += shtml
 
-                tableentryHtml = tableentryHtml.replace('$\infty$', '&infin;')
+                tableentryHtml = tableentryHtml.replace(r'$\infty$', r'&infin;')
                 curlineHtml.append('<td>%s</td>\n' % tableentryHtml)
                 curline.append(tableentry)
 

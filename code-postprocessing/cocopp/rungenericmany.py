@@ -373,7 +373,7 @@ def main(args, outputdir):
     if genericsettings.isTab:
         print("Generating comparison tables...")
         prepend_to_file(latex_commands_file,
-                        ['\providecommand{\\bbobpptablesmanylegend}[1]{' +
+                        [r'\providecommand{\bbobpptablesmanylegend}[1]{' +
                          pptables.get_table_caption() + '}'])
         dictNoi = pproc.dictAlgByNoi(dictAlg)
         for ng, tmpdictng in dictNoi.items():

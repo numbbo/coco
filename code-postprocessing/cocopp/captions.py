@@ -94,19 +94,19 @@ def get_best_ert_text():
                 or testbed.name == testbedsettings.suite_name_bi):
             if testbed.reference_algorithm_displayname:
                 if "best 2009" in testbed.reference_algorithm_displayname:
-                    text = "best \\ERT\ measured during BBOB-2009"
+                    text = r"best \ERT\ measured during BBOB-2009"
                 elif "best 2010" in testbed.reference_algorithm_displayname:
-                    text = "best \\ERT\ measured during BBOB-2010"
+                    text = r"best \ERT\ measured during BBOB-2010"
                 elif "best 2012" in testbed.reference_algorithm_displayname:
-                    text = "best \\ERT\ measured during BBOB-2012"
+                    text = r"best \ERT\ measured during BBOB-2012"
                 elif "best 2013" in testbed.reference_algorithm_displayname:
-                    text = "best \\ERT\ measured during BBOB-2013"
+                    text = r"best \ERT\ measured during BBOB-2013"
                 elif "best 2016" in testbed.reference_algorithm_displayname:
-                    text = "best \\ERT\ measured during BBOB-2016"
+                    text = r"best \ERT\ measured during BBOB-2016"
                 elif "best 2009-16" in testbed.reference_algorithm_displayname:
-                    text = "best \\ERT\ measured during BBOB-2009-16"
+                    text = r"best \ERT\ measured during BBOB-2009-16"
                 else:
-                    text = "the \\ERT\ of the reference algorithm"
+                    text = r"the \ERT\ of the reference algorithm"
         else:
             raise NotImplementedError('reference algorithm not supported for this testbed')
     else:
@@ -177,7 +177,7 @@ replace_dict = {
     '!!HARDEST-TARGET-LATEX!!': lambda: testbedsettings.current_testbed.hardesttargetlatex,
     '!!DIM!!': lambda: r"""\DIM""",
     '!!SINGLE-RUNLENGTH-FACTORS!!': lambda: '$' + 'D, '.join(
-        [str(i) for i in genericsettings.single_runlength_factors[:6]]) + 'D,\dots$',
+        [str(i) for i in genericsettings.single_runlength_factors[:6]]) + r'D,\dots$',
     '!!LIGHT-BROWN-LINES!!': lambda: get_light_brown_line_text(testbedsettings.current_testbed.name),
     '!!PPFIGS-FTARGET!!': lambda: get_ppfigs_ftarget(),
     '!!NUM-OF-TARGETS-IN-ECDF!!': lambda: str(len(testbedsettings.current_testbed.pprldmany_target_values)),

@@ -452,7 +452,7 @@ def tableXLaTeX(table, spec, extra_eol=(), add_begin_tabular=True, add_end_tabul
     return res
 
 def tableLaTeXStar(table, width, spec, extraeol=()):
-    """Generates a tabular\* from a sequence of sequence of strings
+    """Generates a tabular* from a sequence of sequence of strings
 
     :param seq table: sequence of sequence of strings
     :param string width: string for the width of the table

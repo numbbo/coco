@@ -162,7 +162,7 @@ def cite(alg_name, is_noise_free, is_noisy):
             res.append("DBLP:conf/gecco/Kubalik09a")
         if alg_name == "PSO":
             res.append("DBLP:conf/gecco/El-AbdK09a")
-        if alg_name == "PSO\_Bounds":
+        if alg_name == "PSO_Bounds":
             res.append("DBLP:conf/gecco/El-AbdK09b")
         if alg_name == "Monte Carlo":
             res.append("DBLP:conf/gecco/AugerR09")
@@ -205,7 +205,7 @@ def cite(alg_name, is_noise_free, is_noisy):
             res.append("DBLP:conf/gecco/Auger09a")
         elif alg_name == "PSO":
             res.append("DBLP:conf/gecco/El-AbdK09a")
-        elif alg_name == "PSO\_Bounds":
+        elif alg_name == "PSO_Bounds":
             res.append("DBLP:conf/gecco/El-AbdK09b")
         elif alg_name == "Monte Carlo":
             res.append("DBLP:conf/gecco/AugerR09a")
@@ -532,7 +532,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                 curlineHtml = [item.replace('REPLACE%d' % counter, '&nbsp;') for item in curlineHtml]
             curlineHtml = [item.replace('REPLACEF', '&nbsp;') for item in curlineHtml]
 
-        curlineHtml = [i.replace('$\infty$', '&infin;') for i in curlineHtml]
+        curlineHtml = [i.replace(r'$\infty$', r'&infin;') for i in curlineHtml]
         table.append(curline[:])
         tableHtml.extend(curlineHtml[:])
         tableHtml.append('<tbody>\n')
@@ -562,9 +562,9 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                 else:
                     ert, dispersion, isBold = tmp
 
-                alignment = '@{\,}l@{\,}'
+                alignment = r'@{\,}l@{\,}'
                 if j == len(algerts[i]) - 1:
-                    alignment = '@{\,}l@{\,}|'
+                    alignment = r'@{\,}l@{\,}|'
 
                 # create superscript star for significance against all other algorithms
                 str_significance_subsup = ''
@@ -678,7 +678,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
             table.append(curline)
             curlineHtml.append(
                 '<td sorttable_customkey=\"%d\">%d/%d</td>\n' % (algnbsucc[i], algnbsucc[i], algnbruns[i]))
-            curlineHtml = [i.replace('$\infty$', '&infin;') for i in curlineHtml]
+            curlineHtml = [i.replace(r'$\infty$', r'&infin;') for i in curlineHtml]
             tableHtml.extend(curlineHtml[:])
             extraeol.append('')
 

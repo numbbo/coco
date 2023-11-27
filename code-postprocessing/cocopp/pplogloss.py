@@ -27,7 +27,7 @@ from .pptex import writeFEvals2
 from .ppfig import save_figure, consecutiveNumbers
 from . import testbedsettings
 
-"""
+r"""
 ERT loss ratio of an algorithm A for comparison to a reference/best algorithm.
 This works only as comparison to a set of algorithms that reach at least the
 same target values. Let f=f_A(EVALS) be the smallest target value such that the

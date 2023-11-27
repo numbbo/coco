@@ -584,7 +584,7 @@ def zprob(z):
         - for z>0, 1.0-zprob(z) = 1-tail probability
         - for any z, 2.0*(1.0-zprob(abs(z))) = 2-tail probability
 
-    Adapted from z.c in Gary Perlman's \|Stat.  Can handle multiple dimensions.
+    Adapted from z.c in Gary Perlman's |Stat.  Can handle multiple dimensions.
 
     Usage:   azprob(z)    where z is a z-value
 
