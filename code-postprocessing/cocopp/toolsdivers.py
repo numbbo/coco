@@ -4,8 +4,6 @@
 """Various tools. 
 
 """
-from __future__ import absolute_import, print_function
-
 import os, time, warnings
 import tempfile, shutil
 from collections import OrderedDict as _OrderedDict
@@ -13,7 +11,6 @@ import re as _re
 import numpy as np
 from matplotlib import pyplot as plt
 from subprocess import CalledProcessError, STDOUT
-import pkg_resources
 
 from . import genericsettings, testbedsettings
 
@@ -586,7 +583,7 @@ def get_version_label(algorithmID=None):
         the string. If more than one reference value is present in the data,
         the string displays also a warning.
     """
-    coco_version = pkg_resources.require('cocopp')[0].version
+    from ._version import __version__ as coco_version
     reference_values = testbedsettings.get_reference_values(algorithmID)
     
     if reference_values and type(reference_values) is set:        
@@ -600,7 +597,10 @@ def get_version_label(algorithmID=None):
 
 
 def path_in_package(sub_path=""):
+    from importlib import resources as res
     """return the absolute path prepended to `subpath` in this module.
     """
-    egg_info = pkg_resources.require('cocopp')[0]
-    return os.path.join(egg_info.location, egg_info.project_name, sub_path)
+    
+    package_root_directory = res.files("cocopp")
+    path = package_root_directory / sub_path
+    return str(path)

@@ -34,7 +34,6 @@ classifiers = [
 dependencies = [
   "matplotlib >=3.5.0",
   "numpy >=1.21.0",
-  "setuptools >=61.0", # For pkg_resources
   "platformdirs >=3.8.1",
 ]
 dynamic = ["version"]
