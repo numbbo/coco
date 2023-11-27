@@ -389,7 +389,7 @@ def truncate_latex_command_file(filename, keeplines=200):
         lines = list(f)
     with open(filename, 'w') as f:
         for i, line in enumerate(lines):
-            if i > keeplines and line.startswith('\providecommand'):
+            if i > keeplines and line.startswith(r'\providecommand'):
                 break
             f.write(line)
     
