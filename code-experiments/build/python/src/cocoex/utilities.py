@@ -1,6 +1,9 @@
-import sys as _sys  # avoid name space polluting
-import ast as _ast
+import ast as _ast  # avoid name space polluting
+import os as _os
+import sys as _sys
 import time as _time
+import warnings as _warnings
+
 import numpy as np
 
 
@@ -64,7 +67,7 @@ def args_to_dict(args, known_names, specials=None, split='=',
     def eval_value(value):
         try:
             return _ast.literal_eval(value)
-        except:  # ValueError or SyntaxError or ??
+        except Exception:  # ValueError or SyntaxError or ??
             return value
     res = {}
     for arg in args:
@@ -98,9 +101,76 @@ def args_to_dict(args, known_names, specials=None, split='=',
                 print(known_name, '=', res[known_name])
                 break  # name == arg.split()[0] is processed
         else:
-            raise ValueError(name, 'not found or ambiguous in `known_names`')
+            raise ValueError('Argument name "{}" is ambiguous or not given in ``known_names=={}``'
+                             .format(name, sorted([k for k in known_names if not k.startswith('_')
+                                    and k not in ('division', 'print_function', 'unicode_literals',
+                                                  'sys', 'warnings', 'time', 'defaultdict', 'os', 'np', 'scipy')])))
     return res
 
+def dict_to_eval(dict_, ignore_list=('_', 'self')):
+    """return a pruned `dict` so that ``ast.literal_eval(repr(dict_))`` works.
+
+    Keys that start with entries from `ignore_list` when interpreted as
+    `str` are removed, by default those starting with ``_`` or ``self``,
+    where `ignore_list` must be a `str` or a `tuple` of `str`.
+
+    See also `write_setting`.
+    """
+    res = {}
+    for k in dict_:
+        if str(k).startswith(ignore_list):
+            continue
+        try:
+            _ast.literal_eval(repr(dict_[k]))
+        except Exception:
+            pass
+        else:
+            res[k] = dict_[k]
+    return res
+
+def write_setting(dict_, filename, ignore_list=None):
+    """write a simplified parameters dictionary to a file,
+
+    for keeping a record or, e.g., for checking the `budget_multiplier`
+    later.
+
+    A typical usecase is ``write_setting(locals(), 'parameters.pydat')``.
+
+    When ``ignore_list is not None`` it is passed to `dict_to_eval`
+    which determines which parameters are written or omitted. By default,
+    keys starting with ``_`` or ``self`` are omitted and items that bail on
+    `literal_eval`.
+
+    See also `dict_to_eval` and `read_setting`.
+    """
+    if not _os.path.exists(filename):
+        with open(filename, 'wt') as f:
+            if ignore_list is None:
+                f.write(repr(dict_to_eval(dict_)))
+            else:
+                f.write(repr(dict_to_eval(dict_, ignore_list)))
+    else:
+        _warnings.warn('nothing written as the file "' + filename +
+                       '"\nexists already (this should never happen as\n'
+                       'each experiment should be written in a new (sub-)folder)')
+
+def read_setting(filename, warn=True):
+    """return file content evaluated as Python literal (e.g. a `dict`),
+
+    return `None` if `filename` is not a valid path.
+
+    If `warn`, throw a warning when the file `filename` does not exist.
+
+    A typical usecase could be
+    ``old_multiplier = read_setting('parameters.pydat')['budget_multiplier']``.
+
+    See also `write_setting`.
+    """
+    if _os.path.exists(filename):
+        with open(filename, 'rt') as f:
+            return _ast.literal_eval(f.read())
+    warn and _warnings.warn("Parameter file '{}' (to check setting consistency)"
+                            " does not exist".format(filename))
 
 class ObserverOptions(dict):
     """a `dict` with observer options which can be passed to
