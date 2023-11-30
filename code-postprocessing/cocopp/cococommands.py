@@ -60,12 +60,102 @@ Examples:
 
 from __future__ import absolute_import
 
+import collections as _collections
+import warnings as _warnings
+
 from .pproc import get_DataSetList as _DataSetList
 from .toolsdivers import StringList as _StringList
 from .archiving import official_archives
 from . import config as _config
 from . import pproc as _pproc
+from . import genericsettings as _genericsettings
 from . import testbedsettings as _testbedsettings
+
+class DataWithFewSuccesses:
+    """The `result` property is an `OrderedDict` with all ``(dimension, funcId)``-
+
+    tuples that have less than ``self.minsuccesses`` successes. These
+    tuples are the `dict` keys, the values are the respective numbers for
+    ``[successes, trials]``. The minimal number of desired successes can be
+    changed at any time by re-assigning the `minsuccesses` attribute in
+    which case the return value of `result` may change. However when the
+    `success_threshold` attribute is change, then `compute_successes` has
+    to be called to update the result.
+    
+    Usage concept example::
+
+        >> run_more = DataWithFewSuccesses('folder_or_file_name_for_cocopp.load').result
+        >> for p in cocoex.Suite('bbob', '', ''):
+        ..     if (p.id_function, p.dimension) not in run_more:
+        ..         continue
+        ..     p.observe_with(...)
+        ..     # run solver on problem p
+        ..     [...]
+
+    Details: The success number is calculated with the `raw_value`
+    parameter of `DataSet.detSuccesses` thereby bypassing successes from
+    instance balancing copies. However it falls back with a warning when
+    this does not work. When in this case a `DataSetList` is passed instead
+    of a folder name, we could check whether it was instantiated with
+    ``genericsettings.balance_instances == False`` which is not the default
+    setting. Either ``len(self.evals[0]) != len(self._evals[0])`` or
+    ``self.instance_multipliers is not None and
+    np.any(self.instance_multipliers > 1)`` indicate that a balancing
+    action was taken.
+
+    """
+    @property
+    def result(self):
+        """depends on attributes `minsuccesses` and `successes`"""
+        return _collections.OrderedDict(sorted(
+            ((ds.funcId, ds.dim), [s, len(ds.instancenumbers)])
+                for s, ds in zip(self.successes, self.dsl)
+                if s < self.minsuccesses))
+    def __init__(self, folder_name, minsuccesses=9, success_threshold=1e-8):
+        """`folder_name` can also be a filename or a `DataSetList`"""
+        self.input_parameters = {l[0]: l[1] for l in list(locals().items()) if l[0] != 'self'}  # for the record
+        self.minsuccesses = minsuccesses
+        self.success_threshold = success_threshold
+        if isinstance(folder_name, list):
+            self.dsl = folder_name
+        else:
+            _bi = _genericsettings.balance_instances
+            _genericsettings.balance_instances = False  # not strictly necessary anymore
+            with _warnings.catch_warnings():
+                _warnings.simplefilter("ignore")
+                self.dsl = load(folder_name)
+            _genericsettings.balance_instances = _bi
+            if not self.dsl:
+                _warnings.warn("Sorry, could not find any coco data in {}"
+                               .format(folder_name))
+        self.trials = [len(ds.instancenumbers) for ds in self.dsl]
+        """number of trials in each data set, for the record only"""
+        self.successes = self.compute_successes().successes  # declarative assignment
+        """list of successful trials, depends on `success_threshold`.
+           Can be recomputed by calling `compute_successes`.
+           """
+    def compute_successes(self, success_threshold=None):
+        """Assign `successes` attribute as a `list` of number of successful trials
+
+        in the data sets of `self.dsl` and return `self`. When given, reassign
+        also the `success_threshold` attribute.
+        """
+        if success_threshold is not None:
+            self.success_threshold = success_threshold
+        try:
+            self.successes = [ds.detSuccesses([self.success_threshold], raw_values=True)[0]
+                              for ds in self.dsl]
+        except TypeError:  # this should never happen
+            _warnings.warn("calling `detSuccesses(..., raw_values=True)` failed, "
+                          "falling back to no argument (this should never happen)")
+            self.successes = [ds.detSuccesses([self.success_threshold])[0] for ds in self.dsl]
+        return self
+    def print(self):
+        """return a `str` with the number of data sets with too few successes"""
+        return 'DataWithFewSuccesses: {}/{}'.format(len(self.result), len(self.dsl))
+    def __len__(self):
+        return len(self.result)
+
 
 def load(filename):
     """[currently broken when further used within `cocopp`, see `load2`] Create a :py:class:`DataSetList` instance from a file or folder.
