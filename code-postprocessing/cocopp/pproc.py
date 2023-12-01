@@ -1574,18 +1574,27 @@ class DataSet(object):
         
         return averages
 
-    def detSuccesses(self, targets):
+    def detSuccesses(self, targets, raw_values=False):
         """return the number of successful runs for each target.
 
-        The number of runs are for each instance expanded to their least
-        common multiplier if `genericsettings.balance_instances`, hence the
-        success events are not necessarily independent in this case.
+        Unless ``bool(raw_values) is True``, the number of runs are for each
+        instance expanded to their least common multiplier if
+        `genericsettings.balance_instances`, hence the success events are
+        not necessarily independent in this case.
+
+        Details: if `raw_values` is an `int`, only the first `raw_values`
+        columns of the data set are used. If ``raw_values is True``, all
+        data without any balancing repetitions are used.
 
         See also `detSuccessRates`.
         """
+        if raw_values is True:
+            raw_values = len(self._evals[0]) - 1  # number of independent evals data
         succ = []
         for evalrow in self.detEvals(targets, copy=False):
             assert len(evalrow) == self.nbRuns()
+            if raw_values:
+                evalrow = evalrow[:raw_values]
             succ.append(sum(np.isfinite(evalrow)))  # was: append(self.nbRuns() - sum(np.isnan(evalrow)))
         return succ
 
