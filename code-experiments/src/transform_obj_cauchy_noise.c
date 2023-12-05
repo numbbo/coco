@@ -4,6 +4,7 @@
  */
 #include "coco.h"
 #include "suite_bbob_noisy_utilities.c"
+#include <stddef.h>
 
 
 /**
@@ -38,6 +39,9 @@ static void transform_obj_cauchy_noise_evaluate_function(
     cauchy_noise = cauchy_noise > 0 ? cauchy_noise : 0.;
     double tol = 1e-8;
     inner_problem -> evaluate_function(inner_problem, x, y);
+    for(size_t i = 0; i < problem -> number_of_objectives; i++){
+        problem -> last_noise_free_values[i] = y[i];
+    }
     *(y) = *(y) + cauchy_noise + 1.01 * tol + coco_boundary_handling(problem, x);
 }
 
@@ -57,5 +61,6 @@ static coco_problem_t *transform_obj_cauchy_noise(
     problem = coco_problem_transformed_allocate(inner_problem, data, 
         NULL, "cauchy_noise_model");
     problem->evaluate_function = transform_obj_cauchy_noise_evaluate_function;
+    problem->is_noisy = 1;
     return problem;
 }

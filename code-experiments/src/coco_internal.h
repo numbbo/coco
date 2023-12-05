@@ -146,12 +146,14 @@ struct coco_problem_s {
   size_t number_of_objectives;         /**< @brief Number of objectives. */
   size_t number_of_constraints;        /**< @brief Number of constraints. */
 
-  double last_noise_value;
 
   double *smallest_values_of_interest; /**< @brief The lower bounds of the ROI in the decision space. */
   double *largest_values_of_interest;  /**< @brief The upper bounds of the ROI in the decision space. */
   size_t number_of_integer_variables;  /**< @brief Number of integer variables (if > 0, all integer variables come
                                        before any continuous ones). */
+
+  int is_noisy;                        /**< @brief*/
+  double *last_noise_free_values;       /**< @brief*/
 
   double *initial_solution;            /**< @brief Initial feasible solution. */
   int is_opt_known;                    /**< @brief Whether the optimal (best) value is actually known for this problem. */
