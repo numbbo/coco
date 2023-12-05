@@ -32,6 +32,9 @@ static void transform_obj_uniform_noise_evaluate_function(
     uniform_noise_term2 = coco_sample_uniform_noise();
     double uniform_noise_factor = pow(uniform_noise_term1, data -> beta);
     inner_problem -> evaluate_function(inner_problem, x, y);
+    for(size_t i = 0; i < problem -> number_of_objectives; i++){
+        problem -> last_noise_free_values[i] = y[i];
+    }
     *(y) = *(y) - fopt;
     double scaling_factor = 1e9/(*(y) + 1e-99);
     scaling_factor = pow(scaling_factor, data -> alpha * uniform_noise_term2);
@@ -40,7 +43,6 @@ static void transform_obj_uniform_noise_evaluate_function(
     double tol = 1e-8;
     *(y) = *(y) * uniform_noise + 1.01 * tol; 
     *(y) = *(y) + fopt + coco_boundary_handling(problem, x);
-    problem -> last_noise_value = uniform_noise;
 }
 
 /**
@@ -59,5 +61,6 @@ static coco_problem_t *transform_obj_uniform_noise(
     problem = coco_problem_transformed_allocate(inner_problem, data, 
         NULL, "uniform_noise_model");
     problem->evaluate_function = transform_obj_uniform_noise_evaluate_function;
+    problem->is_noisy = 1;
     return problem;
 }

@@ -29,6 +29,9 @@ static void transform_obj_gaussian_noise_evaluate_function(
     gaussian_noise = exp(data -> beta * gaussian_noise);
     double tol = 1e-8;
     inner_problem -> evaluate_function(inner_problem, x, y);
+    for(size_t i = 0; i < problem -> number_of_objectives; i++){
+        problem -> last_noise_free_values[i] = y[i];
+    }
     *(y) = *(y) - fopt;
     *(y) = *(y) * gaussian_noise  + 1.01 * tol;
     *(y) = *(y) + fopt + coco_boundary_handling(problem, x);
@@ -49,6 +52,7 @@ static coco_problem_t *transform_obj_gaussian_noise(
     problem = coco_problem_transformed_allocate(inner_problem, data, 
         NULL, "gaussian_noise_model");
     problem->evaluate_function = transform_obj_gaussian_noise_evaluate_function;
+    problem->is_noisy = 1;
     return problem;
 
 }

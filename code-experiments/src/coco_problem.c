@@ -178,6 +178,9 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->largest_values_of_interest = coco_allocate_vector(number_of_variables);
   problem->number_of_integer_variables = 0; /* No integer variables by default */
 
+  problem->is_noisy = 0;
+  problem->last_noise_free_values = coco_allocate_vector(number_of_objectives);
+
   if (number_of_objectives > 1) {
     problem->is_opt_known = 0;        /* Optimum of multi-objective problems is unknown by default */
     problem->best_parameter = NULL;
@@ -321,6 +324,8 @@ void coco_problem_free(coco_problem_t *problem) {
       coco_free_memory(problem->data);
     if (problem->initial_solution != NULL)
       coco_free_memory(problem->initial_solution);
+    if (problem->last_noise_free_values != NULL)
+      coco_free_memory(problem->last_noise_free_values);
     problem->smallest_values_of_interest = NULL;
     problem->largest_values_of_interest = NULL;
     problem->best_parameter = NULL;
