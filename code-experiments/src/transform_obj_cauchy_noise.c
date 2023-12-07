@@ -4,7 +4,6 @@
  */
 #include "coco.h"
 #include "suite_bbob_noisy_utilities.c"
-#include <stddef.h>
 
 
 /**

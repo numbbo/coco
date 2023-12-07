@@ -385,11 +385,11 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
 
   logger->last_logged_evaluation = 0;
   logger->current_value = y[0];
+  y_logged = y[0];
   if (inner_problem->is_noisy == 1){
     logger->current_value = inner_problem->last_noise_free_values[0];
+    y_logged = inner_problem->last_noise_free_values[0];
   }
-
-  y_logged = y[0];
   if (coco_is_nan(y_logged))
     y_logged = NAN_FOR_LOGGING;
   else if (coco_is_inf(y_logged))
