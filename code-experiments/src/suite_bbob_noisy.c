@@ -3,7 +3,6 @@
  * @brief Implementation of the bbob suite containing 24 noiseless single-objective functions in 6
  * dimensions.
  */
-
 #include "transform_obj_gaussian_noise.c"
 #include "transform_obj_uniform_noise.c"
 #include "transform_obj_cauchy_noise.c"
