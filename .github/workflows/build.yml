@@ -332,6 +332,8 @@ jobs:
       run:
         working-directory: ${{github.workspace}}
     steps:
+    - name: Update Ubuntu packages
+      run: sudo apt-get update
     - name: Install Octave
       run: sudo apt-get install -y octave liboctave-dev
     - name: Download Octave source package
