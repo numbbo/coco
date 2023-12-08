@@ -143,6 +143,9 @@ def add_image(image_name, add_link_to_image, height=160):
     else:
         return '<IMG SRC="%s" height="%dem">' % (image_name, height)
 
+def format_link_list_entry_in_html(s):
+    """format an html text line by appending the <br> tag (was: by the <H3> tag)"""
+    return s + '<br>\n'  # the previous format was '<H3>{}</H3>\n'.format(s)
 
 def add_link(current_dir, folder, file_name, label,
              indent='',
@@ -156,8 +159,8 @@ def add_link(current_dir, folder, file_name, label,
         href = file_name
 
     if ignore_file_exists or os.path.isfile(path):
-        return '<H3>%s<a href="%s%s">%s</a></H3>\n' % (
-            indent, href, "#" + str(dimension) if dimension else "", label)
+        return format_link_list_entry_in_html('{}<a href="{}{}">{}</a>'.format(
+            indent, href, "#" + str(dimension) if dimension else "", label))
 
     return ''
 
@@ -251,7 +254,7 @@ def save_folder_index_file(filename, image_file_extension):
 
 
 def get_home_link():
-    home_link = '<H3><a href="%s%s.html">Home</a></H3>'
+    home_link = format_link_list_entry_in_html('<a href="%s%s.html">Home</a>')
     return home_link % ('../', genericsettings.index_html_file_name)
 
 
@@ -281,8 +284,8 @@ def get_rld_link(current_dir):
 
 def get_parent_link(html_page, parent_file_name):
     if parent_file_name and html_page not in (HtmlPage.ONE, HtmlPage.MANY):
-        return '<H3><a href="%s.html">Overview page</a></H3>' % parent_file_name
-
+        return format_link_list_entry_in_html('<a href="{}.html">Overview page</a>'
+                                              .format(parent_file_name))
     return ''
 
 
