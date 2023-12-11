@@ -13,6 +13,7 @@ MU_TEST(test_coco_evaluate_function) {
   double *x;
   double *y;
 
+  coco_info("testing bbob");
   suite = coco_suite("bbob", NULL, "dimensions: 2 instance_indices: 1");
   x = coco_allocate_vector(2);
   y = coco_allocate_vector(1);
@@ -26,6 +27,7 @@ MU_TEST(test_coco_evaluate_function) {
   coco_free_memory(x);
   coco_free_memory(y);
 
+  coco_info("testing bbob-noisy");
   suite = coco_suite("bbob-noisy", NULL, "dimensions: 2 instance_indices: 1");
   x = coco_allocate_vector(2);
   y = coco_allocate_vector(1);
@@ -39,6 +41,7 @@ MU_TEST(test_coco_evaluate_function) {
   coco_free_memory(x);
   coco_free_memory(y);
 
+  coco_info("testing bbob-biobj");
   suite = coco_suite("bbob-biobj", NULL, "dimensions: 2 instance_indices: 1");
   x = coco_allocate_vector(2);
   y = coco_allocate_vector(2);
@@ -52,11 +55,17 @@ MU_TEST(test_coco_evaluate_function) {
   coco_free_memory(x);
   coco_free_memory(y);
 
+  coco_info("testing bbob-constrained");
+  coco_info("Allocating suite");
   suite = coco_suite("bbob-constrained", NULL, "dimensions: 2 instance_indices: 1");
+  coco_info("Suite allocated. Allocating x");
   x = coco_allocate_vector(2);
+  coco_info("x allocated. Allocating y");
   y = coco_allocate_vector(1);
+  coco_info("y allocated. Iterating over the suite");
   while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL) {
-  	x[0] = 0;
+    coco_info("getting problem %d", problem->suite_dep_index);
+    x[0] = 0;
   	x[1] = NAN;
     coco_evaluate_function(problem, x, y);
     mu_check(coco_vector_contains_nan(y, 1));

@@ -861,7 +861,9 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   dimension_idx = (size_t) suite->current_dimension_idx;
   instance_idx = (size_t) suite->current_instance_idx;
 
+  coco_info("coco_suite_get_next_problem: getting problem, f%d, d%d, i%d", function_idx, dimension_idx, instance_idx);
   problem = coco_suite_get_problem_from_indices(suite, function_idx, dimension_idx, instance_idx);
+  coco_info("problem allocated");
   if (observer != NULL)
     problem = coco_problem_add_observer(problem, observer);
   suite->current_problem = problem;

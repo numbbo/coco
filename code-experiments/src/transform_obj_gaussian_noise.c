@@ -21,16 +21,18 @@ static void transform_obj_gaussian_noise_evaluate_function(
         const double *x, 
         double *y 
     ){
-    coco_problem_t *inner_problem = coco_problem_transformed_get_inner_problem(problem);    
-    double fopt = *(inner_problem -> best_value);
+    double gaussian_noise, fopt, tol;   
+    coco_problem_t *inner_problem = coco_problem_transformed_get_inner_problem(problem); 
     transform_obj_gaussian_noise_data_t *data;
+    size_t i;
+    fopt = *(inner_problem->best_value);
     data = (transform_obj_gaussian_noise_data_t *) coco_problem_transformed_get_data(problem);
-    double gaussian_noise = coco_sample_gaussian_noise();
-    gaussian_noise = exp(data -> beta * gaussian_noise);
-    double tol = 1e-8;
-    inner_problem -> evaluate_function(inner_problem, x, y);
-    for(size_t i = 0; i < problem -> number_of_objectives; i++){
-        problem -> last_noise_free_values[i] = y[i];
+    gaussian_noise = coco_sample_gaussian_noise();
+    gaussian_noise = exp(data->beta * gaussian_noise);
+    tol = 1e-8;
+    inner_problem->evaluate_function(inner_problem, x, y);
+    for(i = 0; i < problem->number_of_objectives; i++){
+        problem->last_noise_free_values[i] = y[i];
     }
     *(y) = *(y) - fopt;
     *(y) = *(y) * gaussian_noise  + 1.01 * tol;
@@ -48,7 +50,7 @@ static coco_problem_t *transform_obj_gaussian_noise(
     coco_problem_t *problem;
     transform_obj_gaussian_noise_data_t *data;
     data = (transform_obj_gaussian_noise_data_t *) coco_allocate_memory(sizeof(*data));
-    data -> beta = beta;
+    data->beta = beta;
     problem = coco_problem_transformed_allocate(inner_problem, data, 
         NULL, "gaussian_noise_model");
     problem->evaluate_function = transform_obj_gaussian_noise_evaluate_function;
