@@ -179,8 +179,9 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->number_of_integer_variables = 0; /* No integer variables by default */
 
   problem->is_noisy = 0;
-  problem->last_noise_free_values = coco_allocate_vector(number_of_objectives);
-
+  problem->last_noise_free_values = NULL;
+  if (number_of_objectives > 0)
+    problem->last_noise_free_values = coco_allocate_vector(number_of_objectives);
   if (number_of_objectives > 1) {
     problem->is_opt_known = 0;        /* Optimum of multi-objective problems is unknown by default */
     problem->best_parameter = NULL;
