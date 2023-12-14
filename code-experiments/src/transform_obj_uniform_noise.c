@@ -25,10 +25,11 @@ static void transform_obj_uniform_noise_evaluate_function(
     ){    
     double uniform_noise_term1, uniform_noise_term2, fopt, uniform_noise_factor,
         scaling_factor, uniform_noise, tol;
-    coco_problem_t *inner_problem = coco_problem_transformed_get_inner_problem(problem);
-    size_t i;    
-    fopt = *(inner_problem->best_value);
     transform_obj_uniform_noise_data_t *data;
+    size_t i;    
+    coco_problem_t *inner_problem; 
+    inner_problem = coco_problem_transformed_get_inner_problem(problem);
+    fopt = *(inner_problem->best_value);
     data = (transform_obj_uniform_noise_data_t *) coco_problem_transformed_get_data(problem);
     uniform_noise_term1 = coco_sample_uniform_noise();
     uniform_noise_term2 = coco_sample_uniform_noise();

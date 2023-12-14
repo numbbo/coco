@@ -59,11 +59,8 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
   
   size_t number_of_linear_constraints; 
   coco_problem_t *problem = NULL;
-  coco_info("coco_get_cons_bbob_problem: allocating feasible_direction on dimension %d", dimension);
   double *feasible_direction = coco_allocate_vector(dimension);
-  coco_info("coco_get_cons_bbob_problem: feasible_direction allocated, allocating x_opt on dimension %d", dimension);
   double *xopt = coco_allocate_vector(dimension);
-  coco_info("coco_get_cons_bbob_problem: x_opt allocated");
   long rseed = (long) (function + 10000 * instance);
 
   const char *problem_id_template = "bbob-constrained_f%03lu_i%02lu_d%02lu";
@@ -96,7 +93,6 @@ static coco_problem_t *coco_get_cons_bbob_problem(const char *suite_name,
         feasible_direction, xopt, problem_id_template, 
         problem_name_template);
     problem = transform_obj_scale(problem, 10.);  /* move initial feasible point to a delta-f between 100 and 10000 */
-
   } else if (obj_function_type(function) == 2) {
 	  
     problem = f_ellipsoid_c_linear_cons_bbob_problem_allocate(function, 
