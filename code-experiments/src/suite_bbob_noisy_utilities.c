@@ -41,7 +41,7 @@ void increase_random_seed(void){
 /**
  * @brief Resets both random seeds to the initial values
  */
-void reset_seeds(void){
+void coco_reset_seeds(void){
   _RANDSEED = 30;
   _RANDNSEED = 30;
 }
