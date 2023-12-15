@@ -332,10 +332,10 @@ jobs:
       run:
         working-directory: ${{github.workspace}}
     steps:
-    - name: Update package manager
-      run: sudo apt-get update
     - name: Install Octave
-      run: sudo apt-get install -y octave liboctave-dev
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y octave liboctave-dev
     - name: Download Octave source package
       uses: actions/download-artifact@v3
       with:
