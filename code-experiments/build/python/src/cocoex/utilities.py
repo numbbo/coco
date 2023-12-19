@@ -32,8 +32,8 @@ def args_to_dict(args, known_names, specials=None, split='=',
     `dict` are known names, (ii) evaluates the values in some cases
     and (iii) handles `specials`.
 
-    `know_names` is an iterable (`dict` or `list` or `tuple`) of strings.
-    If ``know_names is None``, all args are processed, otherwise a
+    `known_names` is an iterable (`dict` or `list` or `tuple`) of strings.
+    If ``known_names is None``, all args are processed, otherwise a
     `ValueError` is raised for unknown names. This is useful if we
     want to re-assign variables (overwrite default values) and avoid
     spelling mistakes pass silently.
@@ -74,7 +74,11 @@ def args_to_dict(args, known_names, specials=None, split='=',
         if specials and name in specials:
             if name == 'batch':
                 print('batch:')
-                for k, v in zip(specials['batch'].split('/'), value.split('/'), strict=True):
+                if len(specials['batch'].split('/')) != len(value.split('/')):
+                    raise ValueError("'{0}' is not a valid value for argument 'batch={0}'."
+                                     " A valid example is 'batch=1/3' ({1})"
+                                     .format(value, specials['batch']))  # zip(..., strict=...) bails in Python3.9
+                for k, v in zip(specials['batch'].split('/'), value.split('/')):
                     res[k] = int(v)  # batch accepts only int
                     print(' ', k, '=', res[k])
                 continue  # name is processed
@@ -85,7 +89,12 @@ def args_to_dict(args, known_names, specials=None, split='=',
             if known_name.startswith(name) and (
                         sum([other.startswith(name)
                              for other in known_names or [name]]) == 1):
-                res[known_name] = eval_value(value)
+                if known_name in res:
+                    if res[known_name] != eval_value(value):
+                        raise ValueError("found two values for argument {0}={1} and ={2}"
+                                         .format(known_name, res[known_name], value))
+                else:
+                    res[known_name] = eval_value(value)
                 print(known_name, '=', res[known_name])
                 break  # name == arg.split()[0] is processed
         else:
