@@ -328,16 +328,17 @@ class MiniPrint:
     def __init__(self):
         self.dimension = None
         self._calls = 0
+        self._sweeps = 0
         self._day0 = _time.localtime()[2]
     @property
     def stime(self):
         """current time as string +days since started"""
         ltime = _time.localtime()[2:6]
-        s = "%dh%02d:%02ds" % tuple(ltime[1:])
+        s = "%dh%02d:%02d" % tuple(ltime[1:])
         if ltime[0] > self._day0:
             s = s + "+%dd" % (ltime[0] - self._day0)
         return s
-    def __call__(self, problem, final=False, restarted=False):
+    def __call__(self, problem, final=False, restarted=False, final_message=False):
         if self.dimension != problem.dimension:
             if self.dimension is not None:
                 print('')
@@ -352,7 +353,13 @@ class MiniPrint:
         self._calls += 1
         print('|' if problem.final_target_hit else ':' if restarted else '.', end='')
         if final:  # final print
-            print('')
+            self._sweeps += 1
+            if final_message:
+                try:
+                    len(final_message)  # poor mans string type check
+                    print(final_message)
+                except TypeError:
+                    print('\nSuite done ({})'.format(self._sweeps))
         _sys.stdout.flush()
 
 
@@ -441,15 +448,22 @@ class ShortInfo:
         return d + ' ' + h + 'h' + m + ':' + s
 
 
-def ascetime(sec):
+def ascetime(sec, decimals=0):
     """return elapsed time as str.
 
-    Example: return `"0h33:21"` if `sec == 33*60 + 21`.
+    Example: return ``"0h33:21" if sec == 33*60 + 21``.
     """
-    h = sec / 60**2
-    m = 60 * (h - h // 1)
-    s = 60 * (m - m // 1)
-    return "%dh%02d:%02d" % (h, m, s)
+    if sec < 0:  # sort-of ValueError?
+        return "%.1f sec" % (sec)
+    ds = str(sec % 1)[1:2+decimals] if decimals else ""  # fraction
+    # if sec < 10:  # breaks backwards compatibility of processing printed output
+    #     return "%d%s sec" % (sec, str(sec % 1)[1:2+max((1, decimals))])
+    if sec < 100 and decimals:
+        return "%d%s sec" % (sec, ds)
+    h = sec / 60**2  # hours
+    m = 60 * (h % 1)  # minutes
+    s = 60 * (m % 1)  # seconds
+    return "%dh%02d:%02d%s" % (h, m, s, ds)
 
 
 def print_flush(*args):
