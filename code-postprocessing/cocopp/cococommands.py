@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Depreciated (`cocopp` itself is to be used from Jupyter or IPython):
-Module for using COCO from the (i)Python interpreter.
+"""A collection of commands for using COCO from Jupyter or IPython.
 
 The main data structures used in COCO are :py:class:`DataSet`, which
 corresponds to data of one algorithm on one problem, and
