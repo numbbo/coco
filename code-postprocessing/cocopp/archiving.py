@@ -688,13 +688,6 @@ class COCODataArchive(_td.StrList):
         if not remote:
             return ''  # like this string operations don't bail out
         self._download(names[0])
-        if 11 < 3:  # old code
-            # create full local path and download
-            _makedirs(os.path.split(full_name)[0])  # create path if necessary
-            url = '/'.join((self.remote_data_path, names[0]))
-            self._print("  downloading %s to %s" % (url, full_name))
-            _urlretrieve(url, full_name)
-            self.check_hash(full_name)
         return full_name
 
     def _download(self, name):
@@ -703,7 +696,12 @@ class COCODataArchive(_td.StrList):
         full_name = self.full_path(name)
         _makedirs(os.path.split(full_name)[0])  # create path if necessary
         self._print("  downloading %s to %s" % (url, full_name))
-        _urlretrieve(url, full_name)
+        try:
+            _urlretrieve(url, full_name)
+        except BaseException:  # KeyboardInterrupt is a BaseException
+            if os.path.exists(full_name):
+                os.remove(full_name)  # remove partial download
+            raise
         self.check_hash(full_name)
 
     def get_one(self, *args, **kwargs):
