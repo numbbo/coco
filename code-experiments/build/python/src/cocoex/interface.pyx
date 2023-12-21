@@ -855,6 +855,11 @@ cdef class Problem:
             raise ValueError("cannot deduce function id from '%s'" % self.id)
 
     @property
+    def id_triple(self):
+        "see __init__.py"
+        return self.id_function, self.dimension, self.id_instance
+
+    @property
     def id_instance(self):
         "see __init__.py"
         try:

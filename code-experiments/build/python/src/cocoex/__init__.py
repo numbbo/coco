@@ -583,6 +583,11 @@ class Problem(_Problem):
         return super().id_instance
 
     @property
+    def id_triple(self):
+        "unique problem id triplet ``(function, dimension, instance)``"
+        return super().id_triple
+
+    @property
     def name(self):
         """human readible short description with spaces"""
         return super().name
