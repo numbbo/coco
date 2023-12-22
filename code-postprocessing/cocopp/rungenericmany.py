@@ -142,24 +142,26 @@ def main(args, outputdir):
 
     config.config(dsList[0].suite_name)
 
-    for i in dsList:
-        if i.dim not in testbedsettings.current_testbed.dimensions_to_display:
-            continue
-        # check whether current set of instances correspond to correct
-        # setting of a BBOB workshop and issue a warning otherwise:
-        curr_instances = (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)))
-        correct = False
-        for instance_set_of_interest in genericsettings.instancesOfInterest:
-            if curr_instances == instance_set_of_interest:
-                correct = True
-        try: last_incorrect_instances
-        except: last_incorrect_instances = None
-        if not correct and curr_instances != last_incorrect_instances:
-            warnings.warn('The data of %s ' % i +
-                          '(and possibly further data) do not ' +
-                          'list the correct instances ' +
-                          'of function F%d.' % i.funcId)
-            last_incorrect_instances = curr_instances
+    if 11 < 3:  # this floods the screen when we repeat instances (which should be perfectly fine to do)
+        # TODO: if still desired, this should go to a DataSetList.check_consistency method (which does a separate test for each single DataSet and/or algorithm in the list?)
+        for i in dsList:
+            if i.dim not in testbedsettings.current_testbed.dimensions_to_display:
+                continue
+            # check whether current set of instances correspond to correct
+            # setting of a BBOB workshop and issue a warning otherwise:
+            curr_instances = (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)))
+            correct = False
+            for instance_set_of_interest in genericsettings.instancesOfInterest:
+                if curr_instances == instance_set_of_interest:
+                    correct = True
+            try: last_incorrect_instances
+            except: last_incorrect_instances = None
+            if not correct and curr_instances != last_incorrect_instances:
+                warnings.warn('The data of %s ' % i +
+                            '(and possibly further data) do not ' +
+                            'list the correct instances ' +
+                            'of function F%d.' % i.funcId)
+                last_incorrect_instances = curr_instances
 
     ppfig.copy_js_files(many_algorithms_output)
 
