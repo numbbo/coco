@@ -131,7 +131,8 @@ marker_size_multiplier = 1.1
 '''multiply all marker sizes in below line_styles, used in compall.pprldmany.main'''
 line_styles = [  # used by ppfigs and pprlmany, linewidth=1 can also be set here but is also modified later using style and zorder
     {'color': '#1874b4', 'linestyle': '-', 'marker': 'o', 'markersize': 7, 'zorder': 2},
-    {'color': '#ff7d0b', 'linestyle': '-', 'marker': 'd', 'markersize': 7, 'zorder': 2},
+    # {'color': '#ff7d0b', 'linestyle': '-', 'marker': 'd', 'markersize': 7, 'zorder': 2},
+    {'color': '#fa7009', 'linestyle': '-', 'marker': 'd', 'markersize': 7, 'zorder': 2},
     {'color': '#22a022', 'linestyle': '-', 'marker': '*', 'markersize': 8.7, 'zorder': 2},
     {'color': '#d61e1f', 'linestyle': '-', 'marker': 'P', 'markersize': 8, 'zorder': 2},
     {'color': '#8a52bd', 'linestyle': '-', 'marker': 'p', 'markersize': 8, 'zorder': 2},
