@@ -1063,6 +1063,8 @@ class DataSet(object):
         elif (instancedict not in genericsettings.instancesOfInterest):
             is_consistent = False
             warnings.warn('  instance numbers not among the ones specified in 2009, 2010, 2012, 2013, and 2015-2018')
+        if not is_consistent:
+            warnings.warn('Some DataSet of {0} was not consistent'.format(self.algId))  # should rather be in the previous messages
         assert self._evals.shape[1] - 1 == len(self.instancenumbers), self
         assert self.evals.shape[1] - 1 == len(self.maxevals), self
         return is_consistent
