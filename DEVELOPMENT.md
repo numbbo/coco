@@ -27,6 +27,17 @@ Following these steps should setup a fresh `coco` environment:
 You now have all required dependencies to work on the code base.
 If you notice that something is missing, please let us know by opening an [issue](https://github.com/numbbo/coco/issues/new/choose).
 
+### Reusing a conda environment
+
+Say you already have a conda environment named `foo` that you want to reuse because it contains some additional packages you need for development.
+Then, once you've activated the environment, you can run
+
+```sh
+conda update -f env.yaml
+```
+
+and it will install all the required development dependencies into your existing environment.
+
 ## Working with the Experimental Code
 
 Before any of the bindings can be built and after every change to the core files (in `code-experiments/src/`), you need to run `scripts/fabricate`.
