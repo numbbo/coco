@@ -137,7 +137,10 @@ def git_version(format="pep440"):
     '0.1-6015-ga0a3769' if not pep440 else '0.1.6015'
 
     """
-    res = git(['describe', '--tags']).lstrip("v").split("-")
+    try:
+        res = git(['describe', '--tags']).lstrip("v").split("-")
+    except subprocess.CalledProcessError:
+        res = ("99.0.0", "0", "0")
     if len(res) == 1: # Clean tagged release
         return res[0] # Strip leading v
     else:
