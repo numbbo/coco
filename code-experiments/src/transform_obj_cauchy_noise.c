@@ -24,7 +24,6 @@ static void transform_obj_cauchy_noise_evaluate_function(
         double *y 
     ){
     coco_problem_t *inner_problem = coco_problem_transformed_get_inner_problem(problem);    
-    double fopt = *(inner_problem -> best_value);
     transform_obj_cauchy_noise_data_t *data;
     data = (transform_obj_cauchy_noise_data_t *) coco_problem_transformed_get_data(problem);
     double uniform_indicator, numerator_normal_variate, denominator_normal_variate;
