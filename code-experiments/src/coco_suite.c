@@ -792,7 +792,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
 
   /* Check that there are enough dimensions, functions and instances left */
   int number_of_active_dimensions = 0;
-  for (int i = 0; i < suite->number_of_dimensions; ++i) {
+  for (size_t i = 0; i < suite->number_of_dimensions; ++i) {
     number_of_active_dimensions += suite->dimensions[i] != 0;
   }
   if ((number_of_active_dimensions < 1)
