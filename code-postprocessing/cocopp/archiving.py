@@ -583,7 +583,7 @@ class COCODataArchive(_td.StrList):
         """Return a `list` (`StrList`) of absolute pathnames,
 
         by repeatedly calling `get`. Elements of the `indices` list can
-        be an index or a substring that matches one and only one name
+        be an index or a (sub)string that matches one or several names
         in the archive. If ``indices is None``, the results from the
         last call to `find` are used. Data are downloaded if necessary.
 
