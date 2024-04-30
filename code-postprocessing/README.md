@@ -30,7 +30,7 @@ Only a trailing `*` is accepted and any string containing the substring is match
 
 <pre class="py-doctest"><span class="py-prompt">>>></span> cocopp.main(<span class="py-string">'bbob/2009/*'</span>)  <span class="py-comment"></span></pre>
 
-can be browsed at [https://numbbo.github.io/ppdata-archive/bbob/2009-all](https://numbbo.github.io/ppdata-archive/bbob/2009-all). To display algorithms in the background, the <tt class="rst-docutils literal">genericsettings.background</tt> variable needs to be set:
+can be browsed at [https://numbbo.github.io/ppdata-archive/bbob/2009](https://numbbo.github.io/ppdata-archive/bbob/2009). To display algorithms in the background, the <tt class="rst-docutils literal">genericsettings.background</tt> variable needs to be set:
 
 <pre class="py-doctest"><span class="py-prompt">>>></span> cocopp.genericsettings.background = {<span class="py-builtin">None</span>: cocopp.archives.bbob.get_all(<span class="py-string">'bfgs'</span>)}  <span class="py-comment"></span></pre>
 
