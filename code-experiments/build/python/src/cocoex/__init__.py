@@ -22,6 +22,7 @@ from .interface import Observer as _Observer
 from .interface import Problem as _Problem
 from .interface import Suite as _Suite 
 from .interface import known_suite_names
+from .utilities import ExperimentRepeater
 from .interface import log_level # noqa: F401
 from ._version import __version__ # noqa: F401
 

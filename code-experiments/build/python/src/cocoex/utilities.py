@@ -3,6 +3,7 @@ import os as _os
 import sys as _sys
 import time as _time
 import warnings as _warnings
+import collections as _collections  # defaultdict, OrderedDict
 
 import numpy as np
 
@@ -588,3 +589,314 @@ def print_flush(*args):
     """print without newline but with flush"""
     print(*args, end="")
     _sys.stdout.flush()
+
+class ExperimentRepeater:
+    """Allow to automatically repeat an experiment based on budget and successes.
+
+    The class tracks evaluations and the `final_target_hit` status
+    ("successes") of the problem instances of a `cocoex.Suite`. Based on
+    the stored information, the `done` method allows to run sub-experiment
+    sweeps until some given budget is exhaused, namely, ``budget_multiplier
+    * dimension``.
+
+    Example code snippet::
+
+        [...]
+        repeater = cocoex.ExperimentRepeater(budget_multiplier)
+        [...]
+        while not repeater.done():
+            for problem in suite:
+                if repeater.done(problem):
+                    continue
+                problem.observe_with(observer)  # generates the data for cocopp postprocessing
+                fmin(problem, repeater.initial_solution_proposal(problem))
+                repeater.track(problem)  # record evaluations and success
+
+    The call ``repeater.done()`` checks whether the budget is exhausted or
+    enough trials were successful on all problems, or an instance lacks a
+    trial on some problems, it is akin to, but not exactly the same as,
+    ``all(repeater.done(p) for p in suite)``. ``ExperimentRepeater(0)``
+    does exactly one sweep and no repetitions.
+
+    The stored data can be queried, in which case `problem` can be a
+    ``(id_function, dimension, id_instance)`` tuple. In particular, the
+    methods `evaluations`, `successes` and `trials` return a `list` of the
+    respective data for each instance of `instances`. The last entry of the
+    argument tuple is ignored in these calls and can be `None` or omitted.
+    The `all` method allows to query all `(id_function, dimension)` entries
+    at once::
+
+        >> evals = repeater.all(repeater.evaluations)  # returns a `dict`
+        >> fun, dim = 1, 10
+        >> evals[(fun, dim)] == repeater.evaluations((fun, dim, None))
+        True
+
+    Terminology: a "problem instance" is defined by the triple
+    ``(id_function, dimension, id_instance)`` and "problem" may refer
+    to any or all problem instances with the same ``(id_function,
+    dimension)``.
+
+    Details
+    -------
+    Only the `track` method relies on passing a `cocoex.Problem`
+    instance, otherwise a ``(id_function, dimension, id_instance)``
+    tuple is eligible. The tracked information is stored in the `._data`
+    dictionary with ``(id_function, dimension)`` as keys. The `data` method
+    implements safe access to this dictionary.
+
+    When problem instances are repeated in a single suite, they may be
+    _partially_ skipped _after_ the first full sweep. That is, the
+    configuration ``1-5,1-5,1-5`` can also lead to four trials of each
+    instance 1-5, because all instances have been repeated the same number
+    of times.
+
+    >>> import cocoex  # some not very meaningful testing
+    >>> repeater = cocoex.ExperimentRepeater(2)
+    >>> assert not repeater.done((1, 2))
+    >>> assert repeater._sweeps == 0 and not repeater.done() and repeater._sweeps == 1
+    >>> assert len(repeater.data((1, 10))) == 0
+    >>> assert len(repeater.evaluations((1, 2))) == 0
+
+    """
+    def __init__(self, budget_multiplier, min_successes=11):
+        """``min_successes=11`` for instances 1-5 provokes at least three
+
+        sweeps, hence 15 trials, given the `budget_multiplier` is large
+        enough and the algorithm terminates early enough before the budget
+        is exhausted. 3 x 1-5 is the instance-setup from BBOB 2009, however
+        the choice of the initial solution still slightly differs.
+        """
+        self.params = {k: v for k, v in locals().items() if k != 'self'}
+        self.max_sweeps = 1e4  # should not be necessary
+        self._dimension_offset = 0
+        '''budget = (dimension + offset) * budget_multiplier'''
+        self._data = _collections.OrderedDict()
+        '''a ``dict[(fun, dim)]`` of ``dict[iinst]`` of `list` of
+           ``(evaluations, success)`` `tuples`'''
+        self._calls = 0  # calls of `track`
+        self._sweeps = 0  # calls of ``done()`` without argument
+    def all(self, method):
+        """return `dict` with ``method(key)`` as values and
+
+        with all ``(id_function, dimension)`` as keys.
+
+        Works with the instance methods `evaluations`, `successes`,
+        `budget_exhausted`, `trials`, or `instances` as argument or the
+        respective strings.
+        """
+        if method == str(method):
+            method = getattr(self, method)
+        return {(fun, dim): method((fun, dim)) for (fun, dim) in self._data}
+    def budget_from_dimension(self, problem_or_dimension):
+        """return budget_multiplier x ((problem.dimension or dimension) + self.offset).
+
+        By default, ``offset == 0``.
+        """
+        
+        dimension = problem_or_dimension if isinstance(problem_or_dimension, int) else (
+                    self.problem_to_ids(problem_or_dimension)[1])
+        return (dimension + self._dimension_offset) * self.params['budget_multiplier']
+    def _empty_data(self, problem=None):
+        """should always return an empty list, called in the `data` method"""
+        if problem is None:
+            return {p: self._empty_data(p) for p in self._data if self._empty_data(p)}
+        fun, dim = self.problem_to_ids(problem)[:2]
+        if (fun, dim) in self._data:
+            d = self._data[(fun, dim)]
+            return [ii for ii in d if not d[ii]]  # list of instance numbers with no data
+        return []
+    @property
+    def n_problems(self):
+        """current number of tracked problems (different ``(id_function, dimension)``)"""
+        return sum(len(self.trials(k)) > 0 for k in self._data)
+    def _n_instance_data(self, problem):
+        return len(self.data_of_instance(problem))
+    def n_problem_instances(self, problem=None):
+        """number of problem instances (of `problem`) with at least one trial
+        """
+        if problem is not None:
+            return sum(n > 0 for n in self.trials(problem))
+            return len(self.data(problem))
+            return sum(len(res_list) > 0 for res_list in self.data(problem).values())
+        return sum(self.n_problem_instances(p) for p in self._data)
+        return sum(len(d) for d in self._data.values())
+    def n_trials(self, problem=None):
+        """current number of tracked trials from all instances (of `problem`)"""
+        if problem is not None:
+            return sum(self.trials(problem))
+        return sum(self.all(self.n_trials).values())
+    def track(self, problem):
+        """record problem instance evaluations and success (target hit)"""
+        fun, dim, iinst = self.problem_to_ids(problem)
+        if (fun, dim) not in self._data:
+            self._data[(fun, dim)] = _collections.defaultdict(list)
+        self._data[(fun, dim)][iinst] += [(problem.evaluations, problem.final_target_hit)]
+        self._calls += 1
+    def problem_to_ids(self, problem):
+        """return ``(id_function, dimension, id_instance)`` of `problem`"""
+        self._check(problem)
+        if (not callable(problem)
+                and isinstance(problem, (tuple, list))
+                and len(problem) in (2, 3)):
+            return tuple(problem) if len(problem) == 3 else (problem[0], problem[1], None)
+        return problem.id_function, problem.dimension, problem.id_instance
+    def _to_key(self, problem):
+        """return `data`-key of problem, namely ``(id_function, dimension)``"""
+        return self.problem_to_ids(problem)[:2]
+    def _check(self, problem):
+        """check problem to avoid kernel crashes, raise ValueError"""
+        if hasattr(problem, 'info') and 'invalid' in problem.info:
+            raise ValueError(problem.info)
+    def _assert_consistencies(self):
+        if self.done():  # the below is necessary but not sufficient to be done
+            assert all(sum(v) for v in zip(self.all('budget_exhausted').values(),
+                                           self.all('succeeded').values()))
+        for (problem, data) in self._data.items():
+            assert self.trials(problem) == [len(data[ii]) for ii in sorted(data)]
+            assert sum(n > 0 for n in self.trials(problem)) == len(self.data(problem)), (
+                    "found unexpected empty data in problem {}:"
+                    "\n  trials=={}\n  data=={}"
+                    .format(problem, self.trials(problem), self.data(problem)))
+        assert (sum(len(d) for d in self._data.values()) == 
+                sum(self.n_problem_instances(p) for p in self._data))
+    def data(self, problem):
+        """return reference to `dict` with instance as keys,
+
+        where nonexisting entries are returned as empty but not permanently
+        created.
+        """
+        if self._empty_data():
+            _warnings.warn("empty data found when calling `data` method"
+                           " with problem {}:\n  {}"
+                           .format(self.problem_to_ids(problem), self._empty_data()))
+        return self._data.get(self._to_key(problem), _collections.defaultdict(tuple))
+        # return self._data.[(fun, dim)] if (fun, dim) in self._data else _collections.defaultdict(tuple)  # is minimally quicker
+    def data_of_instance(self, problem):
+        """return `list` of ``(evaluations, success)`` of problem instance"""
+        return self.data(problem).get(self.problem_to_ids(problem)[2], ())
+    def instances(self, problem):
+        """return `list` of instance IDs tracked for (id_function, dimension) of `problem`.
+
+        Instance IDs are the keys for the ``self.data(problem)`` dictionary.
+        """
+        return sorted(self.data(problem))  # unsorted dict keys have arbitrary order
+    def trials(self, problem, instance=None):
+        """return `list` of number of recorded trials for each instance
+
+        if ``instance is None``, otherwise for the given `instance` only.
+        """
+        dd = self.data(problem)  # dictionary of all data related to problem
+        if instance is not None:
+            return len(dd[instance])
+        return [len(dd[iinst]) for iinst in sorted(dd)]
+    def successes(self, problem):
+        """return `list` of successes per instance"""
+        dd = self.data(problem)  # dictionary of all data related to problem
+        return [sum(i[1] for i in dd[key]) for key in sorted(dd)]
+    def evaluations(self, problem):
+        """return `list` of summed evaluations per problem instance"""
+        dd = self.data(problem)  # dictionary of all data related to problem
+        return [sum(i[0] for i in dd[key]) for key in sorted(dd)]
+    def budget_exhausted(self, problem):
+        """compare average evaluations per instance with `budget_from_dimension`"""
+        return sum(self.evaluations(problem)) >= max((1, len(self.instances(problem)))
+                    ) * self.budget_from_dimension(problem)
+    def succeeded(self, problem):
+        """return `True` iff problem had at least `min_success` successes"""
+        return sum(self.successes(problem)) >= self.params['min_successes']
+    def message_sweep(self):
+        """return status message and '' when nothing was tracked yet"""
+        if not len(self._data) and self._sweeps <= 1:
+            return ''
+        successes = [sum(v) for v in self.all(self.successes).values()]
+        succeeded = self.all(self.succeeded).values()
+        return ('\nSweep {} done ({} success{} on {} problem{} where {} had >= 1'
+            ' success and {} had >= {} successes and {} exhausted the budget)\n'
+            .format(self._sweeps,
+                    sum(successes),
+                    'es' if sum(successes) != 1 else '',
+                    len(self._data),
+                    's' if len(self._data) != 1 else '',
+                    sum(s > 0 for s in successes),
+                    sum(succeeded),
+                    self.params['min_successes'],
+                    sum(b and not s for (s, b) in
+                        zip(succeeded, self.all(self.budget_exhausted).values()))))
+    def done(self, problem=None, message=True):
+        """return `False` iff this/any `problem` instance remains to be (re-)run.
+
+        When ``problem is not None``, return `True` if this problem
+        instance does not require another trial, however `False` as long as
+        `done` has not been called twice without argument (thereby assuming
+        that the loop starts with ``while repeater.done()``).
+ 
+        When ``problem is None``, return `True` if no single recorded problem
+        requires another trial.
+
+        Return invariably `False` before the second call of ``done()``
+        without argument, which is considered to happen right before the
+        second sweep when the first sweep is finished.
+
+        Details
+        -------
+        ``done()`` without argument gives only consistent results before or
+        after a _full_ first sweep. In particular, _during_ the first sweep
+        it cannot account for problems that have not yet been run once.
+
+        Calling ``done()`` increments the sweep counter iff it returns
+        `False`, the default for ``max_sweeps`` is ``1e4``. The attribute
+        can be directly reassigned at any time.
+
+        See also: `remaining_problems`
+        """
+        if problem is not None:
+            if self._sweeps <= 1 or self.missing_trials(problem) or (
+                    not self.succeeded(problem)
+                    and not self.budget_exhausted(problem)):
+                return False
+            return True
+        if message:  # prints nothing when no data are found
+            print(self.message_sweep(), end='')  # indicates "sequence of problems" case
+        self._sweeps += 1  # for the above sweeps number check
+        done = self._sweeps >= self.max_sweeps or (
+            self.n_problem_instances() > 0 and not self.remaining_problems())
+        self._sweeps -= done  # don't increment when done
+        return done
+    def remaining_problems(self, suite=None):
+        """return `list` of (probably) remaining problem instances to run.
+
+        `suite`, when given, compares the recorded experiments with the
+        problem instances in the suite to determine what remains. The
+        `suite` argument is bound to give unexpected results when some of
+        the problems from `suite` are skipped to be run with other batches,
+        e.g., in parallel.
+
+        See also: `done`
+        """
+        if suite is not None:
+            res = [self.problem_to_ids(p) for p in suite if not self.done(p)]
+        else:
+            res = [(fun, dim, iinst)
+                        for (fun, dim), instances in self._data.items()
+                            for iinst in instances
+                                if not self.done((fun, dim, iinst))]
+        return res
+    def missing_trials(self, problem):
+        """return number of missing trials for this problem instance
+
+        compared to the other instances of the same problem or 1 when no
+        trials were found at all.
+        """
+        return max((1, max([0] + self.trials(problem)))) - len(self.data_of_instance(problem))
+    def initial_solution_proposal(self, problem, nonzero_odds=14):
+        """return allzeros in the first of any ``nonzero_odds + 1`` trials
+
+        if ``nonzero_odds > 0``, and otherwise
+        ``problem.initial_solution_proposal(#trials_done + 1)``.
+        """
+        if nonzero_odds != int(nonzero_odds):
+            raise ValueError("nonzero_odds={} must be an int".format(nonzero_odds))
+        trials = sum(self.trials(problem))
+        if nonzero_odds == 0:
+            return problem.initial_solution_proposal(trials + 1)
+        return problem.initial_solution_proposal(trials if trials % (nonzero_odds + 1) else 0)
