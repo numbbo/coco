@@ -397,6 +397,7 @@ class MiniPrint:
     """
     def __init__(self):
         self.dimension = None
+        self.last_index = -1
         self._calls = 0
         self._sweeps = 0
         self._day0 = _time.localtime()[2]
@@ -409,7 +410,7 @@ class MiniPrint:
             s = s + "+%dd" % (ltime[0] - self._day0)
         return s
     def __call__(self, problem, final=False, restarted=False, final_message=False):
-        if self.dimension != problem.dimension:
+        if self.dimension != problem.dimension or self.last_index > problem.index:
             if self.dimension is not None:
                 print('')
             print("%dD %s" % (problem.dimension, self.stime))
@@ -420,6 +421,7 @@ class MiniPrint:
                 print(' ', end='')
             else:
                 print()
+        self.last_index = problem.index
         self._calls += 1
         print('|' if problem.final_target_hit else ':' if restarted else '.', end='')
         if final:  # final print
