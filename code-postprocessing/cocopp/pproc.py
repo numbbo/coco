@@ -972,8 +972,9 @@ class DataSet(object):
                 tmp = not all(tmp)
             if tmp or len(self._maxevals) != len(self.readmaxevals):
                 warnings.warn('There is a difference between the maxevals in the '
-                              '*.info file and in the data files.')
-
+                              '*.info file {} and in the data files {}:'
+                              '\n {}\n {}'.format(indexfile, dataFiles,
+                                                  self.readmaxevals, self._maxevals))
             self._cut_data()
         if len(self._evals):
             self._target = self._evals[:,0]  # needed for biobj best alg computation
