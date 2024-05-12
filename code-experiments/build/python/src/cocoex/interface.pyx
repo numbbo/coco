@@ -762,10 +762,10 @@ cdef class Problem:
         return coco_problem_get_evaluations_constraints(self.problem)
     @property
     def final_target_hit(self):
-        """return 1 if the final target is known and has been hit, 0 otherwise
+        """return `True` if the final target has been hit, `False` otherwise
         """
         assert(self.problem)
-        return coco_problem_final_target_hit(self.problem)
+        return bool(coco_problem_final_target_hit(self.problem))
     #@property
     #def final_target_fvalue1(self):
     #    assert(self.problem)
