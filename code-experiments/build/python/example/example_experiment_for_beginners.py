@@ -9,9 +9,10 @@ To apply the code to a different solver, `fmin` must be re-assigned or
 re-defined accordingly. For example, using `cma.fmin` instead of
 `scipy.optimize.fmin` can be done like::
 
->>> import cma  # doctest:+SKIP
->>> def fmin(fun, x0):
-...     return cma.fmin(fun, x0, 2, {'verbose':-9})
+    import cma
+    def fmin(fun, x0, **kwargs):
+        return cma.fmin2(fun, x0, 2, {'verbose': -9} if not kwargs.get('disp')
+                                     else None)[0]
 
 """
 from __future__ import division, print_function
