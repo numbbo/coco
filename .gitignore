@@ -10,11 +10,13 @@ __pycache__
 *.egg-info/
 .vscode/*
 .version
+.idea/
 
 code-experiments/build/**/bbob2009_testcases.txt
 code-experiments/build/**/bbob2009_testcases2.txt
 code-experiments/build/**/coco.[ch]
 code-experiments/build/**/exdata/
+code-experiments/build/**/ppdata/
 code-experiments/build/c/build/
 code-experiments/build/c/example_experiment
 code-experiments/build/java/build/

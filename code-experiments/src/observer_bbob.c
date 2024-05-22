@@ -22,11 +22,11 @@ typedef struct {
   coco_problem_t *observed_problem;  /**< @brief Pointer to the observed problem (NULL if none is observed) */
   char *prefix;                      /**< @brief Prefix in the name of the info and data files */
 
-  /* last_dimensions and functions_array have the same number of values - corresponding to the same function index
-   * While functions_array can contain duplicate values, only the first occurrences count */
-  size_t num_functions;             /**< @brief The number of all functions in the suite */
-  size_t *last_dimensions;          /**< @brief The dimension that was last used for the function index */
-  size_t *functions_array;          /**< @brief The function number that corresponds to the function index */
+  /* Store the information on the last function, dimension and dat file used, to be able to tell when the 
+   * logger needs to write in a new dat file.  */
+  size_t last_function;             /**< @brief The function that was logged last */
+  size_t last_dimension;            /**< @brief The dimension that was logged last */
+  char *last_dat_file;              /**< @brief The name of the .dat file that was last used for logging */
 } observer_bbob_data_t;
 
 /**
@@ -44,14 +44,9 @@ static void observer_bbob_data_free(void *stuff) {
     data->prefix = NULL;
   }
 
-  if (data->last_dimensions != NULL) {
-    coco_free_memory(data->last_dimensions);
-    data->last_dimensions = NULL;
-  }
-
-  if (data->functions_array != NULL) {
-    coco_free_memory(data->functions_array);
-    data->functions_array = NULL;
+  if (data->last_dat_file != NULL) {
+    coco_free_memory(data->last_dat_file);
+    data->last_dat_file = NULL;
   }
 
   /* Make sure that the observed problem's pointer to the observer points to NULL */
@@ -85,9 +80,10 @@ static void observer_bbob(coco_observer_t *observer, const char *options, coco_o
   observer_data->observed_problem = NULL;
   observer_data->prefix = coco_allocate_string(COCO_PATH_MAX + 1);
 
-  observer_data->num_functions = 0;      /* Needs to be initialized when the suite is known */
-  observer_data->last_dimensions = NULL; /* Needs to be allocated when the suite is known */
-  observer_data->functions_array = NULL; /* Needs to be allocated when the suite is known */
+  observer_data->last_function = 0;      
+  observer_data->last_dimension = 0; 
+  observer_data->last_dat_file = coco_allocate_string(COCO_PATH_MAX + 1); 
+  strncpy(observer_data->last_dat_file, "init", COCO_PATH_MAX);
 
   if (coco_options_read_string(options, "prefix", observer_data->prefix) == 0) {
     strcpy(observer_data->prefix, "bbobexp");

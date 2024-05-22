@@ -241,53 +241,62 @@ static int coco_create_directory(const char *path) {
   return result;
 }
 
-/* Commented to silence the compiler (unused function warning) */
-#if 0
 /**
  * @brief Creates a unique file name from the given file_name.
  *
- * If the file_name does not yet exit, it is left as is, otherwise it is changed(!) by prepending a number
- * to it. If filename.ext already exists, 01-filename.ext will be tried. If this one exists as well,
- * 02-filename.ext will be tried, and so on. If 99-filename.ext exists as well, the function throws
- * an error.
+ * If path/file_name.ext does not yet exit, it is left as is, otherwise it is changed(!) by appending a number
+ * to it. If path/file_name.ext already exists, path/filename-0001.ext will be tried. If this one exists as well,
+ * path/filename-0002.ext will be tried, and so on. If path/filename-9999.ext exists as well, the function throws
+ * an error. Every 1000 trials a warning is issued.
  */
-static void coco_create_unique_filename(char **file_name) {
-
+static void coco_create_unique_filename(const char *path,
+                                        char **file_name,
+                                        const char *ext) {
   int counter = 1;
+  char file_path[COCO_PATH_MAX + 2] = { 0 };
+  char relative_file_path[COCO_PATH_MAX + 2] = { 0 };
   char *new_file_name;
 
-  /* Do not change the file_name if it does not yet exist */
-  if (!coco_file_exists(*file_name)) {
+  strncpy(relative_file_path, *file_name, COCO_PATH_MAX - strlen(relative_file_path) - 1);
+  strncat(relative_file_path, ext, COCO_PATH_MAX - strlen(relative_file_path) - 1);
+  coco_join_path(file_path, sizeof(file_path), path, relative_file_path, NULL);
+  
+  if (!coco_file_exists(file_path)) 
     return;
-  }
 
-  while (counter < 99) {
+  while (counter < 9999) {
 
-    new_file_name = coco_strdupf("%02d-%s", counter, *file_name);
+    new_file_name = coco_strdupf("%s-%04d", *file_name, counter);
 
-    if (!coco_file_exists(new_file_name)) {
+    memset(relative_file_path, 0, sizeof(path));
+    memset(file_path, 0, sizeof(path));
+    strncpy(relative_file_path, new_file_name, COCO_PATH_MAX - strlen(relative_file_path) - 1);
+    strncat(relative_file_path, ext, COCO_PATH_MAX - strlen(relative_file_path) - 1);
+    coco_join_path(file_path, sizeof(file_path), path, relative_file_path, NULL);
+
+    if (!coco_file_exists(file_path)) {
       coco_free_memory(*file_name);
       *file_name = new_file_name;
       return;
-    } else {
-      counter++;
-      coco_free_memory(new_file_name);
-    }
-
+    } 
+    
+    counter++;
+    if (counter % 1000 == 0)
+      coco_warning("coco_create_unique_filename(): trying to create a unique file name %s (%d trials)", *file_name, counter);      
+    coco_free_memory(new_file_name);
+    
   }
 
-  coco_free_memory(new_file_name);
-  coco_error("coco_create_unique_filename(): could not create a unique file name");
+  coco_error("coco_create_unique_filename(): could not create a unique file name %s", *file_name);
   return; /* Never reached */
 }
-#endif
 
 /**
  * @brief Creates a directory that has not existed before.
  *
  * If the given path does not yet exit, it is left as is, otherwise it is changed(!) by appending a number
- * to it. If path already exists, path-001 will be tried. If this one exists as well, path-002 will be tried,
- * and so on. If path-999 exists as well, an error is raised.
+ * to it. If path already exists, path-0001 will be tried. If this one exists as well, path-0002 will be tried,
+ * and so on. If path-9999 exists as well, an error is raised. Every 1000 trials a warning is issued.
  */
 static void coco_create_unique_directory(char **path) {
 
@@ -299,9 +308,9 @@ static void coco_create_unique_directory(char **path) {
     return;
   }
 
-  while (counter < 999) {
+  while (counter < 9999) {
 
-    new_path = coco_strdupf("%s-%03d", *path, counter);
+    new_path = coco_strdupf("%s-%04d", *path, counter);
 
     if (coco_create_directory(new_path) == 0) {
       /* Directory created */
@@ -310,6 +319,8 @@ static void coco_create_unique_directory(char **path) {
       return;
     } else {
       counter++;
+      if (counter % 1000 == 0)
+        coco_warning("coco_create_unique_directory(): creating a unique directory %s (%d trials)", *path, counter);
       coco_free_memory(new_path);
     }
 
@@ -645,7 +656,7 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
 	    return NULL;
   }
 
-  /* Construct the cleaned_option_string by replacing any string between two quotation marks with "STR"*/
+  /* Construct the cleaned_option_string by replacing any string between two quotation marks with "STR" */
   keys = coco_string_split(option_string, '\"');
   if (keys) {
     for (i = 0; *(keys + i); i++) {
@@ -767,7 +778,7 @@ static int coco_options_read(const char *options, const char *name, const char *
   while (isspace((unsigned char) options[i2]))
     i2++;
 
-  if (i2 <= i1){
+  if (i2 <= i1) {
     return 0;
   }
 
