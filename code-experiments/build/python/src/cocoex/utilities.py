@@ -143,6 +143,8 @@ def write_setting(dict_, filename, ignore_list=None):
 
     See also `dict_to_eval` and `read_setting`.
     """
+    if isinstance(filename, (tuple, list)):
+        filename = _os.path.join(*filename)
     if not _os.path.exists(filename):
         with open(filename, 'wt') as f:
             if ignore_list is None:
