@@ -174,6 +174,36 @@ def read_setting(filename, warn=True):
     warn and _warnings.warn("Parameter file '{}' (to check setting consistency)"
                             " does not exist".format(filename))
 
+def forgiving_import(module, warn_level=0):
+    """Do nothing if import fails, return the imported module otherwise.
+
+    Usage::
+
+        cma = forgiving_import('cma')
+
+    in place of::
+
+        import cma
+
+    This is helpful to keep some code smoothly working when `cma` is not
+    installed and not used in the current use case.
+    """
+    try:
+        import importlib
+    except ImportError:
+        print('Please replace \n\n   {}\n\n with \n\n    {}\n\n'
+              'or incomment the respective line.'.format(
+            "module = forgiving_import('module')", 
+            "import module"))
+        raise
+    try:
+        return importlib.import_module(module)
+    except ImportError:
+        if warn_level:
+            print("importing module `{}` with `importlib` failed".format(module))
+        if warn_level > 1:
+            raise
+
 class ObserverOptions(dict):
     """a `dict` with observer options which can be passed to
     the (C-based) `Observer` via the `as_string` property.
