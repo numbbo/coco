@@ -31,6 +31,7 @@ Advanced Version (with documentation)
     tracking downloads later on, see http://mmilidoni.github.io/github-downloads-count/
 
 Afterwards or before (can be skipped potentially if this is not affected by the release):
+
  8. update version and release numbers in the coco-doc documentation repository in
     all docs/*/source/config.py files
  9. publish the new documentation by running `make html-topublish` in all the docs/* folders 
