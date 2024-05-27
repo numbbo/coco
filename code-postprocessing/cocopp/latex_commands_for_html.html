@@ -37,7 +37,7 @@ Bootstrapped empirical cumulative distribution of the number of f-evaluations di
 Expected running time (<span class="roman">ERT</span>&nbsp;in number of f-evaluations
                         as log<sub>10</sub> value) divided by dimension versus dimension. The target function value
                         is chosen such that !!THE-REF-ALG!! just failed to achieve
-                        an <span class="roman">ERT</span>&nbsp;of !!PPFIGS&#8722;FTARGET!!&times;<span class="roman">DIM</span>. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>24</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a statistically better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
+                        an <span class="roman">ERT</span>&nbsp;of !!PPFIGS&#8722;FTARGET!!&times;<span class="roman">DIM</span>. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>24</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
 
 <div class="p"><!----></div>
 ##bbobpprldistrlegendrlbased##
@@ -99,11 +99,11 @@ Expected running time (<span class="roman">ERT</span>&nbsp;in number of f-evalua
 + 10<sup>&#8722;8</sup>.
                 The median number of conducted evaluations is additionally given in 
         <i>italics</i>, if the target in the last column was never reached. 
-        <b>Bold</b> entries are statistically significantly better (according to
-        the rank-sum test) compared to the best algorithm from BBOB 2009, with
-        p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k  &gt;  1 is following the
-        &#8595; symbol, with Bonferroni correction by the number of
-        functions (24).
+        <b>Bold</b> entries are better than the reference algorithm
+        the best algorithm from BBOB 2009 with a p-value of at least 0.05 or 10<sup>&#8722;k</sup>
+        where k is the number following the &#8595; symbol (computed
+        in the rank-sum test with Bonferroni correction by the number of
+        functions 24).
 
 <div class="p"><!----></div>
 ##bbobpptablesmanylegendrlbased##
@@ -175,7 +175,7 @@ Bootstrapped empirical cumulative distribution of the number of f-evaluations di
 
 Expected running time (<span class="roman">ERT</span>&nbsp;in number of f-evaluations
                     as log<sub>10</sub> value), divided by dimension for target function value !!PPFIGS&#8722;FTARGET!!
-                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>24</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a statistically better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
+                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>24</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
 
 <div class="p"><!----></div>
 ##bbobpprldistrlegendfixed##
@@ -238,11 +238,11 @@ Expected running time (<span class="roman">ERT</span>&nbsp;in number of f-evalua
         #succ is the number of trials that reached the target value of the last column.
                 The median number of conducted evaluations is additionally given in 
         <i>italics</i>, if the target in the last column was never reached. 
-        <b>Bold</b> entries are statistically significantly better (according to
-        the rank-sum test) compared to the best algorithm from BBOB 2009, with
-        p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k  &gt;  1 is following the
-        &#8595; symbol, with Bonferroni correction by the number of
-        functions (24).
+        <b>Bold</b> entries are better than the reference algorithm
+        the best algorithm from BBOB 2009 with a p-value of at least 0.05 or 10<sup>&#8722;k</sup>
+        where k is the number following the &#8595; symbol (computed
+        in the rank-sum test with Bonferroni correction by the number of
+        functions 24).
 
 <div class="p"><!----></div>
 ##bbobpptablesmanylegendfixed##
@@ -312,7 +312,7 @@ Bootstrapped empirical cumulative distribution of the number of f-evaluations di
 
 Expected running time (<span class="roman">ERT</span>&nbsp;in number of f-evaluations
                     as log<sub>10</sub> value), divided by dimension for target function value !!PPFIGS&#8722;FTARGET!!
-                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>55</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a statistically better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
+                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>55</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
 
 <div class="p"><!----></div>
 ##bbobpprldistrlegendbiobjfixed##
@@ -373,11 +373,11 @@ Expected running time (<span class="roman">ERT</span>&nbsp;in number of f-evalua
         #succ is the number of trials that reached the target value of the last column.
                 The median number of conducted evaluations is additionally given in 
         <i>italics</i>, if the target in the last column was never reached. 
-        <b>Bold</b> entries are statistically significantly better (according to
-        the rank-sum test) compared to the best algorithm from BBOB 2016, with
-        p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k  &gt;  1 is following the
-        &#8595; symbol, with Bonferroni correction by the number of
-        functions (55).
+        <b>Bold</b> entries are better than the reference algorithm
+        the best algorithm from BBOB 2016 with a p-value of at least 0.05 or 10<sup>&#8722;k</sup>
+        where k is the number following the &#8595; symbol (computed
+        in the rank-sum test with Bonferroni correction by the number of
+        functions 55).
 
 <div class="p"><!----></div>
 ##bbobpptablesmanylegendbiobjfixed##
@@ -448,7 +448,7 @@ Bootstrapped empirical cumulative distribution of the number of f-evaluations di
 Expected running time (<span class="roman">ERT</span>&nbsp;in number of f-evaluations
                         as log<sub>10</sub> value) divided by dimension versus dimension. The target function value
                         is chosen such that !!THE-REF-ALG!! just failed to achieve
-                        an <span class="roman">ERT</span>&nbsp;of !!PPFIGS&#8722;FTARGET!!&times;<span class="roman">DIM</span>. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>55</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a statistically better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
+                        an <span class="roman">ERT</span>&nbsp;of !!PPFIGS&#8722;FTARGET!!&times;<span class="roman">DIM</span>. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>55</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
 
 <div class="p"><!----></div>
 ##bbobpprldistrlegendbiobjrlbased##
@@ -511,11 +511,11 @@ Expected running time (<span class="roman">ERT</span>&nbsp;in number of f-evalua
 + 10<sup>&#8722;5</sup>.
                 The median number of conducted evaluations is additionally given in 
         <i>italics</i>, if the target in the last column was never reached. 
-        <b>Bold</b> entries are statistically significantly better (according to
-        the rank-sum test) compared to the best algorithm from BBOB 2016, with
-        p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k  &gt;  1 is following the
-        &#8595; symbol, with Bonferroni correction by the number of
-        functions (55).
+        <b>Bold</b> entries are better than the reference algorithm
+        the best algorithm from BBOB 2016 with a p-value of at least 0.05 or 10<sup>&#8722;k</sup>
+        where k is the number following the &#8595; symbol (computed
+        in the rank-sum test with Bonferroni correction by the number of
+        functions 55).
 
 <div class="p"><!----></div>
 ##bbobpptablesmanylegendbiobjrlbased##
@@ -587,7 +587,7 @@ Bootstrapped empirical cumulative distribution of the number of f-evaluations di
 
 Expected running time (<span class="roman">ERT</span>&nbsp;in number of f-evaluations
                     as log<sub>10</sub> value), divided by dimension for target function value !!PPFIGS&#8722;FTARGET!!
-                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>92</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a statistically better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
+                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>92</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
 
 <div class="p"><!----></div>
 ##bbobpprldistrlegendbiobjextfixed##
@@ -720,7 +720,7 @@ Bootstrapped empirical cumulative distribution of the number of evaluations divi
 
 Expected running time (<span class="roman">ERT</span>&nbsp;in number of evaluations
                     as log<sub>10</sub> value), divided by dimension for target function value !!PPFIGS&#8722;FTARGET!!
-                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>54</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a statistically better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
+                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>54</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
 
 <div class="p"><!----></div>
 ##bbobpprldistrlegendconstrainedfixed##
@@ -848,7 +848,7 @@ Expected running time (<span class="roman">ERT</span>&nbsp;in log<sub>10</sub> o
 
 Expected running time (<span class="roman">ERT</span>&nbsp;in number of evaluations
                     as log<sub>10</sub> value), divided by dimension for target function value !!PPFIGS&#8722;FTARGET!!
-                    versus number of constraints. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> - f<sub>54</sub>. If the success ratio is &lt; 1/2 and &#62; 0 the symbol is annotated with the number of successes. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a statistically better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of constraints (six).  
+                    versus number of constraints. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> - f<sub>54</sub>. If the success ratio is &lt; 1/2 and &#62; 0 the symbol is annotated with the number of successes. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of constraints (six).  
 
 <div class="p"><!----></div>
 ##bbobppfigconsonelegendconstrainedfixed##
@@ -876,7 +876,7 @@ Bootstrapped empirical cumulative distribution of the number of f-evaluations di
 
 Expected running time (<span class="roman">ERT</span>&nbsp;in number of f-evaluations
                     as log<sub>10</sub> value), divided by dimension for target function value !!PPFIGS&#8722;FTARGET!!
-                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>24</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a statistically better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
+                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>24</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
 
 <div class="p"><!----></div>
 ##bbobpprldistrlegendlargescalefixed##
@@ -1006,7 +1006,7 @@ Bootstrapped empirical cumulative distribution of the number of f-evaluations di
 
 Expected running time (<span class="roman">ERT</span>&nbsp;in number of f-evaluations
                     as log<sub>10</sub> value), divided by dimension for target function value !!PPFIGS&#8722;FTARGET!!
-                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>24</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a statistically better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
+                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>24</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
 
 <div class="p"><!----></div>
 ##bbobpprldistrlegendmixintfixed##
@@ -1136,7 +1136,7 @@ Bootstrapped empirical cumulative distribution of the number of f-evaluations di
 
 Expected running time (<span class="roman">ERT</span>&nbsp;in number of f-evaluations
                     as log<sub>10</sub> value), divided by dimension for target function value !!PPFIGS&#8722;FTARGET!!
-                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>24</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a statistically better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
+                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>24</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
 
 <div class="p"><!----></div>
 ##bbobpprldistrlegendbiobjmixintfixed##
@@ -1266,7 +1266,7 @@ Bootstrapped empirical cumulative distribution of the number of f-evaluations di
 
 Expected running time (<span class="roman">ERT</span>&nbsp;in number of f-evaluations
                     as log<sub>10</sub> value), divided by dimension for target function value !!PPFIGS&#8722;FTARGET!!
-                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>24</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a statistically better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
+                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>24</sub>. Light symbols give the maximum number of evaluations from the longest trial divided by dimension. Black stars (if present) indicate a better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
 
 <div class="p"><!----></div>
 ##bbobpprldistrlegendsboxcostfixed##
@@ -1393,5 +1393,5 @@ Expected running time (<span class="roman">ERT</span>&nbsp;in log<sub>10</sub> o
 T<sub><span class="small">E</span></sub>X
 by <a href="http://hutchinson.belmont.ma.us/tth/">
 T<sub><span class="small">T</span></sub>H</a>,
-version 4.08.<br />On 31 Oct 2023, 11:55.</small>
+version 4.08.<br />On 27 May 2024, 13:15.</small>
 </html>
