@@ -22,22 +22,24 @@ Advanced Version (with documentation)
  1. Draft a release (under the Code / releases tabs). Consider previous releases to see what to write.
  2. check that instance numbers are up-to-date and `"year: this-year"` is implemented as suite option
  2. check that README.md is up-to-date
- 3. clean and test the development branch
- 4. Run tests by pushing the development branch to the `devel-test1` and `test-nightly` branches, which
+ 3. Run `python .\preparehtml.py` in the `code-postprocessing` folder when the LaTeX captions changed
+    (might not work with any operating system because we rely on `tth` to be working)
+ 4. clean and test the development branch
+ 5. Run tests by pushing the development branch to the `devel-test1` and `test-nightly` branches, which
     are the ones, the master branch is protected against
- 5. Merge the `development` branch into the `master` branch.
- 6. Publish the release. 
- 7. Adding the .tar.gz file of the release right after the release by hand will allow for
+ 6. Merge the `development` branch into the `master` branch.
+ 7. Publish the release. 
+ 8. Adding the .tar.gz file of the release right after the release by hand will allow for
     tracking downloads later on, see http://mmilidoni.github.io/github-downloads-count/
 
 Afterwards or before (can be skipped potentially if this is not affected by the release):
 
- 8. update version and release numbers in the coco-doc documentation repository in
+ 9. update version and release numbers in the coco-doc documentation repository in
     all docs/*/source/config.py files
- 9. publish the new documentation by running `make html-topublish` in all the docs/* folders 
+10. publish the new documentation by running `make html-topublish` in all the docs/* folders 
     if uten 8. and pushing the created html files, see also documentation-howto.md
-10. publish the Coco C documentation through doxygen by following the instructions in documentation-howto.md
-11. publish the documentation of the cocoex and cocopp modules, see also the
+11. publish the Coco C documentation through doxygen by following the instructions in documentation-howto.md
+12. publish the documentation of the cocoex and cocopp modules, see also the
     documentation-howto.md in the coco-doc repository for details
 
     
