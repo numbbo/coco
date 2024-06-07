@@ -54,20 +54,19 @@ def get_table_caption():
         (preceded by the target !!DF!!-value in \textit{italics}) in the first row. 
         \#succ is the number of trials that reached the target value of the last column.
         """
-
     table_caption_rest = (r"""%
         The median number of conducted function evaluations is additionally given in 
         \textit{italics}, if the target in the last column was never reached.
-        Entries, succeeded by a star, are statistically significantly better (according to
-        the rank-sum test) when compared to all other algorithms of the table, with
-        $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
-        than 1, with Bonferroni correction by the number of functions (!!TOTAL-NUM-OF-FUNCTIONS!!). """ +
+        The best entry is marked by a star when the largest $p$-value of pairwise
+        rank-sum tests with the other algorithms either obeys $0.01 < p \le 0.05$
+        or $10^{-k-1} < p \le 10^{-k}$ when the star is followed by the number $k$,
+        with Bonferroni correction by the number of functions (!!TOTAL-NUM-OF-FUNCTIONS!!). """ +
                 (r"""A ${}$ signifies the number of trials that were worse than the ERT of !!THE-REF-ALG!! """
                  r"""shown only when less than 10 percent were worse and the ERT was better."""
                  .format(significance_vs_ref_symbol)
                     if not (testbedsettings.current_testbed.reference_algorithm_filename == '' or
                             testbedsettings.current_testbed.reference_algorithm_filename is None)
-                 else "") + r"""Best results are printed in bold.
+                 else "") + r""" Best results are printed in bold.
         """)
 
     table_caption = None

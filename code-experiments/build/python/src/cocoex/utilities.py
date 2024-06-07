@@ -143,6 +143,8 @@ def write_setting(dict_, filename, ignore_list=None):
 
     See also `dict_to_eval` and `read_setting`.
     """
+    if isinstance(filename, (tuple, list)):
+        filename = _os.path.join(*filename)
     if not _os.path.exists(filename):
         with open(filename, 'wt') as f:
             if ignore_list is None:
@@ -171,6 +173,36 @@ def read_setting(filename, warn=True):
             return _ast.literal_eval(f.read())
     warn and _warnings.warn("Parameter file '{}' (to check setting consistency)"
                             " does not exist".format(filename))
+
+def forgiving_import(module, warn_level=0):
+    """Do nothing if import fails, return the imported module otherwise.
+
+    Usage::
+
+        cma = forgiving_import('cma')
+
+    in place of::
+
+        import cma
+
+    This is helpful to keep some code smoothly working when `cma` is not
+    installed and not used in the current use case.
+    """
+    try:
+        import importlib
+    except ImportError:
+        print('Please replace \n\n   {}\n\n with \n\n    {}\n\n'
+              'or incomment the respective line.'.format(
+            "module = forgiving_import('module')", 
+            "import module"))
+        raise
+    try:
+        return importlib.import_module(module)
+    except ImportError:
+        if warn_level:
+            print("importing module `{}` with `importlib` failed".format(module))
+        if warn_level > 1:
+            raise
 
 class ObserverOptions(dict):
     """a `dict` with observer options which can be passed to
@@ -397,8 +429,10 @@ class MiniPrint:
     """
     def __init__(self):
         self.dimension = None
+        self.id_function = None
         self.last_index = -1
-        self._calls = 0
+        self._calls = 0  # formatting aid
+        self._functions = 0  # not in use
         self._sweeps = 0
         self._day0 = _time.localtime()[2]
     @property
@@ -410,17 +444,29 @@ class MiniPrint:
             s = s + "+%dd" % (ltime[0] - self._day0)
         return s
     def __call__(self, problem, final=False, restarted=False, final_message=False):
-        if self.dimension != problem.dimension or self.last_index > problem.index:
+        new_dimension = self.dimension != problem.dimension or (
+            self.last_index > problem.index)
+        if new_dimension:
+            _sys.stdout.flush()
             if self.dimension is not None:
                 print('')
             print("%dD %s" % (problem.dimension, self.stime))
             self.dimension = problem.dimension
             self._calls = 0
-        elif not self._calls % 10:
-            if self._calls % 50:
-                print(' ', end='')
-            else:
+            self._functions = 0
+        # elif not self._calls % 10:
+        #     if self._calls % 50:
+        #         print(' ', end='')
+        #     else:
+        #         print()
+        if self.id_function != problem.id_function or new_dimension:
+            self.id_function = problem.id_function
+            if not new_dimension and self._calls >= 50:
+                self._calls = 0
                 print()
+            print('{}f{}'.format(' ' if self.id_function < 10 else '',
+                                 self.id_function), end='', flush=True)
+            self._functions += 1
         self.last_index = problem.index
         self._calls += 1
         print('|' if problem.final_target_hit else ':' if restarted else '.', end='')

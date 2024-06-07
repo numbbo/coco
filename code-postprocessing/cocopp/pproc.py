@@ -971,10 +971,9 @@ class DataSet(object):
             else:
                 tmp = not all(tmp)
             if tmp or len(self._maxevals) != len(self.readmaxevals):
-                warnings.warn('There is a difference between the maxevals in the '
-                              '*.info file {} and in the data files {}:'
-                              '\n {}\n {}'.format(indexfile, dataFiles,
-                                                  self.readmaxevals, self._maxevals))
+                warnings.warn('The maxevals from {} and {} disagree:'
+                              '\n  {}\n  {}'.format(
+                                  indexfile, dataFiles, self.readmaxevals, self._maxevals))
             self._cut_data()
         if len(self._evals):
             self._target = self._evals[:,0]  # needed for biobj best alg computation
@@ -1043,6 +1042,7 @@ class DataSet(object):
             # check exception of 2009 data sets with 3 times instances 1:5
             counts = [self.instancenumbers.count(i) for i in set(self.instancenumbers)]
             if not len(set(counts)) == 1:  # require same number of repetition per instance
+                is_consistent = False
                 warnings.warn('  double instances in ' + 
                                 str(self.instancenumbers) + 
                                 ' (f' + str(self.funcId) + ', ' + str(self.dim)
@@ -2092,6 +2092,23 @@ class DataSet(object):
         m[~np.isfinite(m)] = np.nan
         return m
 
+    def _data_differ(self, ds):
+        """return a list of targets for which `ds` differs from `self`
+
+        in the leading columns of the `_evals` attribute.
+        """
+        def nanequal(a, b):
+            try: return np.array_equal(a, b, equal_nan=True)  # since 1.19 (2020)
+            except AttributeError: return np.all((a == b) | (np.isnan(a) & np.isnan(b)))
+        targets = sorted(set.union(set(self._evals[:, 0]), set(ds._evals[:, 0])))
+        if not targets:
+            return []
+        differ = [not nanequal(row_s[:ds._evals.shape[1]-1],
+                               row_ds[:self._evals.shape[1]-1])
+                    for (row_s, row_ds) in zip(self.detEvals(targets),
+                                               ds.detEvals(targets))]
+        return [t for (t, d) in zip(targets, differ) if d]
+
     def plot(self, plot_function=plt.semilogy, smallest_target=8e-9,
              median_format='k--', color_map=None, **kwargs):
         """plot all data from `evals` attribute and the median.
@@ -2350,31 +2367,35 @@ class DataSetList(list):
             print('Could not load "%s".' % indexFile)
             print('I/O error(%s): %s' % (e.errno, e.strerror))
 
-    def append(self, o, check_data_type=False):
+    def append(self, o, check_data_type='warn'):
         """Redefines the append method to check for unicity."""
 
         if check_data_type and not isinstance(o, DataSet):
-            warnings.warn('appending a non-DataSet to the DataSetList')
-            raise Exception('Expect DataSet instance.')
+            warnings.warn('appending a non-DataSet {} to a DataSetList'.format(o))
+            if check_data_type != 'warn':
+                raise ValueError('Expect DataSet instance.')
         isFound = False
         for i in self:
             if i == o:
                 isFound = True
-                if 11 < 3 and i.instancenumbers == o.instancenumbers and any([_i > 5 for _i in i.instancenumbers]):
-                    warnings.warn("same DataSet found twice, second one from "
-                        + str(o.indexFiles) + " with instances "
-                        + str(i.instancenumbers))
+                if 1 < 3 and i.instancenumbers == o.instancenumbers and (
+                    # max(i.instancenumbers) > 5 and
+                    not i._data_differ(o)):
+                    warnings.warn("same DataSet found twice,"
+                                  + " skipping the second one from "
+                                  + str(o.indexFiles) + " with instances "
+                                  + str(i.instancenumbers))
                     # todo: this check should be done in a
                     #       consistency checking method, as the one below
                     break
-                if set(i.instancenumbers).intersection(o.instancenumbers) \
+                # replaced by i.consisency_check() below
+                if 11 < 3 and set(i.instancenumbers).intersection(o.instancenumbers) \
                         and any([_i > 5 for _i in set(i.instancenumbers).intersection(o.instancenumbers)]):
                     warn_message = ('in DataSetList.processIndexFile: instances '
                                     + str(set(i.instancenumbers).intersection(o.instancenumbers))
                                     + ' found several times.'
                                     + ' Read data for F%d in %d-D of %s might be inconsistent' % (i.funcId, i.dim, i.algId))
                     warnings.warn(warn_message)
-                                  # + ' found several times. Read data for F%(argone)d in %(argtwo)d-D ' % {'argone':i.funcId, 'argtwo':i.dim}
                 # tmp = set(i.dataFiles).symmetric_difference(set(o.dataFiles))
                 #Check if there are new data considered.
                 if 1 < 3:
@@ -2399,6 +2420,8 @@ class DataSetList(list):
                     elif getattr(o, 'pickleFile', False):
                         i.modsFromPickleVersion = False
                         i.pickleFile = o.pickleFile
+                if not i.consistency_check():
+                    warnings.warn("merged {} getting an inconsistent data set {}".format(o, i))
                 break
         if not isFound:
             list.append(self, o)
@@ -3375,7 +3398,7 @@ def dictAlgByDim(dictAlg):
             if d in tmpdictAlg[alg]:
                 tmp = tmpdictAlg[alg][d]
             elif testbedsettings.current_testbed:
-                try:
+                try:  # TODO: this is at the wrong place in the dictAlgByDim function
                     if d in testbedsettings.current_testbed.dimensions_to_display[:-1]:
                         txt = ('No data for algorithm %s in %d-D.'
                             % (alg, d))

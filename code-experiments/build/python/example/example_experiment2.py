@@ -39,19 +39,14 @@ See a beginners example experiment: `<https://github.com/numbbo/coco/blob/master
 from __future__ import division, print_function, unicode_literals
 __author__ = "Nikolaus Hansen and ..."
 import sys
-import time  # output some timings per evaluation
-from collections import defaultdict
-import os, webbrowser  # to show post-processed results in the browser
-import numpy as np  # for median, zeros, random, asarray
-import cocoex  # experimentation module
-try: import cocopp  # post-processing module
-except: pass
 
 ### MKL bug fix
 def set_num_threads(nt=1, disp=1):
     """see https://github.com/numbbo/coco/issues/1919
+    and https://github.com/CMA-ES/pycma/issues/238
     and https://twitter.com/jeremyphoward/status/1185044752753815552
     """
+    import os
     try: import mkl
     except ImportError: disp and print("mkl is not installed")
     else:
@@ -65,7 +60,14 @@ def set_num_threads(nt=1, disp=1):
     disp and print("setting mkl threads num to", nt)
 
 if sys.platform.lower() not in ('darwin', 'windows'):
-    set_num_threads(1)
+    set_num_threads(1)  # execute before numpy is imported
+
+import time  # output some timings per evaluation
+from collections import defaultdict
+import numpy as np  # for median, zeros, random, asarray
+import cocoex  # experimentation module
+try: import cocopp  # post-processing module
+except: pass
 
 ### solver imports (add other imports if necessary)
 import scipy.optimize  # to define the solver to be benchmarked
@@ -193,7 +195,6 @@ for dimension in sorted(timings):
     print("    %3d       %.1e" % (dimension, np.median(timings[dimension])))
 print("  -------------------------------------")
 
-### post-process data
+### post-process data and open browser
 if batches == 1 and 'cocopp' in globals() and cocopp not in (None, 'None'):
     cocopp.main(observer.result_folder)  # re-run folders look like "...-001" etc
-    webbrowser.open("file://" + os.getcwd() + "/ppdata/index.html")
