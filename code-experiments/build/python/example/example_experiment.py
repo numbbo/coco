@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""DEPRECATED: use rather `example_experiment2.py`
+"""DEPRECATED: use rather `example_experiment_complete.py`
 
 A Python script for the COCO experimentation module `cocoex`.
 

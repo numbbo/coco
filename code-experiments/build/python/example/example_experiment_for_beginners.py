@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-"""A short and simple example experiment with restarts.
+"""DEPRECATED: use rather `example_experiment_simple.py`
+
+A short and simple example experiment with restarts.
 
 The code is fully functional but mainly emphasises on readability.
 Hence produces only rudimentary progress messages and does not provide

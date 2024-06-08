@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""A short and simple example experiment with restarts.
+"""DEPRECATED: use rather `example_experiment_complete.py`
+
+A short and simple example experiment with restarts.
 
 The script is fully functional but also emphasises on readability. It
 features restarts, timings and recording termination conditions.
