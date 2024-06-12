@@ -39,6 +39,8 @@ def prepare_html(texFile):
     
     if ('win32' in sys.platform):
         tthFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tth\\tth.exe')
+    elif 'darwin' in sys.platform:
+        tthFile = 'tth'
     else:
         tthFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tth_C/tth')
 
