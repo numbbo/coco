@@ -143,31 +143,21 @@ static int logger_bbob_single_digit_constraint(const double c) {
 }
 
 /**
- * @brief Decides whether a new line in the info file should be started
+ * @brief Decides whether a new line in the info file (and therefore a new set of .?dat files) 
+ * should be started
  *
- * A new line is started when he current dimension differs from the last logged dimension for this
- * function.
+ * A new line should be started when the current dimension or the current function differ from 
+ * the last logged dimension and function.
  */
-static int logger_bbob_start_new_line(observer_bbob_data_t *observer_data,
+static int logger_bbob_start_new_line(coco_observer_t *observer,
                                       size_t current_dimension,
                                       size_t current_function) {
-  /* This is complicated, because the function indices are not directly accessible */
-  size_t i, last_dimension = 0;
-  size_t function_idx = observer_data->num_functions;
-  for (i = 0; i < observer_data->num_functions; i++) {
-    if (current_function == observer_data->functions_array[i]) {
-      function_idx = i;
-      break;
-    }
-  }
-  if (function_idx >= observer_data->num_functions)
-    coco_error("logger_bbob_start_new_line(): Cannot find function %lu", current_function);
+  observer_bbob_data_t *observer_data = ((observer_bbob_data_t *)observer->data);
+  assert (observer_data != NULL);
 
-  last_dimension = observer_data->last_dimensions[function_idx];
-  /* Finally, update current dimension */
-  observer_data->last_dimensions[function_idx] = current_dimension;
-
-  return (current_dimension != last_dimension);
+  if ((current_function == observer_data->last_function) && (current_dimension == observer_data->last_dimension))
+    return 0;
+  return 1;
 }
 
 /**
@@ -245,9 +235,10 @@ static void logger_bbob_open_info_file(logger_bbob_data_t *logger,
                                        const char *folder,
                                        const char *function_string,
                                        const char *data_file_name,
-                                       const char *suite_name) {
+                                       const char *suite_name, 
+                                       int start_new_line) {
   char data_file_path[COCO_PATH_MAX + 2] = { 0 };
-  int start_new_line = 0, add_empty_line = 0;
+  int add_empty_line = 0;
   char file_name[COCO_PATH_MAX + 2] = { 0 };
   char file_path[COCO_PATH_MAX + 2] = { 0 };
   FILE **info_file;
@@ -280,7 +271,6 @@ static void logger_bbob_open_info_file(logger_bbob_data_t *logger,
       fclose(tmp_file);
     }
     logger_bbob_open_file(info_file, file_path);
-    start_new_line = logger_bbob_start_new_line(observer_data, logger->number_of_variables, logger->function);
     if (start_new_line) {
       if (add_empty_line)
         fprintf(*info_file, "\n");
@@ -311,14 +301,21 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, int is_opt_known)
   char folder_path[COCO_PATH_MAX + 2] = { 0 };
   char *function_string;
   char *dimension_string;
-  char *str_opt = "Fopt";
-  char *str_ref = "Fref";
-  char *str_pointer = str_opt;
+  char *str_pointer;
+  char *relative_path_pointer = NULL;
+  int start_new_line;
+  observer_bbob_data_t *observer_data;
 
   coco_debug("Started logger_bbob_initialize()");
 
+  if (is_opt_known == 0)
+    str_pointer = "Fref";
+  else
+    str_pointer = "Fopt";
+
   assert(logger != NULL);
   assert(logger->observer != NULL);
+  observer_data = ((observer_bbob_data_t *)((coco_observer_t *)logger->observer)->data);
 
   function_string = coco_strdupf("%lu", (unsigned long) logger->function);
   dimension_string = coco_strdupf("%lu", (unsigned long) logger->number_of_variables);
@@ -332,27 +329,38 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, int is_opt_known)
   strncat(relative_path, function_string, COCO_PATH_MAX - strlen(relative_path) - 1);
   strncat(relative_path, "_DIM", COCO_PATH_MAX - strlen(relative_path) - 1);
   strncat(relative_path, dimension_string, COCO_PATH_MAX - strlen(relative_path) - 1);
+  
+  /* Find out whether a new line in the info file (and a new .?dat file) is needed */
+  start_new_line = logger_bbob_start_new_line(logger->observer, logger->number_of_variables, logger->function);
+  if (start_new_line) {
+    relative_path_pointer = coco_strdup(relative_path);
+    coco_create_unique_filename(logger->observer->result_folder, &relative_path_pointer, ".dat");
+    strncpy(observer_data->last_dat_file, relative_path_pointer, COCO_PATH_MAX);
+    observer_data->last_function = logger->function;
+    observer_data->last_dimension = logger->number_of_variables;
+  } else {
+    relative_path_pointer = coco_strdup(observer_data->last_dat_file);
+  }
 
   /* info file */
-  logger_bbob_open_info_file(logger, logger->observer->result_folder, function_string,
-      relative_path, logger->suite_name);
+  logger_bbob_open_info_file(logger, logger->observer->result_folder, function_string, relative_path_pointer, 
+    logger->suite_name, start_new_line);
   fprintf(logger->info_file, ", %lu", (unsigned long) logger->instance);
 
-  if (is_opt_known == 0)
-    str_pointer = str_ref;
   /* data files */
-  logger_bbob_open_data_file(&(logger->dat_file), logger->observer->result_folder, relative_path, ".dat");
+  logger_bbob_open_data_file(&(logger->dat_file), logger->observer->result_folder, relative_path_pointer, ".dat");
   fprintf(logger->dat_file, logger_bbob_header, str_pointer, logger->optimal_value);
-  logger_bbob_open_data_file(&(logger->tdat_file), logger->observer->result_folder, relative_path, ".tdat");
+  logger_bbob_open_data_file(&(logger->tdat_file), logger->observer->result_folder, relative_path_pointer, ".tdat");
   fprintf(logger->tdat_file, logger_bbob_header, str_pointer, logger->optimal_value);
-  logger_bbob_open_data_file(&(logger->rdat_file), logger->observer->result_folder, relative_path, ".rdat");
+  logger_bbob_open_data_file(&(logger->rdat_file), logger->observer->result_folder, relative_path_pointer, ".rdat");
   fprintf(logger->rdat_file, logger_bbob_header, str_pointer, logger->optimal_value);
-  logger_bbob_open_data_file(&(logger->mdat_file), logger->observer->result_folder, relative_path, ".mdat");
+  logger_bbob_open_data_file(&(logger->mdat_file), logger->observer->result_folder, relative_path_pointer, ".mdat");
   fprintf(logger->mdat_file, logger_bbob_header, str_pointer, logger->optimal_value);
 
   logger->is_initialized = 1;
   coco_free_memory(dimension_string);
   coco_free_memory(function_string);
+  coco_free_memory(relative_path_pointer);
 
   coco_debug("Ended   logger_bbob_initialize()");
 }
@@ -626,21 +634,6 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   assert(observer_data != NULL);
   if (observer_data->observed_problem != NULL) {
     coco_error("logger_bbob(): The observed problem must be closed before a new problem can be observed");
-  }
-
-  /* These values are initialized only the first time a bbob logger is allocated */
-  if (observer_data->num_functions == 0) {
-    observer_data->num_functions = suite->number_of_functions;
-  }
-  if (observer_data->last_dimensions == NULL) {
-    observer_data->last_dimensions = coco_allocate_vector_size_t(observer_data->num_functions);
-    for (i = 0; i < observer_data->num_functions; i++)
-      observer_data->last_dimensions[i] = 0;
-  }
-  if (observer_data->functions_array == NULL) {
-    observer_data->functions_array = coco_allocate_vector_size_t(observer_data->num_functions);
-    for (i = 0; i < observer_data->num_functions; i++)
-      observer_data->functions_array[i] = suite->functions[i];
   }
 
   logger_data = (logger_bbob_data_t *) coco_allocate_memory(sizeof(*logger_data));

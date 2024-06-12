@@ -28,7 +28,7 @@ static const unsigned int BUDGET_MULTIPLIER = 2;
  * The maximal number of independent restarts allowed for an algorithm that
  * restarts itself.
  */
-static const long INDEPENDENT_RESTARTS = 1e5;
+static const size_t INDEPENDENT_RESTARTS = 10000;
 
 /**
  * The random seed. Change if needed.

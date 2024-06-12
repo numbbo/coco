@@ -559,7 +559,8 @@ void coco_observer_free(coco_observer_t *observer) {
  * observer_bbob, observer_biobj and observer_toy for options of the specific
  * observers.
  * - "outer_folder: NAME" determines the outer folder for the experiment. The
- * default value is "exdata".
+ * default value is "exdata" (relative to the current folder). Absolute paths
+ * are also allowed.
  * - "result_folder: NAME" determines the folder within the "exdata" folder into
  * which the results will be output. If the folder with the given name already
  * exists, first NAME_001 will be tried, then NAME_002 and so on. The default
@@ -719,7 +720,7 @@ coco_observer_t *coco_observer(const char *observer_name,
     }
   }
 
-  base_evaluation_triggers = coco_allocate_string(COCO_PATH_MAX);
+  base_evaluation_triggers = coco_allocate_string(COCO_PATH_MAX + 1);
   if (coco_options_read_string(observer_options, "base_evaluation_triggers",
                                base_evaluation_triggers) == 0) {
     strcpy(base_evaluation_triggers, "1,2,5");
