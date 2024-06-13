@@ -150,9 +150,20 @@ jobs:
     needs: python-wheels-build-cocoex
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        version: ["3.9", "3.10", "3.11", "3.12"]
-    runs-on: ${{matrix.os}}
+        buildplat:
+          - [ubuntu-20.04, manylinux_x86_64]
+          - [ubuntu-20.04, musllinux_x86_64]
+          - [macos-12, macosx_x86_64]
+          - [windows-2019, win_amd64]
+          - [windows-2019, win32]
+        python: ["3.9", "3.10", "3.11", "3.12"]
+        exclude:
+          # Don't build PyPy 32-bit windows
+          - buildplat: [windows-2019, win32]
+            python: "3.9"
+          - buildplat: [ ubuntu-20.04, musllinux_x86_64 ]
+            python: "3.9"
+    runs-on: ${{ matrix.buildplat[0] }}
     defaults:
       run:
         working-directory: ${{github.workspace}}
@@ -167,7 +178,7 @@ jobs:
         path: wheels
     - uses: actions/setup-python@v4
       with:
-        python-version: ${{matrix.version}}
+        python-version: ${{matrix.python}}
     - name: Setup Python
       run: python -m pip install --upgrade pip wheel
     - name: Install cocoex 
@@ -183,9 +194,20 @@ jobs:
     needs: [python-wheels-build-cocoex, python-wheels-build-cocopp]
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        version: ["3.9", "3.10", "3.11", "3.12"]
-    runs-on: ${{matrix.os}}
+        buildplat:
+          - [ubuntu-20.04, manylinux_x86_64]
+          - [ubuntu-20.04, musllinux_x86_64]
+          - [macos-12, macosx_x86_64]
+          - [windows-2019, win_amd64]
+          - [windows-2019, win32]
+        python: ["3.9", "3.10", "3.11", "3.12"]
+        exclude:
+          # Don't build PyPy 32-bit windows
+          - buildplat: [windows-2019, win32]
+            python: "3.9"
+          - buildplat: [ ubuntu-20.04, musllinux_x86_64 ]
+            python: "3.9"
+    runs-on: ${{ matrix.buildplat[0] }}
     defaults:
       run:
         working-directory: ${{github.workspace}}
@@ -197,7 +219,7 @@ jobs:
         path: wheels
     - uses: actions/setup-python@v4
       with:
-        python-version: ${{matrix.version}}
+        python-version: ${{matrix.python}}
     - name: Setup Python
       run: python -m pip install --upgrade pip wheel
     - name: Install cocoex and cocopp
@@ -405,4 +427,3 @@ jobs:
       with:
         name: rust-example-${{matrix.os}}
         path: cocoex-rust/exdata/*
-
