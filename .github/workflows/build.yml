@@ -30,6 +30,12 @@ jobs:
         cmake -B build .
         cmake --build build
         ctest --test-dir build
+    - name: Run core integration tests
+      working-directory: ${{github.workspace}}/code-experiments/test/integration-test/
+      run: |
+        cmake -B build .
+        cmake --build build
+        ctest --test-dir build
     - name: Build cocoex Python package
       run: python -m build -s -o dist code-experiments/build/python
     - name: Build cocopp Python package
