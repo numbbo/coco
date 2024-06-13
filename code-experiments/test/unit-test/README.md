@@ -17,4 +17,4 @@ A specific test should be testing a small part of the code. See `test_coco_utili
 1. Fabricate the sources: `python ../../../scripts/fabricate`.
 1. Configure build: `cmake -B build`
 1. Build test suite: `cmake --build build`
-1. Run tests: `ctest --test-dir build` or on Windows `ctest --text-dir build -C Debug`
+1. Run tests: `ctest --test-dir build` or on Windows `ctest --test-dir build -C Debug`

@@ -8,7 +8,7 @@
 #include <string.h>
 #include <time.h>
 
-#include "coco.h"
+// FIXME: Is this _really_ necessary?
 #include "coco.c"
 
 /**
