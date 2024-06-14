@@ -235,8 +235,11 @@ def get_nbup():
 
 
 def get_ppfigs_ftarget():
+    global tohtml
     target = testbedsettings.current_testbed.ppfigs_ftarget
     target = pproc.TargetValues.cast([target] if np.isscalar(target) else target)
     assert len(target) == 1
 
-    return toolsdivers.number_to_latex(target.label(0))
+    return (toolsdivers.number_to_html(target.label(0)) if tohtml
+            else toolsdivers.number_to_latex(target.label(0)))
+
