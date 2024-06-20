@@ -16,7 +16,7 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: "3.10"
         cache: "pip"
@@ -41,32 +41,32 @@ jobs:
     - name: Build cocopp Python package
       run: python -m build -o dist code-postprocessing/
     - name: Archive C source package
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: dist-c
         path: dist/cocoex-c-*.zip
     - name: Archive Java source package
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: dist-java
         path: dist/cocoex-java-*.zip
     - name: Archive Matlab source package
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: dist-matlab
         path: dist/cocoex-matlab-*.zip
     - name: Archive Octave source package
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: dist-octave
         path: dist/cocoex-octave-*.zip
     - name: Archive Rust source package
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: dist-rust
         path: dist/cocoex-rust-*.zip
     - name: Archive cocoex and cocopp Python source package
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: dist-python-sdist
         path: |
@@ -81,18 +81,18 @@ jobs:
         working-directory: ${{github.workspace}}
     steps:
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: "3.10"
     - name: Download Python source package
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: dist-python-sdist
     - name: Build cocopp wheel
       shell: bash
       run: python -m pip wheel -w dist/ cocopp-*.tar.gz
     - name: Archive Python wheels
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: dist-python-wheels
         path: dist/cocopp*.whl
@@ -131,11 +131,11 @@ jobs:
       with:
         architecture: 'x86'
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: "3.10"
     - name: Download Python source package
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: dist-python-sdist
     - name: Install cibuildwheel
@@ -147,7 +147,7 @@ jobs:
         CIBW_PRERELEASE_PYTHONS: True
         CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
     - name: Archive Python wheels
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: dist-python-wheels
         path: dist/cocoex*.whl
@@ -174,15 +174,15 @@ jobs:
       run:
         working-directory: ${{github.workspace}}
     steps:
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: dist-python-sdist
         path: dist
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: dist-python-wheels
         path: wheels
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: ${{matrix.python}}
     - name: Setup Python
@@ -219,11 +219,11 @@ jobs:
         working-directory: ${{github.workspace}}
     steps:
     - uses: actions/checkout@v4
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: dist-python-wheels
         path: wheels
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: ${{matrix.python}}
     - name: Setup Python
@@ -239,11 +239,11 @@ jobs:
     needs: source-build
     runs-on: "ubuntu-latest"
     steps:
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: dist-python-sdist
         path: dist
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: "3.11"
     - name: Setup Python
@@ -267,11 +267,11 @@ jobs:
       run:
         working-directory: ${{github.workspace}}
     steps:
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: dist-python-wheels
         path: wheels
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: ${{matrix.version}}
     - name: Setup Python
@@ -296,7 +296,7 @@ jobs:
         working-directory: ${{github.workspace}}
     steps:
     - name: Download C source package
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: dist-c
     - name: Unpack
@@ -309,7 +309,7 @@ jobs:
       run: ctest --test-dir build 
     - name: Store reports
       if: failure()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: c-test-${{matrix.os}}
         path: |
@@ -327,14 +327,14 @@ jobs:
     runs-on: ${{matrix.os}}
     defaults:
       run:
-        working-directory: ${{github.workspace}}
     steps:
+        working-directory: ${{github.workspace}}
     - name: Download Java source package
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: dist-java
     - name: Setup java
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: ${{ matrix.java }}
@@ -347,7 +347,7 @@ jobs:
       working-directory: ${{github.workspace}}/cocoex-java/
       run: java -classpath build/coco.jar -Djava.library.path=build/ ExampleExperiment 
     - name: Archive Java example experiment results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: java-example-${{matrix.os}}
         path: cocoex-java/exdata/*
@@ -365,7 +365,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y octave liboctave-dev
     - name: Download Octave source package
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: dist-octave
     - name: Unpack
@@ -377,7 +377,7 @@ jobs:
       working-directory: ${{github.workspace}}/cocoex-octave/
       run: octave --no-gui exampleexperiment.m                
     - name: Archive Octave example experiment results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: octave-example
         path: cocoex-octave/exdata/*
@@ -394,7 +394,7 @@ jobs:
         working-directory: ${{github.workspace}}
     steps:
     - name: Download Rust source package
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: dist-rust
     - name: Unpack
@@ -417,7 +417,7 @@ jobs:
         working-directory: ${{github.workspace}}
     steps:
     - name: Download Rust source package
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: dist-rust
     - name: Unpack
@@ -429,7 +429,7 @@ jobs:
       working-directory: ${{github.workspace}}/cocoex-rust/
       run: cargo run --example example-experiment
     - name: Archive Rust example experiment results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: rust-example-${{matrix.os}}
         path: cocoex-rust/exdata/*
