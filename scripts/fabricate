@@ -142,15 +142,20 @@ def git_version(format="pep440"):
     except subprocess.CalledProcessError:
         res = ("99.0.0", "0", "0")
     if len(res) == 1: # Clean tagged release
-        return res[0] # Strip leading v
+        if format == "rust":
+            return res[0].replace("rc", "-rc")
+        else:
+            return res[0]
     else:
         version, offset, hash = res
         offset = int(offset)
         major, minor, release = version.split(".")
-
         if format == "pep440":
             return f"{major}.{minor}.{int(release) + 1}-dev{offset}+{hash}"
         elif format == "rust":
+            # Rust expects release candidates to be tagged -rcX not rcX...
+            if "rc" in release:
+                release = release.replace("rc", "-rc")
             return f"{major}.{minor}.{int(release) + 1}-dev.{offset}+{hash}"
         else:
             raise(f"Unknown version format '{format}'.")
