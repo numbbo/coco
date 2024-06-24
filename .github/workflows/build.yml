@@ -327,8 +327,8 @@ jobs:
     runs-on: ${{matrix.os}}
     defaults:
       run:
+        working-directory: ${{github.workspace}}    
     steps:
-        working-directory: ${{github.workspace}}
     - name: Download Java source package
       uses: actions/download-artifact@v4
       with:
