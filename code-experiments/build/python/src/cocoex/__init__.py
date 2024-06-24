@@ -28,7 +28,15 @@ from .interface import log_level # noqa: F401
 from ._version import __version__ # noqa: F401
 
 
-__all__ = ['Observer', 'Suite', 'known_suite_names', 'default_observers']
+__all__ = [
+    'Observer',
+    'Suite',
+    'known_suite_names', 
+    'ExperimentRepeater', 
+    'BatchScheduler',
+    'default_observers'
+]
+
 
 def default_observers(update=None):
     """return a map from suite names to default observer names.
