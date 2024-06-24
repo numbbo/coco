@@ -8,7 +8,7 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cocoex"
+name = "coco-experiment"
 authors = [
   {name = "Asma Ataman"},
   {name = "Dejan Tušar"},

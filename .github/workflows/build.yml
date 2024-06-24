@@ -36,7 +36,7 @@ jobs:
         cmake -B build .
         cmake --build build
         ctest --test-dir build
-    - name: Build cocoex Python package
+    - name: Build coco-experiment Python package
       run: python -m build -s -o dist code-experiments/build/python
     - name: Build cocopp Python package
       run: python -m build -o dist code-postprocessing/
@@ -70,7 +70,7 @@ jobs:
       with:
         name: dist-python-sdist
         path: |
-          dist/cocoex*.tar.gz
+          dist/coco_experiment*.tar.gz
           dist/cocopp*.tar.gz
 
   python-wheels-build-cocopp:
@@ -142,7 +142,7 @@ jobs:
       run: python -m pip install cibuildwheel==2.16.2
     - name: Build cocoex wheel
       shell: bash
-      run: python -m cibuildwheel --output-dir dist/ cocoex-*.tar.gz
+      run: python -m cibuildwheel --output-dir dist/ coco_experiment-*.tar.gz
       env:
         CIBW_PRERELEASE_PYTHONS: True
         CIBW_BUILD: ${{ matrix.python }}-${{ matrix.buildplat[1] }}
@@ -150,7 +150,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: dist-python-wheels
-        path: dist/cocoex*.whl
+        path: dist/coco_experiment*.whl
   
   python-wheels-test:
     needs: python-wheels-build-cocoex
@@ -188,11 +188,11 @@ jobs:
     - name: Setup Python
       run: python -m pip install --upgrade pip wheel
     - name: Install cocoex 
-      run: python -m pip install --find-links wheels/ cocoex
+      run: python -m pip install --find-links wheels/ coco-experiment
     - name: Run cocoex test
       shell: bash
       run: |
-        tar xf dist/cocoex-*.tar.gz --strip-components=1
+        tar xf dist/coco_experiment-*.tar.gz --strip-components=1
         python -m pip install pytest pytest-cov
         pytest --cov=cocoex test/
   
@@ -229,7 +229,7 @@ jobs:
     - name: Setup Python
       run: python -m pip install --upgrade pip wheel
     - name: Install cocoex and cocopp
-      run: python -m pip install --find-links wheels/ cocoex cocopp
+      run: python -m pip install --find-links wheels/ coco-experiment cocopp
     - name: Install scipy for example experiment
       run: python -m pip install scipy
     - name: Run example experiment
@@ -253,7 +253,7 @@ jobs:
       continue-on-error: true
       run: |
         pip install ruff
-        tar xf dist/cocoex-*.tar.gz --strip-components=1
+        tar xf dist/coco_experiment*.tar.gz --strip-components=1
         ruff --output-format=github .
   
   cocopp-example:
