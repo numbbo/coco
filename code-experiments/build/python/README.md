@@ -1,12 +1,12 @@
 <h1 align="center">
-<img src="https://raw.githubusercontent.com/numbbo/coco/279d8a44b978c8accbc0c36689851902b3f6efeb/logo/coco-ex.webp" width="300">
+<img src="https://raw.githubusercontent.com/numbbo/coco/0ea5f5784c5fa0543261d9c104b490d2d95566f9/logo/coco-ex-300.webp" width="300">
 </h1><br>
 
 [![PyPI Downloads](https://img.shields.io/pypi/dm/coco-experiment.svg?label=PyPI%20downloads)](
 https://pypi.org//)
 [![Paper](https://img.shields.io/badge/DOI-10.1080%2F10556788.2020.1808977-blue)](https://doi.org/10.1080/10556788.2020.1808977)
 
-*coco-experiment* is a Python modul implementing the experimental part of [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://doi.org/10.1080/10556788.2020.1808977).
+*coco-experiment* is a Python module implementing the experimental part of [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://doi.org/10.1080/10556788.2020.1808977).
 
 - **Website:** https://numbbo.github.io/coco/
 - **Source code:** https://github.com/numbbo/coco
