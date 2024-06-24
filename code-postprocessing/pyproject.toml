@@ -42,9 +42,9 @@ dynamic = ["version"]
 version = {attr = "cocopp._version.__version__"}
 
 [project.urls]
-Homepage = "https://www.spotseven.de"
-Issues = "https://github.com/bartzbeielstein/pyspotstream/issues"
-Repository = "https://github.com/bartzbeielstein/pyspotstream"
+Homepage = "https://numbbo.github.io"
+Issues = "https://github.com/numbbo/coco/issues"
+Repository = "https://github.com/numbbo/coco"
 
 [tool.setuptools]
 packages = [
