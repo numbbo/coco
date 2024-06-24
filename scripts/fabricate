@@ -150,6 +150,9 @@ def git_version(format="pep440"):
         version, offset, hash = res
         offset = int(offset)
         major, minor, release = version.split(".")
+        if "rc" in release:
+            release = release[:release.index("rc")]
+                    
         if format == "pep440":
             return f"{major}.{minor}.{int(release) + 1}-dev{offset}+{hash}"
         elif format == "rust":
