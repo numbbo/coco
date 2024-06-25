@@ -5,7 +5,7 @@ numbbo/coco: Comparing Continuous Optimizers
 >
 > This repository contains the source files for the `coco` framework.
 > If you don't want to *extend* the framework, you probably don't need this!
-> Instead, use the language bindings of your choice from the package repository for your language (e.g. PyPI for Python, crates.io for Rust, ...).
+> See instead the [new documentation](https://numbbo.it/getting-started) and use the language bindings of your choice from the package repository for your language (e.g. PyPI for Python, crates.io for Rust, ...).
 
 > [!CAUTION]
 >
@@ -56,7 +56,8 @@ For more general information:
 
 ## Running Experiments
 
-1. **Download** the COCO framework code from github,
+1. For running experiments **in Python**, follow the (new) instructions [here](https://numbbo.it/getting-started/experiment-python.html).  
+   **Otherwise, download** the COCO framework code from github,
 
     - either by clicking the [Download ZIP button](https://github.com/numbbo/coco/archive/master.zip) 
       and unzip the `zip` file, 
