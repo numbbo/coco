@@ -80,11 +80,14 @@ _Additional_ requirements for running an algorithm in a specific language.
   (i.e. in the system path).
 * **Rust**: For details, take a look at the [Rust Readme](./code-experiments/build/rust/README.md)
 * **MATLAB**: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.md)
-* **Python on Windows with MinGW**: Python 2.7 and the Microsoft compiler package for Python 2.7 
-  containing VC9, available [here](https://www.microsoft.com/en-us/download/details.aspx?id=44266). 
-  These are necessary to build the C extensions for the Python `cocoex` module for Windows. 
-  The package contains 32-bit and 64-bit compilers and the Windows SDK headers.
-* **Python on Linux**: `python-dev` must be installed to compile/install the `cocoex` module.
+* **Python**:
+  * **new**: requires only to be able to install `coco-experiment` and `cocopp`
+  * **was**:
+    * **Python on Windows with MinGW**: Python 2.7 and the Microsoft compiler package for Python 2.7 
+    containing VC9, available [here](https://www.microsoft.com/en-us/download/details.aspx?id=44266). 
+    These are necessary to build the C extensions for the Python `cocoex` module for Windows. 
+    The package contains 32-bit and 64-bit compilers and the Windows SDK headers.
+    * **Python on Linux**: `python-dev` must be installed to compile/install the `cocoex` module.
 * **Octave**: Octave 4.0.0 or later. On operating systems other than Windows, earlier versions might work.
   Under Linux the package `liboctave-dev` might be necessary. 
 
@@ -110,8 +113,8 @@ Getting Started <a name="Getting-Started"></a>
 
     As long as no experiments are meant to be run, the next points 2.-6. can be skipped and continue with points 7. and 8. below.
 
-1. **Download** the COCO framework code from github,
-
+1. For running experiments **in Python**, follow the (new) instructions [here](https://numbbo.it/getting-started/experiment-python.html).
+   **Otherwise, download** the COCO framework code from github,
     - either by clicking the [Download ZIP button](https://github.com/numbbo/coco/archive/master.zip) 
       and unzip the `zip` file, 
     - or by typing `git clone https://github.com/numbbo/coco.git`. This way 
@@ -122,7 +125,7 @@ Getting Started <a name="Getting-Started"></a>
     be found [here](https://github.com/numbbo/coco/releases). The latest release corresponds 
     to the [master branch](https://github.com/numbbo/coco/tree/master) as linked above. 
 
-2. In a system shell, **`cd` into** the `coco` or `coco-<version>` folder (framework root), 
+3. In a system shell, **`cd` into** the `coco` or `coco-<version>` folder (framework root), 
     where the file `do.py` can be found. Type, i.e. **execute**, one of the following commands once
     ```sh
       python do.py run-c
