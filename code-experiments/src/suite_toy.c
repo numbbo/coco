@@ -16,7 +16,8 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
                                          const size_t number_of_dimensions,
                                          const size_t *dimensions,
-                                         const char *default_instances);
+                                         const char *default_instances,
+                                         const int known_optima);
 
 /**
  * @brief Sets the dimensions and default instances for the toy suite.
@@ -27,7 +28,7 @@ static coco_suite_t *suite_toy_initialize(void) {
   const size_t dimensions[] = { 2, 3, 5, 10, 20 };
   const size_t num_dimensions = sizeof(dimensions) / sizeof(dimensions[0]);
 
-  suite = coco_suite_allocate("toy", 6, num_dimensions, dimensions, "instances: 1");
+  suite = coco_suite_allocate("toy", 6, num_dimensions, dimensions, "instances: 1", 1);
 
   return suite;
 }
@@ -56,7 +57,7 @@ static coco_problem_t *suite_toy_get_problem(coco_suite_t *suite,
   if (function == 1) {
     problem = f_sphere_allocate(dimension);
   } else if (function == 2) {
-    problem = f_ellipsoid_allocate(dimension);
+    problem = f_ellipsoid_allocate(dimension, 1.0e6);
   } else if (function == 3) {
     problem = f_rastrigin_allocate(dimension);
   } else if (function == 4) {

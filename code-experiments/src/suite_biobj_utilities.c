@@ -12,7 +12,6 @@
 
 #include "coco.h"
 #include "suite_biobj_best_values_hyp.c"
-#include "suite_biobj_mixint_best_values_hyp.c"
 
 /**
  * @brief The array of triples biobj_instance - problem1_instance - problem2_instance connecting bi-objective
@@ -499,46 +498,36 @@ static coco_problem_t *coco_get_biobj_problem(const size_t function,
 }
 
 /**
- * @brief Returns the best known value for the hypervolume indicator matching the given key if the key is found, and
- * throws a coco_error otherwise.
+ * @brief Saves the best known value for the hypervolume indicator matching the given key.
  *
- * @note This function needs to be updated when a new biobjective suite is added to COCO.
+ * If a suite does not have known optima or it has known optima but the key is not found,
+ * the default value is used.
  */
-static double suite_biobj_get_best_hyp_value(const char *suite_name, const char *key) {
+static void suite_biobj_get_best_hyp_value(const int known_optima,
+                                           const char *key,
+                                           double *value) {
 
+  static const double default_value = 1.0;
   size_t i, count;
-  double best_value = 0;
   char *curr_key;
+  *value = default_value;
 
-  if ((strcmp(suite_name, "bbob-biobj") == 0) ||
-      (strcmp(suite_name, "bbob-biobj-ext") == 0)) {
+  if (known_optima) {
     curr_key = coco_allocate_string(COCO_PATH_MAX + 1);
     count = sizeof(suite_biobj_best_values_hyp) / sizeof(char *);
     for (i = 0; i < count; i++) {
-      sscanf(suite_biobj_best_values_hyp[i], "%s %lf", curr_key, &best_value);
+      sscanf(suite_biobj_best_values_hyp[i], "%s %lf", curr_key, value);
       if (strcmp(curr_key, key) == 0) {
         coco_free_memory(curr_key);
-        return best_value;
+        return;
       }
     }
+    /* If it comes to this point, the key was not found */
+    coco_warning("suite_biobj_get_best_hyp_value(): best value of %s could not be found; set to %f",
+        key, default_value);
+    coco_free_memory(curr_key);
+  } else {
+    coco_warning("suite_biobj_get_best_hyp_value(): best value of %s is not known; set to %f",
+        key, default_value);
   }
-  else if (strcmp(suite_name, "bbob-biobj-mixint") == 0) {
-    curr_key = coco_allocate_string(COCO_PATH_MAX + 1);
-    count = sizeof(suite_biobj_mixint_best_values_hyp) / sizeof(char *);
-    for (i = 0; i < count; i++) {
-      sscanf(suite_biobj_mixint_best_values_hyp[i], "%s %lf", curr_key, &best_value);
-      if (strcmp(curr_key, key) == 0) {
-        coco_free_memory(curr_key);
-        return best_value;
-      }
-    }
-  }
-  else {
-    coco_error("suite_biobj_get_best_hyp_value(): suite %s not supported", suite_name);
-    return 0; /* Never reached */
-  }
-
-  coco_free_memory(curr_key);
-  coco_warning("suite_biobj_get_best_hyp_value(): best value of %s could not be found; set to 1.0", key);
-  return 1.0;
 }

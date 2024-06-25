@@ -481,7 +481,7 @@ def split(dataFiles, idx_to_load=None, dim=None):
                     idx += 1
 
                 # Get the current instance and reference value.
-                parts = line.strip('\n').strip('\%').split(', ')
+                parts = line.strip('\n').strip(r'%').split(', ')
                 for elem in parts:
                     if '=' in elem:
                         key, value = elem.split('=', 1)

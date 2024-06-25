@@ -1,8 +1,8 @@
-#include "coco.h"
-#include "minunit_c89.h"
+#include <math.h>
 
-static int about_equal_vector(const double *a, const double *b, const size_t dimension);
-static int about_equal_2d(const double *a, const double b1, const double b2);
+#include "minunit.h"
+#include "coco.c"
+#include "about_equal.h"
 
 /**
  * Tests several things in the computation of the modified hypervolume indicator for a specific
@@ -191,8 +191,12 @@ MU_TEST(test_coco_logger_biobj_feed_solution) {
 /**
  * Run all tests in this file.
  */
-MU_TEST_SUITE(test_all_logger_biobj) {
+int main(void) {
   MU_RUN_TEST(test_logger_biobj_evaluate);
   MU_RUN_TEST(test_logger_biobj_evaluate2);
   MU_RUN_TEST(test_coco_logger_biobj_feed_solution);
+
+  MU_REPORT();
+
+  return minunit_status;
 }

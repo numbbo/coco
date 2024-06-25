@@ -1,6 +1,6 @@
 % Returns a new COCO observer.
 %
-% Currently, three observers are supported:
+% Currently, four observers are supported:
 %
 %    "bbob" is the observer for single-objective (both noisy and noiseless)
 %                 problems with known optima, which creates *.info, *.dat,
@@ -9,11 +9,15 @@
 %                 *.info, *.dat and *.tdat files for the given indicators, as
 %                 well as an archive folder with *.adat files containing
 %                 nondominated solutions.
+%    "rw" is an observer for single- and bi-objective real-world problems that
+%         logs all information (can be configured to long only some information)
+%         and produces *.txt files (not readable by post-processing).
 %    "toy" is a simple observer that logs when a target has been hit.
 %
 % Parameters:
 %    observer_name     A string containing the name of the observer. Currently
-%                      supported observer names are "bbob", "bbob-biobj", "toy".
+%                      supported observer names are "bbob", "bbob-biobj", "rw",
+%                      and "toy".
 %                      Strings "no_observer", "" or NULL return NULL.
 %    observer_options  A string of pairs "key: value" used to pass the options
 %                      to the observer. Some observer options are general, while
@@ -21,6 +25,8 @@
 %                      the general options, see observer_bbob, observer_biobj,
 %                      and observer_toy for options of the specific observers.
 %
+%                      "outer_folder: NAME" determines the outer folder for the
+%                              experiment. The default value is "exdata".
 %                      "result_folder: NAME" determines the folder within the
 %                              "exdata" folder into which the results will be
 %                              output. If the folder with the given name already
@@ -37,10 +43,13 @@
 %                      "number_target_triggers: VALUE" defines the number of
 %                              targets between each 10**i and 10**(i+1) (equally
 %                              spaced in the logarithmic scale) that trigger
-%                              logging. The default value is 100.
-%                      "target_precision: VALUE" defines the precision used for
-%                              targets (there are no targets for abs(values) <
-%                              target_precision). The default value is 1e-8.
+%                              logging. The default value is 10.
+%                      "log_target_precision: VALUE" defines the precision used
+%                              for logarithmic targets (there are no targets for
+%                              abs(values) < log_target_precision). The default
+%                              value is 1e-8.
+%                      ""lin_target_precision: VALUE" defines the precision used
+%                              for linear targets. The default value is 1e-5.
 %                      "number_evaluation_triggers: VALUE" defines the number of
 %                              evaluations to be logged between each 10**i and
 %                              10**(i+1). The default value is 20.

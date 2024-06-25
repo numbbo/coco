@@ -65,7 +65,7 @@ static void transform_vars_affine_evaluate_function(coco_problem_t *problem, con
 /**
  * @brief Evaluates the transformed constraint.
  */
-static void transform_vars_affine_evaluate_constraint(coco_problem_t *problem, const double *x, double *y) {
+static void transform_vars_affine_evaluate_constraint(coco_problem_t *problem, const double *x, double *y, int update_counter) {
   size_t i, j;  
   transform_vars_affine_data_t *data;
   coco_problem_t *inner_problem;
@@ -86,7 +86,7 @@ static void transform_vars_affine_evaluate_constraint(coco_problem_t *problem, c
       data->x[i] += x[j] * current_row[j];
     }
   }
-  coco_evaluate_constraint(inner_problem, data->x, y);
+  inner_problem->evaluate_constraint(inner_problem, data->x, y, update_counter);
 }
 
 /**

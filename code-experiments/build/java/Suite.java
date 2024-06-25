@@ -22,7 +22,41 @@ public class Suite {
 			throw new Exception("Suite constructor failed.\n" + e.toString());
 		}
 	}
-
+	
+	/**
+	 * Returns the number of problems in the suite. 
+	 * @return the number of problems in the suite
+	 * @throws Exception 
+	 */
+	public long getNumberOfProblems() throws Exception {
+		
+		try {		
+			return CocoJNI.cocoSuiteGetNumberOfProblems(this.getPointer());
+		} catch (Exception e) {
+			throw new Exception("Fetching of problem failed.\n" + e.toString());
+		}
+	}
+	
+	/**
+	 * Returns the (unobserved) problem in the suite with the given function, dimension and instance. 
+	 * @return the corresponding problem in the suite or null when there is no such problem  
+	 * @throws Exception 
+	 */
+	public Problem getProblemByFuncDimInst(long function, long dimension, long instance) throws Exception {
+		
+		try {		
+			long problemPointer = CocoJNI.cocoSuiteGetProblemByFuncDimInst(this.getPointer(), 
+					function, dimension, instance);
+			
+			if (problemPointer == 0)
+				return null;
+			
+			return new Problem(problemPointer);
+		} catch (Exception e) {
+			throw new Exception("Fetching of problem failed.\n" + e.toString());
+		}
+	}
+	
 	/**
 	 * Finalizes the suite.
 	 * @throws Exception 

@@ -66,7 +66,7 @@ def prepare_scaling_figure_caption():
         r"correspond to different algorithms given in the legend of #1. " +
         r"Light symbols give the maximum number of evaluations from the longest trial " +
         r"divided by dimension. " +
-        (r"Black stars indicate a statistically better result compared to all other algorithms " +
+        (r"Black stars (if present) indicate a better result compared to all other algorithms " +
          r"with $p<0.01$ and Bonferroni correction number of dimensions (six).  ")
         if show_significance else ''
     )
@@ -74,22 +74,15 @@ def prepare_scaling_figure_caption():
     scaling_figure_caption_fixed = scaling_figure_caption_start_fixed + scaling_figure_caption_end
     scaling_figure_caption_rlbased = scaling_figure_caption_start_rlbased + scaling_figure_caption_end
 
-    if testbedsettings.current_testbed.name in [testbedsettings.suite_name_bi_ext,
-                                                testbedsettings.suite_name_cons,
-                                                testbedsettings.suite_name_ls,
-                                                testbedsettings.suite_name_mixint,
-                                                testbedsettings.suite_name_bi_mixint]:
+    if (testbedsettings.current_testbed.reference_algorithm_filename == '' or
+            testbedsettings.current_testbed.reference_algorithm_filename is None):
         # NOTE: no runlength-based targets supported yet
         figure_caption = scaling_figure_caption_fixed
-    elif testbedsettings.current_testbed.name in [testbedsettings.suite_name_single,
-                                                  testbedsettings.suite_name_single_noisy,
-                                                  testbedsettings.suite_name_bi]:
+    else:
         if genericsettings.runlength_based_targets:
             figure_caption = scaling_figure_caption_rlbased
         else:
             figure_caption = scaling_figure_caption_fixed
-    else:
-        warnings.warn("Current settings do not support ppfigdim caption.")
 
     return figure_caption
 
@@ -134,22 +127,15 @@ def prepare_ecdfs_figure_caption():
                 r"$\{0.5, \dots, 50\}$. "
                 )
 
-    if testbed.name in [testbedsettings.suite_name_bi_ext,
-                        testbedsettings.suite_name_cons,
-                        testbedsettings.suite_name_ls,
-                        testbedsettings.suite_name_mixint,
-                        testbedsettings.suite_name_bi_mixint]:
+    if (testbed.reference_algorithm_filename == '' or
+            testbed.reference_algorithm_filename is None):
         # NOTE: no runlength-based targets supported yet
         figure_caption = ecdfs_figure_caption_standard
-    elif testbed.name in [testbedsettings.suite_name_single,
-                          testbedsettings.suite_name_single_noisy,
-                          testbedsettings.suite_name_bi]:
+    else:
         if genericsettings.runlength_based_targets:
             figure_caption = ecdfs_figure_caption_rlbased + refalgtext
         else:
             figure_caption = ecdfs_figure_caption_standard + refalgtext
-    else:
-        warnings.warn("Current settings do not support ppfigdim caption.")
 
     return figure_caption
 
@@ -169,7 +155,7 @@ def get_ecdfs_single_fcts_caption():
     ''' Returns figure caption for single function ECDF plots. '''
 
     if genericsettings.runlength_based_targets:
-        s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes in number
+        s = (r"""Empirical cumulative distribution of !!SIMULATED-BOOTSTRAP!! runtimes in number
              of %s divided by dimension (%s/DIM) for  
              targets in !!TARGET-RANGES-IN-ECDF!! that have just not
              been reached by !!THE-REF-ALG!!
@@ -180,7 +166,7 @@ def get_ecdfs_single_fcts_caption():
                 testbedsettings.current_testbed.string_evals_short)
              )
     else:
-        s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes in number
+        s = (r"""Empirical cumulative distribution of !!SIMULATED-BOOTSTRAP!! runtimes in number
              of %s divided by dimension (%s/DIM) for the 
              $!!NUM-OF-TARGETS-IN-ECDF!!$ targets !!TARGET-RANGES-IN-ECDF!!
              for functions $f_{#1}$ to $f_{#2}$ and all dimensions. """ % (
@@ -194,7 +180,7 @@ def get_ecdfs_all_groups_caption():
     ''' Returns figure caption for ECDF plots aggregating over function groups. '''
     
     if genericsettings.runlength_based_targets:
-        s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
+        s = (r"""Empirical cumulative distribution of !!SIMULATED-BOOTSTRAP!!
              runtimes, measured in number of %s 
              divided by dimension (%s/DIM) for all function groups and all 
              dimensions and for those targets in
@@ -208,7 +194,7 @@ def get_ecdfs_all_groups_caption():
              functions is shown in the last plot.""" if not testbedsettings.current_testbed.has_constraints else "")
              )
     else:
-        s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
+        s = (r"""Empirical cumulative distribution of !!SIMULATED-BOOTSTRAP!!
              runtimes, measured in number of %s,
              divided by dimension (%s/DIM) for the $!!NUM-OF-TARGETS-IN-ECDF!!$ 
              targets !!TARGET-RANGES-IN-ECDF!! for all function groups and all 
@@ -225,7 +211,7 @@ def get_ecdfs_single_functions_single_dim_caption():
         showing the results of 2+ algorithms in a single dimension. '''
     
     if genericsettings.runlength_based_targets:
-        s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
+        s = (r"""Empirical cumulative distribution of !!SIMULATED-BOOTSTRAP!!
              runtimes, measured in number of %s 
              divided by dimension (%s/DIM) in 
              dimension #1 and for those targets in
@@ -237,7 +223,7 @@ def get_ecdfs_single_functions_single_dim_caption():
                 testbedsettings.current_testbed.string_evals_short)
              )
     else:
-        s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
+        s = (r"""Empirical cumulative distribution of !!SIMULATED-BOOTSTRAP!!
              runtimes, measured in number of %s,
              divided by dimension (%s/DIM) for the $!!NUM-OF-TARGETS-IN-ECDF!!$ 
              targets !!TARGET-RANGES-IN-ECDF!! in dimension #1.""" % (

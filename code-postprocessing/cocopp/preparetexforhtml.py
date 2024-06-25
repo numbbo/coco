@@ -86,6 +86,9 @@ def main(latex_commands_for_html):
         elif scenario == testbedsettings.scenario_mixintfixed:
             genericsettings.runlength_based_targets = False
             config.config(testbedsettings.suite_name_mixint)
+        elif scenario == testbedsettings.scenario_sboxcostfixed:
+            genericsettings.runlength_based_targets = False
+            config.config(testbedsettings.suite_name_sboxcost)
         else:
             warnings.warn("Scenario '%s' not supported yet in HTML" % scenario)
 

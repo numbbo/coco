@@ -1,5 +1,8 @@
-include AUTHORS
-include LICENSE
-include demo.py
-include coco_test.py
-include bbob2009_testcases.txt
+graft test
+include src/cocoex/coco.h
+# Don't include Cython generated files.
+exclude src/cocoex/interface.c
+exclude src/cocoex/function.c
+# Build artifacts not meant for source distribution
+global-exclude *.pyc
+global-exclude __pycache__

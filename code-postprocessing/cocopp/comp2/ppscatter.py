@@ -334,12 +334,17 @@ def main(dsList0, dsList1, outputdir, settings):
             num_of_instances_alg0.append((dictDim0[d][0]).nbRuns())
             num_of_instances_alg1.append((dictDim1[d][0]).nbRuns())
         # issue a warning if the numbers of instances are inconsistent:
-        if len(set(num_of_instances_alg0)) > 1:
-            warnings.warn('Inconsistent numbers of instances over dimensions found for ALG0:\n\
-                           found instances %s' % str(num_of_instances_alg0))
-        if len(set(num_of_instances_alg1)) > 1:
-            warnings.warn('Inconsistent numbers of instances over dimensions found for ALG1:\n\
-                           found instances %s' % str(num_of_instances_alg1))
+        # outcommented because this floods the screen thereby in effect voiding other (possibly
+        # more important) output
+        # TODO: this should probably go to the dedicated consistency checking code and it should
+        #       allow instance repetitions without warning (there is nothing wrong with uniform
+        #       instance repetitions AFAICS)
+        # if len(set(num_of_instances_alg0)) > 1:
+        #     warnings.warn('Inconsistent numbers of instances over dimensions found for ALG0:\n\
+        #                    found instances %s' % str(num_of_instances_alg0))
+        # if len(set(num_of_instances_alg1)) > 1:
+        #     warnings.warn('Inconsistent numbers of instances over dimensions found for ALG1:\n\
+        #                    found instances %s' % str(num_of_instances_alg1))
         if len(set(num_of_instances_alg0)) == 1 and len(set(num_of_instances_alg1)) == 1:
             text += '%s and %s instances' % (num_of_instances_alg0[0], num_of_instances_alg1[0])
         else:

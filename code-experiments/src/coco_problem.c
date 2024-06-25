@@ -9,6 +9,7 @@
 
 #include "coco_utilities.c"
 
+
 /***********************************************************************************************************/
 
 /**
@@ -34,7 +35,7 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
   
   assert(problem != NULL);
   assert(problem->evaluate_function != NULL);
-  
+
   /* Set objective vector to INFINITY if the decision vector contains any INFINITY values */
   for (i = 0; i < coco_problem_get_dimension(problem); i++) {
     if (coco_is_inf(x[i])) {
@@ -78,12 +79,15 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
  * @param x The decision vector.
  * @param y The vector of constraints that is the result of the evaluation.
  */
-void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y) {
+void coco_evaluate_constraint_optional_update(coco_problem_t *problem,
+                                              const double *x,
+                                              double *y,
+                                              int update_counter) {
   /* implements a safer version of problem->evaluate(problem, x, y) */
   size_t i, j;
   assert(problem != NULL);
   if (problem->evaluate_constraint == NULL) {
-    coco_error("coco_evaluate_constraint(): No constraint function implemented for problem %s",
+    coco_error("coco_evaluate_constraint_optional_update(): No constraint function implemented for problem %s",
         problem->problem_id);
   }
   
@@ -103,8 +107,14 @@ void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *
     return;
   }
   
-  problem->evaluate_constraint(problem, x, y);
-  problem->evaluations_constraints++;
+  problem->evaluate_constraint(problem, x, y, update_counter);
+  if (update_counter)
+    problem->evaluations_constraints++;
+
+}
+
+void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y) {
+  coco_evaluate_constraint_optional_update(problem, x, y, 1);
 }
 
 /**
@@ -128,7 +138,6 @@ static void bbob_evaluate_gradient(coco_problem_t *problem, const double *x, dou
  * Evaluates and logs the given solution (as the coco_evaluate_function), but does not return the evaluated
  * value.
  *
- * @note None of the observers implements this function yet!
  * @note x must point to a correctly sized allocated memory region.
 
  * @param problem The given COCO problem.
@@ -154,7 +163,6 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
                                              const size_t number_of_constraints) {
   coco_problem_t *problem;
   problem = (coco_problem_t *) coco_allocate_memory(sizeof(*problem));
-  
   /* Initialize fields to sane/safe defaults */
   problem->initial_solution = NULL;
   problem->evaluate_function = NULL;
@@ -162,6 +170,7 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->evaluate_gradient = NULL;
   problem->recommend_solution = NULL;
   problem->problem_free_function = NULL;
+
   problem->number_of_variables = number_of_variables;
   problem->number_of_objectives = number_of_objectives;
   problem->number_of_constraints = number_of_constraints;
@@ -169,12 +178,18 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->largest_values_of_interest = coco_allocate_vector(number_of_variables);
   problem->number_of_integer_variables = 0; /* No integer variables by default */
 
+  problem->is_noisy = 0;
+  problem->last_noise_free_values = NULL;
+  if (number_of_objectives > 0)
+    problem->last_noise_free_values = coco_allocate_vector(number_of_objectives);
   if (number_of_objectives > 1) {
+    problem->is_opt_known = 0;        /* Optimum of multi-objective problems is unknown by default */
     problem->best_parameter = NULL;
     problem->best_value = coco_allocate_vector(number_of_objectives);
     problem->nadir_value = coco_allocate_vector(number_of_objectives);
   }
   else {
+    problem->is_opt_known = 1;        /* Optimum of single-objective problems is known by default */
     problem->best_parameter = coco_allocate_vector(number_of_variables);
     problem->best_value = coco_allocate_vector(1);
     problem->nadir_value = NULL;
@@ -223,6 +238,7 @@ static coco_problem_t *coco_problem_duplicate(const coco_problem_t *other) {
   if (other->initial_solution)
     problem->initial_solution = coco_duplicate_vector(other->initial_solution, other->number_of_variables);
 
+  problem->is_opt_known = other->is_opt_known;
   if (other->best_value)
     for (i = 0; i < problem->number_of_objectives; ++i) {
       problem->best_value[i] = other->best_value[i];
@@ -309,17 +325,19 @@ void coco_problem_free(coco_problem_t *problem) {
       coco_free_memory(problem->data);
     if (problem->initial_solution != NULL)
       coco_free_memory(problem->initial_solution);
+    if (problem->last_noise_free_values != NULL)
+      coco_free_memory(problem->last_noise_free_values);
     problem->smallest_values_of_interest = NULL;
     problem->largest_values_of_interest = NULL;
     problem->best_parameter = NULL;
+    problem->data = NULL;
     problem->best_value = NULL;
     problem->nadir_value = NULL;
     problem->suite = NULL;
-    problem->data = NULL;
     problem->initial_solution = NULL;
     coco_free_memory(problem);
   }
-}
+} 
 
 /***********************************************************************************************************/
 
@@ -615,18 +633,44 @@ void bbob_problem_best_parameter_print(const coco_problem_t *problem) {
   }
 }
 
+/* We need a forward declaration of this for `bbob_biobj_problem_best_parameter_print` */
+static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, double *y);
+
+
 void bbob_biobj_problem_best_parameter_print(const coco_problem_t *problem) {
   size_t i;
   FILE *file;
   coco_problem_t *problem1, *problem2;
+
+  /* THIS IS AN UGLY HACK!
+   *
+   * For a biobjective problem that has been wrapped with a logger, we cannot
+   * access the ->data member of the original problem. But we need access in
+   * order to access the underlying single objective functions.
+   *
+   * There's no easy way to check if a problem is wrapped by a logger, here we
+   * rely on checking if the ->evaluate_function is the logger one.
+   *
+   */
+  if (problem->evaluate_function == &logger_biobj_evaluate) {
+    coco_warning("I'm sorry, Dave. I’m afraid I can’t do that.");
+    /* In case this function was called previously, overwrite any results. */
+    file = fopen("._bbob_biobj_problem_best_parameter.txt", "w");
+    if (file != NULL) {
+      fclose(file);
+    }
+    return;
+  }
+
   assert(problem != NULL);
-  assert(problem->data != NULL);
   problem1 = ((coco_problem_stacked_data_t *) problem->data)->problem1;
-  problem2 = ((coco_problem_stacked_data_t *) problem->data)->problem2;
   assert(problem1 != NULL);
-  assert(problem2 != NULL);
   assert(problem1->best_parameter != NULL);
+
+  problem2 = ((coco_problem_stacked_data_t *) problem->data)->problem2;
+  assert(problem2 != NULL);
   assert(problem2->best_parameter != NULL);
+
   file = fopen("._bbob_biobj_problem_best_parameter.txt", "w");
   if (file != NULL) {
     for (i = 0; i < problem->number_of_variables; ++i)
@@ -681,16 +725,16 @@ static void coco_problem_transformed_evaluate_function(coco_problem_t *problem, 
 }
 
 /**
- * @brief Calls the coco_evaluate_constraint function on the inner problem.
+ * @brief Calls the coco_evaluate_constraint_optional_update function on the inner problem.
  */
-static void coco_problem_transformed_evaluate_constraint(coco_problem_t *problem, const double *x, double *y) {
+static void coco_problem_transformed_evaluate_constraint(coco_problem_t *problem, const double *x, double *y, int update_counter) {
   coco_problem_transformed_data_t *data;
   assert(problem != NULL);
   assert(problem->data != NULL);
   data = (coco_problem_transformed_data_t *) problem->data;
   assert(data->inner_problem != NULL);
 
-  coco_evaluate_constraint(data->inner_problem, x, y);
+  coco_evaluate_constraint_optional_update(data->inner_problem, x, y, update_counter);
 }
 
 static void bbob_problem_transformed_evaluate_gradient(coco_problem_t *problem, const double *x, double *y) {
@@ -832,9 +876,9 @@ static void coco_problem_stacked_evaluate_function(coco_problem_t *problem, cons
 }
 
 /**
- * @brief Calls the coco_evaluate_constraint function on the underlying problems.
+ * @brief Calls the coco_evaluate_constraint_optional_update function on the underlying problems.
  */
-static void coco_problem_stacked_evaluate_constraint(coco_problem_t *problem, const double *x, double *y) {
+static void coco_problem_stacked_evaluate_constraint(coco_problem_t *problem, const double *x, double *y, int update_counter) {
   coco_problem_stacked_data_t* data = (coco_problem_stacked_data_t*) problem->data;
 
   const size_t number_of_constraints_problem1 = coco_problem_get_number_of_constraints(data->problem1);
@@ -843,9 +887,9 @@ static void coco_problem_stacked_evaluate_constraint(coco_problem_t *problem, co
       == number_of_constraints_problem1 + number_of_constraints_problem2);
 
   if (number_of_constraints_problem1 > 0)
-    coco_evaluate_constraint(data->problem1, x, y);
+    coco_evaluate_constraint_optional_update(data->problem1, x, y, update_counter);
   if (number_of_constraints_problem2 > 0)
-    coco_evaluate_constraint(data->problem2, x, &y[number_of_constraints_problem1]);
+    coco_evaluate_constraint_optional_update(data->problem2, x, &y[number_of_constraints_problem1], update_counter);
   
 }
 

@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Depreciated (`cocopp` itself is to be used from Jupyter or IPython):
-Module for using COCO from the (i)Python interpreter.
+"""A collection of commands for using COCO from Jupyter or IPython.
 
 The main data structures used in COCO are :py:class:`DataSet`, which
 corresponds to data of one algorithm on one problem, and
@@ -60,12 +59,158 @@ Examples:
 
 from __future__ import absolute_import
 
+import collections as _collections
+import warnings as _warnings
+import numpy as np
+
 from .pproc import get_DataSetList as _DataSetList
 from .toolsdivers import StringList as _StringList
 from .archiving import official_archives
 from . import config as _config
 from . import pproc as _pproc
+from . import genericsettings as _genericsettings
 from . import testbedsettings as _testbedsettings
+
+def true_number_of_trials(ds):
+    """return number of actually conducted trials for `DataSet` `ds`"""
+    if len(ds.instancenumbers) != len(ds._evals[0]) - 1:
+        _warnings.warn("DataSet {0}: instancenumbers = {1} != {2} = len(_evals[0]) - 1"
+                       .format(ds.algId, ds.instancenumbers, len(ds._evals[0]) - 1))
+    return len(ds.instancenumbers)
+class DataWithFewSuccesses:
+    """The `all` property is an `OrderedDict` with all ``(dimension, funcId)``-
+
+    tuples that have less than ``self.minsuccesses`` successes. The tuples
+    are the `dict` keys, the values are the respective numbers for
+    ``[evaluations, successes, trials]``, where evaluations are the average
+    overall (sum of) evaluations per instance. The minimal number of desired
+    successes can be changed at any time by re-assigning the `minsuccesses`
+    attribute in which case the return value of `result` may change. When
+    the `success_threshold` attribute is change, `compute_successes` has to
+    be called to update the results. The `with_budget_left` property gives
+    those entries of `all` which have less than `budget_multiplier` x
+    dimension evaluations. The `current` property gives `with_budget_left`
+    or `all` if the former is empty.
+
+    The first argument can be a folder or filename or any other string
+    excepted by `cocopp.load` matching a single dataset or it can be a
+    `DataSetList`.
+    
+    Usage concept example::
+
+        >> run_more = DataWithFewSuccesses('folder_or_file_name_for_cocopp.load').current
+        >> for p in cocoex.Suite('bbob', '', ''):
+        ..     if (p.id_function, p.dimension) not in run_more:
+        ..         continue
+        ..     p.observe_with(...)
+        ..     # run solver on problem p
+        ..     [...]
+
+    Details
+    -------
+    The success number is calculated with the `raw_value` parameter of
+    `DataSet.detSuccesses` thereby bypassing successes from instance
+    balancing copies. However it falls back with a warning when this does
+    not work.
+
+    In the experimental setup from 2009, the used budget [evaluations per
+    instance] is "overestimated" by a factor of three because each instance
+    is run three times to begin with.
+    
+    TODO: When in this case a `DataSetList` is passed instead
+    of a folder name, we could check whether it was instantiated with
+    ``genericsettings.balance_instances == False`` which is not the default
+    setting. Either ``len(self.evals[0]) != len(self._evals[0])`` or
+    ``self.instance_multipliers is not None and
+    np.any(self.instance_multipliers > 1)`` indicate that a balancing
+    action was taken.
+
+    See also ``cocopp.load``.
+
+    """
+    @property
+    def current(self):
+        """`OrderedDict` of ``(function, dimension)`` with budget left or otherwise all """
+        return self.with_budget_left or self.all
+    @property
+    def all(self):
+        """depends on attributes `minsuccesses` and `successes` only"""
+        return (_collections.OrderedDict(sorted(
+                ((ds.funcId, ds.dim),
+                 [self.evaluations[i], self.successes[i], len(ds.instancenumbers)])
+                    for i, ds in enumerate(self.dsl)
+                        if self.successes[i] < self.minsuccesses
+                        and (ds.funcId, ds.dim) not in self.exclude)))
+    @property
+    def with_budget_left(self):
+        """depends on attributes `minsuccesses`, `successes`, `budget_multiplier` and `evaluations`"""
+        return _collections.OrderedDict(sorted(
+            ((ds.funcId, ds.dim),
+             [self.evaluations[i], self.successes[i], len(ds.instancenumbers)])
+                for i, ds in enumerate(self.dsl)
+                    if self.successes[i] < self.minsuccesses
+                    and self.evaluations[i] < self.budget_multiplier * ds.dim
+                    and (ds.funcId, ds.dim) not in self.exclude))
+    def __init__(self, folder_name, minsuccesses=9, budget_multiplier=np.inf,
+                 success_threshold=1e-8, exclude=()):
+        """`folder_name` can also be a filename or a data entry or a `DataSetList`"""
+        self.input_parameters = {it[0]: it[1] for it in list(locals().items())
+                                 if it[0] != 'self'}  # for the record
+        self.minsuccesses = minsuccesses
+        self.budget_multiplier = budget_multiplier
+        self.exclude = exclude
+        self.success_threshold = success_threshold
+        if isinstance(folder_name, list):
+            self.dsl = folder_name
+        else:
+            _bi = _genericsettings.balance_instances
+            _genericsettings.balance_instances = False  # not strictly necessary anymore
+            with _warnings.catch_warnings():
+                _warnings.simplefilter("ignore")
+                self.dsl = load(folder_name)
+            _genericsettings.balance_instances = _bi
+            if not self.dsl:
+                _warnings.warn("Sorry, could not find any coco data in {}"
+                               .format(folder_name))
+        self.trials = [true_number_of_trials(ds) for ds in self.dsl]
+        """number of trials in each data set, for the record only"""
+        self.successes = self.compute_successes().successes  # declarative assignment
+        """list of successful trials, depends on `success_threshold`.
+           Can be recomputed by calling `compute_successes`.
+           """
+        self.evaluations = self.compute_evaluations()
+        """list of average evaluations per instance for each function+dimension"""
+    def compute_successes(self, success_threshold=None):
+        """Assign `successes` attribute as a `list` of number of successful trials
+
+        in the data sets of `self.dsl` and return `self`. When given, reassign
+        also the `success_threshold` attribute.
+        """
+        if success_threshold is not None:
+            self.success_threshold = success_threshold
+        try:
+            self.successes = [ds.detSuccesses([self.success_threshold], raw_values=True)[0]
+                              for ds in self.dsl]
+        except TypeError:  # this should never happen
+            _warnings.warn("calling `detSuccesses(..., raw_values=True)` failed, "
+                          "falling back to no argument (this should never happen)")
+            self.successes = [ds.detSuccesses([self.success_threshold])[0] for ds in self.dsl]
+        return self
+    def compute_evaluations(self):
+        """assign `.evaluations` as a `list` of overall evaluations spent per instance (on average)
+
+        for each function+dimension.
+        """
+        self.evaluations = [sum(ds.maxevals[:true_number_of_trials(ds)])
+                            / len(set(ds.instancenumbers)) for ds in self.dsl]
+        # self.evaluations = [ds.detAverageEvals([self.success_threshold])[0] * ds.nbRuns() for ds in self.dsl]
+        return self.evaluations
+    def print(self):
+        """return a `str` with the number of data sets with too few successes"""
+        return 'DataWithFewSuccesses: {}/{}'.format(len(self.result), len(self.dsl))
+    def __len__(self):
+        return len(self.result)
+
 
 def load(filename):
     """[currently broken when further used within `cocopp`, see `load2`] Create a :py:class:`DataSetList` instance from a file or folder.

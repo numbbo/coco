@@ -6,6 +6,7 @@ Prepares the figure and table descriptions in html.
 import os
 import sys
 import subprocess
+import warnings
 
 try:
     from . import preparetexforhtml, genericsettings
@@ -39,6 +40,14 @@ def prepare_html(texFile):
     
     if ('win32' in sys.platform):
         tthFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tth\\tth.exe')
+    elif 'darwin' in sys.platform:
+        tthFile = 'tth'
+        try:
+            import shutil
+            if shutil.which(tthFile) is None:
+                raise FileNotFoundError
+        except Exception:
+            warnings.warn('tth on found, run "brew install tth" and try again')
     else:
         tthFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tth_C/tth')
 

@@ -1,5 +1,7 @@
-#include "coco.h"
-#include "minunit_c89.h"
+#include "minunit.h"
+
+#include "coco.c"
+#include "about_equal.h"
 
 /**
  * Tests the function mo_get_norm.
@@ -165,10 +167,14 @@ MU_TEST(test_mo_get_distance_to_ROI) {
 /**
  * Run all tests in this file.
  */
-MU_TEST_SUITE(test_all_mo_utilities) {
+int main(void) {
   MU_RUN_TEST(test_mo_get_norm);
   MU_RUN_TEST(test_mo_normalize);
   MU_RUN_TEST(test_mo_get_dominance);
   MU_RUN_TEST(test_mo_is_within_ROI);
   MU_RUN_TEST(test_mo_get_distance_to_ROI);
+
+  MU_REPORT();
+
+  int minunit_status;
 }

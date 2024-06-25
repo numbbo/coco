@@ -366,7 +366,7 @@ def main(arguments):
         assert result == 0, 'Test failed: rungeneric on two bbob-noisy algorithms.'
         #run_latex_template("templateNOISYarticle.tex", run_all_tests)
         
-        # testing data from recent runs, prepared in do.py:
+        # testing data from recent runs:
         recent_data_path = os.path.abspath(join_path(os.path.dirname(__file__),
                                                      '../../code-experiments/build/python/exdata'))
         with InfolderGoneWithTheWind():

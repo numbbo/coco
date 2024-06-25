@@ -73,12 +73,12 @@ void run_once(char *suite_options) {
   coco_suite_t *suite;
   coco_observer_t *observer;
   coco_problem_t *problem;
-  
+
   /* Set some options for the observer. See documentation for other options. */
   char *observer_options =
       coco_strdupf("result_folder: RS_on_%s "
                    "algorithm_name: RS "
-                   "algorithm_info: \"A simple random search algorithm\"", 
+                   "algorithm_info: \"A simple random search algorithm\"",
                    "bbob-constrained");
 
   printf("Running experiment with suite options %s\n", suite_options);
@@ -102,6 +102,9 @@ void run_once(char *suite_options) {
 }
 
 int main(void)  {
+
+  /* Mute output that is not error */
+  coco_set_log_level("error");
 
   run_once("dimensions: 5,10 function_indices: 1-6 instance_indices: 1-3");
   run_once("dimensions: 40 function_indices: 19,25,31 instance_indices: 10-15");

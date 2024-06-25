@@ -88,7 +88,14 @@ coco_urls = ["https://coco.gforge.inria.fr/data-archive",  # original location
              "https://numbbo.github.io/data-archive/data-archive",  # new location
             ]
 coco_url = coco_urls[-1]  # may be reassigned if it doesn't work out
-cocopp_home = os.path.abspath(os.path.expanduser(os.path.join("~", ".cocopp")))
+
+# cocopp needs a directory where it can cache downloaded datasets.
+# 
+# We use `platformdirs` to find the users cache directory in a platform independent way
+# and create a subdirectory within for cocopp.
+
+import platformdirs
+cocopp_home = platformdirs.user_cache_dir("cocopp", ensure_exists=True)
 default_archive_location = os.path.join(cocopp_home, 'data-archives')
 default_definition_filename = 'coco_archive_definition.txt'
 cocopp_home_archives = default_archive_location
@@ -576,7 +583,7 @@ class COCODataArchive(_td.StrList):
         """Return a `list` (`StrList`) of absolute pathnames,
 
         by repeatedly calling `get`. Elements of the `indices` list can
-        be an index or a substring that matches one and only one name
+        be an index or a (sub)string that matches one or several names
         in the archive. If ``indices is None``, the results from the
         last call to `find` are used. Data are downloaded if necessary.
 
@@ -681,13 +688,6 @@ class COCODataArchive(_td.StrList):
         if not remote:
             return ''  # like this string operations don't bail out
         self._download(names[0])
-        if 11 < 3:  # old code
-            # create full local path and download
-            _makedirs(os.path.split(full_name)[0])  # create path if necessary
-            url = '/'.join((self.remote_data_path, names[0]))
-            self._print("  downloading %s to %s" % (url, full_name))
-            _urlretrieve(url, full_name)
-            self.check_hash(full_name)
         return full_name
 
     def _download(self, name):
@@ -696,7 +696,12 @@ class COCODataArchive(_td.StrList):
         full_name = self.full_path(name)
         _makedirs(os.path.split(full_name)[0])  # create path if necessary
         self._print("  downloading %s to %s" % (url, full_name))
-        _urlretrieve(url, full_name)
+        try:
+            _urlretrieve(url, full_name)
+        except BaseException:  # KeyboardInterrupt is a BaseException
+            if os.path.exists(full_name):
+                os.remove(full_name)  # remove partial download
+            raise
         self.check_hash(full_name)
 
     def get_one(self, *args, **kwargs):
@@ -722,31 +727,34 @@ class COCODataArchive(_td.StrList):
         """
         res = []
         args = _str_to_list(args)
-        nb_results = 0
-        for i, name in enumerate(args):
+        for name in args:
             name = name.strip()
             if os.path.exists(name):
                 res.append(name)
-            elif name.endswith('!'):  # take first match
-                res.append(self.get_first([name[:-1]], remote=remote))
-                if res and res[-1] is None:
-                    warnings.warn('"%s" seems not to be an existing file or '
-                                  'match any archived data' % name)
-                    raise ValueError('"%s" seems not to be an existing file or '
-                                  'match any archived data' % name)
-            elif name.endswith('*'):  # take all matches
-                res.extend(self.get_all(name[:-1], remote=remote))
-            elif '*' in name:  # use find which also handles regular expressions
-                res.extend(self.get(found, remote=remote)
-                           for found in self.find(name))
-            elif self.find(name):  # get will bail out if there is not exactly one match
-                res.append(self.get(name, remote=remote))
-            if len(res) <= nb_results:
-                warnings.warn('"%s" seems not to be an existing file or '
-                              'match any archived data' % name)
-                raise ValueError('"%s" seems not to be an existing file or '
-                              'match any archived data' % name)
-            nb_results = len(res)
+                continue
+            for try_ in range(2):
+                more = []
+                if name.endswith('!'):  # take first match
+                    more.append(self.get_first([name[:-1]], remote=remote))
+                elif name.endswith('*'):  # take all matches
+                    more.extend(self.get_all(name[:-1], remote=remote))
+                elif '*' in name:  # use find which also handles regular expressions
+                    more.extend(self.get(found, remote=remote)
+                                for found in self.find(name))
+                elif self.find(name):  # get will bail out if there is not exactly one match
+                    more.append(self.get(name, remote=remote))
+                if more and more[-1] is not None:
+                    if try_ == 1:
+                        print('2nd try succeeded')
+                    break
+                if not remote or try_ > 0:
+                    raise ValueError('"%s" seems not to be an existing file or match any archived data'
+                                     % name)
+                warnings.warn('COCODataArchive failed to locate "%s".\n'
+                              'Will try again after updating from %s'
+                              % (name, self.remote_data_path))
+                self.update()
+            res.extend(more)
         if len(args) != len(set(args)):
             warnings.warn("Several data arguments point to the very same "
                           "location. This will likely lead to \n"
@@ -1307,6 +1315,8 @@ class OfficialArchives(object):
             (self._base + 'bbob-biobj', COCOBBOBBiobjDataArchive),
             (self._base + 'bbob-largescale', None),  # TODO: introduce a new class
             (self._base + 'bbob-mixint', None),  # TODO: introduce a new class
+            (self._base + 'bbob-constrained', None),  # TODO: introduce a new class
+            (self._base + 'sbox-cost', None),  # TODO: introduce a new class
             (self._base + 'test', None),  # None resolves to COCODataArchive
         ]
 

@@ -1,5 +1,6 @@
-#include "coco.h"
-#include "minunit_c89.h"
+#include "minunit.h"
+
+#include "coco.c"
 
 /**
  * Tests whether the coco_evaluate_function returns a vector of NANs when given a vector with one or more
@@ -13,6 +14,19 @@ MU_TEST(test_coco_evaluate_function) {
   double *y;
 
   suite = coco_suite("bbob", NULL, "dimensions: 2 instance_indices: 1");
+  x = coco_allocate_vector(2);
+  y = coco_allocate_vector(1);
+  while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL) {
+    x[0] = 0;
+    x[1] = NAN;
+    coco_evaluate_function(problem, x, y);
+    mu_check(coco_vector_contains_nan(y, 1));
+  }
+  coco_suite_free(suite);
+  coco_free_memory(x);
+  coco_free_memory(y);
+
+  suite = coco_suite("bbob-noisy", NULL, "dimensions: 2 instance_indices: 1");
   x = coco_allocate_vector(2);
   y = coco_allocate_vector(1);
   while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL) {
@@ -129,13 +143,15 @@ MU_TEST(test_coco_problem_get_largest_fvalues_of_interest_bbob_biobj_ext) {
   coco_suite_free(suite);
 }
 
-/**
- * Run all tests in this file.
- */
-MU_TEST_SUITE(test_all_coco_problem) {
+int main(void) {
   MU_RUN_TEST(test_coco_evaluate_function);
   MU_RUN_TEST(test_coco_evaluate_constraint);
   MU_RUN_TEST(test_coco_is_feasible);
   MU_RUN_TEST(test_coco_problem_get_largest_fvalues_of_interest_bbob_biobj_ext);
-}
+	
+	MU_REPORT();
 
+  coco_remove_directory("exdata");
+
+  return minunit_status;
+}

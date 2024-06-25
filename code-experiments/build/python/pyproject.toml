@@ -1,0 +1,54 @@
+[build-system]
+requires = [
+  "setuptools >= 67.0",
+  "cython     ~= 3.0",
+  "wheel",
+  "numpy"
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "coco-experiment"
+authors = [
+  {name = "Asma Ataman"},
+  {name = "Dejan Tušar"},
+  {name = "Dimo Brockhoff", email = "dimo.brockhoff@inria.fr" },
+  {name = "Nikolaus Hansen", email = "nikolaus.hansen@inria.fr" },
+  {name = "Olaf Mersmann", email = "olafm@p-value.net"},
+  {name = "Ouassim Ait ElHara"},
+  {name = "Tea Tušar", email = "tea.tusar@ijs.si" },
+]
+description = 'Benchmarking framework for all types of black-box optimization algorithms.'
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "BSD-3-Clause"}
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: BSD License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+]
+dependencies = [ 
+  "numpy >= 1.24.0",
+]
+dynamic = ["version"]
+
+[tool.setuptools.dynamic]
+version = {attr = "cocoex._version.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest]
+log_cli = true
+addopts = "--doctest-modules"
+
+[project.urls]
+Homepage = "https://github.com/numbbo/coco"
+Documentation = "https://numbbo.github.io/coco-doc/apidocs/cocoex/"
+Issues = "https://github.com/numbbo/coco/issues"

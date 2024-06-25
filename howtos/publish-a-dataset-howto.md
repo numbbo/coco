@@ -49,7 +49,7 @@ For this:
 
 Hosting an archive means putting one or several data zipfiles with an added
 "archive definition text file" online in a dedicated folder that can be
-accessed under an URL, like http://lq-cma.gforge.inria.fr/data-archives/lq-gecco2019.
+accessed under an URL, like http://cma-es.github.io/lq-cma/data-archives/lq-gecco2019.
 For example, any folder under a personal homepage root will do.
 
 For this:
@@ -138,7 +138,7 @@ with hashcodes and filesizes as additional entries.
 ```python
 import cocopp
 
-url = 'http://lq-cma.gforge.inria.fr/data-archives/lq-gecco2019'
+url = 'http://cma-es.github.io/lq-cma/data-archives/lq-gecco2019'
 arch = cocopp.archiving.get(url)
 print(arch)  # `arch` "is" a `list` of relative filenames
 ['CMA-ES__2019-gecco-surr.tgz',

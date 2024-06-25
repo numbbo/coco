@@ -15,6 +15,7 @@
 #include "coco_internal.h"
 #include "coco_utilities.c"
 
+#include "suite_bbob_noisy.c"
 #include "suite_bbob.c"
 #include "suite_bbob_mixint.c"
 #include "suite_biobj.c"
@@ -33,7 +34,7 @@
  */
 static coco_suite_t *coco_suite_intialize(const char *suite_name) {
 
-  coco_suite_t *suite;
+  coco_suite_t *suite = NULL;
 
   if (strcmp(suite_name, "toy") == 0) {
     suite = suite_toy_initialize();
@@ -50,6 +51,8 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
     suite = suite_bbob_mixint_initialize(suite_name);
   } else if (strcmp(suite_name, "bbob-biobj-mixint") == 0) {
     suite = suite_biobj_mixint_initialize();
+  } else if (strcmp(suite_name, "bbob-noisy") == 0) {
+    suite = suite_bbob_noisy_initialize();
   }
   else {
     coco_error("coco_suite_intialize(): unknown problem suite");
@@ -66,7 +69,6 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
  */
 static const char *coco_suite_get_instances_by_year(const coco_suite_t *suite, const int year) {
   const char *year_string;
-
   if (strcmp(suite->suite_name, "bbob") == 0) {
     year_string = suite_bbob_get_instances_by_year(year);
   } else if ((strcmp(suite->suite_name, "bbob-biobj") == 0) ||
@@ -80,6 +82,8 @@ static const char *coco_suite_get_instances_by_year(const coco_suite_t *suite, c
     year_string = suite_bbob_mixint_get_instances_by_year(year);
   } else if (strcmp(suite->suite_name, "bbob-biobj-mixint") == 0) {
     year_string = suite_biobj_mixint_get_instances_by_year(year);
+  } else if (strcmp(suite->suite_name, "bbob-noisy") == 0) {
+    year_string = suite_bbob_noisy_get_instances_by_year(year);
   } else {
     coco_error("coco_suite_get_instances_by_year(): suite '%s' has no years defined", suite->suite_name);
     return NULL;
@@ -101,7 +105,7 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
                                                            const size_t instance_idx) {
 
   coco_problem_t *problem;
-  
+
   if ((suite->functions[function_idx] == 0) ||
       (suite->dimensions[dimension_idx] == 0) ||
     (suite->instances[instance_idx] == 0)) {
@@ -123,6 +127,8 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
     problem = suite_bbob_mixint_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-biobj-mixint") == 0) {
     problem = suite_biobj_mixint_get_problem(suite, function_idx, dimension_idx, instance_idx);
+  } else if (strcmp(suite->suite_name, "bbob-noisy") == 0) {
+    problem = suite_bbob_noisy_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else {
     coco_error("coco_suite_get_problem_from_indices(): unknown problem suite");
     return NULL;
@@ -134,20 +140,18 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
 }
 
 /**
- * @brief Returns the best indicator value for the given problem.
+ * @brief Saves the best indicator value for the given problem in value.
  */
-static double coco_suite_get_best_indicator_value(const coco_suite_t *suite,
-                                                  const coco_problem_t *problem,
-                                                  const char *indicator_name) {
-  double result = 0;
+static void coco_suite_get_best_indicator_value(const int known_optima,
+                                                const coco_problem_t *problem,
+                                                const char *indicator_name,
+                                                double *value) {
 
   if (strcmp(indicator_name, "hyp") == 0) {
-    result = suite_biobj_get_best_hyp_value(suite->suite_name, problem->problem_id);
+    suite_biobj_get_best_hyp_value(known_optima, problem->problem_id, value);
   } else {
     coco_error("coco_suite_get_best_indicator_value(): indicator %s not supported", indicator_name);
-    return 0; /* Never reached */
   }
-  return result;
 }
 
 /**
@@ -211,7 +215,8 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
                                          const size_t number_of_dimensions,
                                          const size_t *dimensions,
-                                         const char *default_instances) {
+                                         const char *default_instances,
+                                         const int known_optima) {
 
   coco_suite_t *suite;
   size_t i;
@@ -232,10 +237,12 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
   suite->functions = coco_allocate_vector_size_t(suite->number_of_functions);
   for (i = 0; i < suite->number_of_functions; i++) {
     suite->functions[i] = i + 1;
+    if (strcmp(suite->suite_name, "bbob-noisy") == 0) suite->functions[i] = suite->functions[i] + 100;
   }
 
   assert(strlen(default_instances) > 0);
   suite->default_instances = coco_strdup(default_instances);
+  suite->known_optima = known_optima;
 
   /* Will be set to the first valid dimension index before the constructor ends */
   suite->current_dimension_idx = -1;
@@ -595,14 +602,14 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
  * - "bbob-biobj" contains 55 <a href="http://numbbo.github.io/coco-doc/bbob-biobj/functions">bi-objective
  * functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
  * - "bbob-biobj-ext" as an extension of "bbob-biobj" contains 92
- * <a href="http://numbbo.github.io/coco-doc/bbob-biobj/functions">bi-objective functions</a> in 6 dimensions 
+ * <a href="http://numbbo.github.io/coco-doc/bbob-biobj/functions">bi-objective functions</a> in 6 dimensions
  * (2, 3, 5, 10, 20, 40)
  * - "bbob-largescale" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 6 large dimensions (40, 80, 160, 320, 640, 1280)
  * - "bbob-constrained" contains 54 linearly-constrained problems, which are combinations of 8 single 
  * objective functions with 6 different numbers of active linear constraints (1, 2, 10, dimension/2, dimension-1,
  * dimension+1), in 6 dimensions (2, 3, 5, 10, 20, 40).
- * - "bbob-mixint" contains mixed-integer single-objective functions in 6 dimensions (2, 3, 5, 10, 20, 40)
+ * - "bbob-mixint" contains 24 mixed-integer single-objective functions in 6 dimensions (2, 3, 5, 10, 20, 40)
  * - "bbob-biobj-mixint" contains 92 mixed-integer bi-objective functions in 6 dimensions (2, 3, 5, 10, 20, 40)
  * - "toy" contains 6 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 5 dimensions (2, 3, 5, 10, 20)
@@ -782,11 +789,17 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
 
   }
 
+
   /* Check that there are enough dimensions, functions and instances left */
-  if ((suite->number_of_dimensions < 1)
+  int number_of_active_dimensions = 0;
+  for (size_t i = 0; i < suite->number_of_dimensions; ++i) {
+    number_of_active_dimensions += suite->dimensions[i] != 0;
+  }
+  if ((number_of_active_dimensions < 1)
+      || (suite->number_of_dimensions < 1)
       || (suite->number_of_functions < 1)
       || (suite->number_of_instances < 1)) {
-    coco_error("coco_suite(): the suite does not contain at least one dimension, function and instance");
+    coco_warning("coco_suite(): the suite does not contain at least one dimension, function and instance");
     return NULL;
   }
 
@@ -810,7 +823,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
  * @returns The next problem of the suite or NULL if there is no next problem left.
  */
 coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t *observer) {
-  
+
   size_t function_idx;
   size_t dimension_idx;
   size_t instance_idx;
@@ -835,7 +848,7 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
     coco_info_partial("done\n");
     return NULL;
   }
- 
+
   if (suite->current_problem) {
     coco_problem_free(suite->current_problem);
   }
@@ -871,7 +884,7 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
       coco_info_partial("f%02lu", (unsigned long) suite->functions[function_idx]);
     }
     /* One dot for each instance */
-    coco_info_partial(".", suite->instances[instance_idx]);
+    coco_info_partial(".");
   }
 
   return problem;
@@ -894,7 +907,6 @@ size_t coco_suite_encode_problem_index(const coco_suite_t *suite,
 
   return instance_idx + (function_idx * suite->number_of_instances) +
       (dimension_idx * suite->number_of_instances * suite->number_of_functions);
-
 }
 
 /**

@@ -36,6 +36,17 @@ def is_recognized_repository_filetype(filename):
             or filename.find('.tgz') > 0
             or filename.find('.zip') > 0)
 
+def is_recognized_repository_filetype2(filename):
+    """return True if `filename` is a file and ends with a recognized extension"""
+    n = filename.strip()
+    if os.path.isdir(n):
+        return False
+    return (n.endswith('.tgz') or
+            n.endswith('.zip') or
+            n.endswith('.tar.gz') or
+            n.endswith('.tar')
+            )
+
 
 def main(directory='.'):
     """Lists "data" files recursively in a given directory, tar files
@@ -109,7 +120,8 @@ def get_directory(directory, extract_files):
                         raise IOError(2, 'Some of the files cannot be extracted ' +
                                       'from "%s". The path is too long.' % directory)
 
-                    tar_file.extractall(dir_name)
+                    try: tar_file.extractall(dir_name, filter='data')
+                    except TypeError: tar_file.extractall(dir_name)  # Windows
                     # TarFile.open handles tar.gz/tgz
                     print('    archive extracted to folder', dir_name, '...')
             directory = dir_name

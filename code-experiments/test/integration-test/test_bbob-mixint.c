@@ -1,5 +1,6 @@
 /**
  * Tests that some of the bbob-mixint problems with dimension 2 have been correctly discretized.
+ * Tests also the restart and recommend functions.
  */
 
 #include <stdlib.h>
@@ -7,13 +8,13 @@
 #include <string.h>
 #include <time.h>
 
-#include "coco.h"
+// FIXME: Is this _really_ necessary?
 #include "coco.c"
 
 /**
  * A random search optimizer.
  */
-void my_optimizer(coco_problem_t *problem) {
+void my_optimizer(coco_problem_t *problem, coco_observer_t *observer) {
 
   const size_t budget = 2;
   coco_random_state_t *rng = coco_random_new(0xdeadbeef);
@@ -35,6 +36,10 @@ void my_optimizer(coco_problem_t *problem) {
 
     coco_evaluate_function(problem, x, y);
 
+    if (i == 0)
+      coco_recommend_solution(problem, x);
+
+    coco_observer_signal_restart(observer, problem);
   }
 
   coco_random_free(rng);
@@ -52,7 +57,7 @@ void run_once(char *suite_name, char *suite_options, char *observer_name, char *
   suite = coco_suite(suite_name, NULL, suite_options);
   observer = coco_observer(observer_name, observer_options);
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
-    my_optimizer(problem);
+    my_optimizer(problem, observer);
   }
   coco_observer_free(observer);
   coco_suite_free(suite);
@@ -318,6 +323,9 @@ void check_discretization_bi(char *suite_name, char *suite_options) {
 }
 
 int main(int argc, char *argv[])  {
+
+  /* Mute output that is not error */
+  coco_set_log_level("error");
 
   if ((argc == 2) && (strcmp(argv[1], "leak_check") == 0)) {
     run_once("bbob-mixint", "instance_indices: 1 dimensions: 5,160", "bbob", "");

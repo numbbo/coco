@@ -1,3 +1,7 @@
+<h1 align="center">
+<img src="https://raw.githubusercontent.com/numbbo/coco/0ea5f5784c5fa0543261d9c104b490d2d95566f9/logo/coco-pp-300.webp" width="300">          
+</h1><br>
+
 # COmparing Continuous Optimisers (COCO) post-processing
 
 The ([`cocopp`](https://numbbo.github.io/gforge/apidocs-cocopp/cocopp.html)) package takes data generated with the [COCO framework](https://github.com/numbbo/coco) to compare continuous opitmizers and produces output figures and tables in <tt class="rst-docutils literal">html</tt> format and for including into LaTeX-documents.
@@ -30,7 +34,7 @@ Only a trailing `*` is accepted and any string containing the substring is match
 
 <pre class="py-doctest"><span class="py-prompt">>>></span> cocopp.main(<span class="py-string">'bbob/2009/*'</span>)  <span class="py-comment"></span></pre>
 
-can be browsed at [https://numbbo.github.io/ppdata-archive/bbob/2009-all](https://numbbo.github.io/ppdata-archive/bbob/2009-all). To display algorithms in the background, the <tt class="rst-docutils literal">genericsettings.background</tt> variable needs to be set:
+can be browsed at [https://numbbo.github.io/ppdata-archive/bbob/2009](https://numbbo.github.io/ppdata-archive/bbob/2009). To display algorithms in the background, the <tt class="rst-docutils literal">genericsettings.background</tt> variable needs to be set:
 
 <pre class="py-doctest"><span class="py-prompt">>>></span> cocopp.genericsettings.background = {<span class="py-builtin">None</span>: cocopp.archives.bbob.get_all(<span class="py-string">'bfgs'</span>)}  <span class="py-comment"></span></pre>
 

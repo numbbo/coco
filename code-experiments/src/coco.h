@@ -83,18 +83,23 @@ typedef unsigned __int64 uint64_t;
 /** @brief Definition of isinf to be used only if undefined by the included headers */
 #define isinf(x) (0)
 #endif
+/* @brief The value that is logged instead of NAN */
+#define NAN_FOR_LOGGING 2e21
+/* @brief The value that is logged instead of INFINITY */
+#define INFINITY_FOR_LOGGING 3e21
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * @brief COCO's version.
- *
- * Automatically updated by do.py.
- */
+* @brief COCO's version.
+*
+* The version number is dervied from the latest tag in the
+* repository plus the number of commits after the tag.
+*/
 /**@{*/
-static const char coco_version[32] = "$COCO_VERSION";
+extern const char *coco_version;
 /**@}*/
 
 /***********************************************************************************************************/
@@ -115,6 +120,60 @@ typedef enum {
   COCO_INFO,      /**< @brief error, warning and info messages are output */
   COCO_DEBUG      /**< @brief error, warning, info and debug messages are output */
 } coco_log_level_type_e;
+
+/***********************************************************************************************************/
+/**
+ * @name Structures representing the additional arguments to be passed to the functions
+ */
+/**{@*/
+
+/**
+ * @brief The extra argument to be passed to the step ellipsoid function
+ * only penalty scale, because in the legacy code is different 
+ * between the noisy and the noise free implementations 
+ */
+typedef struct{
+  double penalty_scale;
+} f_step_ellipsoid_args_t;
+
+/**
+ * @brief The extra argument to be passed to the step ellipsoid function
+ * only conditioning, because in the legacy code is different 
+ * between the noisy and the noise free implementations 
+ */
+typedef struct{
+  double conditioning;
+} f_ellipsoid_args_t;
+
+/**
+ * @brief The extra argument to be passed to the step ellipsoid function
+ * conditioning and penalty scale, because in the legacy code were different 
+ * between the noisy and the noise free implementations 
+ */
+typedef struct{
+  double conditioning;
+  double penalty_scale;
+} f_schaffers_args_t;
+
+/**
+ * @brief The extra argument to be passed to the step ellipsoid function
+ * facftrue, because in the legacy code is different 
+ * between the noisy and the noise free implementations 
+ */
+typedef struct{
+  double facftrue;
+}f_griewank_rosenbrock_args_t;
+
+/**
+ * @brief The extra argument to be passed to the step ellipsoid function
+ * facftrue, because in the legacy code is different 
+ * between the noisy and the noise free implementations 
+ */
+typedef struct{
+  size_t number_of_peaks;
+  double penalty_scale;
+}f_gallagher_args_t;
+/**@}*/
 
 /***********************************************************************************************************/
 
@@ -160,11 +219,11 @@ struct coco_random_state_s;
 /**
  * @brief The COCO random state type.
  *
- * See coco_random_state_s for more information on its fields. */
+ * See coco_random_state_s for more information on its fields. 
+ */
 typedef struct coco_random_state_s coco_random_state_t;
 
 /***********************************************************************************************************/
-
 /**
  * @name Methods regarding COCO suite
  */
@@ -329,6 +388,11 @@ coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_obser
  */
 const char *coco_observer_get_result_folder(const coco_observer_t *observer);
 
+/**
+ * @brief Signals the restart of the algorithm
+ */
+void coco_observer_signal_restart(coco_observer_t *observer, coco_problem_t *problem);
+
 /**@}*/
 
 /***********************************************************************************************************/
@@ -479,6 +543,20 @@ double coco_random_normal(coco_random_state_t *state);
 /***********************************************************************************************************/
 
 /**
+ * @name Methods regarding noisy problems
+ */
+/**@{*/
+
+/**
+ * @brief Resets seeds
+ */
+void coco_reset_seeds(void);
+
+/**@}*/
+
+/***********************************************************************************************************/
+
+/**
  * @name Methods managing memory
  */
 /**@{*/
@@ -609,6 +687,7 @@ char *coco_strdupf(const char *str, ...);
 
 void bbob_problem_best_parameter_print(const coco_problem_t *problem);
 void bbob_biobj_problem_best_parameter_print(const coco_problem_t *problem);
+
 
 #ifdef __cplusplus
 }

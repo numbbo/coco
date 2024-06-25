@@ -25,7 +25,8 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
                                          const size_t number_of_dimensions,
                                          const size_t *dimensions,
-                                         const char *default_instances);
+                                         const char *default_instances,
+                                         const int known_optima);
 
 /**
  * @brief Sets the dimensions and default instances for the bbob large-scale suite.
@@ -36,7 +37,7 @@ static coco_suite_t *suite_largescale_initialize(void) {
   const size_t dimensions[] = { 20, 40, 80, 160, 320, 640};
   const size_t num_dimensions = sizeof(dimensions) / sizeof(dimensions[0]);
 
-  suite = coco_suite_allocate("bbob-largescale", 24, num_dimensions, dimensions, "instances: 1-15");
+  suite = coco_suite_allocate("bbob-largescale", 24, num_dimensions, dimensions, "instances: 1-15", 1);
   return suite;
 }
 
@@ -127,7 +128,9 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
     problem = f_schaffers_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed_17, 1000,
                                                               problem_id_template, problem_name_template);
   } else if (function == 19) {
-    problem = f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_allocate(function, dimension, instance, rseed,
+    f_griewank_rosenbrock_args_t args;
+    args.facftrue = 10.0;
+    problem = f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_allocate(function, dimension, instance, rseed, &args,
                                                                              problem_id_template, problem_name_template);
   } else if (function == 20) {
     problem = f_schwefel_generalized_bbob_problem_allocate(function, dimension, instance, rseed,
@@ -153,7 +156,6 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
   if (problem == NULL) {
     coco_error("coco_get_largescale_problem(): function f%lu not yet implemented  ", function);
   }
-  
   return problem;
 }
 

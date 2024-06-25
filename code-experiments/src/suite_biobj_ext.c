@@ -66,7 +66,8 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
                                          const size_t number_of_dimensions,
                                          const size_t *dimensions,
-                                         const char *default_instances);
+                                         const char *default_instances,
+                                         const int known_optima);
 static void suite_biobj_ext_free(void *stuff);
 static size_t suite_biobj_ext_get_new_instance(coco_suite_t *suite,
                                            const size_t instance,
@@ -84,7 +85,7 @@ static coco_suite_t *suite_biobj_ext_initialize(void) {
   const size_t num_dimensions = sizeof(dimensions) / sizeof(dimensions[0]);
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob-biobj-ext", 55+37, num_dimensions, dimensions, "year: 2018");
+  suite = coco_suite_allocate("bbob-biobj-ext", 55+37, num_dimensions, dimensions, "year: 2018", 1);
 
   return suite;
 }

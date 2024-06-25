@@ -31,7 +31,8 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
                                          const size_t number_of_dimensions,
                                          const size_t *dimensions,
-                                         const char *default_instances);
+                                         const char *default_instances,
+                                         const int known_optima);
 
 /**
  * @brief Sets the dimensions and default instances for the bbob suite.
@@ -43,7 +44,7 @@ static coco_suite_t *suite_bbob_initialize(void) {
   const size_t num_dimensions = sizeof(dimensions) / sizeof(dimensions[0]);
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob", 24, num_dimensions, dimensions, "year: 2023");
+  suite = coco_suite_allocate("bbob", 24, num_dimensions, dimensions, "year: 2018", 1);
 
   return suite;
 }
@@ -94,11 +95,11 @@ static const char *suite_bbob_get_instances_by_year(const int year) {
  *
  * Useful for other suites as well (see for example suite_biobj.c).
  */
-static coco_problem_t *coco_get_bbob_problem(const size_t function,
+coco_problem_t *coco_get_bbob_problem(const size_t function,
                                              const size_t dimension,
                                              const size_t instance) {
   coco_problem_t *problem = NULL;
-
+  
   const char *problem_id_template = "bbob_f%03lu_i%02lu_d%02lu";
   const char *problem_name_template = "BBOB suite problem f%lu instance %lu in %luD";
 
@@ -125,7 +126,9 @@ static coco_problem_t *coco_get_bbob_problem(const size_t function,
     problem = f_attractive_sector_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);
   } else if (function == 7) {
-    problem = f_step_ellipsoid_bbob_problem_allocate(function, dimension, instance, rseed,
+    f_step_ellipsoid_args_t args;
+    args.penalty_scale = 1.0;
+    problem = f_step_ellipsoid_bbob_problem_allocate(function, dimension, instance, rseed, &args,
         problem_id_template, problem_name_template);
   } else if (function == 8) {
     problem = f_rosenbrock_bbob_problem_allocate(function, dimension, instance, rseed,
@@ -134,7 +137,9 @@ static coco_problem_t *coco_get_bbob_problem(const size_t function,
     problem = f_rosenbrock_rotated_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);
   } else if (function == 10) {
-    problem = f_ellipsoid_rotated_bbob_problem_allocate(function, dimension, instance, rseed,
+    f_ellipsoid_args_t args;
+    args.conditioning = 1.0e6;
+    problem = f_ellipsoid_rotated_bbob_problem_allocate(function, dimension, instance, rseed, &args,
         problem_id_template, problem_name_template);
   } else if (function == 11) {
     problem = f_discus_bbob_problem_allocate(function, dimension, instance, rseed,
@@ -155,22 +160,36 @@ static coco_problem_t *coco_get_bbob_problem(const size_t function,
     problem = f_weierstrass_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);
   } else if (function == 17) {
-    problem = f_schaffers_bbob_problem_allocate(function, dimension, instance, rseed, 10,
+    f_schaffers_args_t args;
+    args.conditioning = 10.0;
+    args.penalty_scale = 10.0;
+    problem = f_schaffers_bbob_problem_allocate(function, dimension, instance, rseed, &args,
         problem_id_template, problem_name_template);
   } else if (function == 18) {
-    problem = f_schaffers_bbob_problem_allocate(function, dimension, instance, rseed_17, 1000,
+    f_schaffers_args_t args;
+    args.conditioning = 1000.0;
+    args.penalty_scale = 10.0;
+    problem = f_schaffers_bbob_problem_allocate(function, dimension, instance, rseed_17, &args,
         problem_id_template, problem_name_template);
   } else if (function == 19) {
-    problem = f_griewank_rosenbrock_bbob_problem_allocate(function, dimension, instance, rseed,
+    f_griewank_rosenbrock_args_t args;
+    args.facftrue = 10.0; 
+    problem = f_griewank_rosenbrock_bbob_problem_allocate(function, dimension, instance, rseed, &args,
         problem_id_template, problem_name_template);
   } else if (function == 20) {
     problem = f_schwefel_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);
   } else if (function == 21) {
-    problem = f_gallagher_bbob_problem_allocate(function, dimension, instance, rseed, 101,
+    f_gallagher_args_t args;
+    args.number_of_peaks = (size_t) 101;
+    args.penalty_scale = 1.0;
+    problem = f_gallagher_bbob_problem_allocate(function, dimension, instance, rseed, &args,
         problem_id_template, problem_name_template);
   } else if (function == 22) {
-    problem = f_gallagher_bbob_problem_allocate(function, dimension, instance, rseed, 21,
+    f_gallagher_args_t args;
+    args.number_of_peaks = (size_t) 21;
+    args.penalty_scale = 1.0;
+    problem = f_gallagher_bbob_problem_allocate(function, dimension, instance, rseed, &args,
         problem_id_template, problem_name_template);
   } else if (function == 23) {
     problem = f_katsuura_bbob_problem_allocate(function, dimension, instance, rseed,

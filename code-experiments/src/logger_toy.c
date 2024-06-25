@@ -20,11 +20,11 @@
  * @brief The toy logger data type.
  */
 typedef struct {
-  FILE *log_file;                    /**< @brief Pointer to the file already prepared for logging. */
-  coco_observer_targets_t *targets;  /**< @brief Triggers based on target values. */
-  size_t number_of_evaluations;      /**< @brief The number of evaluations performed so far. */
-  int precision_x;                   /**< @brief Precision for outputting decision values. */
-  int precision_f;                   /**< @brief Precision for outputting objective values. */
+  FILE *log_file;                        /**< @brief Pointer to the file already prepared for logging. */
+  coco_observer_log_targets_t *targets;  /**< @brief Triggers based on logarithmic target values. */
+  size_t number_of_evaluations;          /**< @brief The number of evaluations performed so far. */
+  int precision_x;                       /**< @brief Precision for outputting decision values. */
+  int precision_f;                       /**< @brief Precision for outputting objective values. */
 } logger_toy_data_t;
 
 /**
@@ -57,7 +57,7 @@ static void logger_toy_evaluate(coco_problem_t *problem, const double *x, double
   logger->number_of_evaluations++;
 
   /* Output the solution when a new target that has been hit */
-  if (coco_observer_targets_trigger(logger->targets, y[0])) {
+  if (coco_observer_log_targets_trigger(logger->targets, y[0])) {
     fprintf(logger->log_file, "%lu\t%.*e\t%.*e", (unsigned long) logger->number_of_evaluations,
     		logger->precision_f, y[0], logger->precision_f, logger->targets->value);
     for (i = 0; i < problem->number_of_variables; i++) {
@@ -86,7 +86,7 @@ static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *inn
   /* Initialize the logger_toy_data_t object instance */
   logger_data = (logger_toy_data_t *) coco_allocate_memory(sizeof(*logger_data));
   logger_data->number_of_evaluations = 0;
-  logger_data->targets = coco_observer_targets(observer->number_target_triggers, observer->target_precision);
+  logger_data->targets = coco_observer_log_targets(observer->number_target_triggers, observer->log_target_precision);
   logger_data->log_file = ((observer_toy_data_t *) observer->data)->log_file;
   logger_data->precision_x = observer->precision_x;
   logger_data->precision_f = observer->precision_f;

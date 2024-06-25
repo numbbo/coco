@@ -19,10 +19,21 @@ typedef enum {
   LOG_VARS_NEVER, LOG_VARS_LOW_DIM, LOG_VARS_ALWAYS
 } observer_biobj_log_vars_e;
 
+static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *problem);
+static void logger_biobj_free(void *logger);
+static void logger_biobj_signal_restart(coco_problem_t *problem);
+static void logger_biobj_data_nullify_observer(void *logger_data);
+
 /**
  * @brief The bbob-biobj observer data type.
+ *
+ * There is a cyclic reference between the biobj_logger and the biobj_observer (through the observer's
+ * observed_problem and the logger's data, which points to the observer). This is needed to be able
+ * to free both objects without problems.
  */
 typedef struct {
+  coco_problem_t *observed_problem;            /**< @brief Pointer to the observed problem (NULL if none is observed) */
+
   observer_biobj_log_nondom_e log_nondom_mode; /**< @brief Handling of the nondominated solutions. */
   observer_biobj_log_vars_e log_vars_mode;     /**< @brief When the decision variables are logged. */
 
@@ -34,8 +45,27 @@ typedef struct {
 
 } observer_biobj_data_t;
 
-static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *problem);
-static void logger_biobj_free(void *logger);
+/**
+ * @brief  Makes sure the observer_biobj_data_t object is not pointing to any problem.
+ */
+static void observer_biobj_data_free(void *stuff) {
+
+  observer_biobj_data_t *data = (observer_biobj_data_t *) stuff;
+  coco_problem_t *problem;
+
+  coco_debug("Started observer_bbob_data_free()");
+
+  /* Make sure that the observed problem's pointer to the observer points to NULL */
+  if (data->observed_problem != NULL) {
+    problem = (coco_problem_t *) data->observed_problem;
+    if (problem->data != NULL) {
+      logger_biobj_data_nullify_observer(coco_problem_transformed_get_data(problem));
+    }
+    data->observed_problem = NULL;
+  }
+
+  coco_debug("Ended   observer_bbob_data_free()");
+}
 
 /**
  * @brief Initializes the bi-objective observer.
@@ -113,9 +143,12 @@ static void observer_biobj(coco_observer_t *observer, const char *options, coco_
     observer_data->previous_dimension = -1;
   }
 
+  observer_data->observed_problem = NULL;
+
   observer->logger_allocate_function = logger_biobj;
   observer->logger_free_function = logger_biobj_free;
-  observer->data_free_function = NULL;
+  observer->restart_function = logger_biobj_signal_restart;
+  observer->data_free_function = observer_biobj_data_free;
   observer->data = observer_data;
 
   if ((observer_data->log_nondom_mode == LOG_NONDOM_NONE) && (!observer_data->compute_indicators)) {

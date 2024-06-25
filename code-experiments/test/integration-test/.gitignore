@@ -1,13 +1,3 @@
-coco.c
-coco.h
-
-Makefile
-test_bbob-constrained
-test_bbob-largescale
-test_bbob-mixint
-test_biobj
-test_coco
-test_instance_extraction
-
-bbob2009_testcases.txt
-bbob2009_testcases2.txt
+build/
+exdata/
+Testing/

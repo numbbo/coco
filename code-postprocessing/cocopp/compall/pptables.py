@@ -28,7 +28,7 @@ def get_table_caption():
         + r""") divided by the respective !!BEST-ERT!! (when finite) in
         #1.
         This \ERT\ ratio and, in braces as dispersion measure, the half difference between
-        10 and 90\%-tile of bootstrapped run lengths appear for each algorithm and 
+        10 and 90\%-tile of !!BOOTSTRAPPED!! run lengths appear for each algorithm and 
         """)
     table_caption_one_noreference = (r"""%
         Expected runtime (\ERT) to reach given targets, measured
@@ -36,7 +36,7 @@ def get_table_caption():
         + testbedsettings.current_testbed.string_evals
         + r""", in #1. For each function, the \ERT\ 
         and, in braces as dispersion measure, the half difference between 10 and 
-        90\%-tile of (bootstrapped) runtimes is shown for the different
+        90\%-tile of !!BOOTSTRAPPED!! runtimes is shown for the different
         target """
         + ("!!DF!!-" if not testbedsettings.current_testbed.has_constraints else "precision ")
         + r"""values as shown in the top row. 
@@ -54,41 +54,31 @@ def get_table_caption():
         (preceded by the target !!DF!!-value in \textit{italics}) in the first row. 
         \#succ is the number of trials that reached the target value of the last column.
         """
-
     table_caption_rest = (r"""%
         The median number of conducted function evaluations is additionally given in 
         \textit{italics}, if the target in the last column was never reached.
-        Entries, succeeded by a star, are statistically significantly better (according to
-        the rank-sum test) when compared to all other algorithms of the table, with
-        $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
-        than 1, with Bonferroni correction by the number of functions (!!TOTAL-NUM-OF-FUNCTIONS!!). """ +
+        The best entry is marked by a star when the largest $p$-value of pairwise
+        rank-sum tests with the other algorithms either obeys $0.01 < p \le 0.05$
+        or $10^{-k-1} < p \le 10^{-k}$ when the star is followed by the number $k$,
+        with Bonferroni correction by the number of functions (!!TOTAL-NUM-OF-FUNCTIONS!!). """ +
                 (r"""A ${}$ signifies the number of trials that were worse than the ERT of !!THE-REF-ALG!! """
                  r"""shown only when less than 10 percent were worse and the ERT was better."""
                  .format(significance_vs_ref_symbol)
-                    if not (testbedsettings.current_testbed.name in (testbedsettings.suite_name_bi_ext,
-                                                                     testbedsettings.suite_name_ls,
-                                                                     testbedsettings.suite_name_mixint,
-                                                                     testbedsettings.suite_name_bi_mixint))
-                           else "") + r"""Best results are printed in bold.
+                    if not (testbedsettings.current_testbed.reference_algorithm_filename == '' or
+                            testbedsettings.current_testbed.reference_algorithm_filename is None)
+                 else "") + r""" Best results are printed in bold.
         """)
 
     table_caption = None
-    if testbedsettings.current_testbed.name in [testbedsettings.suite_name_bi_ext,
-                                                testbedsettings.suite_name_cons,
-                                                testbedsettings.suite_name_ls,
-                                                testbedsettings.suite_name_mixint,
-                                                testbedsettings.suite_name_bi_mixint]:
+    if (testbedsettings.current_testbed.reference_algorithm_filename == '' or
+            testbedsettings.current_testbed.reference_algorithm_filename is None):
         # NOTE: no runlength-based targets supported yet
         table_caption = table_caption_one_noreference + table_caption_rest
-    elif testbedsettings.current_testbed.name in [testbedsettings.suite_name_single,
-                                                  testbedsettings.suite_name_single_noisy,
-                                                  testbedsettings.suite_name_bi]:
+    else:
         if genericsettings.runlength_based_targets:
             table_caption = table_caption_one + table_caption_two2 + table_caption_rest
         else:
             table_caption = table_caption_one + table_caption_two1 + table_caption_rest
-    else:
-        warnings.warn("Current settings do not support pptables caption.")
 
     return captions.replace(table_caption)
 
@@ -171,7 +161,7 @@ def cite(alg_name, is_noise_free, is_noisy):
             res.append("DBLP:conf/gecco/Kubalik09a")
         if alg_name == "PSO":
             res.append("DBLP:conf/gecco/El-AbdK09a")
-        if alg_name == "PSO\_Bounds":
+        if alg_name == "PSO_Bounds":
             res.append("DBLP:conf/gecco/El-AbdK09b")
         if alg_name == "Monte Carlo":
             res.append("DBLP:conf/gecco/AugerR09")
@@ -214,7 +204,7 @@ def cite(alg_name, is_noise_free, is_noisy):
             res.append("DBLP:conf/gecco/Auger09a")
         elif alg_name == "PSO":
             res.append("DBLP:conf/gecco/El-AbdK09a")
-        elif alg_name == "PSO\_Bounds":
+        elif alg_name == "PSO_Bounds":
             res.append("DBLP:conf/gecco/El-AbdK09b")
         elif alg_name == "Monte Carlo":
             res.append("DBLP:conf/gecco/AugerR09a")
@@ -541,7 +531,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                 curlineHtml = [item.replace('REPLACE%d' % counter, '&nbsp;') for item in curlineHtml]
             curlineHtml = [item.replace('REPLACEF', '&nbsp;') for item in curlineHtml]
 
-        curlineHtml = [i.replace('$\infty$', '&infin;') for i in curlineHtml]
+        curlineHtml = [i.replace(r'$\infty$', r'&infin;') for i in curlineHtml]
         table.append(curline[:])
         tableHtml.extend(curlineHtml[:])
         tableHtml.append('<tbody>\n')
@@ -571,9 +561,9 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                 else:
                     ert, dispersion, isBold = tmp
 
-                alignment = '@{\,}l@{\,}'
+                alignment = r'@{\,}l@{\,}'
                 if j == len(algerts[i]) - 1:
-                    alignment = '@{\,}l@{\,}|'
+                    alignment = r'@{\,}l@{\,}|'
 
                 # create superscript star for significance against all other algorithms
                 str_significance_subsup = ''
@@ -687,7 +677,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
             table.append(curline)
             curlineHtml.append(
                 '<td sorttable_customkey=\"%d\">%d/%d</td>\n' % (algnbsucc[i], algnbsucc[i], algnbruns[i]))
-            curlineHtml = [i.replace('$\infty$', '&infin;') for i in curlineHtml]
+            curlineHtml = [i.replace(r'$\infty$', r'&infin;') for i in curlineHtml]
             tableHtml.extend(curlineHtml[:])
             extraeol.append('')
 

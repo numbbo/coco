@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Generates figure of the bootstrap distribution of ERT.
+"""Generates figure of the bootstrap distribution of (function) evaluations.
     
-The main method in this module generates figures of Empirical
-Cumulative Distribution Functions of the bootstrap distribution of
-the Expected Running Time (ERT) divided by the dimension for many
+The main method in this module generates figures of Empirical Cumulative
+Distribution Functions of the bootstrap distribution of the (function)
+evaluations needed to reach a target divided by the dimension for many
 algorithms.
 
 The outputs show the ECDFs of the running times of the simulated runs
@@ -20,7 +20,7 @@ function evaluations of unsuccessful runs divided by dimension.
 
     import cocopp
 
-    # Empirical cumulative distribution function of bootstrapped ERT figure
+    # Empirical cumulative distribution function of bootstrapped evaluations figure
     ds = cocopp.load(cocopp.bbob.get('2009/BIPOP-CMA-ES'))
     figure()
     cocopp.compall.pprldmany.plot(ds) # must rather call main instead of plot?
@@ -583,7 +583,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
     From a dictionary of :py:class:`DataSetList` sorted by algorithms,
     generates the cumulative distribution function of the bootstrap
-    distribution of ERT for algorithms on multiple functions for
+    distribution of evaluations for algorithms on multiple functions for
     multiple targets altogether.
 
     :param dict dictAlg: dictionary of :py:class:`DataSetList` instances

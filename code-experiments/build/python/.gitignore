@@ -1,8 +1,0 @@
-cython/coco.c
-cython/coco.h
-
-setup.py
-README.txt
-
-bbob2009_testcases.txt
-bbob2009_testcases2.txt
