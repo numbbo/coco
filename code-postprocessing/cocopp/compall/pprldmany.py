@@ -32,7 +32,7 @@ from __future__ import absolute_import, print_function
 
 import os
 import warnings
-from pdb import set_trace
+import collections
 import numpy as np
 import matplotlib.pyplot as plt
 from .. import toolsstats, bestalg, genericsettings, testbedsettings
@@ -644,7 +644,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             print('Crafting effort for', alg, 'is', CrE)
 
     dictData = {}  # list of (ert per function) per algorithm
-    dictMaxEvals = {}  # list of (maxevals per function) per algorithm
+    dictMaxEvals = collections.defaultdict(list)  # list of (maxevals per function) per algorithm
 
     # funcsolved = [set()] * len(targets) # number of functions solved per target
     xbest = []
@@ -736,7 +736,12 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                     elif plotType == PlotType.FUNC:
                         keyValue = 'f%d' % (f)
                     dictData.setdefault(keyValue, []).extend(x)
-                    dictMaxEvals.setdefault(keyValue, []).extend(runlengthunsucc)
+                    # dictMaxEvals.setdefault(keyValue, []).extend(runlengthunsucc)
+                    if len(runlengthunsucc):
+                        maxmed = np.median(runlengthunsucc)
+                        if len(runlengthsucc):
+                            maxmed = max((maxmed, np.median(runlengthsucc)))
+                        dictMaxEvals[keyValue].append(maxmed)
 
             displaybest = plotType == PlotType.ALG
             if displaybest:
