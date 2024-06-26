@@ -71,7 +71,7 @@ def _DataSet_complement_data(self, step=10**0.2, final_target=1e-8):
     newdat = []
     warnings.warn("implementation has changed and was never used")
     nb_columns = self._evals.shape[1]
-    self._evals = np.array(self._evals, copy=False)
+    self._evals = np.asarray(self._evals)
     for i in range(len(self._evals) - 1):
         newdat.append(self._evals[i])
         target = self._evals[i][0] / step
@@ -413,7 +413,7 @@ class RunlengthBasedTargetValues(TargetValues):
                 
                 if len(targets) > 1 and targets[-1] >= targets[-2] and self.force_different_targets_factor > 1 and targets[-1] > self.smallest_target:
                     targets[-1] = targets[-2] / self.force_different_targets_factor
-            targets = np.array(targets, copy=False)
+            targets = np.asarray(targets)
             targets[targets < self.smallest_target] = self.smallest_target
             
             # a few more sanity checks
@@ -445,7 +445,7 @@ class RunlengthBasedTargetValues(TargetValues):
             if (len(targets) > 1 and targets[-1] >= targets[-2] and 
                 self.force_different_targets_factor > 1):
                 targets[-1] = targets[-2] / self.force_different_targets_factor
-        targets = np.array(targets, copy=False)
+        targets = np.asarray(targets)
         targets[targets < self.smallest_target] = self.smallest_target
 
         # a few more sanity checks
@@ -1569,7 +1569,7 @@ class DataSet(object):
             idxnan = np.isnan(evalrow)
             evalsums.append(sum(evalrow[idxnan==False]) + sum(self.maxevals[idxnan]))
         
-        averages = np.array(evalsums, copy=False) / self.nbRuns()
+        averages = np.asarray(evalsums) / self.nbRuns()
             
         if do_assertion:
             assert all([(ert == np.inf and ps == 0) or toolsdivers.equals_approximately(ert,  averages[i] / ps)
@@ -2914,9 +2914,8 @@ class DataSetList(list):
                                     raise ValueError('reference_value is not finite')
                                     # a possible solution would be to set ``val = 1``
                             reference_scores[ds.funcId] = \
-                                np.array([data_per_target * [val]
-                                    for val in reference_scores[ds.funcId]],
-                                         copy=False)
+                                np.asarray([data_per_target * [val]
+                                    for val in reference_scores[ds.funcId]])
                         for i, line in enumerate(reference_scores[ds.funcId]):
                             reference_scores[ds.funcId][i] = \
                                 np.sort(np.asarray(line)[toolsstats.randint_derandomized(0, len(line), data_per_target)])
@@ -3088,8 +3087,8 @@ class DataSetList(list):
             if scoring_function is None or scoring_function == 'ERT':
                 current_scores = ds.detERT(target_values)
             else:
-                current_scores = np.array([scoring_function(d)
-                                           for d in current_lines], copy=False)
+                current_scores = np.asarray([scoring_function(d)
+                                           for d in current_lines])
             assert len(current_lines) == len(best_lines)
             assert len(current_lines) == len(current_scores) \
                  == len(best_scores) == len(best_lines)

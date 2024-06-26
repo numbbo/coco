@@ -753,7 +753,7 @@ def extractBestAlgorithms(args=algs2009, f_factor=2,
 
                     # add second best or all algorithms that have an ERT
                     # within a factor of f_factor of the best:
-                    secondbest_ERT = np.infty
+                    secondbest_ERT = np.inf
                     secondbest_str = ''
                     secondbest_included = False
                     for astring in j:

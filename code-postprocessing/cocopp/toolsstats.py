@@ -63,7 +63,7 @@ def fix_data_number(data, ndata=15,
     return data
 
 
-def sp1(data, maxvalue=np.Inf, issuccessful=None):
+def sp1(data, maxvalue=np.inf, issuccessful=None):
     """sp1(data, maxvalue=Inf, issuccessful=None) computes a
     mean value over successful entries in data divided by
     success rate, the so-called SP1
@@ -79,7 +79,7 @@ def sp1(data, maxvalue=np.Inf, issuccessful=None):
 
     Returns: (SP1, success_rate, nb_of_successful_entries), where
       SP1 is the mean over successful entries in data divided
-      by the success rate. SP1 equals np.Inf when the success
+      by the success rate. SP1 equals np.inf when the success
       rate is zero.
     """
 
@@ -111,11 +111,11 @@ def sp1(data, maxvalue=np.Inf, issuccessful=None):
 
     # return
     if succ == 0:
-        return (np.Inf, 0., 0)
+        return (np.inf, 0., 0)
     else:
         return (np.mean(dat) / succ, succ, len(dat))
 
-def sp(data, maxvalue=np.Inf, issuccessful=None, allowinf=True):
+def sp(data, maxvalue=np.inf, issuccessful=None, allowinf=True):
     """sp(data, issuccessful=None) computes the sum of the function
     evaluations over all runs divided by the number of success,
     the so-called success performance which estimates the expected
@@ -245,7 +245,7 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles,
     
     if Nsucc == 0:
         raise NotImplementedError('this code has been removed as it was not clear whether it makes sense')
-        # return (np.Inf*np.array(percentiles), )
+        # return (np.inf*np.array(percentiles), )
         # TODO: the following line does not work because of the use of function sum which interface is different than that of sp or sp1
         return (draw(runlengths_unsucc, percentiles, samplesize=samplesize, 
                      func=sum
@@ -477,7 +477,7 @@ def prctile(x, arrprctiles, issorted=False, ignore_nan=True):
         prctiles
 
     .. note::
-        treats np.Inf and -np.Inf, np.NaN and None, the latter are
+        treats np.inf and -np.inf, np.nan and None, the latter are
         simply disregarded
 
     """
@@ -492,7 +492,7 @@ def prctile(x, arrprctiles, issorted=False, ignore_nan=True):
 
     N = float(len(x))
     if N == 0:
-        return [np.NaN for a in arrprctiles]
+        return [np.nan for a in arrprctiles]
 
     res = []
     for p in arrprctiles:
@@ -609,7 +609,7 @@ def zprob(z):
         return x
 
     Z_MAX = 6.0  # maximum meaningful z-value
-    x = np.zeros(z.shape, np.float_)  # initialize
+    x = np.zeros(z.shape, np.float64)  # initialize
     y = 0.5 * np.fabs(z)
     x = np.where(np.less(y, 1.0), wfunc(y * y), yfunc(y - 2.0))  # get x's
     x = np.where(np.greater(y, Z_MAX * 0.5), 1.0, x)  # kill those with big Z
@@ -942,7 +942,7 @@ def sliding_window_data(data, width=2, operator=np.median,
             'the number of data %d' % int(width), len(data))
     down = width // 2
     up = width // 2 + (width % 2)
-    d = np.array(data, copy=False)
+    d = np.asarray(data)
     smoothened_data = []
     stats = []
     stats_mod = len(d) // number_of_stats
@@ -967,7 +967,7 @@ def sliding_window_data(data, width=2, operator=np.median,
             next = 0.1 + 1.8 * np.random.rand()
         i_last_stats += 1
 
-    return (np.array(smoothened_data, copy=False)
+    return (np.asarray(smoothened_data)
         if isinstance(data, np.ndarray) else smoothened_data, stats)
 
 def equals_approximately(a, b, abs=1e-11, rel=1e-11):
