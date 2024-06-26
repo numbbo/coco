@@ -33,7 +33,7 @@ classifiers = [
 ]
 dependencies = [
   "matplotlib >=3.5.0",
-  "numpy >=1.21.0,<2.0.0",
+  "numpy >=1.21.0",
   "platformdirs >=3.8.1",
 ]
 dynamic = ["version"]
@@ -52,3 +52,6 @@ packages = [
   "cocopp.comp2",
   "cocopp.compall"
 ]
+
+[tool.ruff.lint]
+select = ["NPY201"]
