@@ -52,7 +52,10 @@ annotation_space_end_relative = 1.21  # figure space end relative to x_limit, sp
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # number of bootstrap samples drawn for each fct+target in the performance profile
 nbperdecade = 1
-median_max_evals_marker_format = ['x', 12.5, 1]  # [symbol, size, edgewidth]
+max_evals_marker_format = ['x', 12.5, 1]  # [symbol, size, edgewidth]
+max_evals_single_marker_format = ['+', 14, 1]  # [symbol, size, edgewidth]
+max_evals_percentile = 90
+budget_cross_always = True  # was False before June 2024
 label_fontsize = 15  # was 17
 xticks_fontsize = 16
 yticks_fontsize = 14
@@ -195,8 +198,7 @@ def beautify():
     plt.ylim(-0.0, 1.0)
 
 
-
-def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
+def plotdata(data, maxval=None, maxevals=None, CrE=0., maxevals2=None, **kwargs):
     """Draw a normalized ECDF. What means normalized?
     
     :param seq data: data set, a 1-D ndarray of runlengths
@@ -206,7 +208,9 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
     :param seq maxevals: if provided, will plot the median of this
                          sequence as a single cross marker
     :param float CrE: Crafting effort the data will be multiplied by
-                      the exponential of this value.
+                      the exponential of this value
+    :param maxevals2: a single value or values to be plotted as median(maxevals2)
+                      with the same marker as maxevals
     :param kwargs: optional arguments provided to plot function.
     
     """
@@ -250,33 +254,37 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
                                         logscale=False, clip_on=False, **kwargs)
         # res = plotUnifLogXMarkers(x2, y2, nbperdecade, logscale=False, **kwargs)
 
-    if maxevals:  # Should cover the case where maxevals is None or empty
-        x3 = np.median(maxevals)  # change it only here
-        if (x3 <= maxval and
-            # np.any(x2 <= x3) and   # maxval < median(maxevals)
-            not plt.getp(res[-1], 'label').startswith('best')
-            ): # TODO: HACK for not considering a "best" algorithm line
-            # Setting y3
-            if n == 0:
-                y3 = 0
-            else:
-                try:
-                    y3 = y2[x2 <= x3][-1]  # find right y-value for x3==median(maxevals)
-                except IndexError:  # median(maxevals) is smaller than any data, can only happen because of CrE?
-                    y3 = y2[0]
-            h = plt.plot((x3,), (y3,),
-                         marker=median_max_evals_marker_format[0],
-                         markersize=median_max_evals_marker_format[1] * size_correction_from_n_foreground**0.85,
-                         markeredgewidth=median_max_evals_marker_format[2],
-                         # marker='x', markersize=24, markeredgewidth=3, 
-                         markeredgecolor=plt.getp(res[0], 'color'),
-                         ls=plt.getp(res[0], 'linestyle'),
-                         color=plt.getp(res[0], 'color'),
-                         # zorder=1.6   # zorder=0;1;1.5 is behind the grid lines, 2 covers other lines, 1.6 is between
-                         )
-            h.extend(res)
-            res = h  # so the last element in res still has the label.
-            # Only take sequences for x and y!
+        for maxeval_, format in ((maxevals, max_evals_marker_format),
+                                 (maxevals2, max_evals_single_marker_format)):
+            if not maxeval_:  # cover the case where maxevals is None or empty
+                continue
+            x3 = np.median(maxeval_)  # change it only here
+            if ((budget_cross_always or x3 <= maxval) and
+                # np.any(x2 <= x3) and   # maxval < median(maxevals)
+                not plt.getp(res[-1], 'label').startswith('best')
+                ): # TODO: HACK for not considering a "best" algorithm line
+                # Setting y3
+                if n == 0:
+                    y3 = 0
+                else:
+                    try:
+                        y3 = y2[x2 <= x3][-1]  # find right y-value for x3==median(maxevals)
+                    except IndexError:  # median(maxevals) is smaller than any data, can only happen because of CrE?
+                        y3 = y2[0]
+                h = plt.plot((x3,), (y3,),
+                            marker=format[0],
+                            markersize=format[1] * size_correction_from_n_foreground**0.85,
+                            markeredgewidth=format[2],
+                            # marker='x', markersize=24, markeredgewidth=3, 
+                            markeredgecolor=plt.getp(res[0], 'color'),
+                            ls=plt.getp(res[0], 'linestyle'),
+                            color=plt.getp(res[0], 'color'),
+                            # zorder=1.6   # zorder=0;1;1.5 is behind the grid lines, 2 covers other lines, 1.6 is between
+                            )
+                # h.extend(res)
+                # res = h  # so the last element in res still has the label.
+
+                # Only take sequences for x and y!
 
     return res
 
@@ -644,7 +652,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             print('Crafting effort for', alg, 'is', CrE)
 
     dictData = {}  # list of (ert per function) per algorithm
-    dictMaxEvals = collections.defaultdict(list)  # list of (maxevals per function) per algorithm
+    dictMaxEvals = collections.defaultdict(list)  # sum(maxevals) / max(1, #success) per instance
+    dictMaxEvals2 = collections.defaultdict(list)  # max of successf and unsucc 90%tile runtime over all instances
 
     # funcsolved = [set()] * len(targets) # number of functions solved per target
     xbest = []
@@ -690,13 +699,14 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             samplesize = int(samplesize)
         for f, dictAlgperFunc in sorted(dictFunc.items()):
             # print(target_values((f, dim)))
-            for j, t in enumerate(target_values((f, dim))):
+            targets = target_values((f, dim))
+            for j, t in enumerate(targets):
                 # for j, t in enumerate(testbedsettings.current_testbed.ecdf_target_values(1e2, f)):
                 # funcsolved[j].add(f)
 
                 for alg in algorithms_with_data:
                     x = [np.inf] * samplesize
-                    runlengthunsucc = []
+                    runlengthunsucc = []  # this should be a DataSet method
                     try:
                         entry = dictAlgperFunc[alg][0]  # one element per fun and per dim.
                         evals = entry.detEvals([t])[0]
@@ -737,11 +747,17 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                         keyValue = 'f%d' % (f)
                     dictData.setdefault(keyValue, []).extend(x)
                     # dictMaxEvals.setdefault(keyValue, []).extend(runlengthunsucc)
-                    if len(runlengthunsucc):
-                        maxmed = np.median(runlengthunsucc)
-                        if len(runlengthsucc):
-                            maxmed = max((maxmed, np.median(runlengthsucc)))
-                        dictMaxEvals[keyValue].append(maxmed)
+                    if len(runlengthunsucc) and t == min(targets):  # only once, not for each target as it was before June 2024
+                        def percentile(vals, which=max_evals_percentile):
+                            return toolsstats.prctile(vals, [which])[0]
+                        if 1 < 3:
+                            if 'entry' in locals():  # entry was assigned under a try
+                                dictMaxEvals[keyValue].append(percentile(entry.budget_effective_estimates.values()))
+                        if 1 < 3:
+                            maxmed = percentile(runlengthunsucc)
+                            if len(runlengthsucc):
+                                maxmed = max((maxmed, percentile(runlengthsucc)))
+                            dictMaxEvals2[keyValue].append(maxmed)
 
             displaybest = plotType == PlotType.ALG
             if displaybest:
@@ -806,7 +822,6 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         for i, alg in enumerate(plotting_style.algorithm_list):
             try:
                 data = dictData[alg]
-                maxevals = dictMaxEvals[alg]
             except KeyError:
                 continue
 
@@ -837,7 +852,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
             args.update(plotting_style.pprldmany_styles)  # no idea what this does, maybe update for background algorithms?
 
-            lines.append(plotdata(np.array(data), x_limit, maxevals,
+            lines.append(plotdata(np.array(data), x_limit,
+                                  dictMaxEvals[alg], maxevals2=dictMaxEvals2[alg],
                                   CrE=CrEperAlg[alg], **args))
 
     if 11 < 3:

@@ -584,6 +584,7 @@ class DataSet(object):
         algId
         algs
         bootstrap_sample_size
+        budget_effective_estimates
         comment
         ...
         dim
@@ -598,6 +599,7 @@ class DataSet(object):
         ...
         info
         info_str
+        instance_index_lists
         instance_multipliers
         instancenumbers
         isBiobjective
@@ -619,8 +621,10 @@ class DataSet(object):
         reference_values
         splitByTrials
         success_ratio
+        successes_by_instance
         suite_name
         target
+        trial_count_by_instance
         >>> all(ds.evals[:, 0] == ds.target)  # first column of ds.evals is the "target" f-value
         True
         >>> # investigate row 0,10,20,... and of the result columns 0,5,6, index 0 is ftarget
@@ -2148,6 +2152,73 @@ class DataSet(object):
         m = numpy.median(evals, 1)
         m[~np.isfinite(m)] = np.nan
         return m
+
+    def instance_index_lists(self, raw_values=True):
+        """return `OrderedDict` of index lists for each instance.
+
+        `raw_values` means no instance balancing, otherwise the indices
+        refer to `instancenumbers_balanced` whos first indices are the same
+        as in `instancenumbers`.
+
+        The index starts with 0 conforming with `instancenumbers`,
+        `maxevals`, `detEvals` and others. However in the `evals`
+        array, column 0 contains f-values and the instance indices start
+        with 1.
+        """
+        res = collections.OrderedDict()
+        for index, i in enumerate(self.instancenumbers if raw_values
+                                  else self.instancenumbers_balanced):
+            if i not in res:
+                res[i] = []
+            res[i] += [index]
+        return res
+
+    @property
+    def _budget_estimates(self):
+        """return `OrderedDict` of sum(maxevals) for each (raw data) instance.
+
+        This was implemented but never used.
+        """
+        res = collections.OrderedDict()
+        for instance, indices in self.instance_index_lists(raw_values=True).items():
+            res[instance] = sum(self.maxevals[i] for i in indices)
+            # res[instance] = max((max(s), sum(u)))
+            # res[instance] = sum(u) + (np.median(s) if s else 0)
+            # res[instance] = sum(u) + (max(s) if s else 0)
+        return res
+
+    @property
+    def budget_effective_estimates(self):
+        """return `OrderedDict` of ``sum(maxevals) / max(1, #successes)``
+
+        for each instance. This is similar to the budget of the
+        within-trial restarted algorithm and also equals to the
+        within-instance ERT for the most difficult target
+        ``self.precision`` when #successes > 0.
+        """
+        res = collections.OrderedDict()
+        successes = self.successes_by_instance()
+        for instance, indices in self.instance_index_lists(raw_values=True).items():
+            res[instance] = sum(self.maxevals[i] for i in indices
+                                ) / max((1, successes[instance]))
+        return res
+
+    def successes_by_instance(self, target=None, raw_values=True):
+        """return `OrderedDict` with number of successes for each instance"""
+        res = collections.OrderedDict()
+        try:
+            target = self.precision
+        except AttributeError:  # biobj case
+            target = 1e-8  # FIXME: is there a smarter way here?
+        evals = self.detEvals([target])[0]
+        for instance, indices in self.instance_index_lists(raw_values).items():
+            res[instance] = sum(np.isfinite(evals[i]) for i in indices)
+        return res
+
+    @property
+    def trial_count_by_instance(self):
+        """return `Counter` `dict` with number of trials (actually) done for each instance"""
+        return collections.Counter(self.instancenumbers)
 
     def _data_differ(self, ds):
         """return a list of targets for which `ds` differs from `self`
