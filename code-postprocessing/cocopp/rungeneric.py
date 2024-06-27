@@ -298,7 +298,7 @@ def main(argv=None):
                 genericsettings.isPickled = True
                 warnings.warn('The usage of --pickle is deprecated and will be removed in a later release of COCO.')
             # The next 4 are for testing purpose
-            elif o == "--runlength-based":
+            elif o in ("--runlength-based", "--budget-based"):
                 genericsettings.runlength_based_targets = True
             elif o == "--expensive":
                 genericsettings.isExpensive = True  # comprises runlength-based
