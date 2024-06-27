@@ -353,13 +353,13 @@ def beautify(legend=False, rightlegend=False):
         set_trace()
 
     # Grid options
-    axisHandle.yaxis.grid(True)
+    axisHandle.yaxis.grid(True, which='both')
 
     ymin, ymax = plt.ylim()
 
     # quadratic slanted "grid"
     if 1 < 3:
-        for i in range(-2, 7, 1 if ymax < 1e5 else 2):
+        for i in range(-2, 7, 1 if ymax/(ymin+1e-6) < 1e6 else 2):
             plt.plot((0.2, 20000), (10**i, 10**(i + 5)), 'k:',
                      linewidth=0.5)  # grid should be on top
     else:  # to be removed
