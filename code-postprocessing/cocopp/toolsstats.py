@@ -298,9 +298,9 @@ def randint_derandomized(low, high=None, size=None):
     """return a `numpy` array of derandomized random integers.
 
     The interface is the same as for `numpy.randint`, however the
-    default value for `size` is ``high-low`` and each "random" integer
+    default value for `size` is ``high - low`` and each "random" integer
     is guarantied to appear exactly once in each chunk of size
-    ``high-low``. (That is, by default a permutation is returned.)
+    ``high - low``. (That is, by default a permutation is returned.)
 
     As for `numpy.randint`, the value range is [low, high-1] or [0, low-1]
     if ``high is None``.

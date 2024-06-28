@@ -1115,6 +1115,8 @@ class DataSet(object):
         `samplesize` is by default the smallest multiple of `nbRuns` that
         is larger than 14.
 
+        `bootstrap` is passed to `detEvals` and will increase the variance.
+
         ``np.sort(np.concatenate(return_value))`` provides the combined
         sorted ECDF data over all targets which may be plotted with
         `pyplot.step` (missing the last step).
@@ -1651,7 +1653,11 @@ class DataSet(object):
     def detEvals(self, targets, copy=True, bootstrap=False, append_instances=False):
         """return ``len(targets)`` data rows ``self.evals[i, 1:]``.
 
-        Rows have the closest but not larger target such that
+        If `bootstrap`, the "data rows" are ``len(self.evals[i, 1:])``
+        values drawn with replacement from ``self.evals[i, 1:]``. This may
+        be useful to estimate variances (at some point).
+
+        Rows have the closest but not a larger target such that
         ``self.evals[i, 0] <= target and self.evals[i - 1, 0] > target``,
         or in the "limit" cases the first data line or a line
         ``np.array(self.nbRuns() * [np.nan])``.
@@ -1803,7 +1809,7 @@ class DataSet(object):
             not hasattr(self, 'instancenumbers') or
             len(self.instancenumbers) == 0):
             return False
-        return self.instance_multipliers is not None and np.any(self.instance_multipliers > 1)
+        return self.instance_multipliers is not None and set(self.instance_multipliers) != {1}
 
     @property
     def instance_multipliers(self):
@@ -1818,7 +1824,7 @@ class DataSet(object):
             return None  # 0 would work with np.any(.)
         if not genericsettings.balance_instances or (
             isinstance(self.instancenumbers, dict)):  # self.instancenumbers of portfolios is a dict
-            return np.ones(len(self.instancenumbers))
+            return len(self.instancenumbers) * (1,)
         if (1 < 3 and  # this failed like
             # cocopp/pptable.py", line 219  significancetest(refalgentry, entry, ...
             # cocopp/toolsstats.py", line 806, in significancetest
@@ -1836,16 +1842,16 @@ class DataSet(object):
             lcm = np.lcm.reduce(list(instance_counters.values()))  # lowest common multiplier
         except AttributeError:  # old versions of numpy don't know lcm
             lcm = np.prod(list(set(list(instance_counters.values()))))
-        instance_multipliers = np.asarray(
-            [int(lcm / instance_counters[i]) for i in self.instancenumbers], dtype=int)
+        instance_multipliers = tuple(
+                int(lcm / instance_counters[i]) for i in self.instancenumbers)
         if not hasattr(self, '_instance_multipliers'):  # to prevent lint warning
             self._instance_multipliers = instance_multipliers
         elif (len(self._instance_multipliers) == len(instance_multipliers) and
-              not all(self._instance_multipliers == instance_multipliers)):
+              not self._instance_multipliers == instance_multipliers):
             warnings.warn("instance multipliers changed (not sure how this can happen)" +
                           str((self, self.instancenumbers, self._instance_multipliers, instance_multipliers)))
         self._instance_multipliers = instance_multipliers
-        self._instance_multipliers_instancenumbers = tuple(self.instancenumbers)
+        self._instance_multipliers_instancenumbers = tuple(self.instancenumbers)  # note on which instances the multipliers are based
         return self._instance_multipliers
 
     @property
@@ -1884,7 +1890,9 @@ class DataSet(object):
 
     @property
     def evals_appended(self):
-        """like the `evals` property-attribute but here instances with the same ID
+        """Is this abandoned?
+
+        like the `evals` property-attribute but here instances with the same ID
         are aggregated (appended).
 
         The aggregation appends trials with the same instance ID in the
@@ -1974,7 +1982,7 @@ class DataSet(object):
                             if i - 1 not in merged_runs]]
         self._evals_appended = evals
         self._maxevals_appended = np.asarray(maxevals)
-        assert sum(self._maxevals) == sum(self._maxevals_appended), (self._maxevals, self._maxevalsappended)
+        assert sum(self._maxevals) == sum(self._maxevals_appended), (self._maxevals, self._maxevals_appended)
 
     @staticmethod
     def _largest_finite_index(ar):

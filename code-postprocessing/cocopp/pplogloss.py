@@ -407,7 +407,7 @@ def plot(xdata, ydata):
                 if len(y) == 0:
                     continue
 
-            res.extend(plt.plot([xdata[i]]*len(y), 10**np.array(y),
+            res.extend(plt.plot([xdata[i]]*len(y), 10**np.asarray(y),
                                 marker='+', color=flierscolor,
                                 ls='', markersize=20, markeredgewidth=3))
 
@@ -440,7 +440,7 @@ def plot(xdata, ydata):
                                     verticalalignment='bottom'))
                 y = y[np.isfinite(y)]
 
-        dictboxwhisker = boxplot(list(10**np.array(i) for i in ydata),
+        dictboxwhisker = boxplot(list(10**np.asarray(i) for i in ydata),
                                  sym='', notch=0, widths=None,
                                  positions=xdata)
         #'medians', 'fliers', 'whiskers', 'boxes', 'caps'
@@ -775,7 +775,7 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
             #Aggregate over functions.
             ydata.append(np.log10(list(data[f][i] for f in data)))
 
-        xdata = np.log10(np.array(EVALS)/d)
+        xdata = np.log10(np.asarray(EVALS)/d)
         xticklabels = ['']
         xticklabels.extend('%d' % i for i in xdata[1:])
         plot(xdata, ydata)
