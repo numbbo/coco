@@ -1688,6 +1688,21 @@ class DataSet(object):
                     for t in targets]
         return [evalsrows[t] for t in targets]  # order w.r.t. input targets
 
+    def detEvals_by_instance(self, targets, raw_values=True, **kwargs):
+        """return result of `detEvals` for each instance individually
+
+        in an `OrderedDict` whos keys are all elements of `instancenumbers`.
+
+        ``raw_data=True`` means no instance balancing/repetitions.
+
+        See `detEvals` for further keyword arguments.
+        """
+        evals_list = self.detEvals(targets, **kwargs)
+        res = collections.OrderedDict()
+        for i, idx in self.instance_index_lists(raw_values).items():
+            res[i] = [evals[idx] for evals in evals_list]
+        return res
+
     def _number_of_better_runs(self, target, ref_eval):
         """return the number of ``self.evals(target)`` that are smaller
 
