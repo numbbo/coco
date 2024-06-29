@@ -1855,6 +1855,18 @@ class DataSet(object):
         return self._instance_multipliers
 
     @property
+    def instancenumbers_balanced(self):
+        """return instancenumbers extended with balancing_instancenumbers"""
+        if set(self.instance_multipliers) == {1}:
+            return self.instancenumbers
+        res = list(self.instancenumbers)
+        for i, m in zip(self.instancenumbers, self.instance_multipliers):
+            while m > 1:
+                res += [i]
+                m -= 1
+        return tuple(res)
+
+    @property
     def _instance_repetitions(self):  # -> int
         """return the number of runs that repeated a previous instance.
 
