@@ -1107,15 +1107,23 @@ class DataSet(object):
             targets,
             samplesize=None,
             randintfirst=toolsstats.randint_derandomized,
-            randintrest=toolsstats.randint_derandomized,
-            bootstrap=False):
-        """Return a len(targets) list of ``samplesize`` "simulated" run
-        lengths (#evaluations, sorted) with a similar interface as `detEvals`.
+            randintrest=np.random.randint,
+            bootstrap=False,
+            instance=None):
+        """Return a ``len(targets)`` `list` of ``samplesize`` "simulated runtimes"
 
-        `samplesize` is by default the smallest multiple of `nbRuns` that
-        is larger than 14.
+        with an interface similar to `detEvals`.
 
-        `bootstrap` is passed to `detEvals` and will increase the variance.
+        `samplesize` is by default the smallest multiple of ``nbRuns()``
+        that is not smaller than 15.
+
+        `bootstrap` is passed to `detEvals` such that the simulated runs
+        use a bootstrapped subset. This will increase the variance from
+        repeated `evals_with_simulated_restarts` calls. This may become
+        useful to measure dispersion of runtime distributions.
+
+        `instance`, when given, uses only the data from this instance. The
+        default `samplesize` may not be appropriate in this case.
 
         ``np.sort(np.concatenate(return_value))`` provides the combined
         sorted ECDF data over all targets which may be plotted with
@@ -1127,11 +1135,6 @@ class DataSet(object):
         `detEvals` or `evals_with_simulated_restarts` should be largely
         interchangeable, while the latter has a "success" rate of either
         0 or 1.
-
-        TODO: change this: To get a bootstrap sample for estimating dispersion use
-        ``min_samplesize=0, randint=np.random.randint``.
-
-        TODO: how is the sample size propagated to the bootstrapping?
 
         Details:
 
@@ -1155,37 +1158,56 @@ class DataSet(object):
             samplesize = 0
             while samplesize < 15:
                 samplesize += self.nbRuns()
-        res = []  # res[i] is a list of samplesize evals
-        for evals in self.detEvals(targets, copy=True, bootstrap=bootstrap):
+        if instance is None:
+            evals_list = self.detEvals(targets, copy=True, bootstrap=bootstrap)
+        else:
+            evals_list = self.detEvals_by_instance(
+                    targets, copy=True, bootstrap=bootstrap)[instance]
+        return self._evals_with_simulated_restarts(evals_list,
+            samplesize, randintfirst, randintrest, bootstrap)
+
+    def _evals_with_simulated_restarts(self, evals_list, samplesize,
+                                       randintfirst, randintrest, bootstrap):
+        """return simulated runtimes for each 1D-array in `evals_list`.
+
+        See `evals_with_simulated_restarts`
+        """
+        res = []  # a list of samplesize runtime arrays (evals)
+        for evals in evals_list:
             # prepare evals array
-            evals.sort()
+            evals.sort()  # nan are sorted to the end (since numpy 1.4.0 ~2013)
             indices = np.isfinite(evals)
             nsucc = sum(indices)
             if nsucc == 0:  # no successes
-                res += [samplesize * [np.nan]]  # TODO: this is "many" data with little information
+                res += [samplesize * [np.nan]]  # FIXME (minor): this is "many" data with little information
                 continue
-            elif nsucc == len(evals) and not bootstrap:
-                res += [sorted(evals[randintfirst(0, len(evals), samplesize)])]
+            elif nsucc == len(evals):
+                res += [evals[randintfirst(0, len(evals), samplesize)]]
                 continue
             nindices = ~indices
             assert sum(indices) + sum(nindices) == len(evals)
+            assert max(np.nonzero(indices)[0]) < min(np.nonzero(nindices)[0]), (
+                indices, nindices)
             evals[nindices] = self.maxevals[nindices]  # replace nan
             # let the first nsucc data in evals be those from successful runs
-            evals = np.hstack([evals[indices], evals[nindices]])
+            # evals = np.hstack([evals[indices], evals[nindices]])  # done by evals.sort
             assert sum(np.isfinite(evals)) == len(evals)
 
             # do the job
             indices = randintfirst(0, len(evals), samplesize)
             sums = evals[indices]
-            failing = np.where(indices >= nsucc)[0]
+            failing = np.nonzero(indices >= nsucc)[0]
             assert nsucc > 0  # prevent infinite loop
             while len(failing):  # add "restarts"
                 indices = randintrest(0, len(evals), len(failing))
                 sums[failing] += evals[indices]
-                # keep failing indices
+                # retain failing indices
                 failing = [failing[i] for i in range(len(failing))
                             if indices[i] >= nsucc]
-            res += [sorted(sums)]
+            res += [sums]
+
+        for evals in res:
+            evals.sort()
 
         assert set([len(evals) if evals is not None else samplesize
                 for evals in res]) == set([samplesize])
