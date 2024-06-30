@@ -2118,7 +2118,8 @@ class DataSet(object):
         return [t for (t, d) in zip(targets, differ) if d]
 
     def plot(self, plot_function=plt.semilogy, smallest_target=8e-9,
-             median_format='k--', color_map=None, **kwargs):
+             median_formats=(('linestyle', '--'), ), color_map=None,
+             plot_formats=(), **kwargs):
         """plot all data from `evals` attribute and the median.
 
         Plotted are Delta f-value vs evaluations. The sort for the color
@@ -2130,25 +2131,35 @@ class DataSet(object):
         `matplotlib.cm`. Default is `brg` between 0 and 0.5, like
         ``plt.cm.brg(np.linspace(0, 0.5, self.nbRuns()))``.
 
-        `**kwargs` is passed to `plot_function`.
+        `**kwargs` is updated with `plot_formats` and passed to
+        `plot_function` (for convenience).
         """
         if smallest_target > self.evals[0, 0]:
             raise ValueError("smallest_target=%f argument is larger than the largest recorded target %f"
                 % (smallest_target, self.evals[0, 0]))
-        kwargs.setdefault('clip_on', False)  # doesn't help
-        colors = iter(color_map or plt.cm.brg(np.linspace(0, 0.5, self.nbRuns())))
-        # colors = iter(plt.cm.plasma(np.linspace(0, 0.7, self.nbRuns())))
+        plot_kwargs = kwargs
+        kwargs.update(plot_formats)
+        median_kwargs = dict(median_formats)
+        plot_kwargs.setdefault('clip_on', False)  # doesn't help
+        plot_kwargs.setdefault('linewidth', 0.5)
+        colors = None if 'color' in plot_kwargs else (
+            iter(color_map or plt.cm.brg(np.linspace(0, 0.5, self.nbRuns()))))
+        #   iter(plt.cm.plasma(np.linspace(0, 0.7, self.nbRuns()))))
+        median_kwargs.setdefault('color', plot_kwargs.get('color', 'black'))
         for i in self._argsort(smallest_target):  # ranges from 1 to nbRuns included
             evals = self.evals.T[i]  # i == 0 are the target values
             idx = np.logical_and(self.evals[:, 0] >= smallest_target, np.isfinite(evals))
-            plot_function(evals[idx], self.evals[idx, 0], color=next(colors), **kwargs)
+            if colors:
+                plot_kwargs['color'] = next(colors)
+            plot_function(evals[idx], self.evals[idx, 0], **plot_kwargs)
         # plot median
         xmedian = self.median_evals()
         idx = np.logical_and(self.evals[:, 0] >= smallest_target, np.isfinite(xmedian))
         assert np.any(idx)  # must always be true, because the first row of evals is always finite
-        plot_function(xmedian[idx], self.evals[idx, 0], median_format, **kwargs)
+        median_kwargs.setdefault('linewidth', plot_kwargs['linewidth'] + 1)
+        plot_function(xmedian[idx], self.evals[idx, 0], **median_kwargs)
         i = np.where(idx)[0][-1]  # mark the last median with a circle
-        plot_function(xmedian[i], self.evals[i, 0], 'ok')
+        plot_function(xmedian[i], self.evals[i, 0], 'o', **median_kwargs)
         # make labels and beautify
         plt.ylabel(r'$\Delta f$')
         plt.xlabel('function evaluations')
