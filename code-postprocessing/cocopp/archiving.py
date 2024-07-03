@@ -753,7 +753,11 @@ class COCODataArchive(_td.StrList):
                 warnings.warn('COCODataArchive failed to locate "%s".\n'
                               'Will try again after updating from %s'
                               % (name, self.remote_data_path))
-                self.update()
+                try:
+                    self.update()
+                except Exception as e:
+                    warnings.warn("Updating archive definitions failed with \n\n    {}: {}\n\n You may want to check your WWW connectivity."
+                                  .format(str(type(e)).split("'")[1].split("'")[0], e))
             res.extend(more)
         if len(args) != len(set(args)):
             warnings.warn("Several data arguments point to the very same "
