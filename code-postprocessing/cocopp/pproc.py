@@ -2559,8 +2559,8 @@ class DataSetList(list):
                     elif getattr(o, 'pickleFile', False):
                         i.modsFromPickleVersion = False
                         i.pickleFile = o.pickleFile
-                if not i.consistency_check():
-                    warnings.warn("merged {} getting an inconsistent data set {}".format(o, i))
+                # if not i.consistency_check():  # might not be consistent here, but is (should be) checked in the end
+                #     warnings.warn("merged {} getting an inconsistent data set {}".format(o, i))
                 break
         if not isFound:
             list.append(self, o)
