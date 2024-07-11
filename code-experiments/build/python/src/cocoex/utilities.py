@@ -645,7 +645,7 @@ class ExperimentRepeater:
     implements safe access to this dictionary.
 
     When problem instances are repeated in a single suite, they may be
-    _partially_ skipped _after_ the first full sweep. That is, the
+    *partially* skipped *after* the first full sweep. That is, the
     configuration ``1-5,1-5,1-5`` can also lead to four trials of each
     instance 1-5, because all instances have been repeated the same number
     of times.
@@ -840,7 +840,7 @@ class ExperimentRepeater:
         Details
         -------
         ``done()`` without argument gives only consistent results before or
-        after a _full_ first sweep. In particular, _during_ the first sweep
+        after a *full* first sweep. In particular, *during* the first sweep
         it cannot account for problems that have not yet been run once.
 
         Calling ``done()`` increments the sweep counter iff it returns
@@ -902,15 +902,14 @@ class ExperimentRepeater:
         return problem.initial_solution_proposal(trials if trials % (nonzero_odds + 1) else 0)
 
 class BatchScheduler:
-    """Facilitate running a benchmarking experiment on a `cocoex.Suite` in
-       several independent batches.
+    """Facilitate to run a benchmarking experiment in independent batches.
 
     The batch scheduler crucially assumes that in each batch the same
-    problems are given _in the same order_ when calling `is_in_batch`.
+    problems are given *in the same order* when calling `is_in_batch`.
 
     Pseudo code example::
 
-        batch_to_execute = 0  # set current batch to execute in [0, 3]
+        batch_to_execute = 0  # set current batch to execute
 
         suite = cocoex.Suite('bbob', '', '')
         batcher = cocoex.BatchScheduler(4, batch_to_execute)
@@ -919,8 +918,10 @@ class BatchScheduler:
                 continue
             # ... run optimizer on problem ...
     
-    needs to be run four times overall (e.g., in parallel) with
-    ``batch_to_execute`` = 0..3 to generate the full experimental data.
+    needs to be run, in accordance with the first argument to
+    `BatchScheduler`, four times overall (e.g., in parallel) with
+    ``batch_to_execute in (0,1,2,3)`` to generate the full experimental
+    data.
 
     Details: to get a more even time distribution over all batches, it
     seems advisable that the number of functions is not divisible by the
@@ -928,9 +929,10 @@ class BatchScheduler:
     to be ideal on the `'bbob'` testbed of 24 functions.
     """
     def __init__(self, number_of_batches, batch_to_execute):
-        """distribute over `number_of_batches` batches and executed here
+        """distribute over `number_of_batches` batches and execute
 
-        the batch with number `batch_to_execute`.
+        the batch with number `batch_to_execute` which must obey
+        ``0 <= batch_to_execute < number_of_batches``.
         """
         self.params = {n: v for (n, v) in locals().items() if n != 'self'}
         self.first_problem = None
@@ -939,18 +941,18 @@ class BatchScheduler:
         if self.params['number_of_batches'] == 1 and self.params['batch_to_execute'] in (0, 1, None):
             print("number_of_batches == 1, hence running the full suite")
             self.params['batch_to_execute'] = 0
-        elif self.params['number_of_batches'] <= self.params['batch_to_execute']:
-            raise ValueError("number of batches == {} <= {} == batch to execute,"
-                            " however > is required."
+        elif (self.params['batch_to_execute'] < 0 or
+              self.params['batch_to_execute'] >= self.params['number_of_batches']):
+            raise ValueError("batch_to_execute == {} must be >= 0 and < {} == number_of_batches."
                             "\n  The first argument is the number of batches (nob),"
-                            "\n  the second argument needs to sweep from 0...nob-1."
-                            .format(self.params['number_of_batches'],
-                                    self.params['batch_to_execute']))
+                            "\n  the second argument needs to 'sweep' from 0...nob-1."
+                            .format(self.params['batch_to_execute'],
+                                    self.params['number_of_batches']))
     def is_in_batch(self, problem):
         """return `True` iff the batch number for `problem` equals `batch_to_execute`
 
-        which was given as a constructor argument. Assumes that
-        ``id_function`` and ``dimension`` are attributes of `problem`.
+        as given as constructor argument. Assumes that ``id_function`` and
+        ``dimension`` are attributes of `problem`.
 
         The batch number for `problem` is attributed using
         ``(problem.id_function, problem.dimension)`` by order of
