@@ -93,7 +93,7 @@ has_toc: false
 </table>
 
 
-Only f1 and f5 are _purely_ convex quadratic (f1) or _purely_ linear in the region of interest $[-5,5]^n$ (f5).
+Only f1 and f5 are _purely_ convex quadratic (f1) or _purely_ linear in the region of interest $`[-5,5]^n`$ (f5).
 
 See also [N. Hansen et al (2010)](https://dl.acm.org/doi/pdf/10.1145/1830761.1830790). [Comparing Results of 31 Algorithms from the Black-Box Optimization Benchmarking BBOB-2009.](https://dl.acm.org/doi/pdf/10.1145/1830761.1830790) [Workshop Proceedings of the GECCO Genetic and Evolutionary Computation Conference 2010, ACM.](https://dl.acm.org/doi/pdf/10.1145/1830761.1830790) 
 
