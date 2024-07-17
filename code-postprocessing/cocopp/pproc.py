@@ -602,6 +602,7 @@ class DataSet(object):
         instance_index_lists
         instance_multipliers
         instancenumbers
+        instancenumbers_balanced
         isBiobjective
         isFinalized
         mMaxEvals
