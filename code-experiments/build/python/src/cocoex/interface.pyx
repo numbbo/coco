@@ -576,7 +576,7 @@ cdef class Problem:
             # or should we return `[]` for zero constraints?
             # `[]` is more likely to produce quietly unexpected result?
         cdef np.ndarray[double, ndim=1, mode="c"] _x
-        x = np.array(x, copy=False, dtype=np.double, order='C')
+        x = np.asarray(x, dtype=np.double, order='C')
         if np.size(x) != self.number_of_variables:
             raise ValueError(
                 "Dimension, `np.size(x)==%d`, of input `x` does " % np.size(x) +
@@ -596,7 +596,7 @@ cdef class Problem:
         for the assessment of the algorithm.
         """
         cdef np.ndarray[double, ndim=1, mode="c"] _x
-        x = np.array(arx, copy=False, dtype=np.double, order='C')
+        x = np.asarray(arx, dtype=np.double, order='C')
         if np.size(x) != self.number_of_variables:
             raise ValueError(
                 "Dimension, `np.size(x)==%d`, of input `x` does " % np.size(x) +
@@ -618,7 +618,7 @@ cdef class Problem:
         """
         cdef size_t _evaluation = evaluation # "conversion" to size_t
         cdef np.ndarray[double, ndim=1, mode="c"] _y
-        y = np.array(y, copy=False, dtype=np.double, order='C')
+        y = np.asarray(y, dtype=np.double, order='C')
         if np.size(y) != self.number_of_objectives:
             raise ValueError(
                 "Dimension, `np.size(y)==%d`, of input `y` does " % np.size(y) +
@@ -815,7 +815,7 @@ cdef class Problem:
         """return objective function value of input `x`"""
         cdef np.ndarray[double, ndim=1, mode="c"] _x
         assert self.initialized
-        x = np.array(x, copy=False, dtype=np.double, order='C')
+        x = np.asarray(x, dtype=np.double, order='C')
         if np.size(x) != self.number_of_variables:
             raise ValueError(
                 "Dimension, `np.size(x)==%d`, of input `x` does " % np.size(x) +
