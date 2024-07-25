@@ -33,7 +33,7 @@ Say you already have a conda environment named `foo` that you want to reuse beca
 Then, once you've activated the environment, you can run
 
 ```sh
-conda update -f env.yaml
+conda update --file env.yaml
 ```
 
 and it will install all the required development dependencies into your existing environment.
