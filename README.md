@@ -56,7 +56,7 @@ For more general information:
 
 ## Running Experiments
 
-1. For running experiments **in Python**, follow the (new) instructions [here](https://numbbo.it/getting-started/experiment-python.html).  
+1. For running experiments **in Python after [release 2.6.3](https://github.com/numbbo/coco/releases) (Apr 2023)**, follow the (new) instructions [here](https://numbbo.it/getting-started/experiment-python.html).  
    **Otherwise, download** the COCO framework code from github,
 
     - either by clicking the [Download ZIP button](https://github.com/numbbo/coco/archive/master.zip) 
