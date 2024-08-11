@@ -4,21 +4,24 @@ project('coco', 'c',
 
 cc = meson.get_compiler('c')
 m_dep = cc.find_library('m', required : false)
+inc = include_directories('../../src')
 
-coco_lib = static_library('coco', 
-  sources: 'coco.c',
-  dependencies: m_dep
+coco_lib = static_library('coco',
+  sources: '../../src/coco_suite.c',
+  dependencies: m_dep,
   )
 
-executable('example_experiment', 
+executable('example_experiment',
   sources: 'example_experiment.c',
   link_with: coco_lib,
-  dependencies: m_dep
+  dependencies: m_dep,
+  include_directories: inc
   )
 
-executable('test_coco', 
+executable('test_coco',
   sources: 'test_coco.c',
   link_with: coco_lib,
-  dependencies: m_dep
+  dependencies: m_dep,
+  include_directories: inc
   )
 
