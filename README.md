@@ -1,17 +1,18 @@
 numbbo/coco: Comparing Continuous Optimizers
 ============================================
 
+> [!CAUTION]
+>
+> We are currently refactoring the `coco` code base to make it more accessible.
+> Much of the documentation is therefore outdated or in a state of flux.
+> The code has been refactored into several repositories under [github/numbbo](https://github.com/numbbo).
+> We try our best to update everything as soon as possible, if you find something that you think is outdated or needs a better description, don't hestitate to open an issue or a pull request!
+
 > [!IMPORTANT]
 >
 > This repository contains the source files for the `coco` framework.
 > If you don't want to *extend* the framework, you probably don't need this!
 > See instead the [new documentation](https://numbbo.it/getting-started) and use the language bindings of your choice from the package repository for your language (e.g. PyPI for Python, crates.io for Rust, ...).
-
-> [!CAUTION]
->
-> We are currently refactoring the `coco` code base to make it more accessible.
-> Much of the documentation is therefore outdated or in a state of flux.
-> We try our best to update it as soon as possible, if you find something that you think is outdated or needs a better description, don't hestitate to open an issue or a pull request!
 
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2594848.svg)](https://doi.org/10.5281/zenodo.2594848)
