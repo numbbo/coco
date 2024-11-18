@@ -1,6 +1,8 @@
 numbbo/coco: Comparing Continuous Optimizers
 ============================================
 
+## Please [click here](https://numbbo.it/getting-started) to get started (unless for submitting an issue or for working on the code base)
+
 > [!CAUTION]
 >
 > We are currently refactoring the `coco` code base to make it more accessible.
