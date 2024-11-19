@@ -43,8 +43,7 @@ static double f_katsuura_raw(const double *x, const size_t number_of_variables) 
   }
   /*result = 10. / ((double) number_of_variables) / ((double) number_of_variables)
       * (-1. + pow(result, 10. / pow((double) number_of_variables, 1.2)));*/
-  result = 10. / (((double) number_of_variables) * ((double) number_of_variables))
-  * (-1. + result);
+  result = 10. / ((double) number_of_variables * (double) number_of_variables) * (-1. + result);
 
   return result;
 }
