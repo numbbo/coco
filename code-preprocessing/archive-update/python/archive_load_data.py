@@ -11,7 +11,7 @@ from time import gmtime, strftime
 from itertools import groupby
 from operator import itemgetter
 
-from .archive_exceptions import PreprocessingWarning, PreprocessingException
+from archive_exceptions import PreprocessingWarning, PreprocessingException
 
 
 def get_file_name_list(paths, ending=None):
