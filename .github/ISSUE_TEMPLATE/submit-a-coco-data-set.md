@@ -1,7 +1,7 @@
 ---
 name: Submit a COCO data set
-about: Describes how to submit a COCO data set to the official archive.
-title: "[DATA SUBMISSION] please put your title here"
+about: Please submit your data via https://github.com/numbbo/data-archive/issues/new/choose
+title: "Please submit your data there: https://github.com/numbbo/data-archive/issues/new/choose"
 labels: 'data submission'
 assignees: brockho
 
