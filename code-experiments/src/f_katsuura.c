@@ -24,13 +24,13 @@ static double f_katsuura_raw(const double *x, const size_t number_of_variables) 
 
   size_t i, j;
   double tmp, tmp2;
-  double result;
 
   if (coco_vector_contains_nan(x, number_of_variables))
   	return NAN;
 
   /* Computation core */
-  result = 1.0;
+  double result = 1.0;
+  double D = (double) number_of_variables;
   for (i = 0; i < number_of_variables; ++i) {
     tmp = 0;
     for (j = 1; j < 33; ++j) {
@@ -39,12 +39,11 @@ static double f_katsuura_raw(const double *x, const size_t number_of_variables) 
     }
     tmp = 1.0 + ((double) (long) i + 1) * tmp;
     /*result *= tmp;*/ /* Wassim TODO: delete once consistency check passed*/
-    result *= pow(tmp, 10. / pow((double) number_of_variables, 1.2));
+    result *= pow(tmp, 10. / pow(D, 1.2));
   }
   /*result = 10. / ((double) number_of_variables) / ((double) number_of_variables)
       * (-1. + pow(result, 10. / pow((double) number_of_variables, 1.2)));*/
-  result = 10. / ((double) number_of_variables) / ((double) number_of_variables)
-  * (-1. + result);
+  result = 10. / (D * D) * (-1. + result);
 
   return result;
 }
