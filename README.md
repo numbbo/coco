@@ -1,14 +1,14 @@
 numbbo/coco: Comparing Continuous Optimizers
 ============================================
 
-## Please [click here](https://numbbo.it/getting-started) to get started (unless for submitting an issue or for working on the code base)
+## Please [click here](https://numbbo.it/getting-started) to get started.
 
 > [!CAUTION]
 >
-> We are currently refactoring the `coco` code base to make it more accessible.
-> Much of the documentation is therefore outdated or in a state of flux.
-> The code has been refactored into several repositories under [github/numbbo](https://github.com/numbbo).
-> We try our best to update everything as soon as possible, if you find something that you think is outdated or needs a better description, don't hestitate to open an issue or a pull request!
+> **This repository is outdated**, as
+> the code has been refactored into several repositories under [github/numbbo](https://github.com/numbbo).
+> We try our best to keep everything updated, if you find something that you think is outdated or needs a better description, don't hestitate to open an issue or a pull request,
+> usually either in [coco-experiment](https://github.com/numbbo/coco-experiment) or [coco-postprocess](https://github.com/numbbo/coco-postprocess)!
 
 > [!IMPORTANT]
 >
