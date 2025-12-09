@@ -1,7 +1,7 @@
 numbbo/coco: Comparing Continuous Optimizers
 ============================================
 
-## Please [click here](https://numbbo.it/getting-started) to get started.
+## Please [click here](https://numbbo.it) to get to the new COCO documentation homepage and [click here](https://numbbo.it/getting-started) to get started.
 
 > [!CAUTION]
 >
