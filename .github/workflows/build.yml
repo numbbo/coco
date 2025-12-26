@@ -85,7 +85,7 @@ jobs:
       with:
         python-version: "3.10"
     - name: Download Python source package
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: dist-python-sdist
     - name: Build cocopp wheel
@@ -135,7 +135,7 @@ jobs:
       with:
         python-version: "3.10"
     - name: Download Python source package
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: dist-python-sdist
     - name: Install cibuildwheel
@@ -174,11 +174,11 @@ jobs:
       run:
         working-directory: ${{github.workspace}}
     steps:
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4.1.7
       with:
         name: dist-python-sdist
         path: dist
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4.1.7
       with:
         name: dist-python-wheels
         path: wheels
@@ -219,7 +219,7 @@ jobs:
         working-directory: ${{github.workspace}}
     steps:
     - uses: actions/checkout@v4
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4.1.7
       with:
         name: dist-python-wheels
         path: wheels
@@ -239,7 +239,7 @@ jobs:
     needs: source-build
     runs-on: "ubuntu-latest"
     steps:
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4.1.7
       with:
         name: dist-python-sdist
         path: dist
@@ -267,7 +267,7 @@ jobs:
       run:
         working-directory: ${{github.workspace}}
     steps:
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4.1.7
       with:
         name: dist-python-wheels
         path: wheels
@@ -296,7 +296,7 @@ jobs:
         working-directory: ${{github.workspace}}
     steps:
     - name: Download C source package
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: dist-c
     - name: Unpack
@@ -330,7 +330,7 @@ jobs:
         working-directory: ${{github.workspace}}
     steps:
     - name: Download Java source package
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: dist-java
     - name: Setup java
@@ -365,7 +365,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y octave liboctave-dev
     - name: Download Octave source package
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: dist-octave
     - name: Unpack
@@ -394,7 +394,7 @@ jobs:
         working-directory: ${{github.workspace}}
     steps:
     - name: Download Rust source package
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: dist-rust
     - name: Unpack
@@ -417,7 +417,7 @@ jobs:
         working-directory: ${{github.workspace}}
     steps:
     - name: Download Rust source package
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4.1.7
       with:
         name: dist-rust
     - name: Unpack
