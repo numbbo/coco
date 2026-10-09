@@ -55,8 +55,9 @@ def get_table_caption():
         Expected runtime (\ERT\ in number of """
         + testbedsettings.current_testbed.string_evals
         + r""") divided by the \ERT\ of !!THE-REF-ALG!! in #1. This \ERT\
-        ratio and, in braces as dispersion measure, the half difference between 90 and
-        10\%-tile of !!BOOTSTRAPPED!! run lengths appear in the second row of each cell,  
+        ratio and, as dispersion measure, the difference between 90 and
+        50\%-tile (top) and between 50 and 10\%-tile (bottom)
+        of !!BOOTSTRAPPED!! run lengths appear in the second row of each cell,  
         the best \ERT\
         """)
     table_caption_rlbased = (r"""%
@@ -86,8 +87,9 @@ def get_table_caption():
         in number of """
         + testbedsettings.current_testbed.string_evals
         + r""" in #1. For each function, the \ERT\ 
-        and, in braces as dispersion measure, the half difference between 10 and 
-        90\%-tile of !!BOOTSTRAPPED!! runtimes is shown for the different
+        and, as dispersion measure, the difference between 90 and 
+        50\%-tile (top) and between 50 and 10\%-tile (botttom)
+        of !!BOOTSTRAPPED!! runtimes is shown for the different
         target """
         + ("!!DF!!-" if not testbedsettings.current_testbed.has_constraints else "precision ")
         + r"""values as shown in the top row. 
@@ -243,7 +245,7 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                 if any(succ):
                     tmp2 = toolsstats.drawSP(tmp[succ], tmp[succ == False],
                                              (10, 50, 90), entry.bootstrap_sample_size())[0]
-                    dispersion.append((tmp2[-1] - tmp2[0]) / 2.)
+                    dispersion.append((tmp2[1] - tmp2[0], tmp2[2] - tmp2[1]))
                 else:
                     dispersion.append(None)
             if data != ertdata:
@@ -373,19 +375,30 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                     # else:
                         # tableentry += s
 
-                if dispersion[i]:
+                def hmtl_subsup(sub, sup):
+                    return (
+                        '<math><msubsup>'
+                        '<mn></mn>'  # no base
+                        '<mn>%</mn>' # number lower
+                        '<mn>%</mn>' # number upper
+                        '</msubsup></math>') % (sub, sup)
+
+                if dispersion[i]:  # handle superscript for p-value too
                     if refalgentries and not np.isinf(refalgdata[i]):
-                        tmp = writeFEvalsMaxPrec(dispersion[i] / refalgdata[i], 1)
+                        tmp = [writeFEvalsMaxPrec(d / refalgdata[i], 1) for d in dispersion[i]]
                     else:
-                        tmp = writeFEvalsMaxPrec(dispersion[i], 1)
-                    s = r'(%s)' % tmp
+                        tmp = [writeFEvalsMaxPrec(d, 1)  for d in dispersion[i]]
+                    s = r'$_{%s}^{%s' % (tmp[0], tmp[1])
+                    if superscript:
+                        s += r'\,' + superscript
+                    s += r'}$'
                     if tableentry.endswith('}'):
                         tableentry = tableentry[:-1] + s + r'}'
                     else:
                         tableentry += s
-                    tableentryHtml += (' (%s)' % tmp)
+                    tableentryHtml += html_subsup(tmp[0], tmp[1] + superscriptHtml)
 
-                if superscript:
+                elif superscript:
                     s = r'$^{' + superscript + r'}$'
                     shtml = '<sup>' + superscriptHtml + '</sup>'
 
